@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "LIVEASTA TEST",
+  "short_name": "LIVEASTA",
+  "description": "LIVEASTA - ambiente Test-asta",
+  "start_url": "./?v=074-test",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0D1117",
+  "theme_color": "#0D1117",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/davidegolisano-design/live-asta/main/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/davidegolisano-design/live-asta/main/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
