@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>v0.74 TEST</title>
+    <title>v0.75 TEST</title>
     <!-- Test-asta: nuovo Supabase; asset binari remoti dal repo live-asta -->
     <meta name="theme-color" content="#0D1117">
     <meta name="color-scheme" content="dark">
@@ -15670,6 +15670,36 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
 }
 </style>
 
+
+<style id="liveasta-v075-room-select-fix">
+/* LIVEASTA v0.75 — FIX SELECT STANZA BANDITORE */
+#screen-auctioneer-setup #auction-room-select{
+  display:block!important;
+  width:100%!important;
+  height:48px!important;
+  min-height:48px!important;
+  max-height:none!important;
+  box-sizing:border-box!important;
+  padding:0 14px!important;
+  line-height:normal!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  vertical-align:middle!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+}
+#screen-auctioneer-setup #auction-room-select option{
+  line-height:normal!important;
+}
+@media (max-height:720px){
+  #screen-auctioneer-setup #auction-room-select{
+    height:44px!important;
+    min-height:44px!important;
+    padding:0 12px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -15680,7 +15710,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
              aria-label="Apri Impostazioni LIVEASTA"
              onclick="openAdminLogin()"
              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminLogin();}">
-            v0.74
+            v0.75
         </div>
         <div class="setup-card">
             <h1 class="logo-text"><span class="rosa">LIVE</span><span class="rush">ASTA</span></h1>
@@ -16103,7 +16133,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
 
     <div id="screen-admin" class="screen">
         <div class="setup-card" style="max-width:1100px; width:96%; padding:24px;">
-            <div class="admin-version-badge">v0.74</div>
+            <div class="admin-version-badge">v0.75</div>
             <h1>Gestione stanze</h1>
             <p class="subtitle">Nome, password, modifica ed eliminazione</p>
 
@@ -19807,7 +19837,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
                 return;
             }
 
-            /* v0.74 Smartphone: turno a sinistra, stato/classifica a destra. */
+            /* v0.75 Smartphone: turno a sinistra, stato/classifica a destra. */
             if(lv)lv.style.display='none';
             if(av){av.classList.remove('auction-view-hidden','nomination-turn-desktop');av.style.display='flex';}
             showMobileTurnBoard(team);
@@ -19900,7 +19930,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
                 return;
             }
 
-            /* v0.74 Smartphone: stessa logica READY desktop, informazioni ridotte. */
+            /* v0.75 Smartphone: stessa logica READY desktop, informazioni ridotte. */
             const readyDesktop=document.getElementById('auctioneer-ready-desktop');
             if(readyDesktop){readyDesktop.classList.remove('open');readyDesktop.setAttribute('aria-hidden','true');}
             showMobileReadyBoard(ready.length,req.length);
@@ -25795,7 +25825,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
             sealedEnding=true;
             if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
 
-            // v0.74: nessuna busta = nessun countdown di apertura, esito invenduto immediato.
+            // v0.75: nessuna busta = nessun countdown di apertura, esito invenduto immediato.
             if(sealedBids.size===0){
                 sealedRevealDeadlineAt=0;
                 await finalizeSealedAuctionResult();
@@ -28466,9 +28496,9 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
   }
 
   function applyBrand(){
-    document.title='v0.74';
+    document.title='v0.75';
     document.querySelectorAll('.admin-version-badge').forEach(el=>{
-      el.textContent='v0.74';
+      el.textContent='v0.75';
     });
     document.querySelectorAll('.logo-text').forEach(el=>{
       const a=el.querySelector('.rosa');
@@ -29680,7 +29710,7 @@ html[data-live-theme="daily"] #auction-room-error:not(:empty):not(.liveasta-acce
 }
 
 
-/* v0.74 — AUCTIONEER PRESENTATION ISOLATION
+/* v0.75 — AUCTIONEER PRESENTATION ISOLATION
    IMPORTANT ARCHITECTURE RULE:
    - realtime / auction logic remains shared;
    - desktop presentation lives ONLY under .auctioneer-ui-desktop;
@@ -29899,7 +29929,7 @@ html[data-auctioneer-ui="mobile"] #screen-auctioneer-board{--auctioneer-explicit
 html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explicit-mode:desktop;}
 
 /* ==========================================================================
-   v0.74 — PLANCIA BANDITORE SMARTPHONE
+   v0.75 — PLANCIA BANDITORE SMARTPHONE
    SOLO layout plancia: 60% giocatore / 40% timer+offerta.
    Nessuna modifica alla modalità desktop o ai pulsanti.
    ========================================================================== */
@@ -30039,7 +30069,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.74 — CONTENUTI PLANCIA BANDITORE SMARTPHONE
+   v0.75 — CONTENUTI PLANCIA BANDITORE SMARTPHONE
    Il desktop resta escluso da tutte le regole seguenti.
    ========================================================================== */
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction{
@@ -30196,7 +30226,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.74 — FIX MIRATI PLANCIA BANDITORE SMARTPHONE
+   v0.75 — FIX MIRATI PLANCIA BANDITORE SMARTPHONE
    1) Il pannello "Banditura a turni / È il turno di" esiste SOLO nello stato mobile-turn.
    2) Il nome del miglior offerente usa un colore ad alto contrasto sul pannello chiaro.
    ========================================================================== */
@@ -30236,7 +30266,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.74 — CENTRATURA CONTENUTI MOBILE + LEGGIBILITA' LISTONE TURNI
+   v0.75 — CENTRATURA CONTENUTI MOBILE + LEGGIBILITA' LISTONE TURNI
    ========================================================================== */
 
 /* I due riquadri inferiori trattano sempre le informazioni come un unico blocco centrato. */
@@ -30452,7 +30482,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.74 — LABEL QUADRANTI MOBILE + CENTRATURA DEFINITIVA
+   v0.75 — LABEL QUADRANTI MOBILE + CENTRATURA DEFINITIVA
    PREPARAZIONE / TIMER / OFFERTA
    ========================================================================== */
 
@@ -30568,7 +30598,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.74 — PLANCIA MOBILE: BLOCCHI DI FASE UNICI, CENTRATI, NON SOVRAPPOSTI
+   v0.75 — PLANCIA MOBILE: BLOCCHI DI FASE UNICI, CENTRATI, NON SOVRAPPOSTI
    ========================================================================== */
 
 /* Ogni quadrante inferiore è un contenitore centrato. */
@@ -30768,7 +30798,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 
-/* v0.74 light compatibility */
+/* v0.75 light compatibility */
 
 html[data-live-theme="light-neutral"],
 html[data-live-theme="light-blue"],
@@ -31464,7 +31494,7 @@ html[data-live-theme="light-sand"] #auction-room-error:not(:empty):not(.liveasta
 .theme-option[data-theme-option="light-sand"] .theme-swatches i:nth-child(1){background:#F8F4EC!important}.theme-option[data-theme-option="light-sand"] .theme-swatches i:nth-child(2){background:#356F63!important}.theme-option[data-theme-option="light-sand"] .theme-swatches i:nth-child(3){background:#C96622!important}
 
 
-/* v0.74 — Impostazioni separate dall'accesso Superuser */
+/* v0.75 — Impostazioni separate dall'accesso Superuser */
 #screen-admin-login .settings-superuser-btn{
     width:100%!important;
     margin-top:18px!important;
@@ -31482,7 +31512,7 @@ html[data-live-theme="light-sand"] #auction-room-error:not(:empty):not(.liveasta
 
 
 /* ==========================================================================
-   v0.74 — SUPERUSER RESPONSIVE
+   v0.75 — SUPERUSER RESPONSIVE
    Desktop: tabella piena e leggibile.
    Mobile: ogni stanza diventa una card verticale, senza scroll orizzontale.
    ========================================================================== */
@@ -31775,7 +31805,7 @@ html[data-live-theme="light-sand"] #auction-room-error:not(:empty):not(.liveasta
 
 
 /* ==========================================================================
-   v0.74 — ACCESSO GIOCATORE
+   v0.75 — ACCESSO GIOCATORE
    I CTA seguono il colore primario del tema; fix clipping del select squadra.
    ========================================================================== */
 html[data-live-theme] #screen-player-setup #player-wizard-next,
@@ -31835,7 +31865,7 @@ html[data-live-theme="light-sand"]{
 
 
 /* ==========================================================================
-   v0.74 — TASTI SECONDARI UNIFORMI
+   v0.75 — TASTI SECONDARI UNIFORMI
    ESCI / INDIETRO non cambiano più colore tra normale, hover e pressione.
    ========================================================================== */
 html[data-live-theme] :is(
@@ -31897,7 +31927,7 @@ html[data-live-theme] :is(
 
 
 /* ==========================================================================
-   v0.74 — BANDITORE: CTA COERENTI COL TEMA + NIENTE TAP HIGHLIGHT AZZURRO
+   v0.75 — BANDITORE: CTA COERENTI COL TEMA + NIENTE TAP HIGHLIGHT AZZURRO
    ========================================================================== */
 
 /* Elimina l'overlay azzurro nativo Android/Chrome sui controlli toccabili. */
@@ -31975,7 +32005,7 @@ html[data-live-theme] #screen-auctioneer-setup :is(
 
 
 /* ==========================================================================
-   v0.74 — CONTRASTO TESTI GARANTITO NEI TEMI
+   v0.75 — CONTRASTO TESTI GARANTITO NEI TEMI
    ========================================================================== */
 
 /* Regola generale per i pulsanti primari: testo sempre ad alto contrasto
@@ -32059,7 +32089,7 @@ html[data-live-theme] #screen-auctioneer-setup .auction-mode-big:is(:hover,:focu
 
 
 /* ==========================================================================
-   v0.74 — PLAYER INFO CARDS FOLLOW THE ACTIVE THEME
+   v0.75 — PLAYER INFO CARDS FOLLOW THE ACTIVE THEME
    STANZA / SQUADRA / CREDITI / SLOT-BUDGET
    ========================================================================== */
 
@@ -32136,7 +32166,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.74 — PLAYER STANZA / ROSA: FULL HEIGHT MOBILE
+   v0.75 — PLAYER STANZA / ROSA: FULL HEIGHT MOBILE
    Corregge il vecchio override 88dvh che troncava le pagine prima del fondo.
    ========================================================================== */
 @media (max-width:700px){
@@ -32227,7 +32257,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.74 — LISTE GIOCATORE UNIFICATE
+   v0.75 — LISTE GIOCATORE UNIFICATE
    Listone / La mia rosa / Rosa squadra
    ========================================================================== */
 
@@ -32465,7 +32495,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.74 — SPAZIATURA RUOLO / NOME NELLE ROSE
+   v0.75 — SPAZIATURA RUOLO / NOME NELLE ROSE
    Solo "La mia rosa" e rose aperte dalla Stanza.
    ========================================================================== */
 
@@ -32538,7 +32568,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.74 — PREVIEW MINIATURA: COLORI SOCIALI PULITI NEI TEMI CHIARI
+   v0.75 — PREVIEW MINIATURA: COLORI SOCIALI PULITI NEI TEMI CHIARI
    ========================================================================== */
 
 /* Il popup deve mostrare direttamente --roster-preview-team-bg.
@@ -32595,7 +32625,7 @@ html[data-live-theme] .room-roster-player-preview-card{
 
 
 /* ==========================================================================
-   v0.74 — SLOT · BUDGET
+   v0.75 — SLOT · BUDGET
    Budget attivo: verde = dentro budget, rosso = fuori budget.
    Budget disattivo: i ruoli seguono il tema.
    ========================================================================== */
@@ -32624,7 +32654,7 @@ html[data-live-theme] #screen-player-buzzer #player-slots .slot-free-total{
 
 
 /* ==========================================================================
-   v0.74 — PALETTE TEMI
+   v0.75 — PALETTE TEMI
    Solo colori: Classic / Glow Electric / Modern, chiaro + scuro.
    ========================================================================== */
 html[data-live-theme="broadcast"]{
@@ -32692,7 +32722,7 @@ html[data-live-theme="light-sand"]{
 
 
 /* ==========================================================================
-   v0.74 — 12 TEMI: DAILY A SINISTRA / DARK A DESTRA
+   v0.75 — 12 TEMI: DAILY A SINISTRA / DARK A DESTRA
    ========================================================================== */
 .theme-picker.theme-picker-12{
     display:grid!important;
@@ -32757,7 +32787,7 @@ html[data-live-theme="light-sand"]{
 
 
 /* ==========================================================================
-   v0.74 — CONTRASTO MESSAGGI DISPONIBILITÀ / POSTO OCCUPATO
+   v0.75 — CONTRASTO MESSAGGI DISPONIBILITÀ / POSTO OCCUPATO
    Mantiene il significato semantico indipendente dal tema.
    ========================================================================== */
 #player-room-error.liveasta-access-retry,
@@ -32803,7 +32833,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — LISTONE GIOCATORE
+   v0.75 — LISTONE GIOCATORE
    "LEVA PREFERENZE" è sempre un'azione distruttiva: rosso fisso, fuori tema.
    ========================================================================== */
 #player-listone-overlay .player-listone-clear,
@@ -32832,7 +32862,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — SETUP ASTA / MODALITÀ SU SMARTPHONE
+   v0.75 — SETUP ASTA / MODALITÀ SU SMARTPHONE
    Classic e Mantra restano entrambe visibili: niente scorrimento orizzontale.
    ========================================================================== */
 @media (max-width: 767px){
@@ -32869,7 +32899,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — FIX REALE STEP 2 MODALITÀ BANDITORE SMARTPHONE
+   v0.75 — FIX REALE STEP 2 MODALITÀ BANDITORE SMARTPHONE
    Nessun overflow orizzontale: Classic e Mantra restano interamente nel card.
    ========================================================================== */
 @media (max-width:760px){
@@ -32957,7 +32987,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ========================================================================== 
-   v0.74 — SOLO BANDITORE SMARTPHONE: HEADER PLANCIA RESPONSIVE
+   v0.75 — SOLO BANDITORE SMARTPHONE: HEADER PLANCIA RESPONSIVE
    GESTIONE e RESET restano sempre dentro il viewport.
    ========================================================================== */
 @media (max-width:760px){
@@ -33067,7 +33097,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Quando il listone è aperto, la plancia deve essere completamente nascosta.
    ========================================================================== */
 #screen-auctioneer-board.auctioneer-ui-mobile
@@ -33102,7 +33132,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Quadranti inferiori + tasto AVANTI a fine banditura.
    ========================================================================== */
 @media (max-width:760px){
@@ -33264,7 +33294,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Nessuna offerta rimossa, numeri più grandi/adattivi, freccia nel riquadro giocatore.
    ========================================================================== */
 @media (max-width:760px){
@@ -33409,7 +33439,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Centratura geometrica numeri + freccia realmente visibile a fine asta.
    ========================================================================== */
 @media (max-width:760px){
@@ -33594,7 +33624,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.74 — CONFERME INTERNE LIVEASTA
+   v0.75 — CONFERME INTERNE LIVEASTA
    Sostituisce i popup confirm() nativi del browser in tutta l'app.
    ========================================================================== */
 body.liveasta-confirm-open{
@@ -33720,7 +33750,7 @@ body.liveasta-confirm-open{
 
 
 /* ==========================================================================
-   v0.74 — ALERT INTERNI + QUADRANTI BANDITORE SMARTPHONE
+   v0.75 — ALERT INTERNI + QUADRANTI BANDITORE SMARTPHONE
    ========================================================================== */
 
 /* ---------- ALERT INTERNO ---------- */
@@ -33991,7 +34021,7 @@ body.liveasta-alert-open{
 }
 
 
-/* ==========================================================================\n   v0.74 — SOLO BANDITORE SMARTPHONE\n   Riduzione spazio vuoto sotto la barra superiore in plancia e listone.\n   ========================================================================== */
+/* ==========================================================================\n   v0.75 — SOLO BANDITORE SMARTPHONE\n   Riduzione spazio vuoto sotto la barra superiore in plancia e listone.\n   ========================================================================== */
 @media (max-width:760px){
   body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile{
       padding-top:86px!important;
@@ -34026,7 +34056,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Ruolo miniatura senza ombra + aggiudicatario sotto il valore offerta
    ========================================================================== */
 @media (max-width:760px){
@@ -34091,7 +34121,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Fix effettivo ruolo miniatura + quadrante OFFERTA
    ========================================================================== */
 @media (max-width:760px){
@@ -34229,7 +34259,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Quadrante OFFERTA: una sola geometria definitiva.
    ========================================================================== */
 @media (max-width:760px){
@@ -34381,7 +34411,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Quadrante OFFERTA separato definitivamente dal winner-display desktop.
    ========================================================================== */
 @media (max-width:760px){
@@ -34549,7 +34579,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE / ASTA NORMALE
+   v0.75 — SOLO BANDITORE SMARTPHONE / ASTA NORMALE
    Nel quadrante OFFERTA devono restare solo:
    OFFERTA -> valore -> nome offerente.
    Tutti gli elementi legacy/ranking vengono esclusi dalla fase normale.
@@ -34680,7 +34710,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    FIX REALE QUADRANTE DESTRO: nessuna dipendenza da .mobile-normal
    ========================================================================== */
 @media (max-width:760px){
@@ -34818,7 +34848,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE / BANDITORE-GIOCATORE
+   v0.75 — SOLO BANDITORE SMARTPHONE / BANDITORE-GIOCATORE
    ========================================================================== */
 @media (max-width:760px){
 
@@ -35031,7 +35061,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — correzione centratura numero TIMER banditore smartphone
+   v0.75 — correzione centratura numero TIMER banditore smartphone
    ========================================================================== */
 @media (max-width:760px){
 
@@ -35080,7 +35110,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.74 — SOLO BANDITORE SMARTPHONE
+   v0.75 — SOLO BANDITORE SMARTPHONE
    Fix pulito liste DISPONIBILI / GIÀ BANDITI
    ========================================================================== */
 @media (max-width:760px){
