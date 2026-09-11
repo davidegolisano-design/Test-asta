@@ -1,0 +1,50 @@
+name: Fix visible version v0.79
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-visible-version-v079.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch visible version
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+          replacements = {
+              'v0.76': 'v0.79',
+              'V0.76': 'V0.79',
+              'v0.77': 'v0.79',
+              'V0.77': 'V0.79',
+              'v0.78': 'v0.79',
+              'V0.78': 'V0.79',
+          }
+          for old, new in replacements.items():
+              s = s.replace(old, new)
+          if s == original:
+              print('No old visible version strings found; index unchanged')
+          else:
+              p.write_text(s, encoding='utf-8')
+              print('index.html updated to v0.79')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "v0.79 align visible app version"
+            git push
+          fi
