@@ -1,0 +1,42 @@
+/* LIVEASTA v0.84 — coerenza banditore smartphone */
+@media (max-width:760px){
+  /* Il ruolo nella lista deve essere un badge circolare compatto, mai una pillola allungata. */
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) .role-badge,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) .role-circle,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) [class*="role-badge"],
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) [class*="role-circle"]{
+    width:28px!important;
+    min-width:28px!important;
+    max-width:28px!important;
+    height:28px!important;
+    min-height:28px!important;
+    max-height:28px!important;
+    aspect-ratio:1/1!important;
+    padding:0!important;
+    margin:0 7px 0 0!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 28px!important;
+    line-height:1!important;
+    border-radius:50%!important;
+    box-sizing:border-box!important;
+    vertical-align:middle!important;
+    overflow:hidden!important;
+  }
+
+  /* Miniatura della plancia: stessa geometria circolare usata nel resto dell'app. */
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) .auction-player-card img,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) .player-thumbnail,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) .player-thumb,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) #auction-player-image,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) #auction-player-img,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) .auction-player-image img,
+  #screen-auctioneer-board:not(.auctioneer-ui-desktop) .auction-player-thumb img{
+    border-radius:50%!important;
+    aspect-ratio:1/1!important;
+    object-fit:cover!important;
+    object-position:center!important;
+    overflow:hidden!important;
+  }
+}
