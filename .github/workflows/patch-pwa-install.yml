@@ -15,9 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Patch index
-        shell: python
+        shell: bash
         run: |
+          python3 - <<'PY'
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
@@ -70,16 +72,14 @@ jobs:
     deferredPrompt=null;
     btn()?.classList.remove('show');
   });
-
-  const standalone=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
-  if(standalone){
-    window.addEventListener('DOMContentLoaded',()=>btn()?.classList.remove('show'));
-  }
 })();
 </script>
 '''
+              if '</body>' not in s:
+                  raise SystemExit('Tag </body> non trovato')
               s=s.replace('</body>',block+'\n</body>',1)
               p.write_text(s,encoding='utf-8')
+          PY
 
       - name: Commit patch
         shell: bash
