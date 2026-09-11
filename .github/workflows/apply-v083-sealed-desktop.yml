@@ -1,77 +1,47 @@
 name: Apply v0.83 sealed desktop fixes
-
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/apply-v083-sealed-desktop.yml'
-
+    paths: ['.github/workflows/apply-v083-sealed-desktop.yml']
 permissions:
   contents: write
-
 jobs:
   patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch sealed desktop flow
+      - name: Patch
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
           s=s.replace('v0.82','v0.83').replace('V0.82','V0.83')
           css='<link rel="stylesheet" href="./sealed-desktop-v083.css">'
-          if css not in s:
-              s=s.replace('</head>',css+'\n</head>',1)
+          if css not in s: s=s.replace('</head>',css+'\n</head>',1)
 
-          # Carica i timer buste anche entrando direttamente nella plancia banditore.
-          join=s.find('async function joinAsAuctioneer()')
-          end=s.find('async function handleNominationSubmission',join)
-          if join<0 or end<0: raise SystemExit('joinAsAuctioneer block not found')
+          join=s.find('async function joinAsAuctioneer()'); end=s.find('async function handleNominationSubmission',join)
+          if join<0 or end<0: raise SystemExit('join block missing')
           block=s[join:end]
-          anchor="            await loadReadyMode();"
-          extra="\n            await loadSealedTimerSeconds();\n            await loadSealedRevealSeconds();"
           if 'await loadSealedRevealSeconds();' not in block:
-              if anchor not in block: raise SystemExit('loadReadyMode anchor not found')
-              block=block.replace(anchor,anchor+extra,1)
+              a='await loadReadyMode();'
+              if a not in block: raise SystemExit('ready load missing')
+              block=block.replace(a,a+'\n            await loadSealedTimerSeconds();\n            await loadSealedRevealSeconds();',1)
               s=s[:join]+block+s[end:]
 
-          old='''            const remainingRevealMs=(Number(sealedRevealDeadlineAt)||0)-Date.now();
-            if(remainingRevealMs>25){
-                if(sealedRevealInterval){clearInterval(sealedRevealInterval);sealedRevealInterval=null;}
-                sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},remainingRevealMs+40);
-                return;
-            }'''
-          new='''            const revealDeadline=Number(sealedRevealDeadlineAt)||0;
-            const remainingRevealMs=revealDeadline-Date.now();
-            // v0.83: con almeno una busta non è consentito mostrare l'esito
-            // senza un countdown di apertura realmente concluso.
-            if(sealedBids.size>0 && revealDeadline<=0){
-                const reveal=Math.max(1,parseInt(sealedRevealSeconds)||5);
-                sealedRevealDeadlineAt=Date.now()+reveal*1000;
-                showSealedAuctionStage('opening');
-                if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);sealedRevealInterval=null;}
-                sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},reveal*1000+50);
-                return;
-            }
-            if(remainingRevealMs>25){
-                if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);sealedRevealInterval=null;}
-                sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},remainingRevealMs+50);
-                return;
-            }'''
-          if old in s:
-              s=s.replace(old,new,1)
-          elif 'const revealDeadline=Number(sealedRevealDeadlineAt)||0;' not in s:
-              raise SystemExit('finalize guard anchor not found')
+          marker='// v0.83 reveal hard guard'
+          if marker not in s:
+              pos=s.find('async function finalizeSealedAuctionResult()')
+              if pos<0: raise SystemExit('finalize missing')
+              brace=s.find('{',pos)
+              guard='''\n            // v0.83 reveal hard guard\n            if(sealedBids.size>0){\n                const __deadline=Number(sealedRevealDeadlineAt)||0;\n                if(__deadline<=0){\n                    const __seconds=Math.max(1,parseInt(sealedRevealSeconds)||5);\n                    sealedRevealDeadlineAt=Date.now()+__seconds*1000;\n                    showSealedAuctionStage('opening');\n                    if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);}\n                    sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},__seconds*1000+60);\n                    return;\n                }\n                const __left=__deadline-Date.now();\n                if(__left>25){\n                    if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);}\n                    sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},__left+60);\n                    return;\n                }\n            }\n'''
+              s=s[:brace+1]+guard+s[brace+1:]
 
-          anchor='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
-            hideNominationStage();'''
-          replacement='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
-            clearSealedBidRanking();
-            hideNominationStage();'''
-          if anchor in s:
-              s=s.replace(anchor,replacement,1)
+          opening='// Il primo timer è finito: NON mostriamo ancora né vincitore né importo.'
+          oi=s.find(opening)
+          if oi>=0:
+              hi=s.find('hideNominationStage();',oi)
+              if hi>=0 and 'clearSealedBidRanking();' not in s[oi:hi]:
+                  s=s[:hi]+'clearSealedBidRanking();\n            '+s[hi:]
 
           p.write_text(s,encoding='utf-8')
           PY
@@ -80,9 +50,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          if git diff --cached --quiet; then
-            echo "Nothing to commit"
-          else
-            git commit -m "v0.83 fix desktop sealed delivery and reveal timing"
-            git push
-          fi
+          git diff --cached --quiet || (git commit -m "v0.83 fix desktop sealed delivery and reveal timing" && git push)
