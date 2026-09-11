@@ -1,0 +1,46 @@
+name: Apply v0.75 room select fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/v075-room-select-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch room select clipping
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          s = s.replace('v0.74', 'v0.75')
+
+          marker = '/* LIVEASTA v0.75 — FIX SELECT STANZA BANDITORE */'
+          if marker not in s:
+              css = '''\n<style id="liveasta-v075-room-select-fix">\n/* LIVEASTA v0.75 — FIX SELECT STANZA BANDITORE */\n#screen-auctioneer-setup #auction-room-select{\n  display:block!important;\n  width:100%!important;\n  height:48px!important;\n  min-height:48px!important;\n  max-height:none!important;\n  box-sizing:border-box!important;\n  padding:0 14px!important;\n  line-height:normal!important;\n  text-align:center!important;\n  text-align-last:center!important;\n  vertical-align:middle!important;\n  overflow:visible!important;\n  white-space:nowrap!important;\n}\n#screen-auctioneer-setup #auction-room-select option{\n  line-height:normal!important;\n}\n@media (max-height:720px){\n  #screen-auctioneer-setup #auction-room-select{\n    height:44px!important;\n    min-height:44px!important;\n    padding:0 12px!important;\n  }\n}\n</style>\n'''
+              s = s.replace('</head>', css + '\n</head>', 1)
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit v0.75
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'v0.75 fix banditore room select clipping'
+          git push origin main
