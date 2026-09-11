@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>v0.80 TEST</title>
+    <title>v0.81 TEST</title>
     <!-- Test-asta: nuovo Supabase; asset binari remoti dal repo live-asta -->
     <meta name="theme-color" content="#0D1117">
     <meta name="color-scheme" content="dark">
@@ -15672,7 +15672,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
 
 
 <style id="liveasta-v075-room-select-fix">
-/* LIVEASTA v0.80 — FIX SELECT STANZA BANDITORE */
+/* LIVEASTA v0.81 — FIX SELECT STANZA BANDITORE */
 #screen-auctioneer-setup #auction-room-select{
   display:block!important;
   width:100%!important;
@@ -15700,7 +15700,8 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
 }
 </style>
 
-\n<style id="liveasta-v076-desktop-board">\n/* LIVEASTA v0.80 — BANDITORE DESKTOP TOOLBAR + GIÀ BANDITI */\n@media (min-width:761px){\n  /* ONLINE x/x sempre visibile nella testata desktop */\n  #screen-auctioneer-board #auction-dashboard.mode-pc ~ * {}\n  #screen-auctioneer-board > .session-nav .auction-session-center{\n    display:flex!important;\n    flex-direction:row!important;\n    align-items:center!important;\n    justify-content:center!important;\n    gap:8px!important;\n    min-width:0!important;\n    overflow:visible!important;\n  }\n  #screen-auctioneer-board > .session-nav .auction-online-pill{\n    display:inline-flex!important;\n    align-items:center!important;\n    flex:0 0 auto!important;\n    width:auto!important;\n    min-width:max-content!important;\n    height:28px!important;\n    min-height:28px!important;\n    padding:0 10px!important;\n    gap:6px!important;\n    overflow:visible!important;\n    white-space:nowrap!important;\n  }\n  #screen-auctioneer-board > .session-nav #auction-online-count{\n    display:inline!important;\n    visibility:visible!important;\n    opacity:1!important;\n    width:auto!important;\n    max-width:none!important;\n    overflow:visible!important;\n    color:#35d96f!important;\n    font-weight:950!important;\n    white-space:nowrap!important;\n  }\n\n  /* Unica riga desktop: Cerca | random | buste | ruoli | ordinamento */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .dashboard-left{\n    display:grid!important;\n    grid-template-columns:minmax(220px,1fr) 50px minmax(118px,150px) minmax(290px,360px) minmax(280px,350px)!important;\n    grid-template-rows:50px auto minmax(0,1fr) auto auto!important;\n    column-gap:7px!important;\n    row-gap:6px!important;\n    align-items:stretch!important;\n    min-height:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-filter-controls{\n    display:contents!important;\n    margin:0!important;\n    padding:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-roster-btn{\n    display:none!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar #player-search,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn{\n    width:50px!important;\n    min-width:50px!important;\n    padding:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{\n    width:100%!important;\n    min-width:0!important;\n    padding:0 12px!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row{\n    height:50px!important;\n    min-height:50px!important;\n    display:grid!important;\n    grid-auto-flow:column!important;\n    grid-auto-columns:minmax(48px,1fr)!important;\n    gap:6px!important;\n    flex-wrap:nowrap!important;\n    align-items:stretch!important;\n    overflow:hidden!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row > button{\n    width:100%!important;\n    min-width:0!important;\n    max-width:none!important;\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    padding:0 7px!important;\n    border-radius:9px!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row{\n    height:50px!important;\n    min-height:50px!important;\n    display:grid!important;\n    grid-template-columns:auto minmax(0,1fr) 50px!important;\n    gap:6px!important;\n    align-items:stretch!important;\n    margin:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row label{\n    display:flex!important;\n    align-items:center!important;\n    height:50px!important;\n    margin:0!important;\n    white-space:nowrap!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row select,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{\n    width:50px!important;\n    min-width:50px!important;\n    padding:0!important;\n  }\n\n  /* Le sezioni della tabella continuano a occupare tutta la larghezza */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .list-section-title:not(.auctioned-section-head){\n    grid-column:1 / -1!important;\n    grid-row:2!important;\n    margin:0 2px!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .table-container{\n    grid-column:1 / -1!important;\n    grid-row:3!important;\n    min-height:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head{\n    grid-column:1 / -1!important;\n    grid-row:4!important;\n    display:grid!important;\n    grid-template-columns:minmax(0,1fr) auto!important;\n    gap:7px!important;\n    margin:0!important;\n    align-items:stretch!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .collapsed-toggle,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn{\n    height:40px!important;\n    min-height:40px!important;\n    max-height:40px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn:is(:hover,:focus,:active){\n    background:#D9434E!important;\n    background-image:none!important;\n    border-color:#B9323C!important;\n    color:#FFFFFF!important;\n    box-shadow:none!important;\n  }\n\n  /* GIÀ BANDITI desktop: tabella compatta e allineata */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list{\n    grid-column:1 / -1!important;\n    grid-row:5!important;\n    width:100%!important;\n    min-height:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list.collapsed{\n    display:none!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list:not(.collapsed){\n    display:block!important;\n    height:auto!important;\n    max-height:220px!important;\n    overflow-y:auto!important;\n    padding:0!important;\n    border:1px solid var(--theme-border)!important;\n    border-radius:8px!important;\n    background:var(--theme-input)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row{\n    display:grid!important;\n    grid-template-columns:62px minmax(0,1.3fr) minmax(0,1fr) 100px!important;\n    gap:10px!important;\n    align-items:center!important;\n    width:100%!important;\n    min-height:42px!important;\n    height:42px!important;\n    margin:0!important;\n    padding:4px 10px!important;\n    box-sizing:border-box!important;\n    border-bottom:1px solid var(--theme-border)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row:last-child{\n    border-bottom:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row .role-badge{\n    width:38px!important;\n    min-width:38px!important;\n    max-width:38px!important;\n    margin:0!important;\n    padding:3px 5px!important;\n    justify-self:start!important;\n    border-radius:999px!important;\n    font-size:.72rem!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{\n    min-width:0!important;\n    white-space:nowrap!important;\n    overflow:hidden!important;\n    text-overflow:ellipsis!important;\n    font-size:.88rem!important;\n    line-height:1!important;\n    text-align:left!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name{\n    font-weight:850!important;\n    color:var(--theme-text)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{\n    color:var(--theme-muted)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .restore-btn{\n    width:96px!important;\n    min-width:96px!important;\n    height:32px!important;\n    min-height:32px!important;\n    margin:0!important;\n    padding:0 8px!important;\n    justify-self:end!important;\n    font-size:.72rem!important;\n  }\n}\n</style>\n
+\n<style id="liveasta-v076-desktop-board">\n/* LIVEASTA v0.81 — BANDITORE DESKTOP TOOLBAR + GIÀ BANDITI */\n@media (min-width:761px){\n  /* ONLINE x/x sempre visibile nella testata desktop */\n  #screen-auctioneer-board #auction-dashboard.mode-pc ~ * {}\n  #screen-auctioneer-board > .session-nav .auction-session-center{\n    display:flex!important;\n    flex-direction:row!important;\n    align-items:center!important;\n    justify-content:center!important;\n    gap:8px!important;\n    min-width:0!important;\n    overflow:visible!important;\n  }\n  #screen-auctioneer-board > .session-nav .auction-online-pill{\n    display:inline-flex!important;\n    align-items:center!important;\n    flex:0 0 auto!important;\n    width:auto!important;\n    min-width:max-content!important;\n    height:28px!important;\n    min-height:28px!important;\n    padding:0 10px!important;\n    gap:6px!important;\n    overflow:visible!important;\n    white-space:nowrap!important;\n  }\n  #screen-auctioneer-board > .session-nav #auction-online-count{\n    display:inline!important;\n    visibility:visible!important;\n    opacity:1!important;\n    width:auto!important;\n    max-width:none!important;\n    overflow:visible!important;\n    color:#35d96f!important;\n    font-weight:950!important;\n    white-space:nowrap!important;\n  }\n\n  /* Unica riga desktop: Cerca | random | buste | ruoli | ordinamento */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .dashboard-left{\n    display:grid!important;\n    grid-template-columns:minmax(220px,1fr) 50px minmax(118px,150px) minmax(290px,360px) minmax(280px,350px)!important;\n    grid-template-rows:50px auto minmax(0,1fr) auto auto!important;\n    column-gap:7px!important;\n    row-gap:6px!important;\n    align-items:stretch!important;\n    min-height:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-filter-controls{\n    display:contents!important;\n    margin:0!important;\n    padding:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-roster-btn{\n    display:none!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar #player-search,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn{\n    width:50px!important;\n    min-width:50px!important;\n    padding:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{\n    width:100%!important;\n    min-width:0!important;\n    padding:0 12px!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row{\n    height:50px!important;\n    min-height:50px!important;\n    display:grid!important;\n    grid-auto-flow:column!important;\n    grid-auto-columns:minmax(48px,1fr)!important;\n    gap:6px!important;\n    flex-wrap:nowrap!important;\n    align-items:stretch!important;\n    overflow:hidden!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row > button{\n    width:100%!important;\n    min-width:0!important;\n    max-width:none!important;\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    padding:0 7px!important;\n    border-radius:9px!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row{\n    height:50px!important;\n    min-height:50px!important;\n    display:grid!important;\n    grid-template-columns:auto minmax(0,1fr) 50px!important;\n    gap:6px!important;\n    align-items:stretch!important;\n    margin:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row label{\n    display:flex!important;\n    align-items:center!important;\n    height:50px!important;\n    margin:0!important;\n    white-space:nowrap!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row select,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{\n    width:50px!important;\n    min-width:50px!important;\n    padding:0!important;\n  }\n\n  /* Le sezioni della tabella continuano a occupare tutta la larghezza */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .list-section-title:not(.auctioned-section-head){\n    grid-column:1 / -1!important;\n    grid-row:2!important;\n    margin:0 2px!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .table-container{\n    grid-column:1 / -1!important;\n    grid-row:3!important;\n    min-height:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head{\n    grid-column:1 / -1!important;\n    grid-row:4!important;\n    display:grid!important;\n    grid-template-columns:minmax(0,1fr) auto!important;\n    gap:7px!important;\n    margin:0!important;\n    align-items:stretch!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .collapsed-toggle,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn{\n    height:40px!important;\n    min-height:40px!important;\n    max-height:40px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn:is(:hover,:focus,:active){\n    background:#D9434E!important;\n    background-image:none!important;\n    border-color:#B9323C!important;\n    color:#FFFFFF!important;\n    box-shadow:none!important;\n  }\n\n  /* GIÀ BANDITI desktop: tabella compatta e allineata */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list{\n    grid-column:1 / -1!important;\n    grid-row:5!important;\n    width:100%!important;\n    min-height:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list.collapsed{\n    display:none!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list:not(.collapsed){\n    display:block!important;\n    height:auto!important;\n    max-height:220px!important;\n    overflow-y:auto!important;\n    padding:0!important;\n    border:1px solid var(--theme-border)!important;\n    border-radius:8px!important;\n    background:var(--theme-input)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row{\n    display:grid!important;\n    grid-template-columns:62px minmax(0,1.3fr) minmax(0,1fr) 100px!important;\n    gap:10px!important;\n    align-items:center!important;\n    width:100%!important;\n    min-height:42px!important;\n    height:42px!important;\n    margin:0!important;\n    padding:4px 10px!important;\n    box-sizing:border-box!important;\n    border-bottom:1px solid var(--theme-border)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row:last-child{\n    border-bottom:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row .role-badge{\n    width:38px!important;\n    min-width:38px!important;\n    max-width:38px!important;\n    margin:0!important;\n    padding:3px 5px!important;\n    justify-self:start!important;\n    border-radius:999px!important;\n    font-size:.72rem!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{\n    min-width:0!important;\n    white-space:nowrap!important;\n    overflow:hidden!important;\n    text-overflow:ellipsis!important;\n    font-size:.88rem!important;\n    line-height:1!important;\n    text-align:left!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name{\n    font-weight:850!important;\n    color:var(--theme-text)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{\n    color:var(--theme-muted)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .restore-btn{\n    width:96px!important;\n    min-width:96px!important;\n    height:32px!important;\n    min-height:32px!important;\n    margin:0!important;\n    padding:0 8px!important;\n    justify-self:end!important;\n    font-size:.72rem!important;\n  }\n}\n</style>\n
+<link rel="stylesheet" href="./auctioneer-desktop-theme-v081.css">
 </head>
 <body>
 
@@ -15711,7 +15712,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
              aria-label="Apri Impostazioni LIVEASTA"
              onclick="openAdminLogin()"
              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminLogin();}">
-            v0.80
+            v0.81
         </div>
         <div class="setup-card">
             <h1 class="logo-text"><span class="rosa">LIVE</span><span class="rush">ASTA</span></h1>
@@ -16134,7 +16135,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
 
     <div id="screen-admin" class="screen">
         <div class="setup-card" style="max-width:1100px; width:96%; padding:24px;">
-            <div class="admin-version-badge">v0.80</div>
+            <div class="admin-version-badge">v0.81</div>
             <h1>Gestione stanze</h1>
             <p class="subtitle">Nome, password, modifica ed eliminazione</p>
 
@@ -19838,7 +19839,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
                 return;
             }
 
-            /* v0.80 Smartphone: turno a sinistra, stato/classifica a destra. */
+            /* v0.81 Smartphone: turno a sinistra, stato/classifica a destra. */
             if(lv)lv.style.display='none';
             if(av){av.classList.remove('auction-view-hidden','nomination-turn-desktop');av.style.display='flex';}
             showMobileTurnBoard(team);
@@ -19931,7 +19932,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
                 return;
             }
 
-            /* v0.80 Smartphone: stessa logica READY desktop, informazioni ridotte. */
+            /* v0.81 Smartphone: stessa logica READY desktop, informazioni ridotte. */
             const readyDesktop=document.getElementById('auctioneer-ready-desktop');
             if(readyDesktop){readyDesktop.classList.remove('open');readyDesktop.setAttribute('aria-hidden','true');}
             showMobileReadyBoard(ready.length,req.length);
@@ -25826,7 +25827,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
             sealedEnding=true;
             if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
 
-            // v0.80: nessuna busta = nessun countdown di apertura, esito invenduto immediato.
+            // v0.81: nessuna busta = nessun countdown di apertura, esito invenduto immediato.
             if(sealedBids.size===0){
                 sealedRevealDeadlineAt=0;
                 await finalizeSealedAuctionResult();
@@ -28497,9 +28498,9 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
   }
 
   function applyBrand(){
-    document.title='v0.80';
+    document.title='v0.81';
     document.querySelectorAll('.admin-version-badge').forEach(el=>{
-      el.textContent='v0.80';
+      el.textContent='v0.81';
     });
     document.querySelectorAll('.logo-text').forEach(el=>{
       const a=el.querySelector('.rosa');
@@ -29711,7 +29712,7 @@ html[data-live-theme="daily"] #auction-room-error:not(:empty):not(.liveasta-acce
 }
 
 
-/* v0.80 — AUCTIONEER PRESENTATION ISOLATION
+/* v0.81 — AUCTIONEER PRESENTATION ISOLATION
    IMPORTANT ARCHITECTURE RULE:
    - realtime / auction logic remains shared;
    - desktop presentation lives ONLY under .auctioneer-ui-desktop;
@@ -29930,7 +29931,7 @@ html[data-auctioneer-ui="mobile"] #screen-auctioneer-board{--auctioneer-explicit
 html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explicit-mode:desktop;}
 
 /* ==========================================================================
-   v0.80 — PLANCIA BANDITORE SMARTPHONE
+   v0.81 — PLANCIA BANDITORE SMARTPHONE
    SOLO layout plancia: 60% giocatore / 40% timer+offerta.
    Nessuna modifica alla modalità desktop o ai pulsanti.
    ========================================================================== */
@@ -30070,7 +30071,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.80 — CONTENUTI PLANCIA BANDITORE SMARTPHONE
+   v0.81 — CONTENUTI PLANCIA BANDITORE SMARTPHONE
    Il desktop resta escluso da tutte le regole seguenti.
    ========================================================================== */
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction{
@@ -30227,7 +30228,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.80 — FIX MIRATI PLANCIA BANDITORE SMARTPHONE
+   v0.81 — FIX MIRATI PLANCIA BANDITORE SMARTPHONE
    1) Il pannello "Banditura a turni / È il turno di" esiste SOLO nello stato mobile-turn.
    2) Il nome del miglior offerente usa un colore ad alto contrasto sul pannello chiaro.
    ========================================================================== */
@@ -30267,7 +30268,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.80 — CENTRATURA CONTENUTI MOBILE + LEGGIBILITA' LISTONE TURNI
+   v0.81 — CENTRATURA CONTENUTI MOBILE + LEGGIBILITA' LISTONE TURNI
    ========================================================================== */
 
 /* I due riquadri inferiori trattano sempre le informazioni come un unico blocco centrato. */
@@ -30483,7 +30484,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.80 — LABEL QUADRANTI MOBILE + CENTRATURA DEFINITIVA
+   v0.81 — LABEL QUADRANTI MOBILE + CENTRATURA DEFINITIVA
    PREPARAZIONE / TIMER / OFFERTA
    ========================================================================== */
 
@@ -30599,7 +30600,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 /* ==========================================================================
-   v0.80 — PLANCIA MOBILE: BLOCCHI DI FASE UNICI, CENTRATI, NON SOVRAPPOSTI
+   v0.81 — PLANCIA MOBILE: BLOCCHI DI FASE UNICI, CENTRATI, NON SOVRAPPOSTI
    ========================================================================== */
 
 /* Ogni quadrante inferiore è un contenitore centrato. */
@@ -30799,7 +30800,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 
 
 
-/* v0.80 light compatibility */
+/* v0.81 light compatibility */
 
 html[data-live-theme="light-neutral"],
 html[data-live-theme="light-blue"],
@@ -31495,7 +31496,7 @@ html[data-live-theme="light-sand"] #auction-room-error:not(:empty):not(.liveasta
 .theme-option[data-theme-option="light-sand"] .theme-swatches i:nth-child(1){background:#F8F4EC!important}.theme-option[data-theme-option="light-sand"] .theme-swatches i:nth-child(2){background:#356F63!important}.theme-option[data-theme-option="light-sand"] .theme-swatches i:nth-child(3){background:#C96622!important}
 
 
-/* v0.80 — Impostazioni separate dall'accesso Superuser */
+/* v0.81 — Impostazioni separate dall'accesso Superuser */
 #screen-admin-login .settings-superuser-btn{
     width:100%!important;
     margin-top:18px!important;
@@ -31513,7 +31514,7 @@ html[data-live-theme="light-sand"] #auction-room-error:not(:empty):not(.liveasta
 
 
 /* ==========================================================================
-   v0.80 — SUPERUSER RESPONSIVE
+   v0.81 — SUPERUSER RESPONSIVE
    Desktop: tabella piena e leggibile.
    Mobile: ogni stanza diventa una card verticale, senza scroll orizzontale.
    ========================================================================== */
@@ -31806,7 +31807,7 @@ html[data-live-theme="light-sand"] #auction-room-error:not(:empty):not(.liveasta
 
 
 /* ==========================================================================
-   v0.80 — ACCESSO GIOCATORE
+   v0.81 — ACCESSO GIOCATORE
    I CTA seguono il colore primario del tema; fix clipping del select squadra.
    ========================================================================== */
 html[data-live-theme] #screen-player-setup #player-wizard-next,
@@ -31866,7 +31867,7 @@ html[data-live-theme="light-sand"]{
 
 
 /* ==========================================================================
-   v0.80 — TASTI SECONDARI UNIFORMI
+   v0.81 — TASTI SECONDARI UNIFORMI
    ESCI / INDIETRO non cambiano più colore tra normale, hover e pressione.
    ========================================================================== */
 html[data-live-theme] :is(
@@ -31928,7 +31929,7 @@ html[data-live-theme] :is(
 
 
 /* ==========================================================================
-   v0.80 — BANDITORE: CTA COERENTI COL TEMA + NIENTE TAP HIGHLIGHT AZZURRO
+   v0.81 — BANDITORE: CTA COERENTI COL TEMA + NIENTE TAP HIGHLIGHT AZZURRO
    ========================================================================== */
 
 /* Elimina l'overlay azzurro nativo Android/Chrome sui controlli toccabili. */
@@ -32006,7 +32007,7 @@ html[data-live-theme] #screen-auctioneer-setup :is(
 
 
 /* ==========================================================================
-   v0.80 — CONTRASTO TESTI GARANTITO NEI TEMI
+   v0.81 — CONTRASTO TESTI GARANTITO NEI TEMI
    ========================================================================== */
 
 /* Regola generale per i pulsanti primari: testo sempre ad alto contrasto
@@ -32090,7 +32091,7 @@ html[data-live-theme] #screen-auctioneer-setup .auction-mode-big:is(:hover,:focu
 
 
 /* ==========================================================================
-   v0.80 — PLAYER INFO CARDS FOLLOW THE ACTIVE THEME
+   v0.81 — PLAYER INFO CARDS FOLLOW THE ACTIVE THEME
    STANZA / SQUADRA / CREDITI / SLOT-BUDGET
    ========================================================================== */
 
@@ -32167,7 +32168,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.80 — PLAYER STANZA / ROSA: FULL HEIGHT MOBILE
+   v0.81 — PLAYER STANZA / ROSA: FULL HEIGHT MOBILE
    Corregge il vecchio override 88dvh che troncava le pagine prima del fondo.
    ========================================================================== */
 @media (max-width:700px){
@@ -32258,7 +32259,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.80 — LISTE GIOCATORE UNIFICATE
+   v0.81 — LISTE GIOCATORE UNIFICATE
    Listone / La mia rosa / Rosa squadra
    ========================================================================== */
 
@@ -32496,7 +32497,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.80 — SPAZIATURA RUOLO / NOME NELLE ROSE
+   v0.81 — SPAZIATURA RUOLO / NOME NELLE ROSE
    Solo "La mia rosa" e rose aperte dalla Stanza.
    ========================================================================== */
 
@@ -32569,7 +32570,7 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 
 
 /* ==========================================================================
-   v0.80 — PREVIEW MINIATURA: COLORI SOCIALI PULITI NEI TEMI CHIARI
+   v0.81 — PREVIEW MINIATURA: COLORI SOCIALI PULITI NEI TEMI CHIARI
    ========================================================================== */
 
 /* Il popup deve mostrare direttamente --roster-preview-team-bg.
@@ -32626,7 +32627,7 @@ html[data-live-theme] .room-roster-player-preview-card{
 
 
 /* ==========================================================================
-   v0.80 — SLOT · BUDGET
+   v0.81 — SLOT · BUDGET
    Budget attivo: verde = dentro budget, rosso = fuori budget.
    Budget disattivo: i ruoli seguono il tema.
    ========================================================================== */
@@ -32655,7 +32656,7 @@ html[data-live-theme] #screen-player-buzzer #player-slots .slot-free-total{
 
 
 /* ==========================================================================
-   v0.80 — PALETTE TEMI
+   v0.81 — PALETTE TEMI
    Solo colori: Classic / Glow Electric / Modern, chiaro + scuro.
    ========================================================================== */
 html[data-live-theme="broadcast"]{
@@ -32723,7 +32724,7 @@ html[data-live-theme="light-sand"]{
 
 
 /* ==========================================================================
-   v0.80 — 12 TEMI: DAILY A SINISTRA / DARK A DESTRA
+   v0.81 — 12 TEMI: DAILY A SINISTRA / DARK A DESTRA
    ========================================================================== */
 .theme-picker.theme-picker-12{
     display:grid!important;
@@ -32788,7 +32789,7 @@ html[data-live-theme="light-sand"]{
 
 
 /* ==========================================================================
-   v0.80 — CONTRASTO MESSAGGI DISPONIBILITÀ / POSTO OCCUPATO
+   v0.81 — CONTRASTO MESSAGGI DISPONIBILITÀ / POSTO OCCUPATO
    Mantiene il significato semantico indipendente dal tema.
    ========================================================================== */
 #player-room-error.liveasta-access-retry,
@@ -32834,7 +32835,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — LISTONE GIOCATORE
+   v0.81 — LISTONE GIOCATORE
    "LEVA PREFERENZE" è sempre un'azione distruttiva: rosso fisso, fuori tema.
    ========================================================================== */
 #player-listone-overlay .player-listone-clear,
@@ -32863,7 +32864,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — SETUP ASTA / MODALITÀ SU SMARTPHONE
+   v0.81 — SETUP ASTA / MODALITÀ SU SMARTPHONE
    Classic e Mantra restano entrambe visibili: niente scorrimento orizzontale.
    ========================================================================== */
 @media (max-width: 767px){
@@ -32900,7 +32901,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — FIX REALE STEP 2 MODALITÀ BANDITORE SMARTPHONE
+   v0.81 — FIX REALE STEP 2 MODALITÀ BANDITORE SMARTPHONE
    Nessun overflow orizzontale: Classic e Mantra restano interamente nel card.
    ========================================================================== */
 @media (max-width:760px){
@@ -32988,7 +32989,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ========================================================================== 
-   v0.80 — SOLO BANDITORE SMARTPHONE: HEADER PLANCIA RESPONSIVE
+   v0.81 — SOLO BANDITORE SMARTPHONE: HEADER PLANCIA RESPONSIVE
    GESTIONE e RESET restano sempre dentro il viewport.
    ========================================================================== */
 @media (max-width:760px){
@@ -33098,7 +33099,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Quando il listone è aperto, la plancia deve essere completamente nascosta.
    ========================================================================== */
 #screen-auctioneer-board.auctioneer-ui-mobile
@@ -33133,7 +33134,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Quadranti inferiori + tasto AVANTI a fine banditura.
    ========================================================================== */
 @media (max-width:760px){
@@ -33295,7 +33296,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Nessuna offerta rimossa, numeri più grandi/adattivi, freccia nel riquadro giocatore.
    ========================================================================== */
 @media (max-width:760px){
@@ -33440,7 +33441,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Centratura geometrica numeri + freccia realmente visibile a fine asta.
    ========================================================================== */
 @media (max-width:760px){
@@ -33625,7 +33626,7 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
 
 
 /* ==========================================================================
-   v0.80 — CONFERME INTERNE LIVEASTA
+   v0.81 — CONFERME INTERNE LIVEASTA
    Sostituisce i popup confirm() nativi del browser in tutta l'app.
    ========================================================================== */
 body.liveasta-confirm-open{
@@ -33751,7 +33752,7 @@ body.liveasta-confirm-open{
 
 
 /* ==========================================================================
-   v0.80 — ALERT INTERNI + QUADRANTI BANDITORE SMARTPHONE
+   v0.81 — ALERT INTERNI + QUADRANTI BANDITORE SMARTPHONE
    ========================================================================== */
 
 /* ---------- ALERT INTERNO ---------- */
@@ -34022,7 +34023,7 @@ body.liveasta-alert-open{
 }
 
 
-/* ==========================================================================\n   v0.80 — SOLO BANDITORE SMARTPHONE\n   Riduzione spazio vuoto sotto la barra superiore in plancia e listone.\n   ========================================================================== */
+/* ==========================================================================\n   v0.81 — SOLO BANDITORE SMARTPHONE\n   Riduzione spazio vuoto sotto la barra superiore in plancia e listone.\n   ========================================================================== */
 @media (max-width:760px){
   body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile{
       padding-top:86px!important;
@@ -34057,7 +34058,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Ruolo miniatura senza ombra + aggiudicatario sotto il valore offerta
    ========================================================================== */
 @media (max-width:760px){
@@ -34122,7 +34123,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Fix effettivo ruolo miniatura + quadrante OFFERTA
    ========================================================================== */
 @media (max-width:760px){
@@ -34260,7 +34261,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Quadrante OFFERTA: una sola geometria definitiva.
    ========================================================================== */
 @media (max-width:760px){
@@ -34412,7 +34413,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Quadrante OFFERTA separato definitivamente dal winner-display desktop.
    ========================================================================== */
 @media (max-width:760px){
@@ -34580,7 +34581,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE / ASTA NORMALE
+   v0.81 — SOLO BANDITORE SMARTPHONE / ASTA NORMALE
    Nel quadrante OFFERTA devono restare solo:
    OFFERTA -> valore -> nome offerente.
    Tutti gli elementi legacy/ranking vengono esclusi dalla fase normale.
@@ -34711,7 +34712,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    FIX REALE QUADRANTE DESTRO: nessuna dipendenza da .mobile-normal
    ========================================================================== */
 @media (max-width:760px){
@@ -34849,7 +34850,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE / BANDITORE-GIOCATORE
+   v0.81 — SOLO BANDITORE SMARTPHONE / BANDITORE-GIOCATORE
    ========================================================================== */
 @media (max-width:760px){
 
@@ -35062,7 +35063,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — correzione centratura numero TIMER banditore smartphone
+   v0.81 — correzione centratura numero TIMER banditore smartphone
    ========================================================================== */
 @media (max-width:760px){
 
@@ -35111,7 +35112,7 @@ body.liveasta-alert-open{
 
 
 /* ==========================================================================
-   v0.80 — SOLO BANDITORE SMARTPHONE
+   v0.81 — SOLO BANDITORE SMARTPHONE
    Fix pulito liste DISPONIBILI / GIÀ BANDITI
    ========================================================================== */
 @media (max-width:760px){
