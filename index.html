@@ -13,7 +13,7 @@
 
     <meta name="description" content="LIVEASTA - asta fantasy calcio realtime a stanze">
     <link rel="manifest" href="manifest-v22.webmanifest">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/davidegolisano-design/live-asta/main/icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -16936,10 +16936,10 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
         </div>
     </div>
 
-    <audio id="audio-prep" src="https://raw.githubusercontent.com/davidegolisano-design/live-asta/main/preparazione.mp3" preload="auto"></audio>
-    <audio id="audio-start" src="https://raw.githubusercontent.com/davidegolisano-design/live-asta/main/fischio.mp3" preload="auto"></audio>
-    <audio id="audio-buzz" src="https://raw.githubusercontent.com/davidegolisano-design/live-asta/main/buzz.mp3" preload="auto"></audio>
-    <audio id="audio-end" src="https://raw.githubusercontent.com/davidegolisano-design/live-asta/main/gong.mp3" preload="auto"></audio>
+    <audio id="audio-prep" src="./preparazione.mp3" preload="auto"></audio>
+    <audio id="audio-start" src="./fischio.mp3" preload="auto"></audio>
+    <audio id="audio-buzz" src="./buzz.mp3" preload="auto"></audio>
+    <audio id="audio-end" src="./gong.mp3" preload="auto"></audio>
 
     <script>
 
@@ -17169,7 +17169,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
             if(mantra)mantra.style.display=mode==='mantra'?'block':'none';
         }
 
-        const LIVEASTA_ASSET_BASE = 'https://raw.githubusercontent.com/davidegolisano-design/live-asta/main';
+        const LIVEASTA_ASSET_BASE = '.';
         function genericPlayerImage(role = '') {
             const r=String(role||'').trim();
             return (r.toUpperCase()==='P' || mantraRoleTokens(r).includes('Por'))

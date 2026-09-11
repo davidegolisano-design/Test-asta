@@ -29,9 +29,4 @@ main
 /(root)
 
 ASSET
-Per questo test miniature, audio e icone vengono letti dal repository live-asta esistente.
-Non devi quindi duplicare adesso la cartella assets o i file MP3 nel repository Test-asta.
-Il nuovo Supabase e tutta la logica dell'app restano invece separati.
-
-Quando questa versione sarà stabile possiamo fare il pacchetto completamente indipendente
-copiando anche tutti gli asset.
+Questa installazione è completamente indipendente: miniature, audio, icone e service worker sono contenuti direttamente nel repository Test-asta.
