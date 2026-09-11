@@ -25,37 +25,17 @@ jobs:
           if css not in s:
               s=s.replace('</head>',css+'\n</head>',1)
 
-          old='''            await loadNominationState();
-            await loadAuctionPrepSeconds();
-            await loadRoomAuctionExtraSettings();
-            await loadReadyMode();
-            roomControlReturnScreen = 'screen-auctioneer-board';'''
-          new='''            await loadNominationState();
-            await loadAuctionPrepSeconds();
-            await loadRoomAuctionExtraSettings();
-            await loadReadyMode();
-            // v0.83: entrando direttamente in plancia carica anche i due timer buste.
-            await loadSealedTimerSeconds();
-            await loadSealedRevealSeconds();
-            roomControlReturnScreen = 'screen-auctioneer-board';'''
-          if old not in s:
-              raise SystemExit('joinAsAuctioneer timer anchor not found')
-          s=s.replace(old,new,1)
-
-          old='''            // Se tutti gli aventi diritto hanno offerto, non aspettiamo la scadenza.
-            if(sealedEligibleIds.length>0 && sealedBids.size>=sealedEligibleIds.length){
-                if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
-                endSealedAuction();
-            }'''
-          new='''            // Se tutti gli aventi diritto hanno offerto, termina solo la CONSEGNA.
-            // L'apertura mantiene sempre il proprio countdown configurato prima dell'esito.
-            if(sealedEligibleIds.length>0 && sealedBids.size>=sealedEligibleIds.length){
-                if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
-                endSealedAuction();
-            }'''
-          if old not in s:
-              raise SystemExit('all delivered anchor not found')
-          s=s.replace(old,new,1)
+          # Carica i timer buste anche entrando direttamente nella plancia banditore.
+          join=s.find('async function joinAsAuctioneer()')
+          end=s.find('async function handleNominationSubmission',join)
+          if join<0 or end<0: raise SystemExit('joinAsAuctioneer block not found')
+          block=s[join:end]
+          anchor="            await loadReadyMode();"
+          extra="\n            await loadSealedTimerSeconds();\n            await loadSealedRevealSeconds();"
+          if 'await loadSealedRevealSeconds();' not in block:
+              if anchor not in block: raise SystemExit('loadReadyMode anchor not found')
+              block=block.replace(anchor,anchor+extra,1)
+              s=s[:join]+block+s[end:]
 
           old='''            const remainingRevealMs=(Number(sealedRevealDeadlineAt)||0)-Date.now();
             if(remainingRevealMs>25){
@@ -65,8 +45,8 @@ jobs:
             }'''
           new='''            const revealDeadline=Number(sealedRevealDeadlineAt)||0;
             const remainingRevealMs=revealDeadline-Date.now();
-            // v0.83: se esistono buste, un risultato non può essere svelato senza
-            // essere prima passato da un deadline di apertura valido.
+            // v0.83: con almeno una busta non è consentito mostrare l'esito
+            // senza un countdown di apertura realmente concluso.
             if(sealedBids.size>0 && revealDeadline<=0){
                 const reveal=Math.max(1,parseInt(sealedRevealSeconds)||5);
                 sealedRevealDeadlineAt=Date.now()+reveal*1000;
@@ -80,19 +60,18 @@ jobs:
                 sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},remainingRevealMs+50);
                 return;
             }'''
-          if old not in s:
-              raise SystemExit('finalize reveal guard anchor not found')
-          s=s.replace(old,new,1)
+          if old in s:
+              s=s.replace(old,new,1)
+          elif 'const revealDeadline=Number(sealedRevealDeadlineAt)||0;' not in s:
+              raise SystemExit('finalize guard anchor not found')
 
-          old='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
+          anchor='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
             hideNominationStage();'''
-          new='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
-            // Cancella anche qualunque classifica rimasta da una fase precedente.
+          replacement='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
             clearSealedBidRanking();
             hideNominationStage();'''
-          if old not in s:
-              raise SystemExit('opening stage anchor not found')
-          s=s.replace(old,new,1)
+          if anchor in s:
+              s=s.replace(anchor,replacement,1)
 
           p.write_text(s,encoding='utf-8')
           PY
