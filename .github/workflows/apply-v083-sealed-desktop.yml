@@ -1,0 +1,109 @@
+name: Apply v0.83 sealed desktop fixes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-v083-sealed-desktop.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch sealed desktop flow
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('v0.82','v0.83').replace('V0.82','V0.83')
+          css='<link rel="stylesheet" href="./sealed-desktop-v083.css">'
+          if css not in s:
+              s=s.replace('</head>',css+'\n</head>',1)
+
+          old='''            await loadNominationState();
+            await loadAuctionPrepSeconds();
+            await loadRoomAuctionExtraSettings();
+            await loadReadyMode();
+            roomControlReturnScreen = 'screen-auctioneer-board';'''
+          new='''            await loadNominationState();
+            await loadAuctionPrepSeconds();
+            await loadRoomAuctionExtraSettings();
+            await loadReadyMode();
+            // v0.83: entrando direttamente in plancia carica anche i due timer buste.
+            await loadSealedTimerSeconds();
+            await loadSealedRevealSeconds();
+            roomControlReturnScreen = 'screen-auctioneer-board';'''
+          if old not in s:
+              raise SystemExit('joinAsAuctioneer timer anchor not found')
+          s=s.replace(old,new,1)
+
+          old='''            // Se tutti gli aventi diritto hanno offerto, non aspettiamo la scadenza.
+            if(sealedEligibleIds.length>0 && sealedBids.size>=sealedEligibleIds.length){
+                if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
+                endSealedAuction();
+            }'''
+          new='''            // Se tutti gli aventi diritto hanno offerto, termina solo la CONSEGNA.
+            // L'apertura mantiene sempre il proprio countdown configurato prima dell'esito.
+            if(sealedEligibleIds.length>0 && sealedBids.size>=sealedEligibleIds.length){
+                if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
+                endSealedAuction();
+            }'''
+          if old not in s:
+              raise SystemExit('all delivered anchor not found')
+          s=s.replace(old,new,1)
+
+          old='''            const remainingRevealMs=(Number(sealedRevealDeadlineAt)||0)-Date.now();
+            if(remainingRevealMs>25){
+                if(sealedRevealInterval){clearInterval(sealedRevealInterval);sealedRevealInterval=null;}
+                sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},remainingRevealMs+40);
+                return;
+            }'''
+          new='''            const revealDeadline=Number(sealedRevealDeadlineAt)||0;
+            const remainingRevealMs=revealDeadline-Date.now();
+            // v0.83: se esistono buste, un risultato non può essere svelato senza
+            // essere prima passato da un deadline di apertura valido.
+            if(sealedBids.size>0 && revealDeadline<=0){
+                const reveal=Math.max(1,parseInt(sealedRevealSeconds)||5);
+                sealedRevealDeadlineAt=Date.now()+reveal*1000;
+                showSealedAuctionStage('opening');
+                if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);sealedRevealInterval=null;}
+                sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},reveal*1000+50);
+                return;
+            }
+            if(remainingRevealMs>25){
+                if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);sealedRevealInterval=null;}
+                sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},remainingRevealMs+50);
+                return;
+            }'''
+          if old not in s:
+              raise SystemExit('finalize reveal guard anchor not found')
+          s=s.replace(old,new,1)
+
+          old='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
+            hideNominationStage();'''
+          new='''            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
+            // Cancella anche qualunque classifica rimasta da una fase precedente.
+            clearSealedBidRanking();
+            hideNominationStage();'''
+          if old not in s:
+              raise SystemExit('opening stage anchor not found')
+          s=s.replace(old,new,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "v0.83 fix desktop sealed delivery and reveal timing"
+            git push
+          fi
