@@ -1,0 +1,8 @@
+LIVEASTA CLEAN-25 - SHARED UTILITY MODULE EXTRACTION
+================================================
+Behavior intended to be preserved.
+
+Created: scripts/utils.js
+Moved functions: safeReadLocalJson, safeWriteLocalJson, normalizeRoomCode, escapeHtml
+
+utils.js is loaded before roles.js, player-assets.js and app.js. No auction, realtime, Supabase or access logic was changed.
