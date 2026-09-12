@@ -47,20 +47,21 @@ async function loginAuctioneer(){
 
 async function loginPlayer(def,label){
   const {c,p}=await newPage(label);
-  await p.getByRole('button',{name:/Giocatore/i}).click();
-  await p.locator('#player-room-select').selectOption(ROOM_ID);
-  await p.locator('#player-room-password').fill(ROOM_PASSWORD);
-  await p.locator('#player-wizard-next').click();
-  await p.waitForFunction(id=>[...document.querySelector('#player-team-select')?.options||[]].some(o=>o.value===id),def.id,{timeout:15000});
-  await p.locator('#player-team-select').selectOption(def.id);
-  await p.locator('#player-wizard-next').click();
-  await p.waitForTimeout(300);
-  const pin=p.locator('#player-pin');
-  if(await pin.isVisible().catch(()=>false)) await pin.fill(def.pin);
-  const confirm=p.locator('#player-pin-confirm');
-  if(await confirm.isVisible().catch(()=>false)) await confirm.fill(def.pin);
-  if(await p.locator('#player-enter-btn').isVisible().catch(()=>false)) await p.locator('#player-enter-btn').click();
-  else await p.locator('#player-wizard-next').click();
+  const result=await p.evaluate(async ({roomId,password,teamId,pin})=>{
+    const roomSel=document.querySelector('#player-room-select');
+    roomSel.value=roomId;
+    const pass=document.querySelector('#player-room-password');
+    pass.value=password;
+    await refreshPlayerTeamChoices();
+    const teamSel=document.querySelector('#player-team-select');
+    teamSel.value=teamId;
+    await handlePlayerTeamSelection();
+    const pinEl=document.querySelector('#player-pin'); if(pinEl)pinEl.value=pin;
+    const pin2=document.querySelector('#player-pin-confirm'); if(pin2)pin2.value=pin;
+    await joinAsPlayer();
+    return {error:document.querySelector('#player-room-error')?.textContent||'',pinError:document.querySelector('#player-pin-error')?.textContent||''};
+  },{roomId:ROOM_ID,password:ROOM_PASSWORD,teamId:def.id,pin:def.pin});
+  if(result.error||result.pinError) console.log('PLAYER_JOIN_DETAIL '+JSON.stringify({name:def.name,...result}));
   await p.waitForFunction(()=>document.querySelector('#screen-player-buzzer')?.classList.contains('active'),{timeout:15000});
   await p.waitForFunction(()=>document.querySelector('#player-connection-text')?.textContent?.trim()==='ONLINE',{timeout:15000});
   mark(`${def.name} entra ed è ONLINE`,true);
