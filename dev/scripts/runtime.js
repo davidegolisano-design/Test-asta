@@ -124,11 +124,12 @@
       activeResolve=resolve;
       previousFocus=document.activeElement;
 
-      const danger=options.danger ?? isDangerMessage(message);
+      const formatted=window.formatLiveAstaPopupText?window.formatLiveAstaPopupText(message):String(message??'');
+      const danger=options.danger ?? isDangerMessage(formatted);
       overlay.classList.toggle('danger',!!danger);
 
       title.textContent=options.title || (danger?'Conferma operazione':'Conferma');
-      text.textContent=String(message??'');
+      text.textContent=formatted;
       cancel.textContent=options.cancelText || 'ANNULLA';
       ok.textContent=options.confirmText || 'CONFERMA';
 
@@ -218,7 +219,8 @@
 
   window.appAlert=function(message){
     return new Promise(resolve=>{
-      alertQueue.push({message,resolve});
+      const formatted=window.formatLiveAstaPopupText?window.formatLiveAstaPopupText(message):String(message??'');
+      alertQueue.push({message:formatted,resolve});
       showNextAlert();
     });
   };
@@ -396,22 +398,4 @@
       .trim();
   };
 
-  const originalAppAlert=window.appAlert;
-  if(typeof originalAppAlert==='function'){
-    window.appAlert=function(message){
-      return originalAppAlert(window.formatLiveAstaPopupText(message));
-    };
-  }
-
-  const originalAppConfirm=window.appConfirm;
-  if(typeof originalAppConfirm==='function'){
-    window.appConfirm=function(message,options={}){
-      return originalAppConfirm(window.formatLiveAstaPopupText(message),options);
-    };
-  }
-
-  // alert() era già sostituito dal popup interno: lo riallinea al formatter.
-  window.alert=function(message){
-    return window.appAlert(window.formatLiveAstaPopupText(message));
-  };
 })();

@@ -1,0 +1,12 @@
+LIVEASTA CLEAN-12 - POPUP OWNERSHIP
+==================================
+Behavior preserved; duplicate global popup wrappers removed.
+
+Canonical ownership after CLEAN-12:
+- appConfirm: one assignment in runtime.js
+- appAlert: one assignment in runtime.js
+- alert: one assignment in runtime.js
+- formatLiveAstaPopupText remains the single text-normalization helper
+
+The formatter is now called directly by the canonical appConfirm/appAlert implementations.
+The late originalAppAlert/originalAppConfirm/alert wrapper chain was removed.
