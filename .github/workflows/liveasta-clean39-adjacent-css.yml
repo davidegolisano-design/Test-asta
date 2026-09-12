@@ -1,0 +1,45 @@
+name: LIVEASTA DEV clean39 adjacent css merge
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean39-adjacent-css.yml'
+permissions:
+  contents: write
+jobs:
+  clean39:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostCSS and Playwright
+        run: |
+          npm install --no-save postcss playwright
+          npx playwright install --with-deps chromium
+      - name: Apply CLEAN-39 adjacent CSS merge
+        run: node dev/tools/clean39_merge_adjacent_css.mjs
+      - name: Validate CSS and JavaScript
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),postcss=require('postcss');
+          for(const f of ['core.css','ui.css','pwa.css','refinements.css'])postcss.parse(fs.readFileSync('dev/styles/'+f,'utf8'),{from:f});
+          NODE
+          for f in dev/scripts/*.js; do node --check "$f"; done
+      - name: Start local server
+        run: |
+          python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 &
+          sleep 2
+      - name: Run browser smoke
+        run: node dev/tests/smoke.mjs
+      - name: Run shared module regression
+        run: node dev/tests/regression-smoke.mjs
+      - name: Run team logic regression
+        run: node dev/tests/team-logic-smoke.mjs
+      - name: Run timer settings regression
+        run: node dev/tests/timer-settings-smoke.mjs
+      - name: Commit and self-remove temporary files
+        run: |
+          rm -f .github/workflows/liveasta-clean39-adjacent-css.yml dev/tools/clean39_merge_adjacent_css.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/index.html dev/styles/core.css dev/styles/ui.css dev/styles/pwa.css dev/styles/refinements.css dev/CLEANUP_REPORT_CLEAN39_ADJACENT_CSS.txt .github/workflows/liveasta-clean39-adjacent-css.yml dev/tools/clean39_merge_adjacent_css.mjs
+          git commit -m "LIVEASTA DEV clean39 merge adjacent css rules"
+          git push
