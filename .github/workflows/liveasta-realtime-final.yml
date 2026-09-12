@@ -1,0 +1,65 @@
+name: LIVEASTA final realtime E2E
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/liveasta-realtime-final.yml'
+jobs:
+  realtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - name: Final realtime test
+        run: |
+          python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 &
+          cat > /tmp/rt-final.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const URL='http://127.0.0.1:4173/dev/index.html';
+          const ROOM='E2E_RT_FINAL_20260912';
+          const PASS='rt-final-2214';
+          const T1='b626b39d-d959-4f25-a716-7d1f7cca0d3d';
+          const T2='013ff94a-b15f-4e85-a858-898e76a70d7e';
+          const browser=await chromium.launch({headless:true});
+          const host=await browser.newPage({viewport:{width:1440,height:900}});
+          const a=await browser.newPage({viewport:{width:390,height:844}});
+          const b=await browser.newPage({viewport:{width:390,height:844}});
+          const results=[];
+          const ok=(name,pass,detail='')=>{results.push({name,pass,detail}); console.log(`${pass?'PASS':'FAIL'} ${name} ${detail}`); if(!pass) throw new Error(name+': '+detail);};
+          const wait=ms=>new Promise(r=>setTimeout(r,ms));
+          async function prep(p){ await p.goto(URL,{waitUntil:'domcontentloaded'}); await p.waitForFunction(()=>!!window.supabaseClient,{timeout:15000}); }
+          async function connectHost(){
+            await prep(host);
+            const r=await host.evaluate(async room=>{const {data,error}=await window.supabaseClient.from('fanta_rooms').select('*').eq('name',room).single(); if(error)throw error; await connectToRoom(data); subscribeCommonRoomEvents(); return {id:currentRoomId};},ROOM);
+            ok('Banditore collegato alla stanza',!!r.id,r.id);
+          }
+          async function connectPlayer(p,id,name){
+            await prep(p);
+            const r=await p.evaluate(async ({room,id})=>{const {data,error}=await window.supabaseClient.from('fanta_rooms').select('*').eq('name',room).single(); if(error)throw error; await connectToRoom(data); const t=teamsCache.find(x=>String(x.id)===String(id)) || (await window.supabaseClient.from('fanta_teams').select('*').eq('id',id).single()).data; myTeamId=t.id; myTeamName=t.name; setPlayerConnectionStatus('connecting'); const ch=channel; const gen=realtimeConnectionGeneration; ch.on('broadcast',{event:'online_status_request'},()=>sendFallbackOnlineHeartbeat()); await new Promise((resolve,reject)=>{let done=false; ch.subscribe(async status=>{if(status==='SUBSCRIBED'&&!done){done=true; playerAvailabilityMode='online'; setPlayerConnectionStatus('online'); startFallbackOnlineHeartbeat(); await trackPlayerPresence(); resolve();} if((status==='CHANNEL_ERROR'||status==='TIMED_OUT')&&!done){done=true;reject(new Error(status));}}); setTimeout(()=>{if(!done){done=true;reject(new Error('subscribe timeout'));}},12000);}); return {id:myTeamId,name:myTeamName,online:playerRealtimeOnline,gen};},{room:ROOM,id});
+            ok(name+' sottoscritto Realtime',r.online===true,JSON.stringify(r));
+          }
+          async function hostState(){return await host.evaluate(()=>({ids:[...onlinePlayers.keys()].map(String).sort(),count:(document.getElementById('auction-online-count')?.textContent||''),presence:Object.values(channel?.presenceState?.()||{}).flat().filter(x=>x?.type==='player').map(x=>String(x.team_id)).sort()}));}
+          async function waitHost(predicate,timeout=12000){const end=Date.now()+timeout; let s; while(Date.now()<end){s=await hostState(); if(predicate(s))return s; await wait(250);} return s;}
+          try{
+            await connectHost(); await connectPlayer(a,T1,'Alpha'); await connectPlayer(b,T2,'Beta');
+            let s=await waitHost(x=>x.ids.includes(T1)&&x.ids.includes(T2)&&x.presence.includes(T1)&&x.presence.includes(T2));
+            ok('onlinePlayers contiene Alpha e Beta',s.ids.includes(T1)&&s.ids.includes(T2),JSON.stringify(s));
+            ok('Presence contiene Alpha e Beta',s.presence.includes(T1)&&s.presence.includes(T2),JSON.stringify(s.presence));
+            ok('Contatore banditore 2 / 2',/2\s*\/\s*2/.test(s.count),s.count);
+            await b.evaluate(async()=>{stopFallbackOnlineHeartbeat(); await sendExplicitPlayerOffline(); await untrackPlayerPresence(); const old=channel; channel=null; if(old)await window.supabaseClient.removeChannel(old);});
+            s=await waitHost(x=>!x.ids.includes(T2)&&!x.presence.includes(T2),8000);
+            ok('Disconnessione Beta rilevata',!s.ids.includes(T2)&&!s.presence.includes(T2),JSON.stringify(s));
+            await connectPlayer(b,T2,'Beta rientro');
+            s=await waitHost(x=>x.ids.includes(T1)&&x.ids.includes(T2)&&x.presence.includes(T1)&&x.presence.includes(T2),12000);
+            ok('Rientro Beta ripristina onlinePlayers',s.ids.includes(T2),JSON.stringify(s));
+            ok('Rientro Beta ripristina Presence',s.presence.includes(T2),JSON.stringify(s.presence));
+            ok('Contatore finale 2 / 2',/2\s*\/\s*2/.test(s.count),s.count);
+            console.log('FINAL_REPORT '+JSON.stringify(results));
+          } finally { await browser.close(); }
+          EOF
+          node /tmp/rt-final.mjs
