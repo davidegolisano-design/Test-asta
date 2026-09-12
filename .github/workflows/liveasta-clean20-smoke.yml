@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/liveasta-clean20-smoke.yml'
+      - 'dev/tests/smoke.mjs'
 permissions:
   contents: write
 jobs:
@@ -30,7 +31,8 @@ jobs:
           Current DEV passed a real Chromium smoke test on GitHub Actions.
 
           Checked:
-          - DEV home loads
+          - DEV index returns HTTP 200
+          - DEV home/title/marker load
           - no fatal page JavaScript errors
           - no visible literal \\n\\n artifact
           - Home -> Banditore -> device choice -> Home
