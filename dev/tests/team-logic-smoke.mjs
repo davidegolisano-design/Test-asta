@@ -54,6 +54,7 @@ try{
     }
   });
 
+  console.log('TEAM_LOGIC_SNAPSHOT '+JSON.stringify(r));
   assert(r.types.every(x=>x==='function'),'Team logic function missing');
   assert(JSON.stringify(r.classic.t1Purchases)===JSON.stringify(['P']),'teamPurchases filtering changed');
   assert(JSON.stringify(r.classic.t1Counts)===JSON.stringify({P:1,D:0,C:0,A:0,Por:0,total:1}),'Classic teamCounts changed: '+JSON.stringify(r.classic.t1Counts));
