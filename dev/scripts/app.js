@@ -562,14 +562,127 @@
             }
         }
 
-        function changeAuctioneerPlayerTeam(){
+        let playerPinAccessDialog=null;
+
+        function buildPlayerPinAccessDialog(){
+            if(playerPinAccessDialog)return playerPinAccessDialog;
+            const dlg=document.createElement('dialog');
+            dlg.className='v093-player-pin-dialog';
+            dlg.innerHTML=`<form method="dialog" class="v093-player-pin-card">
+              <div class="v093-player-pin-head"><h3>Autorizza accesso giocatore</h3><button type="button" class="v093-player-pin-close" aria-label="Chiudi">×</button></div>
+              <p id="v093-player-pin-copy">Inserisci il PIN personale del giocatore.</p>
+              <input id="v093-player-pin-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="PIN giocatore · 6 cifre">
+              <div id="v093-player-pin-error" class="v093-player-pin-error" aria-live="polite"></div>
+              <div class="v093-player-pin-actions"><button type="button" class="btn btn-secondary v093-player-pin-cancel">Annulla</button><button type="submit" class="btn btn-green">Autorizza</button></div>
+            </form>`;
+            document.body.appendChild(dlg);
+            playerPinAccessDialog=dlg;
+            return dlg;
+        }
+
+        async function verifyPlayerPinAccess(teamId,teamName){
+            teamId=String(teamId||'').trim();
+            if(!teamId){
+                try{if(typeof appAlert==='function')await appAlert('Seleziona prima una squadra libera.');else alert('Seleziona prima una squadra libera.');}catch(_){alert('Seleziona prima una squadra libera.');}
+                return false;
+            }
+
+            const dlg=buildPlayerPinAccessDialog();
+            const form=dlg.querySelector('form');
+            const input=dlg.querySelector('#v093-player-pin-input');
+            const error=dlg.querySelector('#v093-player-pin-error');
+            const copy=dlg.querySelector('#v093-player-pin-copy');
+            const closeBtn=dlg.querySelector('.v093-player-pin-close');
+            const cancelBtn=dlg.querySelector('.v093-player-pin-cancel');
+            copy.textContent=`Inserisci il PIN personale del giocatore di ${teamName||'questa squadra'}.`;
+            input.value='';
+            error.textContent='';
+
+            return new Promise(resolve=>{
+                let settled=false;
+                const finish=value=>{
+                    if(settled)return;
+                    settled=true;
+                    form.removeEventListener('submit',onSubmit);
+                    closeBtn.removeEventListener('click',onClose);
+                    cancelBtn.removeEventListener('click',onClose);
+                    dlg.removeEventListener('cancel',onCancel);
+                    if(dlg.open)dlg.close();
+                    resolve(value);
+                };
+                const onClose=()=>finish(false);
+                const onCancel=e=>{e.preventDefault();finish(false);};
+                const onSubmit=async e=>{
+                    e.preventDefault();
+                    const pin=String(input.value||'').replace(/\D/g,'').slice(0,6);
+                    if(!/^\d{6}$/.test(pin)){
+                        error.textContent='Inserisci il PIN giocatore di 6 cifre.';
+                        input.focus();
+                        return;
+                    }
+                    try{
+                        const roomId=currentRoom?.id||currentRoomId;
+                        const roomPassword=String(currentRoom?.password||'');
+                        if(!roomId)throw new Error('Stanza non disponibile.');
+
+                        const status=await supabaseClient.rpc('liveasta_team_pin_status',{p_team_id:teamId,p_room_id:roomId});
+                        if(status.error)throw status.error;
+                        if(status.data!==true){
+                            error.textContent='Questa squadra non ha ancora un PIN giocatore impostato.';
+                            return;
+                        }
+
+                        const check=await supabaseClient.rpc('liveasta_verify_team_pin',{
+                            p_team_id:teamId,
+                            p_room_id:roomId,
+                            p_room_password:roomPassword,
+                            p_pin:pin
+                        });
+                        if(check.error)throw check.error;
+                        if(check.data!==true){
+                            error.textContent='PIN giocatore non corretto.';
+                            input.select();
+                            return;
+                        }
+                        finish(true);
+                    }catch(err){
+                        console.warn('Verifica PIN accesso giocatore',err);
+                        error.textContent='Impossibile verificare il PIN. Riprova.';
+                    }
+                };
+
+                form.addEventListener('submit',onSubmit);
+                closeBtn.addEventListener('click',onClose);
+                cancelBtn.addEventListener('click',onClose);
+                dlg.addEventListener('cancel',onCancel);
+                dlg.showModal();
+                setTimeout(()=>input.focus({preventScroll:true}),40);
+            });
+        }
+
+        async function changeAuctioneerPlayerTeam(){
             const select=document.getElementById('auctioneer-player-team-select');
             const id=String(select?.value||'')||null;
+            const previousId=String(auctioneerPlayerTeamId||'')||null;
 
             if(auctioneerPlayerMode&&id&&onlinePlayers.has(String(id))){
                 alert('Questa squadra è già collegata da un altro telefono.');
-                if(select)select.value=auctioneerPlayerTeamId||'';
+                if(select)select.value=previousId||'';
                 return;
+            }
+
+            if(auctioneerPlayerMode&&id&&String(id)!==String(previousId||'')){
+                const nextTeam=teamsCache.find(t=>String(t.id)===String(id));
+                const authorized=await verifyPlayerPinAccess(id,nextTeam?.name||'questa squadra');
+                if(!authorized){
+                    if(select)select.value=previousId||'';
+                    return;
+                }
+                if(onlinePlayers.has(String(id))){
+                    alert('Questa squadra non è più libera: è già collegata da un altro telefono.');
+                    if(select)select.value=previousId||'';
+                    return;
+                }
             }
 
             auctioneerPlayerTeamId=id;
@@ -583,7 +696,7 @@
             renderAuctioneerPlayerControl();
         }
 
-        function toggleAuctioneerPlayerMode(){
+        async function toggleAuctioneerPlayerMode(){
             if(auctioneerPlayerMode){
                 auctioneerPlayerMode=false;
                 myTeamId=null;
@@ -602,6 +715,14 @@
                 alert('Seleziona prima la squadra del banditore.');
                 return;
             }
+            if(onlinePlayers.has(String(team.id))){
+                alert('Questa squadra non è più libera: è già collegata da un altro telefono.');
+                renderAuctioneerPlayerControl();
+                return;
+            }
+
+            const authorized=await verifyPlayerPinAccess(team.id,team.name);
+            if(!authorized)return;
             if(onlinePlayers.has(String(team.id))){
                 alert('Questa squadra non è più libera: è già collegata da un altro telefono.');
                 renderAuctioneerPlayerControl();
