@@ -1,0 +1,132 @@
+name: Prepare LIVEASTA DEV clean03 safely
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/liveasta-clean03.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  clean03:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply safe DEV clean03 changes and audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, hashlib, json
+
+          root=Path('.')
+          dev=root/'dev'
+          index=dev/'index.html'
+          pwa=dev/'scripts/pwa.js'
+
+          html=index.read_text(encoding='utf-8',errors='ignore')
+          js=pwa.read_text(encoding='utf-8',errors='ignore')
+
+          # Keep one DEV marker only: static HTML is authoritative.
+          js=re.sub(r"\n\s*function addDevMarker\(\)\{.*?\n\s*\}\n", "\n", js, flags=re.S)
+          js=js.replace('\n  addDevMarker();','')
+          js=js.replace("document.title='LIVEASTA DEV CLEAN';", "document.title='LIVEASTA DEV · v0.94 CLEAN-03';")
+          pwa.write_text(js,encoding='utf-8')
+
+          html=html.replace('LIVEASTA DEV · v0.94 CLEAN-02','LIVEASTA DEV · v0.94 CLEAN-03')
+          html=html.replace('AMBIENTE DEV · v0.94 CLEAN-02','AMBIENTE DEV · v0.94 CLEAN-03')
+          html=html.replace('094-clean02c','094-clean03a')
+          index.write_text(html,encoding='utf-8')
+
+          # Build an audit. No semantic rewrite here.
+          report=[]
+          report.append('LIVEASTA CLEAN-03 AUDIT')
+          report.append('=====================')
+          report.append('Scope: DEV only. No intentional UI or auction-logic changes.')
+          report.append('')
+
+          css_files=sorted((dev/'styles').glob('*.css'))
+          js_files=sorted((dev/'scripts').glob('*.js'))
+          report.append('FILES')
+          for f in css_files+js_files:
+              txt=f.read_text(encoding='utf-8',errors='ignore')
+              report.append(f'- {f.as_posix()}: {len(txt):,} chars, {txt.count(chr(10))+1:,} lines')
+          report.append('')
+
+          # CSS metrics and repeated selectors (audit only).
+          report.append('CSS OVERLAP INDICATORS')
+          selector_total={}
+          important_total=0
+          version_markers=[]
+          for f in css_files:
+              txt=f.read_text(encoding='utf-8',errors='ignore')
+              important_total += txt.count('!important')
+              for m in re.finditer(r'/\*.*?(v\d+(?:\.\d+)?|v0\.\d+).*?\*/',txt,re.I|re.S):
+                  s=' '.join(m.group(0).split())[:140]
+                  version_markers.append((f.name,s))
+              # conservative: selectors only at start of a rule, excluding at-rules/comments
+              for m in re.finditer(r'(^|\})(\s*)([^@{}][^{}]*?)\{',txt,re.M):
+                  sel=' '.join(m.group(3).split())
+                  if not sel or len(sel)>400: continue
+                  selector_total.setdefault(sel,[]).append(f.name)
+          repeated=[(s,locs) for s,locs in selector_total.items() if len(locs)>1]
+          repeated.sort(key=lambda x:(-len(x[1]),x[0]))
+          report.append(f'- !important occurrences: {important_total}')
+          report.append(f'- repeated selector signatures: {len(repeated)}')
+          for s,locs in repeated[:120]:
+              report.append(f'  x{len(locs)} [{", ".join(locs)}] {s[:220]}')
+          report.append('')
+
+          # JS function name overlaps across files, audit only.
+          report.append('JS OVERLAP INDICATORS')
+          fn_map={}
+          for f in js_files:
+              txt=f.read_text(encoding='utf-8',errors='ignore')
+              for name in re.findall(r'(?m)^\s*(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(',txt):
+                  fn_map.setdefault(name,[]).append(f.name)
+          dup_fns=[(n,locs) for n,locs in fn_map.items() if len(locs)>1]
+          dup_fns.sort(key=lambda x:(-len(x[1]),x[0]))
+          report.append(f'- duplicate function names across loaded JS files: {len(dup_fns)}')
+          for n,locs in dup_fns[:160]:
+              report.append(f'  x{len(locs)} {n}: {", ".join(locs)}')
+          report.append('')
+
+          report.append('VERSION/PATCH MARKERS STILL PRESENT')
+          report.append(f'- markers found: {len(version_markers)}')
+          for fname,s in version_markers[:200]:
+              report.append(f'  [{fname}] {s}')
+          report.append('')
+
+          # Validate single static DEV marker.
+          static_count=html.count('id="liveasta-dev-static-marker"')
+          dynamic_count=js.count('addDevMarker')
+          report.append('VALIDATION')
+          report.append(f'- static DEV marker count: {static_count}')
+          report.append(f'- JS DEV marker generator references: {dynamic_count}')
+          if static_count != 1 or dynamic_count != 0:
+              raise SystemExit('DEV marker validation failed')
+
+          (dev/'CLEANUP_AUDIT_CLEAN03.txt').write_text('\n'.join(report)+'\n',encoding='utf-8')
+          PY
+
+      - name: Syntax and reference validation
+        run: |
+          set -e
+          node --check dev/scripts/app.js
+          node --check dev/scripts/bootstrap.js
+          node --check dev/scripts/runtime.js
+          node --check dev/scripts/pwa.js
+          node --check dev/scripts/sealed-auction.js
+          node --check dev/scripts/management.js
+          grep -q 'AMBIENTE DEV · v0.94 CLEAN-03' dev/index.html
+          test -f dev/CLEANUP_AUDIT_CLEAN03.txt
+
+      - name: Commit clean03 and remove one-shot workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/liveasta-clean03.yml
+          git add -A dev .github/workflows/liveasta-clean03.yml
+          git diff --cached --quiet || (git commit -m "Prepare LIVEASTA DEV v0.94 clean03 and audit overlaps" && git push)
