@@ -16,30 +16,13 @@ jobs:
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8',errors='ignore')
-
           css='<link rel="stylesheet" href="./management-v087.css?v=087">'
           if css not in s:
               s=s.replace('</head>',css+'\n</head>',1)
-
           js='<script src="./management-v087.js?v=087"></script>'
           if js not in s:
               s=s.replace('</body>',js+'\n</body>',1)
-
-          old="""            if(controlPurchasesExpanded){
-                const search=document.getElementById('control-purchases-search');
-                setTimeout(()=>search?.focus({preventScroll:true}),60);
-            }
-"""
-          new="""            // v0.87: apertura Acquisti / Rose senza autofocus.
-            // La ricerca resta disponibile ma la tastiera si apre solo dopo un tap esplicito.
-"""
-          if old in s:
-              s=s.replace(old,new,1)
-          else:
-              import re
-              s,n=re.subn(r"\s*if\(controlPurchasesExpanded\)\{\s*const search=document\.getElementById\('control-purchases-search'\);\s*setTimeout\(\(\)=>search\?\.focus\(\{preventScroll:true\}\),60\);\s*\}","\n            // v0.87: apertura Acquisti / Rose senza autofocus.\n",s,count=1)
-              print('autofocus regex replacements:',n)
-
+          s=s.replace("setTimeout(()=>search?.focus({preventScroll:true}),60);","search?.blur();")
           s=s.replace('v0.86','v0.87').replace('V0.86','V0.87')
           s=s.replace('pwa-install.js?v=086','pwa-install.js?v=087')
           p.write_text(s,encoding='utf-8')
