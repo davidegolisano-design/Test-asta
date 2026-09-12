@@ -833,7 +833,249 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
 }
 
 /* === liveasta-v076-desktop-board === */
-\n/* LIVEASTA v0.93 — BANDITORE DESKTOP TOOLBAR + GIÀ BANDITI */\n@media (min-width:761px){\n  /* ONLINE x/x sempre visibile nella testata desktop */\n  #screen-auctioneer-board #auction-dashboard.mode-pc ~ * {}\n  #screen-auctioneer-board > .session-nav .auction-session-center{\n    display:flex!important;\n    flex-direction:row!important;\n    align-items:center!important;\n    justify-content:center!important;\n    gap:8px!important;\n    min-width:0!important;\n    overflow:visible!important;\n  }\n  #screen-auctioneer-board > .session-nav .auction-online-pill{\n    display:inline-flex!important;\n    align-items:center!important;\n    flex:0 0 auto!important;\n    width:auto!important;\n    min-width:max-content!important;\n    height:28px!important;\n    min-height:28px!important;\n    padding:0 10px!important;\n    gap:6px!important;\n    overflow:visible!important;\n    white-space:nowrap!important;\n  }\n  #screen-auctioneer-board > .session-nav #auction-online-count{\n    display:inline!important;\n    visibility:visible!important;\n    opacity:1!important;\n    width:auto!important;\n    max-width:none!important;\n    overflow:visible!important;\n    color:#35d96f!important;\n    font-weight:950!important;\n    white-space:nowrap!important;\n  }\n\n  /* Unica riga desktop: Cerca | random | buste | ruoli | ordinamento */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .dashboard-left{\n    display:grid!important;\n    grid-template-columns:minmax(220px,1fr) 50px minmax(118px,150px) minmax(290px,360px) minmax(280px,350px)!important;\n    grid-template-rows:50px auto minmax(0,1fr) auto auto!important;\n    column-gap:7px!important;\n    row-gap:6px!important;\n    align-items:stretch!important;\n    min-height:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-filter-controls{\n    display:contents!important;\n    margin:0!important;\n    padding:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-roster-btn{\n    display:none!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar #player-search,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn{\n    width:50px!important;\n    min-width:50px!important;\n    padding:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{\n    width:100%!important;\n    min-width:0!important;\n    padding:0 12px!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row{\n    height:50px!important;\n    min-height:50px!important;\n    display:grid!important;\n    grid-auto-flow:column!important;\n    grid-auto-columns:minmax(48px,1fr)!important;\n    gap:6px!important;\n    flex-wrap:nowrap!important;\n    align-items:stretch!important;\n    overflow:hidden!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row > button{\n    width:100%!important;\n    min-width:0!important;\n    max-width:none!important;\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    padding:0 7px!important;\n    border-radius:9px!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row{\n    height:50px!important;\n    min-height:50px!important;\n    display:grid!important;\n    grid-template-columns:auto minmax(0,1fr) 50px!important;\n    gap:6px!important;\n    align-items:stretch!important;\n    margin:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row label{\n    display:flex!important;\n    align-items:center!important;\n    height:50px!important;\n    margin:0!important;\n    white-space:nowrap!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row select,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{\n    height:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{\n    width:50px!important;\n    min-width:50px!important;\n    padding:0!important;\n  }\n\n  /* Le sezioni della tabella continuano a occupare tutta la larghezza */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .list-section-title:not(.auctioned-section-head){\n    grid-column:1 / -1!important;\n    grid-row:2!important;\n    margin:0 2px!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .table-container{\n    grid-column:1 / -1!important;\n    grid-row:3!important;\n    min-height:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head{\n    grid-column:1 / -1!important;\n    grid-row:4!important;\n    display:grid!important;\n    grid-template-columns:minmax(0,1fr) auto!important;\n    gap:7px!important;\n    margin:0!important;\n    align-items:stretch!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .collapsed-toggle,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn{\n    height:40px!important;\n    min-height:40px!important;\n    max-height:40px!important;\n    margin:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn:is(:hover,:focus,:active){\n    background:#D9434E!important;\n    background-image:none!important;\n    border-color:#B9323C!important;\n    color:#FFFFFF!important;\n    box-shadow:none!important;\n  }\n\n  /* GIÀ BANDITI desktop: tabella compatta e allineata */\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list{\n    grid-column:1 / -1!important;\n    grid-row:5!important;\n    width:100%!important;\n    min-height:0!important;\n    box-sizing:border-box!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list.collapsed{\n    display:none!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list:not(.collapsed){\n    display:block!important;\n    height:auto!important;\n    max-height:220px!important;\n    overflow-y:auto!important;\n    padding:0!important;\n    border:1px solid var(--theme-border)!important;\n    border-radius:8px!important;\n    background:var(--theme-input)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row{\n    display:grid!important;\n    grid-template-columns:62px minmax(0,1.3fr) minmax(0,1fr) 100px!important;\n    gap:10px!important;\n    align-items:center!important;\n    width:100%!important;\n    min-height:42px!important;\n    height:42px!important;\n    margin:0!important;\n    padding:4px 10px!important;\n    box-sizing:border-box!important;\n    border-bottom:1px solid var(--theme-border)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row:last-child{\n    border-bottom:0!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row .role-badge{\n    width:38px!important;\n    min-width:38px!important;\n    max-width:38px!important;\n    margin:0!important;\n    padding:3px 5px!important;\n    justify-self:start!important;\n    border-radius:999px!important;\n    font-size:.72rem!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name,\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{\n    min-width:0!important;\n    white-space:nowrap!important;\n    overflow:hidden!important;\n    text-overflow:ellipsis!important;\n    font-size:.88rem!important;\n    line-height:1!important;\n    text-align:left!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name{\n    font-weight:850!important;\n    color:var(--theme-text)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{\n    color:var(--theme-muted)!important;\n  }\n  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .restore-btn{\n    width:96px!important;\n    min-width:96px!important;\n    height:32px!important;\n    min-height:32px!important;\n    margin:0!important;\n    padding:0 8px!important;\n    justify-self:end!important;\n    font-size:.72rem!important;\n  }\n}\n
+
+/* LIVEASTA v0.93 — BANDITORE DESKTOP TOOLBAR + GIÀ BANDITI */
+@media (min-width:761px){
+  /* ONLINE x/x sempre visibile nella testata desktop */
+  #screen-auctioneer-board > .session-nav .auction-session-center{
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    min-width:0!important;
+    overflow:visible!important;
+  }
+  #screen-auctioneer-board > .session-nav .auction-online-pill{
+    display:inline-flex!important;
+    align-items:center!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:max-content!important;
+    height:28px!important;
+    min-height:28px!important;
+    padding:0 10px!important;
+    gap:6px!important;
+    overflow:visible!important;
+    white-space:nowrap!important;
+  }
+  #screen-auctioneer-board > .session-nav #auction-online-count{
+    display:inline!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:auto!important;
+    max-width:none!important;
+    overflow:visible!important;
+    color:#35d96f!important;
+    font-weight:950!important;
+    white-space:nowrap!important;
+  }
+
+  /* Unica riga desktop: Cerca | random | buste | ruoli | ordinamento */
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .dashboard-left{
+    display:grid!important;
+    grid-template-columns:minmax(220px,1fr) 50px minmax(118px,150px) minmax(290px,360px) minmax(280px,350px)!important;
+    grid-template-rows:50px auto minmax(0,1fr) auto auto!important;
+    column-gap:7px!important;
+    row-gap:6px!important;
+    align-items:stretch!important;
+    min-height:0!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-filter-controls{
+    display:contents!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-roster-btn{
+    display:none!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar #player-search,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{
+    height:50px!important;
+    min-height:50px!important;
+    max-height:50px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-icon-btn{
+    width:50px!important;
+    min-width:50px!important;
+    padding:0!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auction-list-toolbar .toolbar-sealed-mode-btn{
+    width:100%!important;
+    min-width:0!important;
+    padding:0 12px!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row{
+    height:50px!important;
+    min-height:50px!important;
+    display:grid!important;
+    grid-auto-flow:column!important;
+    grid-auto-columns:minmax(48px,1fr)!important;
+    gap:6px!important;
+    flex-wrap:nowrap!important;
+    align-items:stretch!important;
+    overflow:hidden!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-role-row > button{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:50px!important;
+    min-height:50px!important;
+    max-height:50px!important;
+    margin:0!important;
+    padding:0 7px!important;
+    border-radius:9px!important;
+    box-sizing:border-box!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row{
+    height:50px!important;
+    min-height:50px!important;
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr) 50px!important;
+    gap:6px!important;
+    align-items:stretch!important;
+    margin:0!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row label{
+    display:flex!important;
+    align-items:center!important;
+    height:50px!important;
+    margin:0!important;
+    white-space:nowrap!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-sort-row select,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{
+    height:50px!important;
+    min-height:50px!important;
+    max-height:50px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #list-filters-board .unified-direction{
+    width:50px!important;
+    min-width:50px!important;
+    padding:0!important;
+  }
+
+  /* Le sezioni della tabella continuano a occupare tutta la larghezza */
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .list-section-title:not(.auctioned-section-head){
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    margin:0 2px!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .table-container{
+    grid-column:1 / -1!important;
+    grid-row:3!important;
+    min-height:0!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head{
+    grid-column:1 / -1!important;
+    grid-row:4!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:7px!important;
+    margin:0!important;
+    align-items:stretch!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .collapsed-toggle,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn{
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list .auctioned-section-head .restore-all-btn:is(:hover,:focus,:active){
+    background:#D9434E!important;
+    background-image:none!important;
+    border-color:#B9323C!important;
+    color:#FFFFFF!important;
+    box-shadow:none!important;
+  }
+
+  /* GIÀ BANDITI desktop: tabella compatta e allineata */
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list{
+    grid-column:1 / -1!important;
+    grid-row:5!important;
+    width:100%!important;
+    min-height:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list.collapsed{
+    display:none!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list:not(.collapsed){
+    display:block!important;
+    height:auto!important;
+    max-height:220px!important;
+    overflow-y:auto!important;
+    padding:0!important;
+    border:1px solid var(--theme-border)!important;
+    border-radius:8px!important;
+    background:var(--theme-input)!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row{
+    display:grid!important;
+    grid-template-columns:62px minmax(0,1.3fr) minmax(0,1fr) 100px!important;
+    gap:10px!important;
+    align-items:center!important;
+    width:100%!important;
+    min-height:42px!important;
+    height:42px!important;
+    margin:0!important;
+    padding:4px 10px!important;
+    box-sizing:border-box!important;
+    border-bottom:1px solid var(--theme-border)!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row:last-child{
+    border-bottom:0!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-row .role-badge{
+    width:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    margin:0!important;
+    padding:3px 5px!important;
+    justify-self:start!important;
+    border-radius:999px!important;
+    font-size:.72rem!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name,
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{
+    min-width:0!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    font-size:.88rem!important;
+    line-height:1!important;
+    text-align:left!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-name{
+    font-weight:850!important;
+    color:var(--theme-text)!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .auctioned-team{
+    color:var(--theme-muted)!important;
+  }
+  #screen-auctioneer-board #auction-dashboard.mode-pc #view-list #auctioned-list .restore-btn{
+    width:96px!important;
+    min-width:96px!important;
+    height:32px!important;
+    min-height:32px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    justify-self:end!important;
+    font-size:.72rem!important;
+  }
+}
+
 
 /* === auctioneer-desktop-theme-v081.css === */
 /* LIVEASTA v0.81 — Plancia banditore desktop coerente con tutti i temi */

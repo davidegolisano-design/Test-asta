@@ -1,0 +1,12 @@
+LIVEASTA CLEAN-05 - REPAIR + REDUNDANT DECLARATIONS
+==================================================
+Repair: v076 extracted block literal newline escapes converted to real newlines.
+Dedupe rule: remove an earlier declaration only when a later rule with exact same selector and exact same at-rule ancestry repeats exact same property, value and !important state.
+
+FILES
+- core.css: removed 68 redundant declarations; 432,485 -> 430,243 chars
+- pwa.css: removed 0 redundant declarations; 16,839 -> 16,839 chars
+- refinements.css: removed 257 redundant declarations; 236,815 -> 225,493 chars
+- ui.css: removed 0 redundant declarations; 112,147 -> 112,086 chars
+
+TOTAL REDUNDANT DECLARATIONS REMOVED: 325

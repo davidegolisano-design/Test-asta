@@ -18,7 +18,7 @@
   }
 
   cleanupMalformedLegacy();
-  document.title='LIVEASTA DEV · v0.94 CLEAN-04';
+  document.title='LIVEASTA DEV · v0.94 CLEAN-05';
 
   const button=document.createElement('button');
   button.id='liveasta-install-btn';
