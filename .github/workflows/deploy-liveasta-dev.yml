@@ -1,0 +1,169 @@
+name: Deploy LIVEASTA DEV clean02
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-liveasta-dev.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build isolated DEV from current v0.93 source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, shutil
+
+          root=Path('.')
+          dev=root/'dev'
+          if dev.exists():
+              shutil.rmtree(dev)
+          (dev/'styles').mkdir(parents=True)
+          (dev/'scripts').mkdir(parents=True)
+
+          html=(root/'index.html').read_text(encoding='utf-8',errors='ignore')
+          style_matches=list(re.finditer(r'<style\b([^>]*)>(.*?)</style>',html,re.S|re.I))
+          script_matches=list(re.finditer(r'<script\b([^>]*)>(.*?)</script>',html,re.S|re.I))
+          inline_scripts=[m for m in script_matches if 'src=' not in m.group(1).lower()]
+
+          if len(style_matches) < 15 or len(inline_scripts) < 20:
+              raise SystemExit(f'Unexpected source structure: styles={len(style_matches)} inline_scripts={len(inline_scripts)}')
+
+          def tag_id(attrs):
+              m=re.search(r'id=["\']([^"\']+)',attrs,re.I)
+              return m.group(1) if m else None
+
+          styles=[(tag_id(m.group(1)),m.group(2).strip()) for m in style_matches]
+          scripts=[(tag_id(m.group(1)),m.group(2).strip()) for m in inline_scripts]
+
+          (dev/'styles/core.css').write_text(styles[0][1]+'\n',encoding='utf-8')
+
+          active_css=[
+              'auctioneer-desktop-theme-v081.css',
+              'player-light-states-v082.css',
+              'sealed-desktop-v083.css',
+              'mobile-auctioneer-v084.css',
+              'role-badges-v086.css',
+              'auction-complete-theme-v091.css',
+              'management-v093.css',
+          ]
+          ui=[]
+          for i in range(1,8):
+              ui.append(f'/* === {styles[i][0]} === */\n{styles[i][1]}\n')
+          for name in active_css:
+              ui.append(f'/* === {name} === */\n{(root/name).read_text(encoding="utf-8",errors="ignore").strip()}\n')
+          (dev/'styles/ui.css').write_text('\n'.join(ui).strip()+'\n',encoding='utf-8')
+
+          refinements=[]
+          for i in range(8,15):
+              refinements.append(f'/* === {styles[i][0]} === */\n{styles[i][1]}\n')
+          (dev/'styles/refinements.css').write_text('\n'.join(refinements).strip()+'\n',encoding='utf-8')
+
+          (dev/'scripts/theme-preload.js').write_text(scripts[0][1]+'\n',encoding='utf-8')
+          app=scripts[1][1].replace("const LIVEASTA_ASSET_BASE = '.';","const LIVEASTA_ASSET_BASE = '..';")
+          (dev/'scripts/app.js').write_text(app+'\n',encoding='utf-8')
+
+          bootstrap=[]
+          for i in range(2,12):
+              bootstrap.append(f'// === {scripts[i][0] or "inline-app"} ===\n{scripts[i][1]}\n')
+          (dev/'scripts/bootstrap.js').write_text('\n'.join(bootstrap).strip()+'\n',encoding='utf-8')
+
+          runtime=[]
+          for i in list(range(12,18))+[19]:
+              runtime.append(f'// === {scripts[i][0] or "inline-runtime"} ===\n{scripts[i][1]}\n')
+          (dev/'scripts/runtime.js').write_text('\n'.join(runtime).strip()+'\n',encoding='utf-8')
+
+          pwa_src=(root/'pwa-install.js').read_text(encoding='utf-8',errors='ignore')
+          pwa_match=re.search(r"const style=document\.createElement\('style'\);\s*style\.id='[^']+';\s*style\.textContent=`(.*?)`;\s*document\.head\.appendChild\(style\);",pwa_src,re.S)
+          if not pwa_match:
+              raise SystemExit('PWA runtime style block not found')
+          (dev/'styles/pwa.css').write_text(pwa_match.group(1).strip()+'\n',encoding='utf-8')
+          pwa_js=pwa_src[:pwa_match.start()]+pwa_src[pwa_match.end():]
+          pwa_js=pwa_js.replace("document.title='v0.93 TEST';","document.title='LIVEASTA DEV CLEAN';")
+          pwa_js=re.sub(
+              r"\s*if\('serviceWorker' in navigator\)\{\s*window\.addEventListener\('load',\(\)=>\{\s*navigator\.serviceWorker\.register\('\./service-worker\.js',\{scope:'\./'\}\)\s*\.catch\(err=>console\.warn\('Service worker non registrato:',err\)\);\s*\}\);\s*\}\s*",
+              "\n  // DEV: service worker disabled to avoid stale assets.\n",
+              pwa_js,flags=re.S
+          )
+          (dev/'scripts/pwa.js').write_text(pwa_js.strip()+'\n',encoding='utf-8')
+
+          (dev/'scripts/sealed-auction.js').write_text((root/'sealed-v090.js').read_text(encoding='utf-8',errors='ignore').strip()+'\n',encoding='utf-8')
+          (dev/'scripts/management.js').write_text((root/'management-v093.js').read_text(encoding='utf-8',errors='ignore').strip()+'\n',encoding='utf-8')
+
+          def replace_style(m):
+              i=replace_style.i
+              replace_style.i+=1
+              if i==0: return '<link rel="stylesheet" href="./styles/core.css">'
+              if i==7: return '<link rel="stylesheet" href="./styles/ui.css">\n<link rel="stylesheet" href="./styles/pwa.css">'
+              if i==14: return '<link rel="stylesheet" href="./styles/refinements.css">'
+              return ''
+          replace_style.i=0
+          dev_html=re.sub(r'<style\b[^>]*>.*?</style>',replace_style,html,flags=re.S|re.I)
+
+          for name in active_css:
+              dev_html=re.sub(rf'<link\b[^>]*href=["\']\./{re.escape(name)}(?:\?[^"\']*)?["\'][^>]*>\s*','',dev_html,flags=re.I)
+
+          def replace_script(m):
+              attrs=m.group(1)
+              if 'src=' in attrs.lower():
+                  return m.group(0)
+              i=replace_script.i
+              replace_script.i+=1
+              if i==0: return '<script src="./scripts/theme-preload.js"></script>'
+              if i==1: return '<script src="./scripts/app.js"></script>'
+              if i==11: return '<script src="./scripts/bootstrap.js"></script>'
+              if i==19: return '<script src="./scripts/runtime.js"></script>'
+              return ''
+          replace_script.i=0
+          dev_html=re.sub(r'<script\b([^>]*)>.*?</script>',replace_script,dev_html,flags=re.S|re.I)
+
+          dev_html=re.sub(r'<script\s+src=["\']\./pwa-install\.js(?:\?[^"\']*)?["\']\s*></script>','<script src="./scripts/pwa.js"></script>',dev_html,flags=re.I)
+          dev_html=re.sub(r'<script\s+src=["\']\./sealed-v090\.js(?:\?[^"\']*)?["\']\s*></script>','<script src="./scripts/sealed-auction.js"></script>',dev_html,flags=re.I)
+          dev_html=re.sub(r'<script\s+src=["\']\./management-v093\.js(?:\?[^"\']*)?["\']\s*></script>','<script src="./scripts/management.js"></script>',dev_html,flags=re.I)
+
+          dev_html=re.sub(r'\s*<link rel="manifest"[^>]*>\s*','\n',dev_html,flags=re.I)
+          dev_html=dev_html.replace('href="./icon-192.png"','href="../icon-192.png"')
+          for name in ['preparazione.mp3','fischio.mp3','buzz.mp3','gong.mp3']:
+              dev_html=dev_html.replace(f'src="./{name}"',f'src="../{name}"')
+          dev_html=dev_html.replace('<title>v0.93 TEST</title>','<title>LIVEASTA DEV CLEAN</title>')
+          dev_html=dev_html.replace('v0.93','v0.94').replace('V0.93','V0.94')
+          (dev/'index.html').write_text(dev_html,encoding='utf-8')
+
+          (dev/'README_DEV.txt').write_text(
+              'LIVEASTA DEV - v0.94 clean02\n\n'
+              'Ambiente di test separato dalla root pubblica.\n'
+              'Asset binari riusati dalla root; service worker disattivato in DEV.\n',
+              encoding='utf-8'
+          )
+          PY
+
+      - name: Validate DEV output
+        run: |
+          set -e
+          test -f dev/index.html
+          test -f dev/styles/core.css
+          test -f dev/styles/ui.css
+          test -f dev/styles/refinements.css
+          test -f dev/scripts/app.js
+          node --check dev/scripts/app.js
+          node --check dev/scripts/bootstrap.js
+          node --check dev/scripts/runtime.js
+          node --check dev/scripts/pwa.js
+          node --check dev/scripts/sealed-auction.js
+          node --check dev/scripts/management.js
+          grep -q 'LIVEASTA DEV CLEAN' dev/index.html
+
+      - name: Commit DEV and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/deploy-liveasta-dev.yml
+          git add -A dev .github/workflows/deploy-liveasta-dev.yml
+          git diff --cached --quiet || (git commit -m "Add isolated LIVEASTA v0.94 clean02 dev environment" && git push)
