@@ -1,0 +1,39 @@
+name: Apply v0.85 circular role badges
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/apply-v085-role-badges.yml
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8', errors='ignore')
+          anchor = '<link rel="stylesheet" href="./mobile-auctioneer-v084.css">'
+          link = '<link rel="stylesheet" href="./role-badges-v085.css?v=085">'
+          if link not in s:
+              if anchor not in s:
+                  raise SystemExit('anchor not found')
+              s = s.replace(anchor, anchor + '\n' + link, 1)
+          s = s.replace('v0.84', 'v0.85').replace('V0.84', 'V0.85')
+          s = s.replace('<script src="./pwa-install.js"></script>', '<script src="./pwa-install.js?v=085"></script>')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name liveasta-bot
+          git config user.email actions@github.com
+          git add index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "v0.85 circular role badges across lists and rosters"
+            git push
+          fi
