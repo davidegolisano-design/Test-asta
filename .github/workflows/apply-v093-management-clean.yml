@@ -1,0 +1,76 @@
+name: Apply v0.93 management clean
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/apply-v093-management-clean.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch v0.93
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8',errors='ignore')
+
+          # Rimuove tutte le stratificazioni grafiche/JS precedenti della Gestione.
+          for href in [
+            './management-v087.css?v=087',
+            './management-v088.css?v=088',
+            './management-v090.css?v=090',
+            './management-mobile-v091.css?v=091',
+            './management-mobile-v092.css?v=092'
+          ]:
+            s=s.replace(f'<link rel="stylesheet" href="{href}">\n','')
+            s=s.replace(f'<link rel="stylesheet" href="{href}">','')
+
+          for src in [
+            './management-v087.js?v=087',
+            './management-v088.js?v=088',
+            './management-v090.js?v=090',
+            './management-mobile-v091.js?v=091',
+            './management-mobile-v092.js?v=092'
+          ]:
+            s=s.replace(f'<script src="{src}"></script>\n','')
+            s=s.replace(f'<script src="{src}"></script>','')
+
+          css='<link rel="stylesheet" href="./management-v093.css?v=093">'
+          if css not in s:
+            s=s.replace('</head>',css+'\n</head>',1)
+
+          js='<script src="./management-v093.js?v=093"></script>'
+          if js not in s:
+            s=s.replace('</body>',js+'\n</body>',1)
+
+          s=s.replace('v0.92','v0.93').replace('V0.92','V0.93')
+          s=s.replace('pwa-install.js?v=092','pwa-install.js?v=093')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('pwa-install.js')
+          s=p.read_text(encoding='utf-8',errors='ignore')
+          s=s.replace("document.title='v0.92 TEST';","document.title='v0.93 TEST';")
+          s=s.replace('liveasta-v092-runtime-style','liveasta-v093-runtime-style')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('service-worker.js')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r"liveasta-test-v\d+-pwa1","liveasta-test-v093-pwa1",s)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('manifest-v22.webmanifest')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r'"start_url"\s*:\s*"[^"]*"','"start_url": "./?v=093-test"',s)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html pwa-install.js service-worker.js manifest-v22.webmanifest
+          git diff --cached --quiet || (git commit -m "v0.93 clean management layout and use player PIN" && git push)
