@@ -1,0 +1,31 @@
+name: LIVEASTA detailed visual audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-visual-detail.yml'
+permissions:
+  contents: write
+jobs:
+  detail:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright and Sharp
+        run: |
+          npm install --no-save playwright sharp
+          npx playwright install --with-deps chromium
+      - name: Start DEV locally
+        run: |
+          python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 &
+          sleep 2
+      - name: Run detailed visual audit
+        run: node dev/tests/visual-audit-detail.mjs
+      - name: Commit report and self-remove
+        run: |
+          rm -f .github/workflows/liveasta-visual-detail.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/visual-audit/detail dev/visual-audit/detail-contact-sheet.jpg dev/visual-audit/detail-report.json dev/tests/visual-audit-detail.mjs .github/workflows/liveasta-visual-detail.yml
+          git commit -m "LIVEASTA DEV detailed visual audit"
+          git pull --rebase origin main
+          git push
