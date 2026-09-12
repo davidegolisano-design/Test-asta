@@ -1,0 +1,26 @@
+name: LIVEASTA DEV clean44 sealed audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean44-sealed-audit.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install parser
+        run: npm install --no-save espree
+      - name: Run CLEAN-44 audit
+        run: node dev/tools/clean44_sealed_audit.mjs
+      - name: Validate JavaScript syntax
+        run: for f in dev/scripts/*.js; do node --check "$f"; done
+      - name: Commit report and self-remove
+        run: |
+          rm -f .github/workflows/liveasta-clean44-sealed-audit.yml dev/tools/clean44_sealed_audit.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/CLEANUP_AUDIT_CLEAN44_SEALED.txt .github/workflows/liveasta-clean44-sealed-audit.yml dev/tools/clean44_sealed_audit.mjs
+          git commit -m "LIVEASTA DEV clean44 sealed auction audit"
+          git push
