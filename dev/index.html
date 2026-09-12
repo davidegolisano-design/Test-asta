@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LIVEASTA DEV · v0.95 MGMT-01</title>
+    <title>LIVEASTA DEV · v0.96 MGMT-02</title>
     <!-- Test-asta: nuovo Supabase; asset binari remoti da repo live-asta -->
     <meta name="theme-color" content="#0D1117">
     <meta name="color-scheme" content="dark">
@@ -24,8 +24,8 @@
 
     <meta name="msapplication-navbutton-color" content="#0D1117">
 
-    <link rel="stylesheet" href="./styles/ui.css?dev=094-clean40a">
-    <link rel="stylesheet" href="./styles/management-system.css?dev=095-mgmt01">
+    <link rel="stylesheet" href="./styles/ui.css?dev=096-mgmt02">
+    <link rel="stylesheet" href="./styles/management.css?dev=096-mgmt02">
     <link rel="stylesheet" href="./styles/pwa.css?dev=094-clean40a">
 </head>
 <body>
@@ -37,10 +37,10 @@
              aria-label="Apri Impostazioni LIVEASTA"
              onclick="openAdminLogin()"
              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminLogin();}">
-            v0.95
+            v0.96
         </div>
         <div class="setup-card">
-            <div id="liveasta-dev-static-marker" style="width:100%;box-sizing:border-box;margin:0 0 16px;padding:11px 12px;border:2px solid #ffb300;border-radius:12px;background:#332400;color:#ffd54f;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:900;letter-spacing:.04em;line-height:1.2;box-shadow:0 0 0 2px rgba(255,179,0,.12) inset;"><strong style="display:block;font-size:14px;">⚠ AMBIENTE DEV · v0.95 MGMT-01</strong><span style="display:block;margin-top:4px;font-size:11px;letter-spacing:.09em;color:#fff3c4;">NON È LA VERSIONE PUBBLICA</span></div>
+            <div id="liveasta-dev-static-marker" style="width:100%;box-sizing:border-box;margin:0 0 16px;padding:11px 12px;border:2px solid #ffb300;border-radius:12px;background:#332400;color:#ffd54f;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:900;letter-spacing:.04em;line-height:1.2;box-shadow:0 0 0 2px rgba(255,179,0,.12) inset;"><strong style="display:block;font-size:14px;">⚠ AMBIENTE DEV · v0.96 MGMT-02</strong><span style="display:block;margin-top:4px;font-size:11px;letter-spacing:.09em;color:#fff3c4;">NON È LA VERSIONE PUBBLICA</span></div>
             <h1 class="logo-text"><span class="rosa">LIVE</span><span class="rush">ASTA</span></h1>
             <p class="subtitle">Asta fantasy calcio realtime</p>
 
@@ -911,194 +911,208 @@
     </div>
 
 <div id="screen-room-control" class="screen">
-        <div class="control-grid">
-            <div class="control-title">
-                <div style="text-align:left;">
-                    <h1 style="margin:0;font-size:1.35rem;">Gestione asta</h1>
-                    <div class="room-pill" id="control-room-pill">STANZA <b>--</b></div>
-                </div>
-                <div class="toolbar-row" style="margin:0;">
-                    <button class="btn btn-secondary btn-compact audio-toolbar-btn control-action-audio" onclick="openAudioMixer()">🔊 Audio</button>
-                    <button class="btn btn-danger btn-compact control-action-reset" onclick="resetRoomRuntimeState()">⟳ Reset</button>
-                    <button class="btn btn-green btn-compact control-action-csv" onclick="exportRoseCSV()">Esporta CSV</button>
-                    <button class="btn btn-secondary btn-compact control-action-import-csv" onclick="openCsvRosterImport()">↑ Importa CSV</button>
-                    <button class="btn btn-secondary btn-compact control-action-back" onclick="closeRoomControl()">← Torna all'asta</button>
+    <div class="mg-page control-grid">
+        <header class="mg-header">
+            <div class="mg-header-main">
+                <button class="btn btn-secondary mg-back" type="button" onclick="closeRoomControl()">← Asta</button>
+                <div class="mg-heading">
+                    <h1>Gestione asta</h1>
+                    <div class="room-pill mg-room-pill" id="control-room-pill">STANZA <b>--</b></div>
                 </div>
             </div>
-            <div class="control-card room-rules-card">
-                <h3 style="margin-top:0;">Regole stanza</h3>
-                <div class="setup-grid">
-                    <div><span class="field-label">Nome stanza</span><input id="control-room-name" class="minimal-input"></div>
-                    <div><span class="field-label">Password</span><input id="control-room-password" class="minimal-input"></div>
+            <div class="mg-header-actions">
+                <button class="btn btn-secondary audio-toolbar-btn control-action-audio" type="button" onclick="openAudioMixer()">🔊 Audio</button>
+                <button class="btn btn-danger control-action-reset" type="button" onclick="resetRoomRuntimeState()">⟳ Reset</button>
+                <button class="btn btn-secondary control-action-import-csv" type="button" onclick="openCsvRosterImport()">↑ Importa</button>
+                <button class="btn btn-green control-action-csv" type="button" onclick="exportRoseCSV()">Esporta</button>
+            </div>
+        </header>
 
-                    <div><span class="field-label">Timer asta</span><input id="control-room-timer" type="number" class="minimal-input" min="1" max="60"></div>
-                    <div><span class="field-label">Blocco rilanci (sec.)</span><input id="control-bid-cooldown" type="number" class="minimal-input" min="0.1" max="5" step="0.1" inputmode="decimal" value="0.5"></div>
-                    <div><span class="field-label">Countdown pre-asta</span><input id="control-room-prep" type="number" class="minimal-input" min="1" max="15"></div>
-                    <div><span class="field-label">Timer busta chiusa</span><input id="control-sealed-timer" type="number" class="minimal-input" min="5" max="180" value="30"></div>
-                    <div><span class="field-label">Timer apertura buste</span><input id="control-sealed-reveal-timer" type="number" class="minimal-input" min="1" max="30" value="5"></div>
-                </div>
-                <div class="room-system-badge-row">
-                    <span class="field-label">Sistema asta</span>
-                    <span id="control-game-mode-badge" class="room-system-badge">CLASSIC</span>
+        <main class="mg-content">
+            <section class="mg-section mg-section-room" aria-labelledby="mg-room-title">
+                <div class="mg-section-head">
+                    <div><span class="mg-kicker">STANZA</span><h2 id="mg-room-title">Regole e configurazione</h2></div>
+                    <p>Accesso, tempi e composizione delle rose.</p>
                 </div>
 
-                <div id="control-classic-limits" class="setup-grid-4">
-                    <div><span class="field-label">Portieri</span><input id="control-limit-P" type="number" class="minimal-input" min="0"></div>
-                    <div><span class="field-label">Difensori</span><input id="control-limit-D" type="number" class="minimal-input" min="0"></div>
-                    <div><span class="field-label">Centrocampisti</span><input id="control-limit-C" type="number" class="minimal-input" min="0"></div>
-                    <div><span class="field-label">Attaccanti</span><input id="control-limit-A" type="number" class="minimal-input" min="0"></div>
-                </div>
-
-                <div id="control-mantra-rules" class="mantra-control-rules" style="display:none;">
-                    <div class="mantra-rule-summary">
-                        <b>MANTRA · Rosa libera</b>
-                        <span>Minimo 23 giocatori · almeno 2 Por · nessun limite Dc/Dd/Ds/B/E/M/C/W/T/A/Pc.</span>
-                    </div>
-                    <div class="setup-grid">
-                        <div>
-                            <span class="field-label">Rosa massima</span>
-                            <input id="control-mantra-max-roster" type="number" class="minimal-input" min="23" max="90" value="30" inputmode="numeric">
+                <article class="mg-card room-rules-card mg-span-2">
+                    <div class="mg-room-layout">
+                        <div class="mg-subcard">
+                            <div class="mg-subcard-head"><h3>Accesso stanza</h3><span id="control-game-mode-badge" class="room-system-badge">CLASSIC</span></div>
+                            <div class="mg-fields mg-fields-2 mg-access-fields">
+                                <label><span class="field-label">Nome stanza</span><input id="control-room-name" class="minimal-input"></label>
+                                <label><span class="field-label">Password</span><input id="control-room-password" class="minimal-input"></label>
+                            </div>
                         </div>
-                        <div>
-                            <span class="field-label">Vincoli minimi</span>
-                            <div class="mantra-fixed-rule">23 giocatori · 2 portieri</div>
+
+                        <div class="mg-subcard">
+                            <div class="mg-subcard-head"><h3>Tempi asta</h3></div>
+                            <div class="mg-fields mg-fields-timers">
+                                <label><span class="field-label">Timer asta</span><input id="control-room-timer" type="number" class="minimal-input" min="1" max="60"></label>
+                                <label><span class="field-label">Blocco rilanci</span><input id="control-bid-cooldown" type="number" class="minimal-input" min="0.1" max="5" step="0.1" inputmode="decimal" value="0.5"></label>
+                                <label><span class="field-label">Pre-asta</span><input id="control-room-prep" type="number" class="minimal-input" min="1" max="15"></label>
+                                <label><span class="field-label">Busta chiusa</span><input id="control-sealed-timer" type="number" class="minimal-input" min="5" max="180" value="30"></label>
+                                <label><span class="field-label">Apertura buste</span><input id="control-sealed-reveal-timer" type="number" class="minimal-input" min="1" max="30" value="5"></label>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <button class="btn btn-compact" onclick="saveRoomConfig()">Salva impostazioni</button>
-            </div>
 
-            <div class="control-card self-raise-control-card">
-                <div class="control-title">
-                    <div>
-                        <h3 style="margin:0;">Autorilancio</h3>
-                        <div class="self-raise-control-note">Se disattivato, la squadra che è già miglior offerente non può rilanciare nuovamente su se stessa. Potrà tornare a offrire solo dopo il rilancio di un'altra squadra.</div>
-                    </div>
-                    <span id="self-raise-control-badge" class="badge-ok">ATTIVO</span>
-                </div>
-                <div class="self-raise-control-row">
-                    <div id="self-raise-control-status" class="self-raise-control-status">Autorilancio consentito.</div>
-                    <input id="self-raise-enabled" type="checkbox" tabindex="-1" aria-hidden="true">
-                    <button id="self-raise-toggle" class="self-raise-switch" type="button" role="switch" aria-checked="true" onclick="toggleSelfRaiseFromUI(event)">
-                        <span class="self-raise-switch-track" aria-hidden="true"><span class="self-raise-switch-thumb"></span></span>
-                        <span class="self-raise-switch-label">Consenti autorilancio</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="control-card online-players-card">
-                <div class="control-title">
-                    <div>
-                        <h3 style="margin:0;">Giocatori online</h3>
-                        <div class="online-players-note">Squadre collegate alla stanza in questo momento · Presence + heartbeat 10s</div>
-                    </div>
-                    <span id="online-player-count" class="badge-ok">0 online</span>
-                </div>
-                <div id="online-player-list" class="online-player-list">
-                    <div class="online-empty">Nessun giocatore online</div>
-                </div>
-            </div>
-            <div class="control-card auctioneer-player-control-card">
-                <div class="control-title">
-                    <div>
-                        <h3 style="margin:0;">Banditore giocatore</h3>
-                        <div class="auctioneer-player-note">
-                            Se attivo, il banditore usa una squadra. Durante READY, countdown e asta
-                            il telefono diventa la schermata giocatore; a fine asta torna automaticamente al listone.
+                        <div class="mg-subcard mg-roster-rules">
+                            <div class="mg-subcard-head"><h3>Composizione rosa</h3></div>
+                            <div id="control-classic-limits" class="mg-fields mg-role-limits setup-grid-4">
+                                <label><span class="field-label">Portieri</span><input id="control-limit-P" type="number" class="minimal-input" min="0"></label>
+                                <label><span class="field-label">Difensori</span><input id="control-limit-D" type="number" class="minimal-input" min="0"></label>
+                                <label><span class="field-label">Centrocampisti</span><input id="control-limit-C" type="number" class="minimal-input" min="0"></label>
+                                <label><span class="field-label">Attaccanti</span><input id="control-limit-A" type="number" class="minimal-input" min="0"></label>
+                            </div>
+                            <div id="control-mantra-rules" class="mantra-control-rules" style="display:none;">
+                                <div class="mantra-rule-summary"><b>MANTRA · Rosa libera</b><span>Minimo 23 giocatori · almeno 2 Por · nessun limite Dc/Dd/Ds/B/E/M/C/W/T/A/Pc.</span></div>
+                                <div class="mg-fields mg-fields-2">
+                                    <label><span class="field-label">Rosa massima</span><input id="control-mantra-max-roster" type="number" class="minimal-input" min="23" max="90" value="30" inputmode="numeric"></label>
+                                    <div><span class="field-label">Vincoli minimi</span><div class="mantra-fixed-rule">23 giocatori · 2 portieri</div></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <span id="auctioneer-player-badge" class="badge-ok">DISATTIVO</span>
-                </div>
-                <div class="auctioneer-player-control-row">
-                    <div>
-                        <span class="field-label">Squadra del banditore</span>
-                        <select id="auctioneer-player-team-select" class="minimal-input" onchange="changeAuctioneerPlayerTeam()"></select>
-                    </div>
-                    <button id="auctioneer-player-toggle-btn" class="btn btn-green btn-compact" type="button" onclick="toggleAuctioneerPlayerMode()">Attiva banditore giocatore</button>
-                </div>
-                <div id="auctioneer-player-status" class="auctioneer-player-status">Modalità disattivata.</div>
-            </div>
+                    <div class="mg-card-actions"><button class="btn btn-green" type="button" onclick="saveRoomConfig()">Salva impostazioni</button></div>
+                </article>
+            </section>
 
-            <div class="control-card ready-control-card">
-                <div class="control-title">
-                    <div>
-                        <h3 style="margin:0;">Ready prima dell'asta</h3>
-                        <div class="ready-control-note">Se attivo, tutte le squadre abilitate devono scegliere READY o SKIP. Se almeno una squadra sceglie READY, l'asta parte per tutti gli abilitati; solo se tutti scelgono SKIP il giocatore va subito invenduto. Gli offline restano obbligatori.</div>
-                    </div>
-                    <span id="ready-control-badge" class="badge-ok">DISATTIVO</span>
+            <section class="mg-section mg-section-auction" aria-labelledby="mg-auction-title">
+                <div class="mg-section-head">
+                    <div><span class="mg-kicker">MODALITÀ ASTA</span><h2 id="mg-auction-title">Comportamenti e automatismi</h2></div>
+                    <p>Attiva solo ciò che serve alla sessione.</p>
                 </div>
-                <div id="ready-control-status" class="ready-control-status">Modalità disattivata</div>
-                <div class="toolbar-row" style="margin-top:10px;">
-                    <button id="ready-toggle-btn" class="btn btn-green btn-compact" onclick="toggleReadyMode()">Attiva READY</button>
-                </div>
-            </div>
-
-            <div class="control-card auto-random-control-card">
-                <div class="control-title">
-                    <div>
-                        <h3 style="margin:0;">Random automatico</h3>
-                        <div class="auto-random-note">Avvia automaticamente giocatori casuali scegliendo solo tra i ruoli selezionati. <b>(Si consiglia la modalità READY attiva)</b></div>
-                    </div>
-                    <label class="auto-random-master-switch" title="Attiva random automatico">
-                        <input id="auto-random-enabled" type="checkbox" onchange="setAutoRandomEnabled(this.checked)">
-                        <span>ATTIVA RANDOM</span>
-                    </label>
-                </div>
-                <div class="auto-random-role-grid" aria-label="Ruoli random automatico">
-                    <label class="auto-random-role role-P"><input id="auto-random-role-P" type="checkbox" onchange="setAutoRandomRole('P',this.checked)"><span>P</span></label>
-                    <label class="auto-random-role role-D"><input id="auto-random-role-D" type="checkbox" onchange="setAutoRandomRole('D',this.checked)"><span>D</span></label>
-                    <label class="auto-random-role role-C"><input id="auto-random-role-C" type="checkbox" onchange="setAutoRandomRole('C',this.checked)"><span>C</span></label>
-                    <label class="auto-random-role role-A"><input id="auto-random-role-A" type="checkbox" onchange="setAutoRandomRole('A',this.checked)"><span>A</span></label>
-                </div>
-                <div id="auto-random-status" class="auto-random-status">DISATTIVO</div>
-            </div>
-
-            <div class="control-card nomination-control-card">
-                <div class="control-title"><div><h3 style="margin:0;">Banditura giocatori a turni</h3><div id="nomination-control-note" class="nomination-control-note">Si completa un ruolo alla volta. Chi ha completato il reparto viene saltato automaticamente.</div></div><span id="nomination-control-badge" class="badge-ok">DISATTIVA</span></div>
-                <div id="nomination-control-status" class="nomination-control-status">Modalità disattivata</div>
-
-                <label class="nomination-auto-bid-one-option">
-                    <input id="nomination-auto-bid-one" type="checkbox" onchange="setNominationAutoBidOne(this.checked)">
-                    <span class="nomination-auto-bid-one-copy">
-                        <b>Offerta 1 banditore</b>
-                        <small>Se attiva, nell'asta normale il giocatore bandito parte da 1 credito assegnato alla squadra che ha bandito.</small>
-                    </span>
-                </label>
-
-                <div class="nomination-turn-nav">
-                    <button class="btn btn-secondary btn-compact" onclick="moveNominationTurn(-1)">← Turno precedente</button>
-                    <button class="btn btn-secondary btn-compact" onclick="moveNominationTurn(1)">Turno successivo →</button>
-                </div>
-
-                <div class="nomination-order-box">
-                    <div class="nomination-order-head">
-                        <div>
-                            <b>Ordine al tavolo</b>
-                            <small>Disponi le squadre nell'ordine in cui devono bandire.</small>
+                <div class="mg-grid-2">
+                    <article class="mg-card self-raise-control-card mg-setting-card">
+                        <div class="mg-setting-head">
+                            <div><h3>Autorilancio</h3><p>Consente al miglior offerente di rilanciare nuovamente su se stesso.</p></div>
+                            <button id="self-raise-toggle" class="mg-switch self-raise-switch" type="button" role="switch" aria-checked="true" aria-label="Autorilancio" onclick="toggleSelfRaiseFromUI(event)">Autorilancio</button>
                         </div>
-                        <button class="btn btn-secondary btn-compact" onclick="resetNominationOrder()">Ripristina</button>
-                    </div>
-                    <div id="nomination-order-list" class="nomination-order-list"></div>
-                </div>
+                        <input id="self-raise-enabled" type="checkbox" tabindex="-1" aria-hidden="true" hidden>
+                        <span id="self-raise-control-badge" class="mg-legacy-state">ATTIVO</span>
+                        <div id="self-raise-control-status" class="mg-status-text" aria-live="polite">Autorilancio consentito.</div>
+                    </article>
 
-                <div class="toolbar-row nomination-control-actions">
-                    <button id="nomination-toggle-btn" class="btn btn-green btn-compact" onclick="toggleNominationMode()">Attiva banditura a turni</button>
-                    <button class="btn btn-secondary btn-compact" onclick="recalculateNominationTurn()">Ricalcola turno</button>
-                </div>
-            </div>
+                    <article class="mg-card ready-control-card mg-setting-card">
+                        <div class="mg-setting-head">
+                            <div><h3>Ready prima dell'asta</h3><p>Le squadre rispondono READY o SKIP prima del countdown.</p></div>
+                            <button id="ready-toggle-btn" class="mg-switch" type="button" role="switch" aria-checked="false" aria-label="Ready prima dell'asta" onclick="toggleReadyMode()">Attiva READY</button>
+                        </div>
+                        <span id="ready-control-badge" class="mg-legacy-state">DISATTIVO</span>
+                        <div id="ready-control-status" class="mg-status-text" aria-live="polite">Modalità disattivata</div>
+                    </article>
 
-            <div id="audio-mixer-modal" class="audio-mixer-overlay" onclick="if(event.target===this)closeAudioMixer()">
-                <div class="control-card audio-mixer-card">
-                    <div class="control-title audio-modal-head">
-                        <div>
-                            <h3 style="margin:0;">🔊 Audio asta</h3>
-                            <div class="audio-mixer-subtitle">Bilancia effetti e voce delle offerte</div>
+                    <article class="mg-card auto-random-control-card mg-setting-card">
+                        <div class="mg-setting-head">
+                            <div><h3>Random automatico</h3><p>Estrae automaticamente tra i ruoli selezionati.</p></div>
+                            <label class="mg-switch-label" title="Attiva random automatico">
+                                <input id="auto-random-enabled" type="checkbox" onchange="setAutoRandomEnabled(this.checked)">
+                                <span class="mg-switch-ui" aria-hidden="true"></span>
+                                <span class="sr-only">Random automatico</span>
+                            </label>
                         </div>
-                        <div class="audio-modal-actions">
-                            <label class="voice-switch"><input id="voice-bids-enabled" type="checkbox" onchange="saveAudioSettings()"><span>Voce offerte</span></label>
-                            <button class="audio-close-btn" type="button" onclick="closeAudioMixer()">×</button>
+                        <div class="mg-role-choice" aria-label="Ruoli random automatico">
+                            <label class="mg-role-chip role-P"><input id="auto-random-role-P" type="checkbox" onchange="setAutoRandomRole('P',this.checked)"><span>P</span></label>
+                            <label class="mg-role-chip role-D"><input id="auto-random-role-D" type="checkbox" onchange="setAutoRandomRole('D',this.checked)"><span>D</span></label>
+                            <label class="mg-role-chip role-C"><input id="auto-random-role-C" type="checkbox" onchange="setAutoRandomRole('C',this.checked)"><span>C</span></label>
+                            <label class="mg-role-chip role-A"><input id="auto-random-role-A" type="checkbox" onchange="setAutoRandomRole('A',this.checked)"><span>A</span></label>
                         </div>
-                    </div>
+                        <div id="auto-random-status" class="mg-status-text auto-random-status">DISATTIVO</div>
+                    </article>
+
+                    <article class="mg-card nomination-control-card mg-setting-card mg-span-2">
+                        <div class="mg-setting-head">
+                            <div><h3>Banditura giocatori a turni</h3><p id="nomination-control-note">Si completa un ruolo alla volta. Chi ha completato il reparto viene saltato automaticamente.</p></div>
+                            <button id="nomination-toggle-btn" class="mg-switch" type="button" role="switch" aria-checked="false" aria-label="Banditura giocatori a turni" onclick="toggleNominationMode()">Attiva banditura a turni</button>
+                        </div>
+                        <span id="nomination-control-badge" class="mg-legacy-state">DISATTIVA</span>
+                        <div id="nomination-control-status" class="mg-status-text nomination-control-status">Modalità disattivata</div>
+
+                        <div class="mg-nomination-details">
+                            <label class="mg-inline-setting nomination-auto-bid-one-option">
+                                <span class="nomination-auto-bid-one-copy"><b>Offerta 1 banditore</b><small>Il giocatore bandito parte da 1 credito assegnato alla squadra che ha bandito.</small></span>
+                                <span class="mg-switch-label">
+                                    <input id="nomination-auto-bid-one" type="checkbox" onchange="setNominationAutoBidOne(this.checked)">
+                                    <span class="mg-switch-ui" aria-hidden="true"></span>
+                                </span>
+                            </label>
+                            <div class="nomination-turn-nav mg-two-actions">
+                                <button class="btn btn-secondary" type="button" onclick="moveNominationTurn(-1)">← Turno precedente</button>
+                                <button class="btn btn-secondary" type="button" onclick="moveNominationTurn(1)">Turno successivo →</button>
+                            </div>
+                            <div class="nomination-order-box">
+                                <div class="nomination-order-head">
+                                    <div><b>Ordine al tavolo</b><small>Disponi le squadre nell'ordine di banditura.</small></div>
+                                    <button class="btn btn-secondary" type="button" onclick="resetNominationOrder()">Ripristina</button>
+                                </div>
+                                <div id="nomination-order-list" class="nomination-order-list"></div>
+                            </div>
+                            <div class="mg-card-actions nomination-control-actions">
+                                <button class="btn btn-secondary" type="button" onclick="recalculateNominationTurn()">Ricalcola turno</button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="mg-section mg-section-participants" aria-labelledby="mg-participants-title">
+                <div class="mg-section-head">
+                    <div><span class="mg-kicker">PARTECIPANTI E DATI</span><h2 id="mg-participants-title">Squadre e rose</h2></div>
+                    <p>Stato collegamenti, partecipanti e storico acquisti.</p>
+                </div>
+                <div class="mg-grid-2">
+                    <article class="mg-card online-players-card">
+                        <div class="mg-card-head"><div><h3>Giocatori online</h3><p>Presenza corrente nella stanza.</p></div><span id="online-player-count" class="mg-count">0 online</span></div>
+                        <div id="online-player-list" class="online-player-list"><div class="online-empty">Nessun giocatore online</div></div>
+                    </article>
+
+                    <article class="mg-card auctioneer-player-control-card mg-setting-card">
+                        <div class="mg-setting-head">
+                            <div><h3>Banditore giocatore</h3><p>Il banditore partecipa usando una delle squadre libere.</p></div>
+                            <button id="auctioneer-player-toggle-btn" class="mg-switch" type="button" role="switch" aria-checked="false" aria-label="Banditore giocatore" onclick="toggleAuctioneerPlayerMode()">Attiva banditore giocatore</button>
+                        </div>
+                        <span id="auctioneer-player-badge" class="mg-legacy-state">DISATTIVO</span>
+                        <label class="mg-field"><span class="field-label">Squadra del banditore</span><select id="auctioneer-player-team-select" class="minimal-input" onchange="changeAuctioneerPlayerTeam()"></select></label>
+                        <div id="auctioneer-player-status" class="mg-status-text auctioneer-player-status">Modalità disattivata.</div>
+                    </article>
+
+                    <article class="mg-card teams-card mg-span-2">
+                        <div class="mg-card-head"><div><h3>Squadre</h3><p>Crediti, slot, PIN e assegnazioni manuali.</p></div><span id="control-team-count" class="mg-count"></span></div>
+                        <div class="team-create-row mg-create-team">
+                            <input id="control-new-team-name" class="minimal-input" type="text" maxlength="40" placeholder="Nome nuova squadra" autocomplete="off" onkeydown="if(event.key==='Enter')createTeamControl()">
+                            <button class="btn btn-green" type="button" onclick="createTeamControl()">+ Aggiungi squadra</button>
+                        </div>
+                        <div class="control-table-wrap"><table class="control-table teams-control-table">
+                            <thead><tr id="control-teams-head-row"><th>Squadra</th><th>Crediti</th><th>P</th><th>D</th><th>C</th><th>A</th><th>Tot.</th><th>PIN</th><th>Azioni</th></tr></thead>
+                            <tbody id="control-teams-body"></tbody>
+                        </table></div>
+                    </article>
+
+                    <article class="mg-card purchases-card mg-span-2">
+                        <div class="mg-card-head purchases-collapsible-head">
+                            <button type="button" class="collapsed-toggle purchases-toggle" id="control-purchases-toggle" onclick="toggleControlPurchases()"><span>Acquisti / Rose · <span id="control-purchase-count">0 acquisti</span></span><span class="chev">⌄</span></button>
+                            <button type="button" class="btn btn-danger" onclick="restoreAllAuctionHistory('gestione')">Annulla / ripristina tutto</button>
+                        </div>
+                        <div id="control-purchases-content" class="control-purchases-content collapsed">
+                            <div class="control-purchases-search-row"><div id="list-filters-purchases" class="unified-list-filters"></div>
+                                <input id="control-purchases-search" class="minimal-input" type="search" placeholder="Cerca giocatore o squadra..." autocomplete="off" oninput="controlPurchasesSearch=this.value;renderControlPurchases()">
+                            </div>
+                            <div class="control-table-wrap"><table class="control-table purchases-control-table">
+                                <thead><tr><th>Giocatore</th><th>R</th><th>Squadra</th><th>Prezzo</th><th>Azioni</th></tr></thead>
+                                <tbody id="control-purchases-body"></tbody>
+                            </table></div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <div id="audio-mixer-modal" class="audio-mixer-overlay" onclick="if(event.target===this)closeAudioMixer()">
+            <div class="control-card audio-mixer-card">
+                <div class="control-title audio-modal-head">
+                    <div><h3 style="margin:0;">🔊 Audio asta</h3><div class="audio-mixer-subtitle">Bilancia effetti e voce delle offerte</div></div>
+                    <div class="audio-modal-actions"><label class="voice-switch"><input id="voice-bids-enabled" type="checkbox" onchange="saveAudioSettings()"><span>Voce offerte</span></label><button class="audio-close-btn" type="button" onclick="closeAudioMixer()">×</button></div>
+                </div>
                 <div class="audio-mixer-grid">
                     <div class="audio-channel"><div class="audio-channel-head"><b>Preparazione</b><button onclick="testAuctionAudio('audio-prep')" type="button">▶</button></div><input id="vol-audio-prep" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">70%</span></div>
                     <div class="audio-channel"><div class="audio-channel-head"><b>Fischio inizio</b><button onclick="testAuctionAudio('audio-start')" type="button">▶</button></div><input id="vol-audio-start" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">100%</span></div>
@@ -1106,80 +1120,13 @@
                     <div class="audio-channel"><div class="audio-channel-head"><b>Fine asta</b><button onclick="testAuctionAudio('audio-end')" type="button">▶</button></div><input id="vol-audio-end" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">80%</span></div>
                     <div class="audio-channel voice-channel"><div class="audio-channel-head"><b>Volume voce</b><button onclick="testBidVoice()" type="button">▶</button></div><input id="vol-bid-voice" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">100%</span></div>
                     <div class="audio-channel voice-channel"><div class="audio-channel-head"><b>Velocità voce</b><button onclick="testBidVoice()" type="button">▶</button></div><input id="rate-bid-voice" type="range" min="80" max="140" step="5" oninput="updateAudioLabel(this,true);saveAudioSettings()"><span class="audio-percent">1.40×</span></div>
-
-                    <div class="audio-channel final3-channel">
-                        <div class="audio-channel-head">
-                            <b>Ultimi 3 sec. asta</b>
-                            <button onclick="testFinalCountdownAudio()" type="button">▶</button>
-                        </div>
-                        <select id="auction-final3-mode" class="audio-mode-select" onchange="saveAudioSettings()">
-                            <option value="beep">Suono 3-2-1</option>
-                            <option value="voice">Voce “3, 2, 1”</option>
-                            <option value="off">Nessun suono</option>
-                        </select>
-                        <small class="audio-mode-note">Solo durante l’asta attiva, non nella preparazione.</small>
-                    </div>
+                    <div class="audio-channel final3-channel"><div class="audio-channel-head"><b>Ultimi 3 sec. asta</b><button onclick="testFinalCountdownAudio()" type="button">▶</button></div><select id="auction-final3-mode" class="audio-mode-select" onchange="saveAudioSettings()"><option value="beep">Suono 3-2-1</option><option value="voice">Voce “3, 2, 1”</option><option value="off">Nessun suono</option></select><small class="audio-mode-note">Solo durante l’asta attiva, non nella preparazione.</small></div>
                 </div>
-
-                <div class="audio-routing-section">
-                    <div class="audio-routing-head">
-                        <div>
-                            <b>Distribuzione audio</b>
-                            <div class="audio-routing-subtitle">Modalità <strong>IN PRESENZA</strong> · predefinita. Predefinita: audio solo sul banditore, giocatori silenziosi. Puoi riattivarli singolarmente.</div>
-                        </div>
-                        <button class="btn btn-secondary btn-small" type="button" onclick="unmuteAllAudioTargets()">Audio a tutti</button>
-                    </div>
-                    <div class="audio-routing-help">Spunta <b>LEVA AUDIO</b> sui dispositivi che non devono riprodurre effetti e voce delle offerte.</div>
-                    <div id="audio-routing-targets" class="audio-routing-targets"></div>
-                    <div id="audio-routing-status" class="audio-routing-status"></div>
-                </div>
-                </div>
-            </div>
-            <div class="control-card teams-card">
-                <div class="control-title"><h3 style="margin:0;">Squadre</h3><span id="control-team-count" class="badge-ok"></span></div>
-                <div class="team-create-row">
-                    <input id="control-new-team-name" class="minimal-input" type="text" maxlength="40" placeholder="Nome nuova squadra" autocomplete="off" onkeydown="if(event.key==='Enter')createTeamControl()">
-                    <button class="btn btn-green btn-compact" type="button" onclick="createTeamControl()">+ Aggiungi squadra</button>
-                </div>
-                <div class="control-table-wrap"><table class="control-table teams-control-table">
-                    <thead><tr id="control-teams-head-row"><th>Squadra</th><th>Crediti</th><th>P</th><th>D</th><th>C</th><th>A</th><th>Tot.</th><th>PIN</th><th>Azioni</th></tr></thead>
-                    <tbody id="control-teams-body"></tbody>
-                </table></div>
-            </div>
-            <div class="control-card purchases-card">
-                <div class="control-title purchases-collapsible-head">
-                    <button type="button"
-                            class="collapsed-toggle purchases-toggle"
-                            id="control-purchases-toggle"
-                            onclick="toggleControlPurchases()">
-                        <span>Acquisti / Rose · <span id="control-purchase-count">0 acquisti</span></span>
-                        <span class="chev">⌄</span>
-                    </button>
-                    <div class="control-title-actions">
-                        <button type="button" class="btn btn-danger btn-compact" onclick="restoreAllAuctionHistory('gestione')">Annulla / ripristina tutto</button>
-                    </div>
-                </div>
-
-                <div id="control-purchases-content" class="control-purchases-content collapsed">
-                    <div class="control-purchases-search-row"><div id="list-filters-purchases" class="unified-list-filters"></div>
-                        <input id="control-purchases-search"
-                               class="minimal-input"
-                               type="search"
-                               placeholder="Cerca giocatore o squadra..."
-                               autocomplete="off"
-                               oninput="controlPurchasesSearch=this.value;renderControlPurchases()">
-                    </div>
-
-                    <div class="control-table-wrap">
-                        <table class="control-table">
-                            <thead><tr><th>Giocatore</th><th>R</th><th>Squadra</th><th>Prezzo</th><th>Azioni</th></tr></thead>
-                            <tbody id="control-purchases-body"></tbody>
-                        </table>
-                    </div>
-                </div>
+                <div class="audio-routing-section"><div class="audio-routing-head"><div><b>Distribuzione audio</b><div class="audio-routing-subtitle">Modalità <strong>IN PRESENZA</strong> · predefinita. Audio solo sul banditore, giocatori silenziosi.</div></div><button class="btn btn-secondary btn-small" type="button" onclick="unmuteAllAudioTargets()">Audio a tutti</button></div><div class="audio-routing-help">Spunta <b>LEVA AUDIO</b> sui dispositivi che non devono riprodurre effetti e voce delle offerte.</div><div id="audio-routing-targets" class="audio-routing-targets"></div><div id="audio-routing-status" class="audio-routing-status"></div></div>
             </div>
         </div>
     </div>
+</div>
 
     <div id="csv-roster-import-overlay"
          class="csv-roster-import-overlay"
@@ -1356,6 +1303,6 @@
 
 <script src="./scripts/pwa.js?dev=094-clean40a"></script>
 <script src="./scripts/sealed-auction.js?dev=094-clean40a"></script>
-<script src="./scripts/management.js?dev=095-mgmt01"></script>
+<script src="./scripts/management.js?dev=096-mgmt02"></script>
 </body>
 </html>
