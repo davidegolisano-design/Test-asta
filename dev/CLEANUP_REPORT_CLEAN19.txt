@@ -1,0 +1,13 @@
+LIVEASTA CLEAN-19 - FIRST app.js MODULE EXTRACTION
+=================================================
+Behavior intended to be preserved.
+
+Created: scripts/csv-import-utils.js
+Extracted functions: csvImportNormalize, csvImportDetectDelimiter, parseCsvRows, csvImportHeaderIndex, csvImportLooksLikeHeader, csvImportColumnMap, csvImportPrice
+
+app.js bytes: 524582 -> 519671
+Removed from app.js: 4911 bytes
+
+The new file is loaded immediately before app.js.
+Only pure CSV parsing/normalization helpers were moved.
+No Supabase calls, UI handlers, room state or roster mutation logic moved.
