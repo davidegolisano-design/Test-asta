@@ -35,6 +35,7 @@ try{
     purchasesCache=[];
     sealedAuctionModeActive=true;sealedAuctionToken='tok';sealedEligibleIds=['t1','t2'];sealedBids=new Map();
     sealedDeadlineAt=Date.now()+60000;sealedTimerInterval=null;
+    const realEndSealedAuction=endSealedAuction;
     const sent=[];channel={send:payload=>{sent.push(payload);return Promise.resolve();}};
     const calls={persist:0,show:0,end:0,tie:[],finalize:0};
     persistSealedBids=()=>{calls.persist++;return Promise.resolve();};
@@ -74,6 +75,7 @@ try{
     const tie=calls.tie[0]||null;
 
     // No bids: endSealedAuction must skip the reveal countdown and finalize immediately.
+    endSealedAuction=realEndSealedAuction;
     sealedAuctionModeActive=true;sealedEnding=false;sealedBids=new Map();sealedRevealDeadlineAt=123;sealedTimerInterval=null;
     finalizeSealedAuctionResult=async()=>{calls.finalize++;};
     await endSealedAuction();
