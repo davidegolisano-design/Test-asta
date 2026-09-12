@@ -17,23 +17,8 @@
     }catch(_){}
   }
 
-  function addDevMarker(){
-    const home=document.querySelector('#screen-role .setup-card');
-    if(!home || document.getElementById('liveasta-dev-marker')) return;
-
-    const marker=document.createElement('div');
-    marker.id='liveasta-dev-marker';
-    marker.setAttribute('role','status');
-    marker.innerHTML='<strong>⚠ AMBIENTE DEV · v0.94 CLEAN-02</strong><span>NON È LA VERSIONE PUBBLICA</span>';
-    marker.style.cssText='width:100%;box-sizing:border-box;margin:0 0 14px;padding:10px 12px;border:2px solid #ffb300;border-radius:12px;background:#332400;color:#ffd54f;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:800;letter-spacing:.04em;line-height:1.25;box-shadow:0 0 0 2px rgba(255,179,0,.12) inset;';
-    const sub=marker.querySelector('span');
-    if(sub) sub.style.cssText='display:block;margin-top:4px;font-size:11px;letter-spacing:.09em;color:#fff3c4;';
-    home.prepend(marker);
-  }
-
   cleanupMalformedLegacy();
-  addDevMarker();
-  document.title='LIVEASTA DEV CLEAN';
+  document.title='LIVEASTA DEV · v0.94 CLEAN-03';
 
   const button=document.createElement('button');
   button.id='liveasta-install-btn';
