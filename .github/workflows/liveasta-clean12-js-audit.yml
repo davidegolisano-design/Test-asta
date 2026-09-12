@@ -1,0 +1,52 @@
+name: LIVEASTA DEV clean12 JavaScript ownership audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean12-js-audit.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit JavaScript duplicate ownership
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          files=sorted(Path('dev/scripts').glob('*.js'))
+          names={}
+          patterns=[
+            re.compile(r'\bfunction\s+([A-Za-z_$][\w$]*)\s*\('),
+            re.compile(r'window\.([A-Za-z_$][\w$]*)\s*=\s*(?:async\s+)?function\b'),
+            re.compile(r'window\.([A-Za-z_$][\w$]*)\s*=\s*\([^)]*\)\s*=>'),
+            re.compile(r'window\.([A-Za-z_$][\w$]*)\s*=\s*[A-Za-z_$][\w$]*\s*;')
+          ]
+          for f in files:
+            txt=f.read_text(encoding='utf-8')
+            for n,line in enumerate(txt.splitlines(),1):
+              for p in patterns:
+                m=p.search(line)
+                if m:
+                  names.setdefault(m.group(1),[]).append((f.name,n,line.strip()[:180]))
+                  break
+          interesting={k:v for k,v in names.items() if len(v)>1}
+          out=['LIVEASTA CLEAN-12 - JAVASCRIPT OWNERSHIP AUDIT','='*49,'No application behavior changed.','',f'JS files scanned: {len(files)}',f'Names with multiple declarations/assignments: {len(interesting)}','']
+          for name,rows in sorted(interesting.items(), key=lambda kv:(-len(kv[1]),kv[0])):
+            out.append(f'[{name}] x{len(rows)}')
+            for fn,ln,src in rows: out.append(f'  - {fn}:{ln}: {src}')
+            out.append('')
+          Path('dev/CLEANUP_AUDIT_CLEAN12_JS.txt').write_text('\n'.join(out),encoding='utf-8')
+          PY
+      - name: Validate sources
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+      - name: Commit report and self-remove workflow
+        run: |
+          rm -f .github/workflows/liveasta-clean12-js-audit.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/CLEANUP_AUDIT_CLEAN12_JS.txt .github/workflows/liveasta-clean12-js-audit.yml
+          git commit -m "Audit LIVEASTA DEV JavaScript ownership after clean11"
+          git push
