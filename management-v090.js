@@ -114,6 +114,18 @@
     if(purchases)purchases.classList.add('v090-utility-card');
   }
 
+  function stopPurchasesAutofocus(root){
+    const toggle=root.querySelector('#control-purchases-toggle');
+    const search=root.querySelector('#control-purchases-search');
+    if(!toggle||!search)return;
+    const blurSearch=()=>{if(document.activeElement===search)search.blur();};
+    toggle.addEventListener('click',()=>{
+      setTimeout(blurSearch,0);
+      setTimeout(blurSearch,80);
+      setTimeout(blurSearch,180);
+    },true);
+  }
+
   function init(){
     const root=document.getElementById('screen-room-control');
     if(!root)return;
@@ -125,6 +137,7 @@
     });
     setupTeamCount(root);
     markSubsections(root);
+    stopPurchasesAutofocus(root);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
