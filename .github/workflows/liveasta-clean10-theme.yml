@@ -1,0 +1,38 @@
+name: LIVEASTA DEV clean10 canonical theme runtime
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean10-theme.yml'
+permissions:
+  contents: write
+jobs:
+  clean10:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply clean10 theme consolidation
+        run: python dev/tools/clean10_theme.py
+      - name: Validate application sources
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          python - <<'PY'
+          from pathlib import Path
+          boot=Path('dev/scripts/bootstrap.js').read_text(encoding='utf-8')
+          run=Path('dev/scripts/runtime.js').read_text(encoding='utf-8')
+          theme=Path('dev/scripts/theme.js').read_text(encoding='utf-8')
+          idx=Path('dev/index.html').read_text(encoding='utf-8')
+          assert 'liveasta-v73-theme-runtime' not in boot
+          assert 'liveasta-v035-theme-runtime-fix' not in run
+          assert theme.count('window.applyLiveAstaTheme') >= 1
+          assert theme.count('window.setLiveAstaTheme') == 1
+          assert './scripts/theme.js?dev=094-clean10a' in idx
+          print('Theme ownership checks: OK')
+          PY
+      - name: Commit and self-remove workflow
+        run: |
+          rm -f .github/workflows/liveasta-clean10-theme.yml dev/tools/clean10_theme.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev .github/workflows/liveasta-clean10-theme.yml
+          git commit -m "LIVEASTA DEV v0.94 clean10 canonical theme runtime"
+          git push
