@@ -1,0 +1,47 @@
+name: Apply v0.89 auctioneer hotfix
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/apply-v089-hotfix.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch v0.89
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8',errors='ignore')
+          s=s.replace('<script src="./sealed-v088.js?v=088"></script>','<script src="./sealed-v089.js?v=089"></script>')
+          s=s.replace('v0.88','v0.89').replace('V0.88','V0.89')
+          s=s.replace('pwa-install.js?v=088','pwa-install.js?v=089')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('pwa-install.js')
+          s=p.read_text(encoding='utf-8',errors='ignore')
+          s=s.replace("document.title='v0.88 TEST';","document.title='v0.89 TEST';")
+          s=s.replace('liveasta-v088-runtime-style','liveasta-v089-runtime-style')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('service-worker.js')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r"liveasta-test-v\d+-pwa1","liveasta-test-v089-pwa1",s)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('manifest-v22.webmanifest')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r'"start_url"\s*:\s*"[^"]*"','"start_url": "./?v=089-test"',s)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html pwa-install.js service-worker.js manifest-v22.webmanifest
+          git diff --cached --quiet || (git commit -m "v0.89 restore auctioneer interactions" && git push)
