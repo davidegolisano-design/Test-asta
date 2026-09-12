@@ -1,0 +1,75 @@
+name: LIVEASTA DEV clean31 extract room rules
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean31-extract-room-rules.yml'
+permissions:
+  contents: write
+jobs:
+  clean31:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install parser and Playwright
+        run: |
+          npm install --no-save espree playwright
+          npx playwright install --with-deps chromium
+      - name: Apply CLEAN-31 room rules extraction
+        run: node dev/tools/clean31_extract_room_rules.mjs
+      - name: Validate JavaScript and ownership
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          grep -q 'scripts/room-rules.js?dev=094-clean31a' dev/index.html
+          grep -q 'function roomLimits' dev/scripts/room-rules.js
+          grep -q 'function totalRoomSlots' dev/scripts/room-rules.js
+          ! grep -q 'function roomLimits' dev/scripts/app.js
+          ! grep -q 'function totalRoomSlots' dev/scripts/app.js
+          grep -q 'function teamCounts' dev/scripts/app.js
+          grep -q 'function maxBidForTeam' dev/scripts/app.js
+      - name: Start local server
+        run: |
+          python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 &
+          sleep 2
+      - name: Run home/access smoke
+        run: node dev/tests/smoke.mjs
+      - name: Run module regression smoke
+        run: node dev/tests/regression-smoke.mjs
+      - name: Run room rules smoke
+        run: |
+          cat > dev/tests/clean31-room-rules-smoke.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          const page=await browser.newPage({viewport:{width:390,height:844}});
+          const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+          await page.goto('http://127.0.0.1:4173/dev/index.html?room-rules-smoke=1',{waitUntil:'domcontentloaded'});
+          await page.waitForTimeout(900);
+          const r=await page.evaluate(()=>({
+            types:[typeof roomLimits,typeof totalRoomSlots],
+            defaults:roomLimits({}),
+            custom:roomLimits({limit_p:'2',limit_d:7,limit_c:'9',limit_a:5}),
+            negative:roomLimits({limit_p:-1,limit_d:'-2',limit_c:null,limit_a:'x'}),
+            classicTotal:totalRoomSlots({game_mode:'classic',limit_p:3,limit_d:8,limit_c:8,limit_a:6}),
+            mantraDefault:totalRoomSlots({game_mode:'mantra'}),
+            mantraLow:totalRoomSlots({game_mode:'mantra',mantra_max_roster:12}),
+            mantraHigh:totalRoomSlots({game_mode:'mantra',mantra_max_roster:120})
+          }));
+          if(r.types.some(x=>x!=='function'))throw new Error('Room rule functions missing');
+          if(JSON.stringify(r.defaults)!==JSON.stringify({P:3,D:8,C:8,A:6}))throw new Error('Default classic limits changed: '+JSON.stringify(r.defaults));
+          if(JSON.stringify(r.custom)!==JSON.stringify({P:2,D:7,C:9,A:5}))throw new Error('Custom classic limits changed');
+          if(JSON.stringify(r.negative)!==JSON.stringify({P:0,D:0,C:0,A:0}))throw new Error('Classic limit clamp changed: '+JSON.stringify(r.negative));
+          if(r.classicTotal!==25)throw new Error('Classic total slots changed');
+          if(r.mantraDefault!==30||r.mantraLow!==23||r.mantraHigh!==90)throw new Error('Mantra capacity changed');
+          if(errors.length)throw new Error('Page errors: '+errors.join(' | '));
+          console.log('LIVEASTA room rules browser smoke: OK');
+          await browser.close();
+          EOF
+          node dev/tests/clean31-room-rules-smoke.mjs
+      - name: Commit and self-remove temporary files
+        run: |
+          rm -f dev/tests/clean31-room-rules-smoke.mjs
+          rm -f .github/workflows/liveasta-clean31-extract-room-rules.yml dev/tools/clean31_extract_room_rules.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/index.html dev/scripts/app.js dev/scripts/room-rules.js dev/CLEANUP_REPORT_CLEAN31_ROOM_RULES.txt .github/workflows/liveasta-clean31-extract-room-rules.yml dev/tools/clean31_extract_room_rules.mjs
+          git commit -m "LIVEASTA DEV clean31 extract room capacity rules"
+          git push
