@@ -1,14 +1,30 @@
 /* LIVEASTA v0.85 — badge ruolo circolari nelle liste */
 
-/* Disponibili, già banditi, rose e acquisti/rose gestione. */
-#screen-auctioneer-board #players-table .role-badge,
-#screen-auctioneer-board #auctioned-list .role-badge,
-#screen-all-rosters .role-badge,
-#player-roster-overlay .role-badge,
-#player-room-team-roster-list .role-badge,
-#screen-room-control .control-table .role-badge,
-#screen-room-control #control-purchases-content .role-badge,
-.roster-player-line .role-badge {
+/*
+   Questa release usa selettori volutamente più specifici delle vecchie
+   regole responsive presenti nell'index e nel runtime PWA, così nessuna
+   pillola legacy può riallungare il badge.
+*/
+
+/* DISPONIBILI — desktop + smartphone */
+html body #screen-auctioneer-board #view-list #players-table#players-table .role-badge,
+html body #screen-auctioneer-board.auctioneer-ui-mobile #view-list #players-table#players-table tbody td:first-child .role-badge,
+html body #screen-auctioneer-board.auctioneer-ui-desktop #view-list #players-table#players-table tbody td:first-child .role-badge,
+
+/* GIÀ BANDITI — desktop + smartphone */
+html body #screen-auctioneer-board #auctioned-list#auctioned-list .auctioned-row .role-badge,
+html body #screen-auctioneer-board.auctioneer-ui-mobile #auctioned-list#auctioned-list .auctioned-row .role-badge,
+html body #screen-auctioneer-board.auctioneer-ui-desktop #auctioned-list#auctioned-list .auctioned-row .role-badge,
+
+/* ROSE — pagina rose, rosa giocatore e rosa squadra */
+html body #screen-all-rosters#screen-all-rosters #all-rosters-grid .roster-player-line .role-badge,
+html body #player-roster-list#player-roster-list .roster-row .role-badge,
+html body #player-room-team-roster-list#player-room-team-roster-list .player-room-roster-line .role-badge,
+html body #player-roster-overlay#player-roster-overlay .role-badge,
+
+/* ACQUISTI / ROSE — pannello gestione, desktop + mobile */
+html body #screen-room-control#screen-room-control #control-purchases-content#control-purchases-content .control-table .role-badge,
+html[data-live-theme] body #screen-room-control#screen-room-control #control-purchases-content#control-purchases-content .control-table .role-badge {
   width: 28px !important;
   min-width: 28px !important;
   max-width: 28px !important;
@@ -17,13 +33,14 @@
   max-height: 28px !important;
   aspect-ratio: 1 / 1 !important;
   padding: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+  margin: 0 !important;
   border-radius: 50% !important;
   box-sizing: border-box !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  justify-self: center !important;
+  align-self: center !important;
   flex: 0 0 28px !important;
   line-height: 1 !important;
   text-align: center !important;
@@ -36,55 +53,63 @@
   text-shadow: none !important;
 }
 
-/* Matrice colori ruoli: P giallo, D verde, C blu, A rosso. */
-#screen-auctioneer-board #players-table .role-badge.role-P,
-#screen-auctioneer-board #auctioned-list .role-badge.role-P,
-#screen-all-rosters .role-badge.role-P,
-#player-roster-overlay .role-badge.role-P,
-#player-room-team-roster-list .role-badge.role-P,
-#screen-room-control .control-table .role-badge.role-P,
-#screen-room-control #control-purchases-content .role-badge.role-P,
-.roster-player-line .role-badge.role-P {
+/* Matrice colori ruolo: P giallo / D verde / C blu / A rosso. */
+html body :is(
+  #screen-auctioneer-board #players-table,
+  #screen-auctioneer-board #auctioned-list,
+  #screen-all-rosters #all-rosters-grid,
+  #player-roster-list,
+  #player-room-team-roster-list,
+  #player-roster-overlay,
+  #screen-room-control #control-purchases-content
+) .role-badge.role-P {
   background: #F2B800 !important;
-  color: #000 !important;
-  -webkit-text-fill-color: #000 !important;
+  background-color: #F2B800 !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 
-#screen-auctioneer-board #players-table .role-badge.role-D,
-#screen-auctioneer-board #auctioned-list .role-badge.role-D,
-#screen-all-rosters .role-badge.role-D,
-#player-roster-overlay .role-badge.role-D,
-#player-room-team-roster-list .role-badge.role-D,
-#screen-room-control .control-table .role-badge.role-D,
-#screen-room-control #control-purchases-content .role-badge.role-D,
-.roster-player-line .role-badge.role-D {
+html body :is(
+  #screen-auctioneer-board #players-table,
+  #screen-auctioneer-board #auctioned-list,
+  #screen-all-rosters #all-rosters-grid,
+  #player-roster-list,
+  #player-room-team-roster-list,
+  #player-roster-overlay,
+  #screen-room-control #control-purchases-content
+) .role-badge.role-D {
   background: #22C55E !important;
-  color: #000 !important;
-  -webkit-text-fill-color: #000 !important;
+  background-color: #22C55E !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 
-#screen-auctioneer-board #players-table .role-badge.role-C,
-#screen-auctioneer-board #auctioned-list .role-badge.role-C,
-#screen-all-rosters .role-badge.role-C,
-#player-roster-overlay .role-badge.role-C,
-#player-room-team-roster-list .role-badge.role-C,
-#screen-room-control .control-table .role-badge.role-C,
-#screen-room-control #control-purchases-content .role-badge.role-C,
-.roster-player-line .role-badge.role-C {
+html body :is(
+  #screen-auctioneer-board #players-table,
+  #screen-auctioneer-board #auctioned-list,
+  #screen-all-rosters #all-rosters-grid,
+  #player-roster-list,
+  #player-room-team-roster-list,
+  #player-roster-overlay,
+  #screen-room-control #control-purchases-content
+) .role-badge.role-C {
   background: #3B82F6 !important;
-  color: #FFF !important;
-  -webkit-text-fill-color: #FFF !important;
+  background-color: #3B82F6 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
-#screen-auctioneer-board #players-table .role-badge.role-A,
-#screen-auctioneer-board #auctioned-list .role-badge.role-A,
-#screen-all-rosters .role-badge.role-A,
-#player-roster-overlay .role-badge.role-A,
-#player-room-team-roster-list .role-badge.role-A,
-#screen-room-control .control-table .role-badge.role-A,
-#screen-room-control #control-purchases-content .role-badge.role-A,
-.roster-player-line .role-badge.role-A {
+html body :is(
+  #screen-auctioneer-board #players-table,
+  #screen-auctioneer-board #auctioned-list,
+  #screen-all-rosters #all-rosters-grid,
+  #player-roster-list,
+  #player-room-team-roster-list,
+  #player-roster-overlay,
+  #screen-room-control #control-purchases-content
+) .role-badge.role-A {
   background: #EF4444 !important;
-  color: #FFF !important;
-  -webkit-text-fill-color: #FFF !important;
+  background-color: #EF4444 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
