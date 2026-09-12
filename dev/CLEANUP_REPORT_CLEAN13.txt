@@ -1,0 +1,14 @@
+LIVEASTA CLEAN-13 - INDEX STRUCTURAL CLEANUP
+============================================
+Behavior/DOM preserved.
+
+index.html bytes before: 88928
+index.html bytes after:  88632
+
+Removed only duplicate head meta declarations:
+- mobile-web-app-capable
+- apple-mobile-web-app-capable
+- apple-mobile-web-app-status-bar-style
+
+Also normalized excessive blank lines, trailing whitespace and obvious head indentation.
+No element IDs, application DOM nodes, script order or stylesheet order were intentionally changed.
