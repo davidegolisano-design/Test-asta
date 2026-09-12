@@ -1,0 +1,65 @@
+LIVEASTA CLEAN-26 - ARCHITECTURE AUDIT
+====================================
+Audit only: no application behavior changed.
+
+[INDEX]
+bytes: 89219
+inline <style>: 0
+inline <script> without src: 0
+HTML ids: 344
+duplicate ids: 0
+inline event handler attributes: 199
+handler function names detected: 121
+handler names without top-level JS owner (review only): 14 -> auctionAccessWizardBack, auctionAccessWizardNext, blur, click, closeLiveAstaThemeMenu, getElementById, openLiveAstaThemeMenu, playerAccessWizardBack, playerAccessWizardNext, preventDefault, replace, setLiveAstaTheme, slice, stopPropagation
+script load order:
+  1. https://unpkg.com/@supabase/supabase-js@2
+  2. https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
+  3. https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js
+  4. ./scripts/theme-preload.js?dev=094-clean25a
+  5. ./scripts/csv-import-utils.js?dev=094-clean25a
+  6. ./scripts/audio.js?dev=094-clean25a
+  7. ./scripts/ui-fit.js?dev=094-clean25a
+  8. ./scripts/utils.js?dev=094-clean25a
+  9. ./scripts/roles.js?dev=094-clean25a
+  10. ./scripts/player-assets.js?dev=094-clean25a
+  11. ./scripts/app.js?dev=094-clean25a
+  12. ./scripts/bootstrap.js?dev=094-clean25a
+  13. ./scripts/theme.js?dev=094-clean25a
+  14. ./scripts/runtime.js?dev=094-clean25a
+  15. ./scripts/pwa.js?dev=094-clean25a
+  16. ./scripts/sealed-auction.js?dev=094-clean25a
+  17. ./scripts/management.js?dev=094-clean25a
+
+[JAVASCRIPT FILES]
+app.js: 503375 bytes | 10943 lines | 454 top-level functions | 152 top-level vars
+audio.js: 7143 bytes | 152 lines | 12 top-level functions | 3 top-level vars
+bootstrap.js: 43561 bytes | 976 lines | 0 top-level functions | 0 top-level vars
+csv-import-utils.js: 5031 bytes | 150 lines | 7 top-level functions | 0 top-level vars
+management.js: 1031 bytes | 26 lines | 0 top-level functions | 0 top-level vars
+player-assets.js: 1314 bytes | 28 lines | 4 top-level functions | 1 top-level vars
+pwa.js: 876 bytes | 32 lines | 0 top-level functions | 0 top-level vars
+roles.js: 3117 bytes | 85 lines | 13 top-level functions | 1 top-level vars
+runtime.js: 12367 bytes | 402 lines | 0 top-level functions | 0 top-level vars
+sealed-auction.js: 2952 bytes | 92 lines | 0 top-level functions | 0 top-level vars
+theme-preload.js: 1268 bytes | 36 lines | 0 top-level functions | 0 top-level vars
+theme.js: 8365 bytes | 198 lines | 0 top-level functions | 0 top-level vars
+ui-fit.js: 4237 bytes | 100 lines | 4 top-level functions | 0 top-level vars
+utils.js: 817 bytes | 29 lines | 4 top-level functions | 0 top-level vars
+
+[APP.JS]
+503375 bytes | 10943 lines | 454 top-level functions | 152 top-level vars
+reduction vs historical 524582-byte baseline: 21207 bytes (4.04%)
+
+[CROSS-FILE TOP-LEVEL OWNERSHIP DUPLICATES]
+count: 0
+
+[CSS FILES]
+core.css: 398416 bytes | 13450 lines | 2452 rules | 8802 declarations | 5370 !important | 353 repeated selector signatures
+pwa.css: 16839 bytes | 2 lines | 54 rules | 283 declarations | 265 !important | 1 repeated selector signatures
+refinements.css: 220195 bytes | 5312 lines | 642 rules | 2623 declarations | 2478 !important | 83 repeated selector signatures
+ui.css: 112076 bytes | 1991 lines | 468 rules | 1617 declarations | 1500 !important | 39 repeated selector signatures
+
+[LEGACY MARKERS - REVIEW ONLY]
+vXX/vXXX tokens: 109
+CLEAN-XX tokens: 5
+Do not remove markers automatically; some remain in compatibility class/id names or comments.
