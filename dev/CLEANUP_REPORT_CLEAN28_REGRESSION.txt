@@ -1,0 +1,13 @@
+LIVEASTA CLEAN-28 - AUTOMATED REGRESSION CHECKPOINT
+==================================================
+No application code changed in this step.
+
+Passed suites:
+ - smoke.mjs: home, DEV marker, Banditore device choice, Giocatore wizard, return navigation, fatal page errors
+ - audio-smoke.mjs: audio module ownership, mixer open/close, default volumes
+ - ui-fit-smoke.mjs: responsive name fitting module
+ - regression-smoke.mjs: shared utils, Classic/Mantra roles, player assets/fallbacks, theme application/fallback
+
+All dev/scripts/*.js also passed node --check.
+
+This checkpoint does not replace later live-room regression for Supabase/realtime, READY, bids, sealed auction, purchases and budget flows.
