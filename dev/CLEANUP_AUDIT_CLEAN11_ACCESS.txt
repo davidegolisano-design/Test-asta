@@ -1,0 +1,32 @@
+LIVEASTA CLEAN-11 ACCESS FLOW AUDIT
+=================================
+No application behavior changed.
+
+[app.js]
+4984: openPlayerLobby: async function openPlayerLobby() {
+5005: setAuctioneerRoomMode: async function setAuctioneerRoomMode(mode) {
+5031: resetAuctioneerRoomMode: function resetAuctioneerRoomMode(){
+
+[bootstrap.js]
+630: openPlayerLobby: const oldOpenPlayerLobby=window.openPlayerLobby;
+631: openPlayerLobby: if(typeof oldOpenPlayerLobby==='function')window.openPlayerLobby=async function(){const r=await oldOpenPlayerLobby.apply(this,arguments);resetPlayerWizard();return r;};
+632: setAuctioneerRoomMode: const oldSetAuctioneerRoomMode=window.setAuctioneerRoomMode;
+633: setAuctioneerRoomMode: if(typeof oldSetAuctioneerRoomMode==='function')window.setAuctioneerRoomMode=async function(mode){auctionWizardStep=1;const r=await oldSetAuctioneerRoomMode.apply(this,arguments);renderAuctionWizard();return r;};
+634: resetAuctioneerRoomMode: const oldResetAuctioneerRoomMode=window.resetAuctioneerRoomMode;
+635: resetAuctioneerRoomMode: if(typeof oldResetAuctioneerRoomMode==='function')window.resetAuctioneerRoomMode=function(){auctionWizardStep=1;const r=oldResetAuctioneerRoomMode.apply(this,arguments);renderAuctionWizard();return r;};
+896: resetAuctioneerRoomMode: const oldResetAuctionMode=window.resetAuctioneerRoomMode;
+897: resetAuctioneerRoomMode: if(typeof oldResetAuctionMode==='function')window.resetAuctioneerRoomMode=function(){window.stopAuctioneerOccupiedRetryCountdown();return oldResetAuctionMode.apply(this,arguments);};
+581: playerAccessWizardBack: window.playerAccessWizardBack=function(){
+892: playerAccessWizardBack: const oldPlayerBack=window.playerAccessWizardBack;
+893: playerAccessWizardBack: if(typeof oldPlayerBack==='function')window.playerAccessWizardBack=function(){window.stopPlayerOccupiedRetryCountdown();return oldPlayerBack.apply(this,arguments);};
+560: playerAccessWizardNext: window.playerAccessWizardNext=async function(){
+868: playerAccessWizardNext: if(id==='player-room-password'){e.preventDefault();window.playerAccessWizardNext?.();return;}
+872: playerAccessWizardNext: if(visible(c))focusNext('player-pin-confirm');else window.playerAccessWizardNext?.();
+875: playerAccessWizardNext: if(id==='player-pin-confirm'){e.preventDefault();window.playerAccessWizardNext?.();return;}
+611: auctionAccessWizardBack: window.auctionAccessWizardBack=function(){
+894: auctionAccessWizardBack: const oldAuctionBack=window.auctionAccessWizardBack;
+895: auctionAccessWizardBack: if(typeof oldAuctionBack==='function')window.auctionAccessWizardBack=function(){window.stopAuctioneerOccupiedRetryCountdown();return oldAuctionBack.apply(this,arguments);};
+616: auctionAccessWizardNext: window.auctionAccessWizardNext=async function(){
+881: auctionAccessWizardNext: if(id==='auction-new-room-password'){e.preventDefault();window.auctionAccessWizardNext?.();return;}
+883: auctionAccessWizardNext: if(id==='auction-room-password'||id==='auction-mantra-max-roster'){e.preventDefault();window.auctionAccessWizardNext?.();return;}
+
