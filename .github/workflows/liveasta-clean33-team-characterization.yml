@@ -24,7 +24,7 @@ jobs:
         run: |
           node dev/tests/smoke.mjs
           node dev/tests/regression-smoke.mjs
-      - name: Characterize team logic
+      - name: Characterize team logic with snapshot
         run: node dev/tests/team-logic-smoke.mjs
       - name: Write report
         run: |
