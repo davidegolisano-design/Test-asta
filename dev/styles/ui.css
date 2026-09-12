@@ -1660,7 +1660,7 @@ html[data-live-theme] #screen-auctioneer-board .nomination-stage.auction-complet
 html body #screen-room-control :is(.v087-collapse-btn,.v091-collapse-btn,.v092-collapse-btn){display:none!important;}
 html body #screen-room-control .control-card.v090-collapsed > *{display:revert!important;}
 html body #screen-room-control .control-card.v090-collapsed{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
-html body #screen-room-control .control-card.v090-collapsed :is(.control-title,.v090-menu-header){margin-bottom:10px!important;}
+html body #screen-room-control .control-card.v090-collapsed .control-title{margin-bottom:10px!important;}
 
 /* Base comune */
 html body #screen-room-control{
@@ -1697,7 +1697,7 @@ html body #screen-room-control .control-card{
   box-sizing:border-box!important;
   box-shadow:none!important;
 }
-html body #screen-room-control .control-card :is(.control-title,.v090-menu-header){
+html body #screen-room-control .control-card .control-title{
   display:flex!important;
   align-items:flex-start!important;
   justify-content:space-between!important;

@@ -1,0 +1,7 @@
+LIVEASTA CLEAN-18 - REMOVE ORPHAN VERSIONED CSS BRANCH
+=====================================================
+Behavior preserved.
+
+Removed the obsolete .v090-menu-header branch from the two management selectors that also target .control-title.
+The class had no remaining HTML/JavaScript literal references.
+Active .control-title behavior and v090-collapsed behavior remain unchanged.
