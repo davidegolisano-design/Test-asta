@@ -1,0 +1,2062 @@
+{
+  "generatedAt": "2026-09-12T19:37:13.723Z",
+  "base": "http://127.0.0.1:4173/dev/index.html?visual-audit=1",
+  "discoveredScreens": [
+    "screen-role",
+    "screen-device-choice",
+    "screen-player-setup",
+    "screen-player-buzzer",
+    "screen-auctioneer-setup",
+    "screen-admin-login",
+    "screen-superuser-login",
+    "screen-admin",
+    "screen-auctioneer-board",
+    "screen-all-rosters",
+    "screen-room-control"
+  ],
+  "states": [
+    {
+      "label": "Mobile · Home",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Mobile · Home",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "div.home-version-badge.home-version-settings",
+            "text": "v0.94",
+            "w": 63,
+            "h": 28
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "w": 72,
+            "h": 32
+          }
+        ],
+        "clipped": [],
+        "tinyText": [
+          {
+            "el": "div.home-qr-label",
+            "text": "SCANSIONA PER ENTRARE",
+            "font": "10.88px"
+          },
+          {
+            "el": "#home-site-url",
+            "text": "127.0.0.1:4173/dev/",
+            "font": "8.96px"
+          },
+          {
+            "el": "small",
+            "text": "Se il progetto ti piace puoi lasciare una donazione libera.",
+            "font": "8.48px"
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "font": "10.08px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Mobile · Accesso giocatore",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Mobile · Accesso giocatore",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [],
+        "clipped": [
+          {
+            "el": "#screen-player-setup",
+            "text": "Entra nell'asta 1 / 3 · STANZA Scegli la stanza creata dal banditore Seleziona u",
+            "cw": 390,
+            "sw": 398,
+            "ch": 844,
+            "sh": 844
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "#player-wizard-step-label",
+            "text": "1 / 3 · STANZA",
+            "font": "10.88px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Mobile · Scelta dispositivo banditore",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Mobile · Scelta dispositivo banditore",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [],
+        "clipped": [],
+        "tinyText": []
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Mobile 360px · Home",
+      "viewport": {
+        "width": 360,
+        "height": 740
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Mobile 360px · Home",
+        "viewport": {
+          "w": 360,
+          "h": 740
+        },
+        "body": {
+          "scrollWidth": 360,
+          "scrollHeight": 740
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "div.home-version-badge.home-version-settings",
+            "text": "v0.94",
+            "w": 63,
+            "h": 28
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "w": 72,
+            "h": 32
+          }
+        ],
+        "clipped": [],
+        "tinyText": [
+          {
+            "el": "div.home-qr-label",
+            "text": "SCANSIONA PER ENTRARE",
+            "font": "9.28px"
+          },
+          {
+            "el": "#home-site-url",
+            "text": "127.0.0.1:4173/dev/",
+            "font": "8px"
+          },
+          {
+            "el": "small",
+            "text": "Se il progetto ti piace puoi lasciare una donazione libera.",
+            "font": "8.48px"
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "font": "10.08px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Giocatore · Asta normale",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Giocatore · Asta normale",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "w": 74,
+            "h": 36
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "w": 66,
+            "h": 36
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "w": 84,
+            "h": 36
+          },
+          {
+            "el": "div.identity-pill.player-room-overview-trigger",
+            "text": "StanzaVisual Audit",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.identity-pill.team.player-availability-clickable",
+            "text": "SquadraGli Ingegneri",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "w": 252,
+            "h": 37
+          },
+          {
+            "el": "#exact-bid-knob",
+            "text": "Tieni premuto per offerta esatta",
+            "w": 34,
+            "h": 34
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#display-team-name",
+            "text": "Gli Ingegneri",
+            "cw": 103,
+            "sw": 112,
+            "ch": 14,
+            "sh": 14
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "cw": 250,
+            "sw": 255,
+            "ch": 35,
+            "sh": 35
+          },
+          {
+            "el": "#player-countdown",
+            "text": "9",
+            "cw": 148,
+            "sw": 148,
+            "ch": 73,
+            "sh": 91
+          },
+          {
+            "el": "#player-current-value",
+            "text": "47",
+            "cw": 148,
+            "sw": 148,
+            "ch": 65,
+            "sh": 79
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "font": "9.44px"
+          },
+          {
+            "el": "span",
+            "text": "Stanza",
+            "font": "7.2px"
+          },
+          {
+            "el": "span",
+            "text": "Squadra",
+            "font": "7.2px"
+          },
+          {
+            "el": "small",
+            "text": "Crediti",
+            "font": "8.64px"
+          },
+          {
+            "el": "small",
+            "text": "Slot · Budget",
+            "font": "7.68px"
+          },
+          {
+            "el": "small",
+            "text": "secondi",
+            "font": "10.88px"
+          },
+          {
+            "el": "#player-auction-title",
+            "text": "MIGLIOR OFFERTA",
+            "font": "10.56px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Giocatore · READY / SKIP",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Giocatore · READY / SKIP",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [
+          {
+            "el": "div.player-ready-eligible",
+            "text": "POSSONO OFFRIRE\n                        Gli Ingegneri ✓Real ",
+            "left": 321,
+            "right": 414
+          },
+          {
+            "el": "div.player-ready-eligible-title",
+            "text": "POSSONO OFFRIRE",
+            "left": 321,
+            "right": 414
+          },
+          {
+            "el": "#player-ready-team-list",
+            "text": "Gli Ingegneri ✓Real TestAtletico Debug ✓FC Smartphone",
+            "left": 321,
+            "right": 414
+          },
+          {
+            "el": "div",
+            "text": "Gli Ingegneri ✓",
+            "left": 322,
+            "right": 413
+          },
+          {
+            "el": "div",
+            "text": "Real Test",
+            "left": 322,
+            "right": 413
+          },
+          {
+            "el": "div",
+            "text": "Atletico Debug ✓",
+            "left": 322,
+            "right": 413
+          },
+          {
+            "el": "div",
+            "text": "FC Smartphone",
+            "left": 322,
+            "right": 413
+          }
+        ],
+        "small": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "w": 74,
+            "h": 36
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "w": 66,
+            "h": 36
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "w": 84,
+            "h": 36
+          },
+          {
+            "el": "div.identity-pill.player-room-overview-trigger",
+            "text": "StanzaVisual Audit",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.identity-pill.team.player-availability-clickable",
+            "text": "SquadraGli Ingegneri",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "w": 252,
+            "h": 37
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#display-team-name",
+            "text": "Gli Ingegneri",
+            "cw": 103,
+            "sw": 112,
+            "ch": 14,
+            "sh": 14
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "cw": 250,
+            "sw": 255,
+            "ch": 35,
+            "sh": 35
+          },
+          {
+            "el": "#player-live-side",
+            "text": "FVM 120 VALORE LISTONE POSSONO OFFRIRE Gli Ingegneri ✓Real TestAtletico Debug ✓F",
+            "cw": 164,
+            "sw": 207,
+            "ch": 515,
+            "sh": 515
+          },
+          {
+            "el": "#player-countdown",
+            "text": "--",
+            "cw": 148,
+            "sw": 148,
+            "ch": 73,
+            "sh": 91
+          },
+          {
+            "el": "#player-current-value",
+            "text": "0",
+            "cw": 148,
+            "sw": 148,
+            "ch": 65,
+            "sh": 79
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "font": "9.44px"
+          },
+          {
+            "el": "span",
+            "text": "Stanza",
+            "font": "7.2px"
+          },
+          {
+            "el": "span",
+            "text": "Squadra",
+            "font": "7.2px"
+          },
+          {
+            "el": "small",
+            "text": "Crediti",
+            "font": "8.64px"
+          },
+          {
+            "el": "small",
+            "text": "Slot · Budget",
+            "font": "7.68px"
+          },
+          {
+            "el": "span",
+            "text": "FVM",
+            "font": "10.92px"
+          },
+          {
+            "el": "small",
+            "text": "VALORE LISTONE",
+            "font": "7.8px"
+          },
+          {
+            "el": "div.player-ready-eligible-title",
+            "text": "POSSONO OFFRIRE",
+            "font": "9.92px"
+          },
+          {
+            "el": "small",
+            "text": "secondi",
+            "font": "10.88px"
+          },
+          {
+            "el": "#player-auction-title",
+            "text": "ATTESA READY",
+            "font": "10.56px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Giocatore · Busta chiusa",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Giocatore · Busta chiusa",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "w": 74,
+            "h": 36
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "w": 66,
+            "h": 36
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "w": 84,
+            "h": 36
+          },
+          {
+            "el": "div.identity-pill.player-room-overview-trigger",
+            "text": "StanzaVisual Audit",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.identity-pill.team.player-availability-clickable",
+            "text": "SquadraGli Ingegneri",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "w": 252,
+            "h": 37
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#display-team-name",
+            "text": "Gli Ingegneri",
+            "cw": 103,
+            "sw": 112,
+            "ch": 14,
+            "sh": 14
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "cw": 250,
+            "sw": 255,
+            "ch": 35,
+            "sh": 35
+          },
+          {
+            "el": "#player-countdown",
+            "text": "18",
+            "cw": 148,
+            "sw": 148,
+            "ch": 73,
+            "sh": 91
+          },
+          {
+            "el": "#player-current-winner",
+            "text": "Inserisci la tua offerta",
+            "cw": 148,
+            "sw": 162,
+            "ch": 17,
+            "sh": 18
+          },
+          {
+            "el": "#player-current-value",
+            "text": "?",
+            "cw": 148,
+            "sw": 148,
+            "ch": 65,
+            "sh": 79
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "font": "9.44px"
+          },
+          {
+            "el": "span",
+            "text": "Stanza",
+            "font": "7.2px"
+          },
+          {
+            "el": "span",
+            "text": "Squadra",
+            "font": "7.2px"
+          },
+          {
+            "el": "small",
+            "text": "Crediti",
+            "font": "8.64px"
+          },
+          {
+            "el": "small",
+            "text": "Slot · Budget",
+            "font": "7.68px"
+          },
+          {
+            "el": "small",
+            "text": "secondi",
+            "font": "10.88px"
+          },
+          {
+            "el": "#player-auction-title",
+            "text": "BUSTA CHIUSA",
+            "font": "10.56px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Banditore desktop · Asta normale",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Banditore desktop · Asta normale",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "body": {
+          "scrollWidth": 1440,
+          "scrollHeight": 1188
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "w": 112,
+            "h": 38
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#auction-player-name-top",
+            "text": "Nicolò Barella",
+            "cw": 104,
+            "sw": 176,
+            "ch": 38,
+            "sh": 38
+          },
+          {
+            "el": "div.bid-label",
+            "text": "OFFERTA ATTUALE",
+            "cw": 123,
+            "sw": 145,
+            "ch": 15,
+            "sh": 15
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "font": "10.88px"
+          },
+          {
+            "el": "#auction-online-pill",
+            "text": "ONLINE 4/5",
+            "font": "10.4px"
+          },
+          {
+            "el": "#auction-online-count",
+            "text": "4/5",
+            "font": "10.4px"
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "font": "10.88px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Banditore smartphone · Asta normale",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Banditore smartphone · Asta normale",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [
+          {
+            "el": "#mobile-right-label",
+            "text": "OFFERTA",
+            "left": 331,
+            "right": 401
+          },
+          {
+            "el": "#mobile-offer-block",
+            "text": "BUSTE CONSEGNATE0 / 0\n                            \n         ",
+            "left": 274,
+            "right": 458
+          },
+          {
+            "el": "#auction-title-display",
+            "text": "MIGLIOR OFFERTA",
+            "left": 274,
+            "right": 458
+          },
+          {
+            "el": "#winner-display",
+            "text": "Atletico Debug",
+            "left": 286,
+            "right": 445
+          },
+          {
+            "el": "div.bid-box",
+            "text": "OFFERTA ATTUALE\n                            47\n             ",
+            "left": 274,
+            "right": 436
+          },
+          {
+            "el": "div.bid-label",
+            "text": "OFFERTA ATTUALE",
+            "left": 293,
+            "right": 417
+          },
+          {
+            "el": "#current-value-display",
+            "text": "47",
+            "left": 293,
+            "right": 417
+          },
+          {
+            "el": "#mobile-winner-display",
+            "text": "Atletico Debug",
+            "left": 293,
+            "right": 417
+          },
+          {
+            "el": "div.credit-label",
+            "text": "CREDITI",
+            "left": 293,
+            "right": 417
+          },
+          {
+            "el": "#auctioneer-turn-ranking-empty",
+            "text": "NESSUNA OFFERTA",
+            "left": 274,
+            "right": 458
+          }
+        ],
+        "small": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "w": 72,
+            "h": 36
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "w": 72,
+            "h": 25
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "w": 94,
+            "h": 25
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "w": 94,
+            "h": 36
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#auction-player-name-top",
+            "text": "Nicolò Barella",
+            "cw": 55,
+            "sw": 176,
+            "ch": 38,
+            "sh": 38
+          },
+          {
+            "el": "div.auction-col.col-timer",
+            "text": "TIMER TEMPO RESIDUO 9SECONDI AVANTI BANDITURA A TURNI È IL TURNO DI -- --",
+            "cw": 40,
+            "sw": 84,
+            "ch": 367,
+            "sh": 367
+          },
+          {
+            "el": "div.auction-col.col-info",
+            "text": "OFFERTA BUSTE CONSEGNATE0 / 0 Gli importi restano nascosti fino all’apertura. MI",
+            "cw": 46,
+            "sw": 115,
+            "ch": 367,
+            "sh": 367
+          },
+          {
+            "el": "div.bid-label",
+            "text": "OFFERTA ATTUALE",
+            "cw": 123,
+            "sw": 145,
+            "ch": 15,
+            "sh": 15
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "font": "10.88px"
+          },
+          {
+            "el": "#auction-room-pill",
+            "text": "STANZA --",
+            "font": "9.28px"
+          },
+          {
+            "el": "b",
+            "text": "--",
+            "font": "9.28px"
+          },
+          {
+            "el": "#auction-online-pill",
+            "text": "ONLINE 4/5",
+            "font": "8.64px"
+          },
+          {
+            "el": "#auction-online-count",
+            "text": "4/5",
+            "font": "8.64px"
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "font": "8.96px"
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "font": "8.48px"
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "font": "10.56px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Banditore desktop · READY",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Banditore desktop · READY",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "body": {
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "w": 112,
+            "h": 38
+          }
+        ],
+        "clipped": [],
+        "tinyText": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "font": "10.88px"
+          },
+          {
+            "el": "#auction-online-pill",
+            "text": "ONLINE 0 / 0",
+            "font": "10.4px"
+          },
+          {
+            "el": "#auction-online-count",
+            "text": "0 / 0",
+            "font": "10.4px"
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "font": "10.88px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Banditore desktop · Buste in consegna",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Banditore desktop · Buste in consegna",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "body": {
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "w": 112,
+            "h": 38
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#auction-dashboard",
+            "text": "BANDITURA A TURNI È IL TURNO DI -- -- -- -- IN ATTESA DEI PLAYER READY 0 / 0 -- ",
+            "cw": 1440,
+            "sw": 1440,
+            "ch": 900,
+            "sh": 1188
+          },
+          {
+            "el": "#auction-player-name-top",
+            "text": "Nicolò Barella",
+            "cw": 104,
+            "sw": 176,
+            "ch": 38,
+            "sh": 38
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "font": "10.88px"
+          },
+          {
+            "el": "#auction-online-pill",
+            "text": "ONLINE 0 / 0",
+            "font": "10.4px"
+          },
+          {
+            "el": "#auction-online-count",
+            "text": "0 / 0",
+            "font": "10.4px"
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "font": "10.88px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Banditore desktop · Apertura buste",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Banditore desktop · Apertura buste",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "body": {
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "w": 112,
+            "h": 38
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#auction-dashboard",
+            "text": "BANDITURA A TURNI È IL TURNO DI -- -- -- -- IN ATTESA DEI PLAYER READY 0 / 0 -- ",
+            "cw": 1440,
+            "sw": 1440,
+            "ch": 900,
+            "sh": 1188
+          },
+          {
+            "el": "#auction-player-name-top",
+            "text": "Nicolò Barella",
+            "cw": 104,
+            "sw": 176,
+            "ch": 38,
+            "sh": 38
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "font": "10.88px"
+          },
+          {
+            "el": "#auction-online-pill",
+            "text": "ONLINE 0 / 0",
+            "font": "10.4px"
+          },
+          {
+            "el": "#auction-online-count",
+            "text": "0 / 0",
+            "font": "10.4px"
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "font": "10.88px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Banditore desktop · Esito busta",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Banditore desktop · Esito busta",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "body": {
+          "scrollWidth": 1440,
+          "scrollHeight": 1200
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "w": 112,
+            "h": 38
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "w": 112,
+            "h": 38
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#auction-player-name-top",
+            "text": "Nicolò Barella",
+            "cw": 986,
+            "sw": 986,
+            "ch": 64,
+            "sh": 70
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "← Esci",
+            "font": "10.88px"
+          },
+          {
+            "el": "#auction-online-pill",
+            "text": "ONLINE 4/5",
+            "font": "10.4px"
+          },
+          {
+            "el": "#auction-online-count",
+            "text": "4/5",
+            "font": "10.4px"
+          },
+          {
+            "el": "button.btn.btn-secondary.auction-quick-btn",
+            "text": "ROSE",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-danger.auction-quick-btn",
+            "text": "RESET",
+            "font": "10.88px"
+          },
+          {
+            "el": "button.btn.btn-secondary.session-back",
+            "text": "Gestione",
+            "font": "10.88px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Gestione stanza · Desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Gestione stanza · Desktop",
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "body": {
+          "scrollWidth": 1440,
+          "scrollHeight": 900
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "div.home-version-badge.home-version-settings",
+            "text": "v0.94",
+            "w": 63,
+            "h": 28
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "w": 78,
+            "h": 34
+          }
+        ],
+        "clipped": [],
+        "tinyText": [
+          {
+            "el": "#home-site-url",
+            "text": "127.0.0.1:4173/dev/",
+            "font": "9.92px"
+          },
+          {
+            "el": "small",
+            "text": "Se il progetto ti piace puoi lasciare una donazione libera.",
+            "font": "8.96px"
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "font": "10.72px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Gestione stanza · Smartphone",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Gestione stanza · Smartphone",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "div.home-version-badge.home-version-settings",
+            "text": "v0.94",
+            "w": 63,
+            "h": 28
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "w": 72,
+            "h": 32
+          }
+        ],
+        "clipped": [],
+        "tinyText": [
+          {
+            "el": "div.home-qr-label",
+            "text": "SCANSIONA PER ENTRARE",
+            "font": "10.88px"
+          },
+          {
+            "el": "#home-site-url",
+            "text": "127.0.0.1:4173/dev/",
+            "font": "8.96px"
+          },
+          {
+            "el": "small",
+            "text": "Se il progetto ti piace puoi lasciare una donazione libera.",
+            "font": "8.48px"
+          },
+          {
+            "el": "a.home-donation-btn",
+            "text": "PayPal",
+            "font": "10.08px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Giocatore · Listone",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Giocatore · Listone",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "w": 74,
+            "h": 36
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "w": 66,
+            "h": 36
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "w": 84,
+            "h": 36
+          },
+          {
+            "el": "div.identity-pill.player-room-overview-trigger",
+            "text": "StanzaVisual Audit",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.identity-pill.team.player-availability-clickable",
+            "text": "SquadraGli Ingegneri",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "w": 252,
+            "h": 37
+          },
+          {
+            "el": "#exact-bid-knob",
+            "text": "Tieni premuto per offerta esatta",
+            "w": 34,
+            "h": 34
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#display-team-name",
+            "text": "Gli Ingegneri",
+            "cw": 103,
+            "sw": 112,
+            "ch": 14,
+            "sh": 14
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "cw": 250,
+            "sw": 255,
+            "ch": 35,
+            "sh": 35
+          },
+          {
+            "el": "#player-countdown",
+            "text": "9",
+            "cw": 148,
+            "sw": 148,
+            "ch": 73,
+            "sh": 91
+          },
+          {
+            "el": "#player-current-value",
+            "text": "47",
+            "cw": 148,
+            "sw": 148,
+            "ch": 65,
+            "sh": 79
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "font": "9.44px"
+          },
+          {
+            "el": "span",
+            "text": "Stanza",
+            "font": "7.2px"
+          },
+          {
+            "el": "span",
+            "text": "Squadra",
+            "font": "7.2px"
+          },
+          {
+            "el": "small",
+            "text": "Crediti",
+            "font": "8.64px"
+          },
+          {
+            "el": "small",
+            "text": "Slot · Budget",
+            "font": "7.68px"
+          },
+          {
+            "el": "small",
+            "text": "secondi",
+            "font": "10.88px"
+          },
+          {
+            "el": "#player-auction-title",
+            "text": "MIGLIOR OFFERTA",
+            "font": "10.56px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    },
+    {
+      "label": "Giocatore · Budget",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "metrics": {
+        "label": "Giocatore · Budget",
+        "viewport": {
+          "w": 390,
+          "h": 844
+        },
+        "body": {
+          "scrollWidth": 390,
+          "scrollHeight": 844
+        },
+        "horizontalOverflow": false,
+        "outside": [],
+        "small": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "w": 74,
+            "h": 36
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "w": 66,
+            "h": 36
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "w": 84,
+            "h": 36
+          },
+          {
+            "el": "div.identity-pill.player-room-overview-trigger",
+            "text": "StanzaVisual Audit",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.identity-pill.team.player-availability-clickable",
+            "text": "SquadraGli Ingegneri",
+            "w": 182,
+            "h": 33
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "w": 252,
+            "h": 37
+          },
+          {
+            "el": "#exact-bid-knob",
+            "text": "Tieni premuto per offerta esatta",
+            "w": 34,
+            "h": 34
+          },
+          {
+            "el": "button.btn.btn-secondary.btn-compact",
+            "text": "Chiudi",
+            "w": 70,
+            "h": 30
+          },
+          {
+            "el": "#budget-unit-credits",
+            "text": "Crediti",
+            "w": 186,
+            "h": 36
+          },
+          {
+            "el": "#budget-unit-percent",
+            "text": "Percentuale",
+            "w": 186,
+            "h": 36
+          },
+          {
+            "el": "#budget-credit-P",
+            "text": "",
+            "w": 113,
+            "h": 36
+          },
+          {
+            "el": "#budget-alert-P",
+            "text": "",
+            "w": 113,
+            "h": 36
+          },
+          {
+            "el": "#budget-credit-D",
+            "text": "",
+            "w": 113,
+            "h": 36
+          },
+          {
+            "el": "#budget-alert-D",
+            "text": "",
+            "w": 113,
+            "h": 36
+          },
+          {
+            "el": "#budget-credit-C",
+            "text": "",
+            "w": 113,
+            "h": 36
+          },
+          {
+            "el": "#budget-alert-C",
+            "text": "",
+            "w": 113,
+            "h": 36
+          },
+          {
+            "el": "#budget-credit-A",
+            "text": "",
+            "w": 113,
+            "h": 36
+          },
+          {
+            "el": "#budget-alert-A",
+            "text": "",
+            "w": 113,
+            "h": 36
+          }
+        ],
+        "clipped": [
+          {
+            "el": "#display-team-name",
+            "text": "Gli Ingegneri",
+            "cw": 103,
+            "sw": 112,
+            "ch": 14,
+            "sh": 14
+          },
+          {
+            "el": "div.mini-stat.slots.budget-slot-trigger",
+            "text": "Slot · BudgetP 1/3 · D 1/8 · C 0/8 · A 0/6",
+            "cw": 250,
+            "sw": 255,
+            "ch": 35,
+            "sh": 35
+          },
+          {
+            "el": "#player-countdown",
+            "text": "9",
+            "cw": 148,
+            "sw": 148,
+            "ch": 73,
+            "sh": 91
+          },
+          {
+            "el": "#player-current-value",
+            "text": "47",
+            "cw": 148,
+            "sw": 148,
+            "ch": 65,
+            "sh": 79
+          }
+        ],
+        "tinyText": [
+          {
+            "el": "#player-exit-btn",
+            "text": "← Esci",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-listone-btn",
+            "text": "Listone",
+            "font": "10.24px"
+          },
+          {
+            "el": "#player-roster-btn",
+            "text": "Rosa · 2",
+            "font": "9.44px"
+          },
+          {
+            "el": "span",
+            "text": "Stanza",
+            "font": "7.2px"
+          },
+          {
+            "el": "span",
+            "text": "Squadra",
+            "font": "7.2px"
+          },
+          {
+            "el": "small",
+            "text": "Crediti",
+            "font": "8.64px"
+          },
+          {
+            "el": "small",
+            "text": "Slot · Budget",
+            "font": "7.68px"
+          },
+          {
+            "el": "small",
+            "text": "secondi",
+            "font": "10.88px"
+          },
+          {
+            "el": "#player-auction-title",
+            "text": "MIGLIOR OFFERTA",
+            "font": "10.56px"
+          },
+          {
+            "el": "#player-budget-total-label",
+            "text": "Budget totale: 500 crediti",
+            "font": "10.56px"
+          },
+          {
+            "el": "button.btn.btn-secondary.btn-compact",
+            "text": "Chiudi",
+            "font": "9.92px"
+          },
+          {
+            "el": "small",
+            "text": "Colora crediti e slot in base al piano P / D / C / A.",
+            "font": "9.28px"
+          },
+          {
+            "el": "small",
+            "text": "Crediti disponibili",
+            "font": "8.8px"
+          },
+          {
+            "el": "div.player-budget-note",
+            "text": "Quando il budget è attivo, un reparto è verde se il budget residuo può",
+            "font": "9.28px"
+          }
+        ]
+      },
+      "screens": [
+        "screen-role",
+        "screen-device-choice",
+        "screen-player-setup",
+        "screen-player-buzzer",
+        "screen-auctioneer-setup",
+        "screen-admin-login",
+        "screen-superuser-login",
+        "screen-admin",
+        "screen-auctioneer-board",
+        "screen-all-rosters",
+        "screen-room-control"
+      ]
+    }
+  ],
+  "notes": [
+    "Audit visivo locale su Chromium con renderer/DOM reali della DEV e dati fixture non persistenti.",
+    "Nessuna scrittura su Supabase e nessuna stanza reale modificata.",
+    "Le schermate di asta usano le stesse funzioni e gli stessi componenti dell’app dove possibile; i valori mostrati sono fixture di audit."
+  ]
+}
