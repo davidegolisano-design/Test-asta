@@ -1,0 +1,19 @@
+LIVEASTA CLEAN-43 - CRITICAL BEHAVIOR REGRESSION
+=================================================
+No application code changed.
+
+Passed browser suites:
+ - general home/access smoke
+ - shared extracted modules
+ - team counts and max-bid economics (Classic/Mantra)
+ - room timer settings and clamps
+ - list filters/sorting (Classic/Mantra)
+ - READY/SKIP eligibility and resolution
+ - all SKIP => unsold at 0
+ - mixed READY/SKIP => auction starts for all eligible teams
+ - sealed READY resolution
+ - normal bid max boundary and full-role block
+ - self-raise disabled block
+ - nomination eligibility Classic/Mantra
+
+Network/Supabase writes were not used by the critical-rule test.
