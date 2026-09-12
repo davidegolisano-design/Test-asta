@@ -11,10 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Integrate player PIN access into canonical app logic
-        run: |
-          echo 'ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgphcHBfcGF0aD1QYXRoKCdkZXYvc2NyaXB0cy9hcHAuanMnKQphcHA9YXBwX3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSd1dGYtOCcpCgpzdGFydD1hcHAuZmluZCgnICAgICAgICBmdW5jdGlvbiBjaGFuZ2VBdWN0aW9uZWVyUGxheWVyVGVhbSgpeycpCmVuZD1hcHAuZmluZCgnICAgICAgICBsZXQgaHlicmlkUHJlZmVycmVkVmlldz1udWxsOycsIHN0YXJ0KQppZiBzdGFydCA8IDAgb3IgZW5kIDwgMDoKICAgIHJhaXNlIFN5c3RlbUV4aXQoJ1RhcmdldCBhdWN0aW9uZWVyLXBsYXllciBibG9jayBub3QgZm91bmQnKQoKbmV3X2Jsb2NrID0gcicoIiIgICAgICAgIGxldCBwbGF5ZXJQaW5BY2Nlc3NEaWFsb2c9bnVsbDsKCiAgICAgICAgZnVuY3Rpb24gYnVpbGRQbGF5ZXJQaW5BY2Nlc3NEaWFsb2coKXsKICAgICAgICAgICAgaWYocGxheWVyUGluQWNjZXNzRGlhbG9nKXJldHVybiBwbGF5ZXJQaW5BY2Nlc3NEaWFsb2c7CiAgICAgICAgICAgIGNvbnN0IGRsZz1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCdk...TRUNCATED_FOR_BREVITY...'
-          | base64 -d > /tmp/clean09.py
-          python /tmp/clean09.py
+        run: python .github/clean09.py
       - name: Validate application sources
         run: |
           for f in dev/scripts/*.js; do node --check "$f"; done
@@ -29,9 +26,9 @@ jobs:
           PY
       - name: Commit and self-remove workflow
         run: |
-          rm -f .github/workflows/liveasta-clean09-player-pin.yml
+          rm -f .github/workflows/liveasta-clean09-player-pin.yml .github/clean09.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dev .github/workflows/liveasta-clean09-player-pin.yml
+          git add dev .github/workflows/liveasta-clean09-player-pin.yml .github/clean09.py
           git commit -m "LIVEASTA DEV v0.94 clean09 canonical player PIN access"
           git push
