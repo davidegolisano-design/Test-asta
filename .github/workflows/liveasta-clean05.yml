@@ -1,4 +1,4 @@
-name: LIVEASTA DEV clean05 redundant declaration cleanup
+name: LIVEASTA DEV clean05 repair and conservative dedupe
 
 on:
   push:
@@ -15,31 +15,56 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install CSS parser
-        run: npm install --no-save postcss@8
+      - name: Repair malformed extracted legacy block
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('dev/styles/ui.css')
+          s=p.read_text(encoding='utf-8',errors='strict')
+          start='/* === liveasta-v076-desktop-board === */'
+          end='/* === auctioneer-desktop-theme-v081.css === */'
+          a=s.find(start); b=s.find(end,a+1)
+          if a<0 or b<0:
+              raise SystemExit('Expected v076 block boundaries not found')
+          block=s[a:b]
+          count=block.count('\\n')
+          if count < 10:
+              raise SystemExit(f'Expected malformed literal newlines, found only {count}')
+          block=block.replace('\\n','\n')
+          s=s[:a]+block+s[b:]
+          p.write_text(s,encoding='utf-8')
+          print(f'Repaired {count} literal newline escapes in v076 block')
+          PY
 
-      - name: Remove only earlier identical declarations shadowed by same selector/context
+      - name: Install CSS parser and validate repaired CSS
+        run: |
+          npm install --no-save postcss@8
+          node - <<'JS'
+          const fs=require('fs'),postcss=require('postcss');
+          for(const f of fs.readdirSync('dev/styles').filter(x=>x.endsWith('.css')).sort()){
+            postcss.parse(fs.readFileSync('dev/styles/'+f,'utf8'),{from:'dev/styles/'+f});
+            console.log('CSS parse OK:',f);
+          }
+          JS
+
+      - name: Remove only exact redundant declarations within same selector and at-rule context
         run: |
           cat > clean05-temp.js <<'JS'
           const fs=require('fs');
           const path=require('path');
           const postcss=require('postcss');
-
           const dir='dev/styles';
           const files=fs.readdirSync(dir).filter(x=>x.endsWith('.css')).sort();
           let totalRemoved=0;
-          const lines=['LIVEASTA CLEAN-05 - REDUNDANT DECLARATIONS','=========================================','Rule: remove an earlier declaration only when a later rule with the exact same selector and exact same at-rule ancestry repeats the same property, value and !important state.','','FILES'];
-
+          const lines=['LIVEASTA CLEAN-05 - REPAIR + REDUNDANT DECLARATIONS','==================================================','Repair: v076 extracted block literal newline escapes converted to real newlines.','Dedupe rule: remove an earlier declaration only when a later rule with exact same selector and exact same at-rule ancestry repeats exact same property, value and !important state.','','FILES'];
           function contextKey(rule){
-            const chain=[];
-            let p=rule.parent;
+            const chain=[]; let p=rule.parent;
             while(p && p.type!=='root'){
               if(p.type==='atrule') chain.unshift('@'+p.name+' '+String(p.params||'').trim());
               p=p.parent;
             }
             return chain.join(' > ');
           }
-
           for(const name of files){
             const file=path.join(dir,name);
             const before=fs.readFileSync(file,'utf8');
@@ -60,11 +85,8 @@ jobs:
                 for(let d=decls.length-1;d>=0;d--){
                   const n=decls[d];
                   const sig=n.prop+'\u0000'+n.value+'\u0000'+(n.important?'1':'0');
-                  if(seen.has(sig)){
-                    n.remove(); removed++;
-                  } else {
-                    seen.add(sig);
-                  }
+                  if(seen.has(sig)){ n.remove(); removed++; }
+                  else seen.add(sig);
                 }
               }
             }
@@ -86,13 +108,13 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           idx=Path('dev/index.html')
-          html=idx.read_text(encoding='utf-8',errors='ignore').replace('CLEAN-04','CLEAN-05').replace('094-clean04a','094-clean05a')
+          html=idx.read_text(encoding='utf-8',errors='strict').replace('CLEAN-04','CLEAN-05').replace('094-clean04a','094-clean05a')
           idx.write_text(html,encoding='utf-8')
           p=Path('dev/scripts/pwa.js')
-          p.write_text(p.read_text(encoding='utf-8',errors='ignore').replace('CLEAN-04','CLEAN-05'),encoding='utf-8')
+          p.write_text(p.read_text(encoding='utf-8',errors='strict').replace('CLEAN-04','CLEAN-05'),encoding='utf-8')
           PY
 
-      - name: Validate
+      - name: Final validation
         run: |
           set -e
           for f in dev/scripts/*.js; do node --check "$f"; done
@@ -100,8 +122,10 @@ jobs:
           test -f dev/CLEANUP_REPORT_CLEAN05.txt
           node - <<'JS'
           const fs=require('fs'),postcss=require('postcss');
-          for(const f of fs.readdirSync('dev/styles').filter(x=>x.endsWith('.css'))){postcss.parse(fs.readFileSync('dev/styles/'+f,'utf8'));}
-          console.log('CSS parse OK');
+          for(const f of fs.readdirSync('dev/styles').filter(x=>x.endsWith('.css')).sort()){
+            postcss.parse(fs.readFileSync('dev/styles/'+f,'utf8'),{from:'dev/styles/'+f});
+          }
+          console.log('Final CSS parse OK');
           JS
 
       - name: Commit and self-remove workflow
@@ -110,4 +134,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           rm -f .github/workflows/liveasta-clean05.yml clean05-temp.js
           git add -A dev .github/workflows/liveasta-clean05.yml
-          git diff --cached --quiet || (git commit -m "LIVEASTA DEV v0.94 clean05 remove redundant CSS declarations" && git push)
+          git diff --cached --quiet || (git commit -m "LIVEASTA DEV v0.94 clean05 repair malformed CSS and dedupe" && git push)
