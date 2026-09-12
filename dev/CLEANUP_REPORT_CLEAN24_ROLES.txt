@@ -1,0 +1,10 @@
+LIVEASTA CLEAN-24 - CLASSIC/MANTRA ROLE MODULE EXTRACTION
+======================================================
+Behavior intended to be preserved.
+
+Created: scripts/roles.js
+Moved constant: MANTRA_ROLE_ORDER
+Moved functions: roomGameMode, isMantraRoom, normalizeMantraRole, mantraRoleTokens, mantraRoleFromPlayer, playerRole, playerIsGoalkeeper, mantraRosterMax, mantraRosterMin, mantraMinGoalkeepers, listoneHasMantraRoles, activeRoleLabel, mantraRoleMatches
+
+updateCreateRoomModeUI remains in app.js because it is UI-specific.
+roles.js is loaded before player-assets.js and app.js. Defaults referencing currentRoom/playersList are evaluated at call time, after app.js has initialized the application state.
