@@ -1,0 +1,49 @@
+name: LIVEASTA DEV clean20 browser smoke
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean20-smoke.yml'
+permissions:
+  contents: write
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local server
+        run: |
+          python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 &
+          echo $! >/tmp/liveasta-http.pid
+          sleep 2
+      - name: Run browser smoke
+        run: node dev/tests/smoke.mjs
+      - name: Write report
+        if: success()
+        run: |
+          cat > dev/CLEANUP_REPORT_CLEAN20_BROWSER_SMOKE.txt <<'EOF'
+          LIVEASTA CLEAN-20 - BROWSER SMOKE TEST
+          =====================================
+          Current DEV passed a real Chromium smoke test on GitHub Actions.
+
+          Checked:
+          - DEV home loads
+          - no fatal page JavaScript errors
+          - no visible literal \\n\\n artifact
+          - Home -> Banditore -> device choice -> Home
+          - Home -> Giocatore -> player setup -> Home
+
+          This is a smoke test, not a full auction regression suite.
+          EOF
+      - name: Commit report and self-remove workflow
+        if: success()
+        run: |
+          rm -f .github/workflows/liveasta-clean20-smoke.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/tests/smoke.mjs dev/CLEANUP_REPORT_CLEAN20_BROWSER_SMOKE.txt .github/workflows/liveasta-clean20-smoke.yml
+          git commit -m "LIVEASTA DEV clean20 browser smoke validation"
+          git push
