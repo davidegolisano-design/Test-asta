@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-09-12T20:12:03.005Z",
+  "clients": 3,
+  "broadcastCount": 20,
+  "receivedPerClient": [13, 13, 14],
+  "presenceSyncPerClient": [3, 3, 6],
+  "documentedBroadcastMessages": 60,
+  "websocketFrames": {
+    "sent": 34,
+    "received": 72,
+    "total": 106,
+    "byClient": [
+      {"index":0,"ws":1,"sentFrames":11,"receivedFrames":22,"sentBytes":1456,"receivedBytes":2708},
+      {"index":1,"ws":1,"sentFrames":11,"receivedFrames":22,"sentBytes":1397,"receivedBytes":2761},
+      {"index":2,"ws":1,"sentFrames":12,"receivedFrames":28,"sentBytes":1581,"receivedBytes":3776}
+    ]
+  },
+  "note": "20 Broadcast app-shaped events across 3 real Supabase Realtime connections plus one Presence disconnect/reconnect cycle. Supabase documented Broadcast counting gives 60 messages for the observed deliveries. Presence/system frames are reported separately because websocket frame count is not identical to billable Realtime message count. No database rows were created or modified."
+}
