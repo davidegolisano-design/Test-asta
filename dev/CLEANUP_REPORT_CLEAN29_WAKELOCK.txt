@@ -1,0 +1,10 @@
+LIVEASTA CLEAN-29 - SCREEN WAKE-LOCK MODULE EXTRACTION
+===================================================
+Behavior intended to be preserved.
+
+Created: scripts/screen-wake-lock.js
+Moved state: screenWakeLock, wakeLockRetryTimer
+Moved functions: requestScreenWakeLock, releaseScreenWakeLock, installScreenWakeLock
+
+The module is loaded before app.js. App startup still calls installScreenWakeLock on DOMContentLoaded.
+No auction, realtime, room access or Supabase behavior was changed.
