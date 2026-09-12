@@ -1,0 +1,21 @@
+name: LIVEASTA DEV clean33 maxbid source audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean33-maxbid-source.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --no-save espree
+      - run: node dev/tools/clean33_maxbid_source.mjs
+      - run: |
+          rm -f .github/workflows/liveasta-clean33-maxbid-source.yml dev/tools/clean33_maxbid_source.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/CLEANUP_AUDIT_CLEAN33_MAXBID_SOURCE.txt .github/workflows/liveasta-clean33-maxbid-source.yml dev/tools/clean33_maxbid_source.mjs
+          git commit -m "LIVEASTA DEV clean33 audit maxBid source"
+          git push
