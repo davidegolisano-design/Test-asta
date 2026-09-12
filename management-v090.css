@@ -1,0 +1,434 @@
+/* LIVEASTA v0.90 — Gestione: gerarchia chiara desktop/mobile + toggle leggibili */
+
+/* --------------------------------------------------------------------------
+   MENU PRINCIPALI
+   -------------------------------------------------------------------------- */
+html body #screen-room-control .v090-menu-card{
+  min-width:0!important;
+  overflow:visible!important;
+}
+html body #screen-room-control .v090-menu-header{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0 0 12px!important;
+  cursor:pointer!important;
+  user-select:none!important;
+  box-sizing:border-box!important;
+}
+html body #screen-room-control .v090-menu-header:focus-visible{
+  outline:2px solid var(--theme-primary,#3DDC97)!important;
+  outline-offset:4px!important;
+  border-radius:8px!important;
+}
+html body #screen-room-control .v090-menu-header > h3,
+html body #screen-room-control .v090-menu-header .v090-title-wrap{
+  min-width:0!important;
+  flex:1 1 auto!important;
+}
+html body #screen-room-control .v090-menu-header h3{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-width:0!important;
+  margin:0!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  line-height:1.25!important;
+}
+html body #screen-room-control .v090-menu-header .mg-help{
+  display:inline-flex!important;
+  flex:0 0 28px!important;
+  width:28px!important;
+  min-width:28px!important;
+  height:28px!important;
+  min-height:28px!important;
+  padding:3px!important;
+  margin-left:2px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  cursor:pointer!important;
+}
+html body #screen-room-control .v090-menu-header .mg-help span{
+  width:20px!important;
+  height:20px!important;
+  line-height:19px!important;
+  text-align:center!important;
+}
+html body #screen-room-control .v090-team-count-inline{
+  color:var(--theme-muted,var(--text-muted,#9CA3AF))!important;
+  font-size:.82em!important;
+  font-weight:750!important;
+  white-space:nowrap!important;
+}
+
+/* Quando chiuso: SOLO titolo (con eventuale totale squadre) + tasto info. */
+html body #screen-room-control .v090-menu-card.v090-collapsed > :not(.v090-menu-header){
+  display:none!important;
+}
+html body #screen-room-control .v090-menu-card.v090-collapsed .v090-menu-header > :not(h3):not(.v090-title-wrap){
+  display:none!important;
+}
+html body #screen-room-control .v090-menu-card.v090-collapsed .v090-menu-header .v090-title-wrap > :not(h3){
+  display:none!important;
+}
+html body #screen-room-control .v090-menu-card.v090-collapsed .v090-menu-header{
+  min-height:40px!important;
+  margin:0!important;
+  align-items:center!important;
+}
+html body #screen-room-control .v090-menu-card.v090-collapsed{
+  min-height:0!important;
+  padding:10px 14px!important;
+}
+/* Il vecchio bottone di collasso non fa più parte della UI v0.90. */
+html body #screen-room-control .v087-collapse-btn{display:none!important;}
+
+/* --------------------------------------------------------------------------
+   TESTI: nessuna informazione importante nascosta quando il menu è aperto
+   -------------------------------------------------------------------------- */
+html body #screen-room-control .v090-menu-card:not(.v090-collapsed) :is(
+  .self-raise-control-note,.online-players-note,.auctioneer-player-note,.ready-control-note,
+  .auto-random-note,.nomination-control-note,.nomination-auto-bid-one-copy small,
+  .nomination-order-head small,.self-raise-control-status,.auctioneer-player-status,
+  .ready-control-status,.nomination-control-status,.auto-random-status
+){
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere!important;
+  line-height:1.42!important;
+}
+html body #screen-room-control .v090-menu-card:not(.v090-collapsed) :is(
+  .self-raise-control-note,.online-players-note,.auctioneer-player-note,.ready-control-note,
+  .auto-random-note,.nomination-control-note,.nomination-auto-bid-one-copy small,
+  .nomination-order-head small
+){
+  color:var(--theme-muted,var(--text-muted,#9CA3AF))!important;
+  font-size:12px!important;
+}
+
+/* --------------------------------------------------------------------------
+   TOGGLE: stato OFF/ON inequivocabile
+   -------------------------------------------------------------------------- */
+html body #screen-room-control :is(
+  #auto-random-enabled,#auto-random-role-P,#auto-random-role-D,#auto-random-role-C,
+  #auto-random-role-A,#nomination-auto-bid-one
+){
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  position:relative!important;
+  display:inline-block!important;
+  flex:0 0 48px!important;
+  width:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  height:27px!important;
+  min-height:27px!important;
+  max-height:27px!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid color-mix(in srgb,var(--theme-muted,#8090a0) 70%,var(--theme-border,#334155))!important;
+  border-radius:999px!important;
+  background:color-mix(in srgb,var(--theme-muted,#8090a0) 62%,var(--theme-hover,#243243))!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  vertical-align:middle!important;
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease!important;
+}
+html body #screen-room-control :is(
+  #auto-random-enabled,#auto-random-role-P,#auto-random-role-D,#auto-random-role-C,
+  #auto-random-role-A,#nomination-auto-bid-one
+)::after{
+  content:''!important;
+  position:absolute!important;
+  width:21px!important;
+  height:21px!important;
+  left:2px!important;
+  top:2px!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.28)!important;
+  transform:none!important;
+  transition:transform .16s ease!important;
+}
+html body #screen-room-control :is(#auto-random-enabled,#nomination-auto-bid-one):checked{
+  background:var(--theme-primary,#3DDC97)!important;
+  border-color:var(--theme-primary,#3DDC97)!important;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-primary,#3DDC97) 20%,transparent)!important;
+}
+html body #screen-room-control #auto-random-role-P:checked{
+  background:#F2B800!important;border-color:#F2B800!important;
+}
+html body #screen-room-control #auto-random-role-D:checked{
+  background:#35B86B!important;border-color:#35B86B!important;
+}
+html body #screen-room-control #auto-random-role-C:checked{
+  background:#3F82E8!important;border-color:#3F82E8!important;
+}
+html body #screen-room-control #auto-random-role-A:checked{
+  background:#EF454A!important;border-color:#EF454A!important;
+}
+html body #screen-room-control :is(
+  #auto-random-enabled,#auto-random-role-P,#auto-random-role-D,#auto-random-role-C,
+  #auto-random-role-A,#nomination-auto-bid-one
+):checked::after{
+  transform:translateX(21px)!important;
+  background:#fff!important;
+}
+
+/* Toggle a bottone già presenti: Ready, Autorilancio, Banditore giocatore, Turni. */
+html body #screen-room-control button.mg-switch[aria-checked="true"]::before,
+html body #screen-room-control button.mg-switch.v088-switch-on::before,
+html body #screen-room-control .self-raise-switch[aria-checked="true"] .self-raise-switch-track,
+html body #screen-room-control .self-raise-switch.v088-switch-on .self-raise-switch-track{
+  background:var(--theme-primary,#3DDC97)!important;
+  border-color:var(--theme-primary,#3DDC97)!important;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-primary,#3DDC97) 22%,transparent)!important;
+}
+html body #screen-room-control button.mg-switch[aria-checked="true"]::after,
+html body #screen-room-control button.mg-switch.v088-switch-on::after{
+  transform:translateX(22px)!important;
+}
+html body #screen-room-control .self-raise-switch[aria-checked="true"] .self-raise-switch-thumb,
+html body #screen-room-control .self-raise-switch.v088-switch-on .self-raise-switch-thumb{
+  transform:translateX(21px)!important;
+}
+
+/* Random: ogni ruolo è una card/toggle leggibile. */
+html body #screen-room-control .auto-random-master-switch{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  min-height:32px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+}
+html body #screen-room-control .auto-random-master-switch > span{display:none!important;}
+html body #screen-room-control .auto-random-role-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin:12px 0!important;
+}
+html body #screen-room-control .auto-random-role{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  min-width:0!important;
+  min-height:54px!important;
+  padding:10px 12px!important;
+  border:1px solid var(--theme-border,#334155)!important;
+  border-radius:11px!important;
+  background:var(--theme-input,var(--bg-main,#101925))!important;
+  box-sizing:border-box!important;
+  cursor:pointer!important;
+  transition:border-color .16s ease,background .16s ease!important;
+}
+html body #screen-room-control .auto-random-role span{
+  order:-1!important;
+  font-size:15px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+html body #screen-room-control .auto-random-role.role-P:has(input:checked){background:color-mix(in srgb,#F2B800 14%,var(--theme-card,#17212e))!important;border-color:#F2B800!important;}
+html body #screen-room-control .auto-random-role.role-D:has(input:checked){background:color-mix(in srgb,#35B86B 14%,var(--theme-card,#17212e))!important;border-color:#35B86B!important;}
+html body #screen-room-control .auto-random-role.role-C:has(input:checked){background:color-mix(in srgb,#3F82E8 14%,var(--theme-card,#17212e))!important;border-color:#3F82E8!important;}
+html body #screen-room-control .auto-random-role.role-A:has(input:checked){background:color-mix(in srgb,#EF454A 14%,var(--theme-card,#17212e))!important;border-color:#EF454A!important;}
+html body #screen-room-control .auto-random-role.role-P span{color:#C79700!important;}
+html body #screen-room-control .auto-random-role.role-D span{color:#239454!important;}
+html body #screen-room-control .auto-random-role.role-C span{color:#3474D8!important;}
+html body #screen-room-control .auto-random-role.role-A span{color:#D83A40!important;}
+
+/* Offerta 1 banditore: testo a sinistra, vero toggle a destra. */
+html body #screen-room-control .nomination-auto-bid-one-option{
+  display:flex!important;
+  flex-direction:row-reverse!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:12px 13px!important;
+  margin:12px 0!important;
+  border:1px solid var(--theme-border,#334155)!important;
+  border-radius:11px!important;
+  background:var(--theme-input,var(--bg-main,#101925))!important;
+  box-sizing:border-box!important;
+}
+html body #screen-room-control .nomination-auto-bid-one-option:has(#nomination-auto-bid-one:checked){
+  border-color:var(--theme-primary,#3DDC97)!important;
+  background:color-mix(in srgb,var(--theme-primary,#3DDC97) 10%,var(--theme-card,#17212e))!important;
+}
+html body #screen-room-control .nomination-auto-bid-one-copy{
+  flex:1 1 auto!important;
+  min-width:0!important;
+}
+html body #screen-room-control .nomination-auto-bid-one-copy b{
+  display:block!important;
+  margin-bottom:3px!important;
+}
+
+/* Sottosezioni: stacco visivo coerente senza creare altri "menu" principali. */
+html body #screen-room-control .v090-subsection{
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+html body #screen-room-control .nomination-order-box{
+  padding:12px!important;
+  border:1px solid var(--theme-border,#334155)!important;
+  border-radius:11px!important;
+  background:color-mix(in srgb,var(--theme-input,#101925) 86%,transparent)!important;
+}
+html body #screen-room-control :is(.nomination-control-actions,.nomination-turn-nav){
+  display:grid!important;
+  gap:8px!important;
+}
+html body #screen-room-control .nomination-control-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+html body #screen-room-control .nomination-turn-nav{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+html body #screen-room-control .nomination-control-actions .btn,
+html body #screen-room-control .nomination-turn-nav .btn{width:100%!important;min-width:0!important;}
+html body #screen-room-control .online-player-list{
+  max-height:260px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+}
+html body #screen-room-control .team-create-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:10px!important;
+  align-items:end!important;
+}
+html body #screen-room-control .team-create-row .btn{
+  width:auto!important;
+  min-width:180px!important;
+}
+
+/* Acquisti/Rose rimane uno strumento operativo separato, non uno dei menu principali. */
+html body #screen-room-control .v090-utility-card{
+  border-style:dashed!important;
+}
+
+/* --------------------------------------------------------------------------
+   COMPUTER
+   -------------------------------------------------------------------------- */
+@media (min-width:900px){
+  html body #screen-room-control .control-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:auto!important;
+    gap:14px!important;
+    align-items:start!important;
+  }
+  html body #screen-room-control .control-grid > .control-title{grid-column:1/-1!important;grid-row:1!important;}
+  html body #screen-room-control .room-rules-card{grid-column:1/-1!important;grid-row:2!important;}
+  html body #screen-room-control .self-raise-control-card{grid-column:1!important;grid-row:3!important;}
+  html body #screen-room-control .ready-control-card{grid-column:2!important;grid-row:3!important;}
+  html body #screen-room-control .online-players-card{grid-column:1!important;grid-row:4!important;}
+  html body #screen-room-control .auctioneer-player-control-card{grid-column:2!important;grid-row:4!important;}
+  html body #screen-room-control .auto-random-control-card{grid-column:1/-1!important;grid-row:5!important;}
+  html body #screen-room-control .nomination-control-card{grid-column:1/-1!important;grid-row:6!important;}
+  html body #screen-room-control .teams-card{grid-column:1/-1!important;grid-row:7!important;}
+  html body #screen-room-control .purchases-card{grid-column:1/-1!important;grid-row:8!important;}
+
+  html body #screen-room-control .room-rules-card .setup-grid{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:12px!important;
+  }
+  html body #screen-room-control .room-rules-card .setup-grid > div:nth-child(1),
+  html body #screen-room-control .room-rules-card .setup-grid > div:nth-child(2){
+    grid-column:span 2!important;
+  }
+  html body #screen-room-control .room-rules-card .setup-grid-4{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  html body #screen-room-control .v090-menu-card:not(.v090-collapsed){padding:16px!important;}
+}
+
+/* --------------------------------------------------------------------------
+   SMARTPHONE / BANDITORE MOBILE
+   -------------------------------------------------------------------------- */
+@media (max-width:899px){
+  html body #screen-room-control .control-grid{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:10px!important;
+    width:100%!important;
+    padding:10px 10px calc(24px + env(safe-area-inset-bottom))!important;
+    box-sizing:border-box!important;
+  }
+  html body #screen-room-control .v090-menu-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:12px!important;
+    box-sizing:border-box!important;
+  }
+  html body #screen-room-control .v090-menu-card.v090-collapsed{padding:9px 11px!important;}
+  html body #screen-room-control .v090-menu-header{min-height:38px!important;margin-bottom:10px!important;gap:8px!important;}
+  html body #screen-room-control .v090-menu-card.v090-collapsed .v090-menu-header{margin-bottom:0!important;}
+  html body #screen-room-control .v090-menu-header h3{font-size:15px!important;line-height:1.25!important;}
+  html body #screen-room-control .v090-menu-card:not(.v090-collapsed) :is(
+    .self-raise-control-note,.online-players-note,.auctioneer-player-note,.ready-control-note,
+    .auto-random-note,.nomination-control-note,.nomination-auto-bid-one-copy small,
+    .nomination-order-head small
+  ){
+    font-size:12px!important;
+  }
+  html body #screen-room-control .room-rules-card .setup-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+  html body #screen-room-control .room-rules-card .setup-grid > div{grid-column:1!important;}
+  html body #screen-room-control .room-rules-card .setup-grid-4{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+  }
+  html body #screen-room-control .auto-random-role-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  html body #screen-room-control .auto-random-role{min-height:52px!important;padding:9px 10px!important;}
+  html body #screen-room-control .nomination-control-actions{grid-template-columns:1fr!important;}
+  html body #screen-room-control .nomination-turn-nav{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  html body #screen-room-control .nomination-order-box{padding:10px!important;}
+  html body #screen-room-control .team-create-row{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+  html body #screen-room-control .team-create-row .btn{width:100%!important;min-width:0!important;}
+  html body #screen-room-control .online-player-list{max-height:220px!important;}
+}
+
+/* Se il banditore è esplicitamente in modalità smartphone, usa sempre la UI mobile anche in landscape. */
+body:has(#auction-dashboard.mode-mobile) #screen-room-control .control-grid{
+  display:flex!important;
+  flex-direction:column!important;
+}
+body:has(#auction-dashboard.mode-mobile) #screen-room-control .room-rules-card .setup-grid{
+  grid-template-columns:1fr!important;
+}
+body:has(#auction-dashboard.mode-mobile) #screen-room-control .room-rules-card .setup-grid-4{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+body:has(#auction-dashboard.mode-mobile) #screen-room-control .auto-random-role-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
