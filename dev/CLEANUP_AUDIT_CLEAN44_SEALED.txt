@@ -1,0 +1,1098 @@
+LIVEASTA CLEAN-44 - SEALED AUCTION FUNCTION AUDIT
+===============================================
+Audit only. No application code changed.
+
+Top-level sealed functions found: 32
+
+[syncSealedBidAreaHeight] bytes=1694
+app deps: (none)
+external/builtins: document, getComputedStyle, parseFloat, Math
+source:
+function syncSealedBidAreaHeight(){
+            const grid=document.getElementById('normal-bid-controls');
+            if(!grid)return;
+            const ready=grid.classList.contains('ready-choice-active');
+            if(ready)grid.classList.remove('ready-choice-active');
+            const temporary=[...grid.querySelectorAll('#sealed-bid-controls,#player-ready-choice-controls')].map(el=>({el,style:el.getAttribute('style')}));
+            temporary.forEach(({el})=>el.style.setProperty('display','none','important'));
+            const sealed=grid.classList.contains('sealed-active');
+            // Measure the normal four-button layout synchronously, without rendering an intermediate frame.
+            if(sealed)grid.classList.remove('sealed-active');
+            try{
+                const rect=grid.getBoundingClientRect();
+                const style=getComputedStyle(grid);
+                const button=grid.querySelector('.buzzer-btn');
+                const buttonHeight=button?parseFloat(getComputedStyle(button).height)||0:0;
+                const extra=['paddingTop','paddingBottom','borderTopWidth','borderBottomWidth'].reduce((n,k)=>n+(parseFloat(style[k])||0),0);
+                const height=rect.height||buttonHeight*2+(parseFloat(style.rowGap)||0)+extra;
+                if(height>0)grid.style.setProperty('--regular-bid-area-height',`${Math.ceil(height)}px`);
+            }finally{
+                if(sealed)grid.classList.add('sealed-active');
+                if(ready)grid.classList.add('ready-choice-active');
+                temporary.forEach(({el,style})=>{if(style===null)el.removeAttribute('style');else el.setAttribute('style',style);});
+            }
+        }
+
+[hybridStartSealedRound] bytes=1117
+app deps: isAuctioneerPlayerIdentity, closePlayerReadyBanner, playerSealedMode, playerSealedToken, sealedAuctionToken, playerSealedSubmitted, isAuctionActive, setPlayerBidButtonsEnabled, sealedEligibleIds, myTeamId, preparePlayerSealedControls, sealedRound, startPlayerSealedCountdownSeconds, sealedTimerSeconds
+external/builtins: String, document
+source:
+function hybridStartSealedRound(){
+            if(!isAuctioneerPlayerIdentity())return;
+
+            closePlayerReadyBanner();
+            playerSealedMode=true;
+            playerSealedToken=String(sealedAuctionToken||'');
+            playerSealedSubmitted=false;
+            isAuctionActive=false;
+            setPlayerBidButtonsEnabled(false);
+
+            const allowed=sealedEligibleIds.map(String).includes(String(myTeamId));
+            preparePlayerSealedControls(allowed);
+
+            document.getElementById('player-auction-title').textContent=sealedRound>1?'SPAREGGIO BUSTA':'BUSTA CHIUSA';
+
+            const winner=document.getElementById('player-current-winner');
+            winner.textContent=allowed
+                ?(sealedRound>1?'Nuova offerta richiesta':'Inserisci la tua offerta')
+                :(sealedRound>1?'Spareggio in corso':'Non puoi partecipare');
+            winner.style.color=allowed?'var(--text-main)':'var(--text-muted)';
+
+            document.getElementById('player-current-value').textContent='?';
+            startPlayerSealedCountdownSeconds(sealedTimerSeconds,5);
+        }
+
+[hybridStartSealedReveal] bytes=681
+app deps: isAuctioneerPlayerIdentity, playerSealedMode, preparePlayerSealedControls, playerSealedRevealLocalEndAt, startPlayerSealedCountdownSeconds
+external/builtins: document, Date, Math, parseInt
+source:
+function hybridStartSealedReveal(seconds){
+            if(!isAuctioneerPlayerIdentity())return;
+
+            playerSealedMode=true;
+            preparePlayerSealedControls(false);
+            document.getElementById('player-auction-title').textContent='APERTURA BUSTE';
+
+            const winner=document.getElementById('player-current-winner');
+            winner.textContent='ATTENDI';
+            winner.style.color='var(--text-muted)';
+
+            document.getElementById('player-current-value').textContent='?';
+            playerSealedRevealLocalEndAt=Date.now()+Math.max(1,parseInt(seconds)||5)*1000;
+            startPlayerSealedCountdownSeconds(seconds,2,true);
+        }
+
+[hybridRenderSealedEnd] bytes=1341
+app deps: isAuctioneerPlayerIdentity, stopPlayerSealedCountdown, playerSealedMode, playerSealedToken, playerSealedSubmitted, preparePlayerSealedControls, loadRoomState, updatePlayerTeamStatus, setPlayerAuctionVisualState, myTeamName, scheduleHybridReturnToBanditore
+external/builtins: document, String, parseInt
+source:
+async function hybridRenderSealedEnd(winnerName,value,noBids=false){
+            if(!isAuctioneerPlayerIdentity())return;
+
+            stopPlayerSealedCountdown();
+            playerSealedMode=false;
+            playerSealedToken=null;
+            playerSealedSubmitted=false;
+            preparePlayerSealedControls(false);
+
+            await loadRoomState();
+            updatePlayerTeamStatus();
+
+            document.getElementById('player-auction-title').textContent='BUSTE APERTE';
+
+            const winner=document.getElementById('player-current-winner');
+            winner.textContent=noBids?'INVENDUTO':(winnerName||'--');
+
+            if(noBids){
+                winner.style.color='var(--text-muted)';
+                setPlayerAuctionVisualState('neutral');
+            }else if(String(winnerName||'')===String(myTeamName||'')){
+                winner.style.color='var(--accent-green)';
+                setPlayerAuctionVisualState('winning');
+            }else{
+                winner.style.color='var(--accent-red)';
+                setPlayerAuctionVisualState('losing');
+            }
+
+            document.getElementById('player-current-value').textContent=noBids?'0':String(parseInt(value)||0);
+            document.getElementById('player-countdown').textContent='0';
+            scheduleHybridReturnToBanditore();
+        }
+
+[sealedBidsStateKey] bytes=154
+app deps: currentRoomId
+external/builtins: (none)
+source:
+function sealedBidsStateKey(token=sealedAuctionToken){
+            return currentRoomId && token ? `sealed_bids_${currentRoomId}_${token}` : '';
+        }
+
+[persistSealedBids] bytes=961
+app deps: sealedBidsStateKey, sealedBids, supabaseClient, sealedAuctionToken, currentAuctionPlayer
+external/builtins: String, parseInt, Number, Date, e, console
+source:
+async function persistSealedBids(){
+            const key=sealedBidsStateKey();
+            if(!key)return;
+            const bids=[...sealedBids.values()].map(x=>({
+                team_id:String(x.team_id),
+                team_name:String(x.team_name||''),
+                amount:parseInt(x.amount)||0,
+                at:Number(x.at)||Date.now()
+            }));
+            try{
+                await supabaseClient.from('fanta_app_data').upsert({
+                    key,
+                    data:{
+                        token:sealedAuctionToken,
+                        player_id:String(currentAuctionPlayer?.Id||''),
+                        bids,
+                        updated_at:new Date().toISOString()
+                    },
+                    file_name:'buste-asta',
+                    updated_at:new Date().toISOString()
+                },{onConflict:'key'});
+            }catch(e){console.warn('Persistenza buste non riuscita',e);}
+        }
+
+[clearPersistedSealedBids] bytes=539
+app deps: sealedBidsStateKey, supabaseClient
+external/builtins: Date, e
+source:
+async function clearPersistedSealedBids(token=sealedAuctionToken){
+            const key=sealedBidsStateKey(token);
+            if(!key)return;
+            try{
+                await supabaseClient.from('fanta_app_data').upsert({
+                    key,
+                    data:{token,player_id:null,bids:[],closed:true,updated_at:new Date().toISOString()},
+                    file_name:'buste-asta-chiuse',
+                    updated_at:new Date().toISOString()
+                },{onConflict:'key'});
+            }catch(e){}
+        }
+
+[stopPlayerSealedCountdown] bytes=222
+app deps: playerSealedCountdownInterval
+external/builtins: clearInterval
+source:
+function stopPlayerSealedCountdown(){
+            if(playerSealedCountdownInterval){
+                clearInterval(playerSealedCountdownInterval);
+                playerSealedCountdownInterval=null;
+            }
+        }
+
+[safeSealedSeconds] bytes=247
+app deps: (none)
+external/builtins: parseInt, Number, Math
+source:
+function safeSealedSeconds(value,fallback=30,maxAllowed=180){
+            const n=parseInt(value);
+            if(!Number.isFinite(n) || n<0)return Math.max(0,parseInt(fallback)||0);
+            return Math.max(0,Math.min(maxAllowed,n));
+        }
+
+[startPlayerSealedCountdownSeconds] bytes=1166
+app deps: stopPlayerSealedCountdown, safeSealedSeconds, playerSealedCountdownInterval
+external/builtins: Date, document, Math, String, playSound, setInterval
+source:
+function startPlayerSealedCountdownSeconds(seconds,dangerAt=5,withSound=false){
+            stopPlayerSealedCountdown();
+
+            const total=safeSealedSeconds(seconds,0,180);
+            const localEnd=Date.now()+total*1000;
+            const timer=document.getElementById('player-countdown');
+            let lastSoundSecond=null;
+
+            const tick=()=>{
+                const rem=Math.max(0,Math.ceil((localEnd-Date.now())/1000));
+                if(timer){
+                    timer.textContent=String(rem);
+                    timer.classList.toggle('danger',rem>0&&rem<=dangerAt);
+                }
+
+                // In apertura buste usa lo stesso suono della preparazione,
+                // una sola volta per ogni secondo visualizzato.
+                if(withSound && rem>0 && rem!==lastSoundSecond){
+                    lastSoundSecond=rem;
+                    playSound('audio-prep');
+                }
+
+                if(rem<=0)stopPlayerSealedCountdown();
+            };
+
+            tick();
+            if(total>0){
+                playerSealedCountdownInterval=setInterval(tick,200);
+            }
+
+            return localEnd;
+        }
+
+[preparePlayerSealedControls] bytes=2183
+app deps: playerSealedMode, playerSealedSubmitted, myTeamId, teamsCache, currentAuctionPlayer, updatePlayerBidBudgetVisuals, syncSealedBidAreaHeight
+external/builtins: document, String, maxBidForTeam, Math
+source:
+function preparePlayerSealedControls(enabled){
+            const normal=document.getElementById('normal-bid-controls');
+            const sealed=document.getElementById('sealed-bid-controls');
+            const input=document.getElementById('sealed-bid-input');
+            const btn=document.getElementById('sealed-bid-submit');
+            const st=document.getElementById('sealed-bid-status');
+
+            // Non nascondiamo il contenitore dei pulsanti: la busta vive DENTRO lo stesso
+            // contenitore e sostituisce fisicamente i quattro tasti.
+            if(normal){
+                normal.style.display='grid';
+                normal.classList.toggle('sealed-active',!!playerSealedMode);
+            }
+            if(sealed){
+                sealed.classList.toggle('sealed-visible',!!playerSealedMode);
+                sealed.style.display=playerSealedMode?'block':'none';
+            }
+
+            enabled=!!enabled;
+
+            if(input){
+                input.disabled=!enabled || playerSealedSubmitted;
+                input.value=playerSealedSubmitted?input.value:'';
+                const team=myTeamId?teamsCache.find(t=>String(t.id)===String(myTeamId)):null;
+                const max=team&&currentAuctionPlayer?maxBidForTeam(team,currentAuctionPlayer.R):0;
+                input.max=String(Math.max(1,max));
+                input.placeholder=max>0?`Max ${max} crediti`:'Offerta non disponibile';
+            }
+            if(btn){
+                btn.disabled=!enabled || playerSealedSubmitted;
+                btn.textContent=playerSealedSubmitted?'OFFERTA INVIATA ✓':'OFFRI';
+            }
+            if(st){
+                st.className='sealed-bid-status'+(playerSealedSubmitted?' sent':'');
+                st.textContent=playerSealedSubmitted
+                    ? 'Offerta registrata. Non può più essere modificata.'
+                    : enabled
+                        ? 'Inserisci l’importo e conferma. L’offerta è definitiva.'
+                        : (playerSealedMode?'Buste in attesa di apertura.':'In attesa della busta chiusa.');
+            }
+            updatePlayerBidBudgetVisuals();
+            syncSealedBidAreaHeight();
+        }
+
+[submitSealedBid] bytes=1938
+app deps: playerSealedMode, playerSealedToken, playerSealedSubmitted, myTeamId, isAuctioneerPlayerIdentity, channel, teamsCache, currentAuctionPlayer, preparePlayerSealedControls, myTeamName, receiveSealedBid
+external/builtins: document, Math, parseInt, String, maxBidForTeam, appConfirm, Date
+source:
+async function submitSealedBid(){
+            if(!playerSealedMode || !playerSealedToken || playerSealedSubmitted || !myTeamId)return;
+            // Per il banditore+giocatore l'offerta viene consegnata direttamente
+            // a receiveSealedBid(), quindi il realtime channel non è un prerequisito.
+            if(!isAuctioneerPlayerIdentity() && !channel)return;
+
+            const input=document.getElementById('sealed-bid-input');
+            const amount=Math.max(1,parseInt(input?.value)||0);
+            const team=teamsCache.find(t=>String(t.id)===String(myTeamId));
+            const max=team&&currentAuctionPlayer?maxBidForTeam(team,currentAuctionPlayer.R):0;
+            const st=document.getElementById('sealed-bid-status');
+
+            if(amount<1 || amount>max){
+                if(st){st.textContent=`Inserisci un'offerta tra 1 e ${max} crediti.`;st.className='sealed-bid-status error';}
+                return;
+            }
+
+            if(!await appConfirm(`Confermi l'offerta di ${amount} crediti?\n\nDopo l'invio NON potrai modificarla.`))return;
+
+            playerSealedSubmitted=true;
+            preparePlayerSealedControls(true);
+
+            const sealedPayload={
+                token:playerSealedToken,
+                team_id:String(myTeamId),
+                team_name:String(myTeamName||''),
+                amount,
+                at:Date.now()
+            };
+
+            if(isAuctioneerPlayerIdentity()){
+                await receiveSealedBid(sealedPayload);
+                return;
+            }
+
+            channel.send({
+                type:'broadcast',
+                event:'sealed_bid_submit',
+                payload:sealedPayload
+            }).catch(()=>{
+                playerSealedSubmitted=false;
+                preparePlayerSealedControls(true);
+                if(st){st.textContent='Invio non riuscito. Riprova.';st.className='sealed-bid-status error';}
+            });
+        }
+
+[showSealedAuctionStage] bytes=2457
+app deps: sealedAuctionModeActive, currentAuctionPlayer, sealedEnding, sealedRevealDeadlineAt, sealedDeadlineAt, sealedEligibleIds, sealedBids, showAuctionPanels, isAuctioneerMobileBoard, setMobileBoardPhase, sealedAuctionToken, teamsCache
+external/builtins: Math, Date, Set, String, document, setPlayerImage, escapeHtml
+source:
+function showSealedAuctionStage(phase='offers'){
+            const opening=phase==='opening';
+            if(!sealedAuctionModeActive || !currentAuctionPlayer || (sealedEnding&&!opening))return;
+            const remaining=Math.max(0,Math.ceil(((opening?sealedRevealDeadlineAt:sealedDeadlineAt)-Date.now())/1000));
+            const eligible=[...new Set(sealedEligibleIds.map(String))];
+            const submitted=new Set([...sealedBids.keys()].map(String));
+            const delivered=eligible.filter(id=>submitted.has(id));
+            showAuctionPanels();
+            const av=document.getElementById('view-auction');
+            av?.classList.add('sealed-collecting');
+            av?.classList.toggle('sealed-opening',opening);
+            if(isAuctioneerMobileBoard())setMobileBoardPhase(opening?'sealed-opening':'sealed-collecting');
+            const caption=av?.querySelector('.timer-caption');if(caption)caption.textContent=opening?'APERTURA':'TEMPO RESIDUO';
+            document.getElementById('winner-display').textContent='';
+            document.getElementById('auction-player-name-top').textContent=currentAuctionPlayer.Nome||'--';
+            document.getElementById('auction-player-role').textContent=currentAuctionPlayer.R||'-';
+            document.getElementById('auction-player-club').textContent=currentAuctionPlayer.Squadra||'-';
+            const img=document.getElementById('card-image');
+            const imageKey=String(currentAuctionPlayer.Id)+':'+sealedAuctionToken;
+            if(img && img.dataset.sealedPlayer!==imageKey){
+                img.dataset.sealedPlayer=imageKey;setPlayerImage(img,currentAuctionPlayer.Id,currentAuctionPlayer.R);
+            }
+            document.getElementById('countdown-display').textContent=String(remaining);
+            document.getElementById('sealed-delivery-count').textContent=`${delivered.length} / ${eligible.length}`;
+            const sealedHead=document.querySelector('#sealed-delivery-panel h3');
+            if(sealedHead)sealedHead.textContent=isAuctioneerMobileBoard()?'CONSEGNATE':'BUSTE CONSEGNATE';
+            const list=document.getElementById('sealed-delivery-names');
+            list.innerHTML=delivered.length?delivered.map(id=>`<div class="sealed-delivery-row"><span class="sealed-delivery-dot"></span><strong>${escapeHtml(teamsCache.find(t=>String(t.id)===id)?.name||'Squadra')}</strong><span>✓</span></div>`).join(''):'<p>In attesa delle buste…</p>';
+        }
+
+[startSealedAuctionTimer] bytes=3044
+app deps: sealedAuctionModeActive, currentAuctionPlayer, sealedEnding, closeReadyGateDedicated, sealedDeadlineAt, sealedTimerSeconds, isAuctionActive, currentWinner, currentAuctionValue, saveLiveAuctionState, livePlayerSnapshot, sealedAuctionToken, sealedRound, sealedEligibleIds, sealedBids, channel, liveAuctionState, liveStateForBroadcast, showSealedAuctionStage, isAuctioneerPlayerIdentity, showScreen, hybridStartSealedRound, sealedTimerInterval, endSealedAuction
+external/builtins: Date, Math, parseInt, playSound, String, setTimeout, clearInterval, setInterval
+source:
+async function startSealedAuctionTimer(){
+            if(!sealedAuctionModeActive || !currentAuctionPlayer)return;
+            sealedEnding=false;
+            await closeReadyGateDedicated();
+
+            sealedDeadlineAt=Date.now()+Math.max(5,parseInt(sealedTimerSeconds)||30)*1000;
+            isAuctionActive=false;
+            currentWinner='';
+            currentAuctionValue=0;
+
+            await saveLiveAuctionState({
+                phase:'sealed',
+                mode:'sealed',
+                player:livePlayerSnapshot(),
+                sealed_token:sealedAuctionToken,
+                sealed_round:sealedRound,
+                sealed_seconds:sealedTimerSeconds,
+                sealed_deadline_at:sealedDeadlineAt,
+                sealed_eligible_ids:sealedEligibleIds,
+                sealed_submitted_ids:[...sealedBids.keys()],
+                winner:'',value:0,seconds:sealedTimerSeconds,deadline_at:sealedDeadlineAt,
+                ready_token:null,ready_required_ids:[],ready_ids:[]
+            });
+
+            playSound('audio-start');
+
+            if(channel){
+                const sealedStartPayload={
+                    token:sealedAuctionToken,
+                    player_id:String(currentAuctionPlayer.Id),
+                    seconds:sealedTimerSeconds,
+                    deadline_at:sealedDeadlineAt,
+                    eligible_ids:sealedEligibleIds,
+                    round:sealedRound
+                };
+
+                channel.send({
+                    type:'broadcast',
+                    event:'sealed_bid_start',
+                    payload:sealedStartPayload
+                }).catch(()=>{});
+
+                // Secondo invio + live state: protegge i telefoni da un broadcast perso.
+                setTimeout(()=>{
+                    channel?.send({
+                        type:'broadcast',
+                        event:'sealed_bid_start',
+                        payload:sealedStartPayload
+                    }).catch(()=>{});
+                    if(liveAuctionState){
+                        channel?.send({type:'broadcast',event:'live_state',payload:liveStateForBroadcast()}).catch(()=>{});
+                    }
+                },350);
+            }
+
+            showSealedAuctionStage();
+
+            // il banditore+giocatore usa lo stesso dispositivo del banditore,
+            // quindi non riceve necessariamente il proprio broadcast sealed_bid_start.
+            // Avviamo direttamente anche la sua interfaccia giocatore.
+            if(isAuctioneerPlayerIdentity()){
+                showScreen('screen-player-buzzer');
+                hybridStartSealedRound();
+            }
+
+            if(sealedTimerInterval)clearInterval(sealedTimerInterval);
+            sealedTimerInterval=setInterval(()=>{
+                showSealedAuctionStage();
+                if(Date.now()>=sealedDeadlineAt){
+                    clearInterval(sealedTimerInterval);
+                    sealedTimerInterval=null;
+                    endSealedAuction();
+                }
+            },250);
+        }
+
+[receiveSealedBid] bytes=3039
+app deps: sealedAuctionModeActive, sealedAuctionToken, currentAuctionPlayer, sealedDeadlineAt, sealedEligibleIds, sealedBids, teamsCache, isAuctioneerPlayerIdentity, myTeamId, playerSealedSubmitted, preparePlayerSealedControls, channel, persistSealedBids, showSealedAuctionStage, sealedTimerInterval, endSealedAuction
+external/builtins: String, Date, Math, parseInt, maxBidForTeam, document, clearInterval
+source:
+async function receiveSealedBid(data){
+            if(!sealedAuctionModeActive || !sealedAuctionToken || !currentAuctionPlayer)return;
+            if(String(data?.token||'')!==String(sealedAuctionToken))return;
+
+            // Il banditore è l'autorità temporale: dopo la sua scadenza
+            // nessuna offerta tardiva viene accettata.
+            if(sealedDeadlineAt && Date.now()>sealedDeadlineAt+250)return;
+            const teamId=String(data?.team_id||'');
+            if(!sealedEligibleIds.includes(teamId))return;
+            if(sealedBids.has(teamId))return;
+
+            const team=teamsCache.find(t=>String(t.id)===teamId);
+            if(!team)return;
+
+            const amount=Math.max(1,parseInt(data?.amount)||0);
+            const max=maxBidForTeam(team,currentAuctionPlayer.R);
+            if(amount<1 || amount>max){
+                const reason=`Offerta non valida. Massimo ${max}.`;
+
+                if(isAuctioneerPlayerIdentity() && String(teamId)===String(myTeamId)){
+                    playerSealedSubmitted=false;
+                    preparePlayerSealedControls(true);
+                    const st=document.getElementById('sealed-bid-status');
+                    if(st){
+                        st.textContent=reason;
+                        st.className='sealed-bid-status error';
+                    }
+                }else{
+                    channel?.send({
+                        type:'broadcast',event:'sealed_bid_rejected',
+                        payload:{token:sealedAuctionToken,team_id:teamId,reason}
+                    }).catch(()=>{});
+                }
+                return;
+            }
+
+            sealedBids.set(teamId,{
+                team_id:teamId,
+                team_name:team.name,
+                amount,
+                at:Date.now()
+            });
+
+            if(isAuctioneerPlayerIdentity() && String(teamId)===String(myTeamId)){
+                playerSealedSubmitted=true;
+                preparePlayerSealedControls(true);
+                const st=document.getElementById('sealed-bid-status');
+                if(st){
+                    st.textContent='Offerta registrata. Non può più essere modificata.';
+                    st.className='sealed-bid-status sent';
+                }
+            }
+
+            persistSealedBids();
+            showSealedAuctionStage();
+
+            channel?.send({
+                type:'broadcast',event:'sealed_bid_count',
+                payload:{
+                    token:sealedAuctionToken,
+                    count:sealedBids.size,
+                    total:sealedEligibleIds.length,
+                    submitted_ids:[...sealedBids.keys()]
+                }
+            }).catch(()=>{});
+
+            // Se tutti gli aventi diritto hanno offerto, non aspettiamo la scadenza.
+            if(sealedEligibleIds.length>0 && sealedBids.size>=sealedEligibleIds.length){
+                if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
+                endSealedAuction();
+            }
+        }
+
+[normalizeSealedRanking] bytes=550
+app deps: (none)
+external/builtins: Array, String, Math, parseInt, Number
+source:
+function normalizeSealedRanking(bids){
+            return (Array.isArray(bids)?bids:[])
+                .map((b,index)=>({
+                    team_id:String(b?.team_id||''),
+                    team_name:String(b?.team_name||'Squadra'),
+                    amount:Math.max(0,parseInt(b?.amount)||0),
+                    at:Number(b?.at)||0,
+                    original_index:index
+                }))
+                .filter(b=>b.amount>0)
+                .sort((a,b)=>b.amount-a.amount || a.at-b.at || a.original_index-b.original_index);
+        }
+
+[sealedRankingMarkup] bytes=802
+app deps: normalizeSealedRanking
+external/builtins: escapeHtml
+source:
+function sealedRankingMarkup(ranking,title='CLASSIFICA OFFERTE'){
+            const rows=normalizeSealedRanking(ranking);
+            if(!rows.length)return '';
+
+            return `
+                <div class="sealed-ranking-title">${escapeHtml(title)}</div>
+                <div class="sealed-ranking-list">
+                    ${rows.map((bid,i)=>`
+                        <div class="sealed-ranking-row ${i===0?'winner':''}">
+                            <span class="sealed-ranking-pos">${i+1}</span>
+                            <span class="sealed-ranking-team">${escapeHtml(bid.team_name)}</span>
+                            <strong class="sealed-ranking-value">${bid.amount}</strong>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+[renderSealedBidRanking] bytes=121
+app deps: renderAuctioneerBidRanking
+external/builtins: (none)
+source:
+function renderSealedBidRanking(ranking){
+            renderAuctioneerBidRanking(ranking,'CLASSIFICA OFFERTE');
+        }
+
+[clearSealedBidRanking] bytes=87
+app deps: renderAuctioneerBidRanking
+external/builtins: (none)
+source:
+function clearSealedBidRanking(){
+            renderAuctioneerBidRanking([]);
+        }
+
+[restartSealedTieBreak] bytes=4103
+app deps: normalizeSealedRanking, clearPersistedSealedBids, sealedRound, sealedAuctionToken, currentRoomId, currentAuctionPlayer, sealedEligibleIds, sealedBids, sealedEnding, sealedDeadlineAt, sealedRevealDeadlineAt, currentWinner, currentAuctionValue, clearSealedBidRanking, readyModeEnabled, beginReadyGate, saveReadyGateDedicated, readyRequiredIds, readyGateToken, channel, playerListoneNumericValue, readyPlayers, readySkipPlayers, sealedTimerSeconds, auctioneerPlayerMode, showHybridPlayerForCurrentAuction, showHybridReadyIfNeeded, showAuctioneerReadyStage, updateReadyGateDisplay, evaluateReadyGate, startSealedAuctionTimer
+external/builtins: Math, Date, String, Map, document, playerImageUrl
+source:
+async function restartSealedTieBreak(tiedBids,previousToken){
+            const tied=normalizeSealedRanking(tiedBids);
+            if(tied.length<2)return;
+
+            // NESSUNA assegnazione: nuova busta soltanto per i pari merito.
+            await clearPersistedSealedBids(previousToken);
+
+            sealedRound=Math.max(1,sealedRound)+1;
+            sealedAuctionToken=`sealed_${currentRoomId}_${currentAuctionPlayer.Id}_r${sealedRound}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+            sealedEligibleIds=tied.map(b=>String(b.team_id));
+            sealedBids=new Map();
+            sealedEnding=false;
+            sealedDeadlineAt=0;
+            sealedRevealDeadlineAt=0;
+            currentWinner='';
+            currentAuctionValue=0;
+
+            clearSealedBidRanking();
+
+            document.getElementById('auction-title-display').textContent='PARITÀ';
+            document.getElementById('winner-display').textContent='NUOVA BUSTA';
+            document.getElementById('winner-display').style.color='var(--accent-blue)';
+            document.getElementById('current-value-display').textContent='--';
+            document.getElementById('countdown-display').textContent='--';
+
+            // prima del round 2 (e di ogni eventuale round successivo)
+            // si rifà il READY. Grazie a readyRequiredTeams() lo ricevono
+            // soltanto le squadre rimaste in parità.
+            if(readyModeEnabled){
+                beginReadyGate();
+                await saveReadyGateDedicated(true);
+
+                const required=readyRequiredIds();
+                const readyPayload={
+                    ready_token:readyGateToken,
+                    ready_required_ids:required,
+                    ready_ids:[],
+                    nome:currentAuctionPlayer.Nome,
+                    role:currentAuctionPlayer.R,
+                    club:currentAuctionPlayer.Squadra
+                };
+
+                if(channel){
+                    channel.send({
+                        type:'broadcast',
+                        event:'new_player',
+                        payload:{
+                            url:playerImageUrl(currentAuctionPlayer.Id,currentAuctionPlayer.R),
+                            nome:currentAuctionPlayer.Nome,
+                            player_id:currentAuctionPlayer.Id,
+                            role:currentAuctionPlayer.R,
+                            club:currentAuctionPlayer.Squadra,
+                            fvm:playerListoneNumericValue(currentAuctionPlayer),
+                            prep_seconds:0,
+                            ready_required:true,
+                            ready_token:readyGateToken,
+                            ready_required_ids:required,
+                            ready_ids:[...readyPlayers],
+                            skip_ids:[...readySkipPlayers],
+                            mode:'sealed',
+                            sealed_token:sealedAuctionToken,
+                            sealed_round:sealedRound,
+                            sealed_seconds:sealedTimerSeconds,
+                            sealed_eligible_ids:sealedEligibleIds
+                        }
+                    }).catch(()=>{});
+
+                    channel.send({
+                        type:'broadcast',
+                        event:'ready_state',
+                        payload:{
+                            token:readyGateToken,
+                            ready_count:0,
+                            total:required.length,
+                            waiting:true,
+                            required_ids:required,
+                            ready_ids:[]
+                        }
+                    }).catch(()=>{});
+                }
+
+                if(auctioneerPlayerMode){
+                    showHybridPlayerForCurrentAuction();
+                    showHybridReadyIfNeeded();
+                }
+
+                showAuctioneerReadyStage();
+                updateReadyGateDisplay();
+                evaluateReadyGate();
+                return;
+            }
+
+            await startSealedAuctionTimer();
+        }
+
+[finalizeSealedAuctionResult] bytes=7618
+app deps: sealedBids, sealedRevealDeadlineAt, sealedRevealSeconds, showSealedAuctionStage, sealedRevealInterval, currentAuctionPlayer, showAuctionPanels, sealedAuctionToken, normalizeSealedRanking, sealedEligibleIds, restartSealedTieBreak, teamsCache, supabaseClient, currentRoomId, currentWinner, currentAuctionValue, auctionedPlayerIds, saveAuctionedPlayers, loadRoomState, broadcastAuctionedState, broadcastStateChanged, markCurrentPlayerAuctioned, renderSealedBidRanking, isAuctioneerMobileBoard, setMobileBoardPhase, mobileBoardView, saveLiveAuctionState, livePlayerSnapshot, channel, hybridRenderSealedEnd, clearPersistedSealedBids, sealedAuctionModeActive, sealedEnding, sealedRound, sealedDeadlineAt, sealedListonePickMode, updateSealedModeButton, nominationState, advanceNominationTurn, nominationReady, saveNominationState, showNominationWaitingBoard
+external/builtins: Number, Math, parseInt, Date, clearInterval, clearTimeout, setTimeout, String, document, alert, playSound, Map
+source:
+async function finalizeSealedAuctionResult(){
+            // v0.93 reveal hard guard
+            if(sealedBids.size>0){
+                const __deadline=Number(sealedRevealDeadlineAt)||0;
+                if(__deadline<=0){
+                    const __seconds=Math.max(1,parseInt(sealedRevealSeconds)||5);
+                    sealedRevealDeadlineAt=Date.now()+__seconds*1000;
+                    showSealedAuctionStage('opening');
+                    if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);}
+                    sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},__seconds*1000+60);
+                    return;
+                }
+                const __left=__deadline-Date.now();
+                if(__left>25){
+                    if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);}
+                    sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},__left+60);
+                    return;
+                }
+            }
+
+            if(!currentAuctionPlayer)return;
+
+            // L'esito non può essere calcolato/mostrato prima della fine del secondo countdown.
+            // Questo evita anticipi dovuti a timer concorrenti, restore dello stato o broadcast.
+            const remainingRevealMs=(Number(sealedRevealDeadlineAt)||0)-Date.now();
+            if(remainingRevealMs>25){
+                if(sealedRevealInterval){clearInterval(sealedRevealInterval);sealedRevealInterval=null;}
+                sealedRevealInterval=setTimeout(()=>{sealedRevealInterval=null;finalizeSealedAuctionResult();},remainingRevealMs+40);
+                return;
+            }
+
+            showAuctionPanels();
+            const token=sealedAuctionToken;
+            const bids=normalizeSealedRanking(
+                [...sealedBids.values()]
+                    .filter(x=>sealedEligibleIds.includes(String(x.team_id)))
+            );
+            const winner=bids.length?bids[0]:null;
+
+            // Se il massimo è pari, il giocatore NON viene assegnato.
+            // Rifacciamo la busta solo tra i pari; può ripetersi più volte.
+            if(winner){
+                const topAmount=parseInt(winner.amount)||0;
+                const tiedTop=bids.filter(b=>(parseInt(b.amount)||0)===topAmount);
+                if(tiedTop.length>1){
+                    await restartSealedTieBreak(tiedTop,token);
+                    return;
+                }
+            }
+
+            let assignmentOk=true;
+
+            if(winner){
+                const team=teamsCache.find(t=>String(t.id)===String(winner.team_id));
+                const {error}=await supabaseClient.rpc('fanta_assign_player',{
+                    p_room_id:currentRoomId,
+                    p_team_id:team?.id,
+                    p_player_id:String(currentAuctionPlayer.Id),
+                    p_player_name:String(currentAuctionPlayer.Nome||''),
+                    p_role:String(currentAuctionPlayer.R||''),
+                    p_club:String(currentAuctionPlayer.Squadra||''),
+                    p_price:parseInt(winner.amount)||1
+                });
+                if(error){
+                    assignmentOk=false;
+                    currentWinner='';
+                    currentAuctionValue=0;
+                    document.getElementById('auction-title-display').textContent='ASSEGNAZIONE BLOCCATA';
+                    document.getElementById('winner-display').textContent='ERRORE';
+                    document.getElementById('current-value-display').textContent='--';
+                    alert(error.message||'Impossibile assegnare il giocatore.');
+                }else{
+                    auctionedPlayerIds.add(String(currentAuctionPlayer.Id));
+                    await saveAuctionedPlayers();
+                    currentWinner=team?.name||winner.team_name;
+                    currentAuctionValue=parseInt(winner.amount)||1;
+                    await loadRoomState();
+                    broadcastAuctionedState();
+                    broadcastStateChanged();
+                }
+            }else{
+                currentWinner='';
+                currentAuctionValue=0;
+                await markCurrentPlayerAuctioned();
+            }
+
+            if(assignmentOk){
+                playSound('audio-end');
+                document.getElementById('auction-title-display').textContent=winner?'AGGIUDICATO A':'ESITO BUSTA';
+                document.getElementById('winner-display').textContent=winner?(currentWinner||winner.team_name):'INVENDUTO';
+                document.getElementById('winner-display').style.color=winner?'var(--accent-blue)':'var(--text-muted)';
+                document.getElementById('current-value-display').textContent=winner?String(currentAuctionValue):'0';
+                document.getElementById('countdown-display').textContent='0';
+
+                // dopo l'apertura buste mostra tutte le offerte ordinate.
+                renderSealedBidRanking(bids);
+                if(isAuctioneerMobileBoard()){
+                    setMobileBoardPhase(winner?'sealed-result':'unsold');
+                    mobileBoardView()?.classList.add('mobile-ended');
+                    if(!winner){
+                        document.getElementById('winner-display').textContent='INVENDUTO';
+                    }
+                }
+
+                await saveLiveAuctionState({
+                    phase:'ended',mode:'sealed_result',player:livePlayerSnapshot(),winner:currentWinner||'',value:currentAuctionValue||0,
+                    sealed_ranking:bids.map(b=>({team_id:b.team_id,team_name:b.team_name,amount:b.amount,at:b.at})),
+                    seconds:0,deadline_at:null,ready_token:null,ready_required_ids:[],ready_ids:[]
+                });
+
+                channel?.send({
+                    type:'broadcast',event:'sealed_bid_end',
+                    payload:{
+                        token,
+                        winner:currentWinner||'',
+                        value:currentAuctionValue||0,
+                        player_id:String(currentAuctionPlayer.Id),
+                        no_bids:!winner,
+                        ranking:bids.map(b=>({team_id:b.team_id,team_name:b.team_name,amount:b.amount,at:b.at}))
+                    }
+                }).catch(()=>{});
+                hybridRenderSealedEnd(currentWinner||'',currentAuctionValue||0,!winner);
+            }
+
+            await clearPersistedSealedBids(token);
+
+            // La modalità busta è MONOUSO: da qui la prossima banditura è sempre normale.
+            sealedAuctionModeActive=false;
+            sealedEnding=false;
+            sealedAuctionToken=null;
+            sealedRound=1;
+            sealedBids=new Map();
+            sealedEligibleIds=[];
+            sealedDeadlineAt=0;
+            sealedRevealDeadlineAt=0;
+            sealedListonePickMode=false;
+            updateSealedModeButton();
+
+            const nextButton=document.getElementById('btn-next');
+            if(assignmentOk){
+                if(nominationState.enabled){
+                    await advanceNominationTurn();
+                    nominationReady=true;
+                    await saveNominationState(true);
+                    await saveLiveAuctionState({phase:'idle',mode:'normal',player:null,winner:'',value:0,seconds:0,deadline_at:null,ready_token:null,ready_required_ids:[],ready_ids:[]});
+                    showNominationWaitingBoard();
+                }else if(nextButton){
+                    nextButton.style.display='flex';
+                }
+            }
+        }
+
+[endSealedAuction] bytes=3397
+app deps: sealedAuctionModeActive, sealedEnding, sealedTimerInterval, sealedBids, sealedRevealDeadlineAt, finalizeSealedAuctionResult, clearSealedBidRanking, hideNominationStage, showAuctionPanels, sealedRevealSeconds, showSealedAuctionStage, saveLiveAuctionState, livePlayerSnapshot, sealedAuctionToken, sealedRound, sealedEligibleIds, channel, currentAuctionPlayer, hybridStartSealedReveal, sealedRevealInterval, isAuctioneerPlayerIdentity
+external/builtins: clearInterval, document, Math, parseInt, Date, String, playSound, setInterval
+source:
+async function endSealedAuction(){
+            if(!sealedAuctionModeActive || sealedEnding)return;
+            sealedEnding=true;
+            if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
+
+            // v0.93: nessuna busta = nessun countdown di apertura, esito invenduto immediato.
+            if(sealedBids.size===0){
+                sealedRevealDeadlineAt=0;
+                await finalizeSealedAuctionResult();
+                return;
+            }
+
+            // Il primo timer è finito: NON mostriamo ancora né vincitore né importo.
+            clearSealedBidRanking();
+            hideNominationStage();
+            showAuctionPanels();
+            document.getElementById('auction-title-display').textContent='APERTURA BUSTE';
+            document.getElementById('winner-display').textContent='ATTENDI';
+            document.getElementById('winner-display').style.color='var(--text-muted)';
+            document.getElementById('current-value-display').textContent='?';
+            const nextButton=document.getElementById('btn-next');
+            if(nextButton)nextButton.style.display='none';
+
+            let reveal=Math.max(1,parseInt(sealedRevealSeconds)||5);
+            const revealDeadline=Date.now()+reveal*1000;
+            sealedRevealDeadlineAt=revealDeadline;
+            showSealedAuctionStage('opening');
+            const timerEl=document.getElementById('countdown-display');
+            timerEl.textContent=String(reveal);
+            timerEl.style.color='var(--accent-blue)';
+
+            // Lo stato condiviso non contiene il risultato finché il countdown non è terminato.
+            await saveLiveAuctionState({
+                phase:'sealed_reveal',mode:'sealed',player:livePlayerSnapshot(),winner:'',value:0,
+                sealed_token:sealedAuctionToken,sealed_round:sealedRound,sealed_seconds:sealedRevealSeconds,sealed_eligible_ids:sealedEligibleIds,
+                sealed_submitted_ids:[...sealedBids.keys()],seconds:reveal,deadline_at:revealDeadline
+            });
+
+            channel?.send({
+                type:'broadcast',event:'sealed_reveal_start',
+                payload:{token:sealedAuctionToken,round:sealedRound,seconds:reveal,deadline_at:revealDeadline,player_id:String(currentAuctionPlayer.Id)}
+            }).catch(()=>{});
+            hybridStartSealedReveal(reveal);
+
+            if(sealedRevealInterval)clearInterval(sealedRevealInterval);
+            let lastRevealSoundSecond=null;
+            const tick=()=>{
+                reveal=Math.max(0,Math.ceil((revealDeadline-Date.now())/1000));
+                timerEl.textContent=String(reveal);
+
+                // Banditore normale: stesso beep della preparazione.
+                // Se è banditore+giocatore il suono viene già riprodotto
+                // dal countdown della schermata giocatore, quindi niente doppio audio.
+                if(!isAuctioneerPlayerIdentity() && reveal>0 && reveal!==lastRevealSoundSecond){
+                    lastRevealSoundSecond=reveal;
+                    playSound('audio-prep');
+                }
+
+                if(reveal<=0){
+                    if(sealedRevealInterval){clearInterval(sealedRevealInterval);sealedRevealInterval=null;}
+                    finalizeSealedAuctionResult();
+                }
+            };
+            tick();
+            sealedRevealInterval=setInterval(tick,250);
+        }
+
+[updateSealedModeButton] bytes=407
+app deps: sealedListonePickMode
+external/builtins: document
+source:
+function updateSealedModeButton(){
+            const btn=document.getElementById('toolbar-sealed-mode-btn');
+            if(!btn)return;
+
+            btn.classList.toggle('active',!!sealedListonePickMode);
+            btn.textContent=sealedListonePickMode
+                ?'Buste ✓'
+                :'Avvia buste';
+            btn.setAttribute('aria-pressed',sealedListonePickMode?'true':'false');
+        }
+
+[toggleSealedListoneMode] bytes=437
+app deps: currentRoomId, sealedListonePickMode, blockHybridBanditoreOutOfTurnAction, updateSealedModeButton, refreshPlayerLists
+external/builtins: document
+source:
+function toggleSealedListoneMode(){
+            if(!currentRoomId)return;
+            if(!sealedListonePickMode && blockHybridBanditoreOutOfTurnAction(true))return;
+
+            sealedListonePickMode=!sealedListonePickMode;
+            updateSealedModeButton();
+
+            const search=document.getElementById('player-search');
+            if(search && sealedListonePickMode)search.focus();
+
+            refreshPlayerLists();
+        }
+
+[openSealedPlayerPicker] bytes=222
+app deps: blockHybridBanditoreOutOfTurnAction, sealedListonePickMode, updateSealedModeButton, refreshPlayerLists
+external/builtins: (none)
+source:
+function openSealedPlayerPicker(){
+            if(blockHybridBanditoreOutOfTurnAction(true))return;
+
+            sealedListonePickMode=true;
+            updateSealedModeButton();
+            refreshPlayerLists();
+        }
+
+[closeSealedPlayerPicker] bytes=158
+app deps: sealedListonePickMode, updateSealedModeButton, refreshPlayerLists
+external/builtins: (none)
+source:
+function closeSealedPlayerPicker(){
+            sealedListonePickMode=false;
+            updateSealedModeButton();
+            refreshPlayerLists();
+        }
+
+[cancelSealedListonePick] bytes=84
+app deps: closeSealedPlayerPicker
+external/builtins: (none)
+source:
+function cancelSealedListonePick(){
+            closeSealedPlayerPicker();
+        }
+
+[chooseSealedPlayerFromListone] bytes=618
+app deps: blockHybridBanditoreOutOfTurnAction, sealedListonePickMode, updateSealedModeButton, playersList, auctionedPlayerIds, startSealedAuctionForPlayer
+external/builtins: String, appConfirm
+source:
+async function chooseSealedPlayerFromListone(id){
+            if(blockHybridBanditoreOutOfTurnAction(true)){
+                sealedListonePickMode=false;
+                updateSealedModeButton();
+                return;
+            }
+
+            const player=playersList.find(p=>String(p.Id)===String(id));
+            if(!player || auctionedPlayerIds.has(String(id)))return;
+            if(!await appConfirm(`Avviare l'offerta in busta chiusa per ${player.Nome}?`))return;
+            sealedListonePickMode=false;
+            updateSealedModeButton();
+            await startSealedAuctionForPlayer(player);
+        }
+
+[renderSealedPlayerOptions] bytes=599
+app deps: getAvailablePlayers
+external/builtins: document, filterAndSortPlayers, escapeHtml, String, playerRole
+source:
+function renderSealedPlayerOptions(){
+            const sel=document.getElementById('sealed-player-select');
+            if(!sel)return;
+            const list=filterAndSortPlayers(getAvailablePlayers(),'sealed');
+
+            sel.innerHTML=list.length
+                ? '<option value="">Seleziona un giocatore...</option>'+
+                  list.map(p=>`<option value="${escapeHtml(String(p.Id))}">[${escapeHtml(playerRole(p)||'-')}] ${escapeHtml(p.Nome||'')} · ${escapeHtml(p.Squadra||'')}</option>`).join('')
+                : '<option value="">Nessun giocatore disponibile</option>';
+        }
+
+[confirmStartSealedAuction] bytes=690
+app deps: blockHybridBanditoreOutOfTurnAction, playersList, closeSealedPlayerPicker, closeRoomControl, startSealedAuctionForPlayer
+external/builtins: document, String, appConfirm
+source:
+async function confirmStartSealedAuction(){
+            if(blockHybridBanditoreOutOfTurnAction(true))return;
+
+            const err=document.getElementById('sealed-picker-error');
+            if(err)err.textContent='';
+            const id=document.getElementById('sealed-player-select')?.value||'';
+            const player=playersList.find(p=>String(p.Id)===String(id));
+            if(!player){if(err)err.textContent='Seleziona un giocatore.';return;}
+
+            if(!await appConfirm(`Avviare l'offerta in busta chiusa per ${player.Nome}?`))return;
+
+            closeSealedPlayerPicker();
+            closeRoomControl();
+            await startSealedAuctionForPlayer(player);
+        }
+
+[sealedEligibleTeams] bytes=234
+app deps: currentAuctionPlayer, teamsCache
+external/builtins: String, maxBidForTeam
+source:
+function sealedEligibleTeams(){
+            if(!currentAuctionPlayer)return[];
+            const role=String(currentAuctionPlayer.R||'').toUpperCase();
+            return teamsCache.filter(team=>maxBidForTeam(team,role)>=1);
+        }
+
+[startSealedAuctionForPlayer] bytes=3031
+app deps: auctionedPlayerIds, currentAuctionPlayer, currentWinner, currentAuctionValue, currentTimer, normalBidMaxima, recentNormalBidIds, sealedEnding, sealedAuctionModeActive, sealedRound, sealedAuctionToken, currentRoomId, sealedBids, sealedEligibleIds, sealedEligibleTeams, sealedDeadlineAt, sealedTimerInterval, restoreAuctionCardVisibility, readySkipPlayers, readyModeEnabled, beginReadyGate, readyGateWaiting, readyGateToken, readyPlayers, channel, playerListoneNumericValue, readyRequiredIds, sealedTimerSeconds, auctioneerPlayerMode, showHybridPlayerForCurrentAuction, showHybridReadyIfNeeded, showAuctioneerReadyStage, updateReadyGateDisplay, evaluateReadyGate, startSealedAuctionTimer
+external/builtins: String, playerRole, Map, Date, Math, clearInterval, document, setPlayerImage, Set, playerImageUrl
+source:
+async function startSealedAuctionForPlayer(player){
+            if(!player || auctionedPlayerIds.has(String(player.Id)))return;
+
+            currentAuctionPlayer={...player,R:playerRole(player)};
+            player=currentAuctionPlayer;
+            // nessun nuovo giocatore eredita esito/prezzo dell'asta precedente.
+            currentWinner='';
+            currentAuctionValue=0;
+            currentTimer=0;
+            normalBidMaxima=new Map();
+            recentNormalBidIds=new Map();
+            sealedEnding=false;
+            sealedAuctionModeActive=true;
+            sealedRound=1;
+            sealedAuctionToken=`sealed_${currentRoomId}_${player.Id}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+            sealedBids=new Map();
+            sealedEligibleIds=sealedEligibleTeams().map(t=>String(t.id));
+            sealedDeadlineAt=0;
+            if(sealedTimerInterval){clearInterval(sealedTimerInterval);sealedTimerInterval=null;}
+
+            restoreAuctionCardVisibility();
+            document.getElementById('auction-player-name-top').textContent=player.Nome||'--';
+            document.getElementById('auction-player-role').textContent=player.R||'-';
+            document.getElementById('auction-player-club').textContent=player.Squadra||'-';
+            setPlayerImage(document.getElementById('card-image'), player.Id, player.R);
+
+            readySkipPlayers=new Set();
+            if(readyModeEnabled)beginReadyGate();
+            else{readyGateWaiting=false;readyGateToken=null;readyPlayers=new Set();}
+
+            if(channel){
+                channel.send({
+                    type:'broadcast',
+                    event:'new_player',
+                    payload:{
+                        url:playerImageUrl(player.Id,player.R),
+                        nome:player.Nome,player_id:player.Id,role:player.R,club:player.Squadra,fvm:playerListoneNumericValue(player),
+                        prep_seconds:0,
+                        ready_required:readyModeEnabled,
+                        ready_token:readyGateToken,
+                        ready_required_ids:readyModeEnabled?readyRequiredIds():[],
+                        ready_ids:readyModeEnabled?[...readyPlayers]:[],
+                        skip_ids:readyModeEnabled?[...readySkipPlayers]:[],
+                        mode:'sealed',
+                        sealed_token:sealedAuctionToken,
+                        sealed_round:sealedRound,
+                        sealed_seconds:sealedTimerSeconds,
+                        sealed_eligible_ids:sealedEligibleIds
+                    }
+                }).catch(()=>{});
+            }
+
+            if(auctioneerPlayerMode){
+                showHybridPlayerForCurrentAuction();
+                if(readyModeEnabled)showHybridReadyIfNeeded();
+            }
+
+            if(readyModeEnabled){
+                showAuctioneerReadyStage();
+                updateReadyGateDisplay();
+                evaluateReadyGate();
+            }else{
+                startSealedAuctionTimer();
+            }
+        }
+
