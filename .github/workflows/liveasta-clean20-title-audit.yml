@@ -1,0 +1,35 @@
+name: LIVEASTA DEV clean20 title audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean20-title-audit.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit title assignments
+        run: |
+          {
+            echo 'LIVEASTA CLEAN-20 TITLE AUDIT'
+            echo '==========================='
+            echo
+            echo '[document.title]'
+            grep -Rni --include='*.js' --include='*.html' 'document\.title' dev || true
+            echo
+            echo '[v0.93 literals]'
+            grep -Rni --include='*.js' --include='*.html' 'v0\.93' dev || true
+            echo
+            echo '[title element writes]'
+            grep -Rni --include='*.js' -E '(querySelector|getElementById).*title|textContent.*v0\.93|innerHTML.*v0\.93' dev || true
+          } > dev/CLEANUP_AUDIT_CLEAN20_TITLE.txt
+      - name: Commit report and self-remove
+        run: |
+          rm -f .github/workflows/liveasta-clean20-title-audit.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/CLEANUP_AUDIT_CLEAN20_TITLE.txt .github/workflows/liveasta-clean20-title-audit.yml
+          git commit -m "LIVEASTA DEV clean20 title ownership audit"
+          git push
