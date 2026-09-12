@@ -1,0 +1,61 @@
+name: LIVEASTA management clean rebuild
+
+on:
+  push:
+    paths:
+      - 'dev/tests/_apply_management_rebuild.py'
+      - '.github/workflows/liveasta-management-rebuild.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild-management:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply clean management rebuild
+        run: python3 dev/tests/_apply_management_rebuild.py
+
+      - name: Static validation
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+
+          html=Path('dev/index.html').read_text(encoding='utf-8')
+          css=Path('dev/styles/management.css').read_text(encoding='utf-8')
+          ui=Path('dev/styles/ui.css').read_text(encoding='utf-8')
+
+          class IDs(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.ids=[]
+              def handle_starttag(self,tag,attrs):
+                  d=dict(attrs)
+                  if 'id' in d:self.ids.append(d['id'])
+          p=IDs(); p.feed(html)
+          dup=sorted({x for x in p.ids if p.ids.count(x)>1})
+          if dup: raise SystemExit('duplicate ids: '+', '.join(dup))
+          if 'management-system.css' in html: raise SystemExit('legacy management-system link found')
+          if 'management-design-' in ui[:500]: raise SystemExit('legacy management design prefix still found')
+          if html.count('id="screen-room-control"') != 1: raise SystemExit('management screen count invalid')
+          if css.count('{') != css.count('}'): raise SystemExit('management css brace mismatch')
+          if 'mg-section-label' in html: raise SystemExit('runtime section injection still in markup')
+          print('HTML/CSS validation OK · IDs',len(p.ids))
+          PY
+          node --check dev/scripts/management.js
+          git diff --check
+
+      - name: Commit DEV-only rebuild and remove temporary files
+        run: |
+          rm -f dev/tests/_apply_management_rebuild.py
+          rm -f .github/workflows/liveasta-management-rebuild.yml
+          git config user.name 'liveasta-dev-bot'
+          git config user.email 'liveasta-dev-bot@users.noreply.github.com'
+          git add dev/index.html dev/styles/ui.css dev/styles/management.css dev/styles/management-system.css dev/scripts/management.js dev/tests/_apply_management_rebuild.py .github/workflows/liveasta-management-rebuild.yml
+          git commit -m 'Rebuild DEV management UI cleanly'
+          git push origin main
