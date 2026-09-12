@@ -1,0 +1,119 @@
+name: LIVEASTA DEV clean08 auctioneer management CSS cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/liveasta-clean08-auctioneer-management.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  clean08:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install parser
+        run: npm install --no-save postcss@8
+
+      - name: Consolidate dead auctioneer and management declarations
+        run: |
+          cat > clean08-temp.js <<'JS'
+          const fs=require('fs');
+          const path=require('path');
+          const postcss=require('postcss');
+          const dir='dev/styles';
+          const files=fs.readdirSync(dir).filter(x=>x.endsWith('.css')).sort();
+          const scopes=['#screen-auctioneer-board','#screen-room-control'];
+          let totalRemoved=0,totalGroups=0;
+          const report=['LIVEASTA CLEAN-08 - AUCTIONEER + MANAGEMENT CSS CASCADE CLEANUP','==========================================================','Scope: exact selector + exact property + exact at-rule context, inside each stylesheet.','Only selectors containing #screen-auctioneer-board or #screen-room-control are considered.','Cascade priority is preserved: !important beats normal; within the same importance level the last declaration wins.','No winning value is changed.','','FILES'];
+
+          function contextKey(rule){
+            const chain=[]; let p=rule.parent;
+            while(p && p.type!=='root'){
+              if(p.type==='atrule') chain.unshift('@'+p.name+' '+String(p.params||'').trim());
+              p=p.parent;
+            }
+            return chain.join(' > ');
+          }
+
+          for(const name of files){
+            const file=path.join(dir,name);
+            const before=fs.readFileSync(file,'utf8');
+            const root=postcss.parse(before,{from:file});
+            const groups=new Map();
+            let order=0;
+            root.walkRules(rule=>{
+              order++;
+              if(!scopes.some(s=>String(rule.selector||'').includes(s))) return;
+              const ctx=contextKey(rule);
+              rule.nodes.filter(n=>n.type==='decl').forEach((d,di)=>{
+                const key=ctx+'\u0000'+rule.selector+'\u0000'+d.prop;
+                if(!groups.has(key)) groups.set(key,[]);
+                groups.get(key).push({d,order,di,important:!!d.important});
+              });
+            });
+            let removed=0, consolidated=0;
+            for(const arr of groups.values()){
+              if(arr.length<2) continue;
+              const imp=arr.filter(x=>x.important);
+              const winner=(imp.length?imp:arr).slice().sort((a,b)=>a.order-b.order||a.di-b.di).at(-1);
+              let local=0;
+              for(const x of arr){
+                if(x===winner) continue;
+                // Normal declarations before an !important winner are dead; earlier !important declarations are dead;
+                // if no !important exists, all earlier normal declarations are dead.
+                x.d.remove(); removed++; local++;
+              }
+              if(local){ consolidated++; totalGroups++; }
+            }
+            root.walkRules(rule=>{
+              const meaningful=(rule.nodes||[]).some(n=>n.type==='decl'||n.type==='rule'||n.type==='atrule');
+              if(!meaningful) rule.remove();
+            });
+            const after=root.toString();
+            fs.writeFileSync(file,after,'utf8');
+            totalRemoved+=removed;
+            report.push(`- ${name}: groups consolidated ${consolidated}; declarations removed ${removed}; ${before.length.toLocaleString()} -> ${after.length.toLocaleString()} chars`);
+          }
+          report.push('',`TOTAL GROUPS CONSOLIDATED: ${totalGroups}`,`TOTAL DEAD DECLARATIONS REMOVED: ${totalRemoved}`);
+          fs.writeFileSync('dev/CLEANUP_REPORT_CLEAN08.txt',report.join('\n')+'\n');
+          JS
+          node clean08-temp.js
+          rm clean08-temp.js
+
+          python - <<'PY'
+          from pathlib import Path
+          idx=Path('dev/index.html')
+          s=idx.read_text(encoding='utf-8',errors='ignore')
+          s=s.replace('CLEAN-07','CLEAN-08').replace('094-clean07a','094-clean08a')
+          idx.write_text(s,encoding='utf-8')
+          p=Path('dev/scripts/pwa.js')
+          if p.exists():
+              t=p.read_text(encoding='utf-8',errors='ignore').replace('CLEAN-07','CLEAN-08')
+              p.write_text(t,encoding='utf-8')
+          PY
+
+      - name: Validate all application sources
+        run: |
+          set -e
+          node - <<'JS'
+          const fs=require('fs'),postcss=require('postcss');
+          for(const f of fs.readdirSync('dev/styles').filter(x=>x.endsWith('.css'))){
+            postcss.parse(fs.readFileSync('dev/styles/'+f,'utf8'),{from:f});
+          }
+          console.log('CSS parse OK');
+          JS
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          grep -q 'CLEAN-08' dev/index.html
+          test -f dev/CLEANUP_REPORT_CLEAN08.txt
+
+      - name: Commit and self-remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/liveasta-clean08-auctioneer-management.yml
+          git add -A dev .github/workflows/liveasta-clean08-auctioneer-management.yml
+          git diff --cached --quiet || (git commit -m "LIVEASTA DEV v0.94 clean08 consolidate auctioneer and management CSS" && git push)
