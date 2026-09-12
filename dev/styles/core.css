@@ -1051,7 +1051,6 @@ input:focus,.minimal-input:focus {
 }
 #screen-auctioneer-board {
   padding:0;
-  background:linear-gradient(145deg,#171E28,#25C982 58%,#202938);
 }
 #auction-dashboard {
   max-width:none;
@@ -2659,17 +2658,7 @@ tr:hover {
 }
 }
 #screen-auctioneer-board .auction-list-toolbar{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 58px 82px;
-  gap:10px;
-  width:100%;
   margin-bottom:10px;
-  align-items:stretch;
-}
-#screen-auctioneer-board .auction-list-toolbar #player-search{
-  width:100%;
-  min-width:0;
-  height:50px;
 }
 #screen-auctioneer-board .toolbar-icon-btn,
         #screen-auctioneer-board .toolbar-roster-btn{
@@ -3099,13 +3088,6 @@ tr:hover {
 #screen-auctioneer-board #view-auction.auction-view-hidden{
   display:none!important;
 }
-#screen-auctioneer-board #view-auction .auction-col{
-  border:1px solid rgba(61,220,151,.72)!important;
-  box-shadow:
-                0 18px 55px rgba(17,24,33,.30),
-                inset 0 1px 0 rgba(255,255,255,.05),
-                0 0 10px rgba(61,220,151,.05)!important;
-}
 .player-nominate-btn{
   flex:0 0 auto;
   width:min(980px,100%);
@@ -3527,10 +3509,8 @@ tr:hover {
   font-weight:800;
 }
 #screen-auctioneer-board .auction-session-center{
-  min-width:0;
   display:flex;
   align-items:center;
-  justify-content:center;
   gap:10px;
 }
 #screen-auctioneer-board .auction-online-pill{
@@ -3904,9 +3884,6 @@ tr:hover {
   height:46px;
 }
 @media(max-width:700px){
-#screen-room-control .teams-control-table{
-  min-width:760px;
-}
 #screen-room-control .teams-control-table th:nth-child(1),
             #screen-room-control .teams-control-table td:nth-child(1){
   width:25%;
@@ -4191,11 +4168,8 @@ tr:hover {
 }
 @media (max-width: 700px){
 #screen-room-control .control-grid{
-  min-height:100dvh;
   overflow-x:hidden!important;
   overflow-y:visible!important;
-  padding:10px 10px calc(24px + env(safe-area-inset-bottom))!important;
-  gap:12px!important;
 }
 #screen-room-control .control-card{
   width:100%!important;
@@ -5520,24 +5494,11 @@ html,body{
   width:96%!important;
   max-width:96%!important;
   min-height:1em!important;
-  padding:0 4px!important;
 }
 #screen-auctioneer-board .auction-player-meta{
   white-space:nowrap!important;
   overflow:visible!important;
   text-overflow:clip!important;
-}
-#screen-player-buzzer .player-card-side,
-#screen-auctioneer-board #view-auction .auction-col.col-player{
-  background-blend-mode:multiply!important;
-  box-shadow:inset 0 0 0 9999px rgba(13,17,23,.08)!important;
-}
-#screen-auctioneer-board #auction-player-name-top,
-#screen-auctioneer-board #auction-player-club{
-  -webkit-text-stroke:.8px rgba(0,0,0,.88)!important;
-  text-shadow:
-    0 2px 3px rgba(0,0,0,.95),
-    0 0 5px rgba(0,0,0,.88)!important;
 }
 #screen-player-buzzer .player-card-side,
 #screen-auctioneer-board #view-auction .auction-col.col-player{
@@ -6598,12 +6559,6 @@ html[data-live-theme],
 #screen-player-buzzer .phone-player-meta{
   transform:translateY(-28px)!important;
 }
-#screen-auctioneer-board #auction-player-name-top{
-  top:15px!important;
-}
-#screen-auctioneer-board .auction-player-meta{
-  top:-17px!important;
-}
 #screen-auctioneer-board #auction-player-name-top,
 #screen-auctioneer-board .auction-player-meta,
 #screen-player-buzzer .phone-player-name,
@@ -6627,12 +6582,6 @@ html[data-live-theme],
 }
 #screen-player-buzzer .phone-player-meta{
   transform:translateY(-40px)!important;
-}
-#screen-auctioneer-board #auction-player-name-top{
-  top:31px!important;
-}
-#screen-auctioneer-board .auction-player-meta{
-  top:-33px!important;
 }
 #screen-player-buzzer .phone-player-name,
 #screen-player-buzzer .phone-player-meta,
@@ -6758,18 +6707,6 @@ html[data-live-theme] body::before,
   width:min(94%,560px)!important;
   margin:12px auto 0!important;
 }
-#screen-auctioneer-board .sealed-ranking-auctioneer .sealed-ranking-title{
-  font-size:.82rem!important;
-}
-#screen-auctioneer-board .sealed-ranking-auctioneer .sealed-ranking-row{
-  padding:7px 10px!important;
-}
-#screen-auctioneer-board .sealed-ranking-auctioneer .sealed-ranking-team{
-  font-size:.92rem!important;
-}
-#screen-auctioneer-board .sealed-ranking-auctioneer .sealed-ranking-value{
-  font-size:1.02rem!important;
-}
 #screen-role .home-version-refresh{
   cursor:pointer!important;
   user-select:none!important;
@@ -6837,7 +6774,6 @@ html[data-live-theme] body::before,
   color:var(--theme-bg-deep)!important;
   background:var(--theme-primary)!important;
   border-color:var(--theme-primary)!important;
-  box-shadow:0 0 0 2px color-mix(in srgb,var(--theme-primary) 24%,transparent)!important;
 }
 #screen-auctioneer-board .toolbar-sealed-mode-btn:hover{
   filter:brightness(1.08)!important;
@@ -6850,19 +6786,11 @@ html[data-live-theme] body::before,
   display:none!important;
 }
 @media(max-width:760px){
-#screen-auctioneer-board .auction-list-toolbar{
-  grid-template-columns:minmax(110px,1fr) 46px minmax(128px,158px) 60px!important;
-}
 #screen-auctioneer-board .auction-list-toolbar #player-search,
   #screen-auctioneer-board .auction-list-toolbar .toolbar-icon-btn,
   #screen-auctioneer-board .auction-list-toolbar .toolbar-roster-btn,
   #screen-auctioneer-board .auction-list-toolbar .toolbar-sealed-mode-btn{
   height:46px!important;
-}
-#screen-auctioneer-board .toolbar-roster-btn{
-  width:60px!important;
-  min-width:60px!important;
-  font-size:.58rem!important;
 }
 }
 .auctioneer-player-control-card{
@@ -7062,11 +6990,7 @@ html[data-live-theme] body::before,
   height:72px!important;
   padding:0!important;
   display:grid!important;
-  grid-template-columns:72px minmax(0,1fr) 86px!important;
   grid-template-rows:38px 28px!important;
-  grid-template-areas:
-      "back center manage"
-      "room room room"!important;
   gap:4px 7px!important;
   align-items:center!important;
 }
@@ -7082,7 +7006,6 @@ html[data-live-theme] body::before,
 }
 #screen-auctioneer-board > .session-nav > .session-back:last-child{
   grid-area:manage!important;
-  width:86px!important;
   height:36px!important;
   min-height:36px!important;
   padding:0 6px!important;
@@ -7123,8 +7046,6 @@ html[data-live-theme] body::before,
   height:6px!important;
 }
 #screen-auctioneer-board .auction-nav-room-pill{
-  justify-self:center!important;
-  max-width:calc(100% - 20px)!important;
   min-height:25px!important;
   height:25px!important;
   padding:2px 10px!important;
@@ -7997,13 +7918,6 @@ html[data-live-theme] body::before,
 #screen-room-control .control-table tbody td::before{
   margin-bottom:3px!important;
   font-size:.56rem!important;
-}
-#screen-room-control .teams-control-table .control-teams-actions{
-  gap:6px!important;
-}
-#screen-room-control .teams-control-table .control-teams-actions .btn{
-  padding:7px!important;
-  font-size:.62rem!important;
 }
 #screen-room-control .nomination-order-box{
   padding:8px!important;
@@ -9600,9 +9514,6 @@ html.audio-modal-open{
 .admin-team-pin-row .btn{
   width:100%!important;
 }
-#screen-room-control .teams-control-table{
-  min-width:760px!important;
-}
 }
 .player-listone-tools{
   display:flex!important;
@@ -11026,16 +10937,12 @@ html.audio-modal-open{
   color:#160F04!important;
 }
 #screen-auctioneer-board #auction-dashboard #view-auction .col-player{
-  display:grid!important;
   grid-template-rows:minmax(34px,auto) minmax(0,1fr) minmax(32px,auto)!important;
-  align-items:stretch!important;
   justify-items:center!important;
   align-content:stretch!important;
-  gap:clamp(3px,.65vh,8px)!important;
 }
 #screen-auctioneer-board #auction-dashboard #auction-player-name-top{
   grid-row:1!important;
-  min-height:0!important;
 }
 #screen-auctioneer-board #auction-dashboard .player-card{
   grid-row:2!important;
@@ -11087,10 +10994,6 @@ html.audio-modal-open{
   font-size:clamp(.88rem,1.2vw,1.15rem)!important;
 }
 }
-#screen-auctioneer-board #auction-dashboard #view-auction .col-player{
-  justify-content:stretch!important;
-  gap:clamp(3px,.55vh,7px)!important;
-}
 #screen-auctioneer-board #auction-dashboard #auction-player-name-top{
   top:auto!important;
   right:auto!important;
@@ -11100,12 +11003,8 @@ html.audio-modal-open{
   align-self:center!important;
   z-index:2!important;
 }
-#screen-auctioneer-board #auction-dashboard #auction-player-card{
-  flex:1 1 0!important;
-}
 #screen-auctioneer-board #auction-dashboard #auction-player-card #card-image{
   max-height:100%!important;
-  margin:auto!important;
 }
 #screen-auctioneer-board #auction-dashboard #auction-player-meta{
   top:auto!important;
@@ -11117,9 +11016,6 @@ html.audio-modal-open{
   z-index:2!important;
 }
 @media(max-height:760px){
-#screen-auctioneer-board #auction-dashboard #view-auction .col-player{
-  gap:2px!important;
-}
 #screen-auctioneer-board #auction-dashboard #auction-player-name-top{
   font-size:clamp(1.05rem,2.1vw,1.65rem)!important;
   line-height:1!important;
@@ -11355,8 +11251,6 @@ html.audio-modal-open{
 }
 #screen-auctioneer-board .auction-quick-reset{
   color:#fff!important;
-  letter-spacing:.025em!important;
-  min-width:86px!important;
   max-width:none!important;
 }
 @media(max-width:760px){
@@ -11382,9 +11276,6 @@ html.audio-modal-open{
 }
 #screen-auctioneer-board .auction-quick-reset{
   grid-area:reset!important;
-  width:86px!important;
-  min-width:86px!important;
-  font-size:.54rem!important;
   letter-spacing:.015em!important;
   overflow:visible!important;
   text-overflow:clip!important;
@@ -11455,7 +11346,6 @@ html.audio-modal-open{
   flex-direction:column!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:clamp(13px,1.35vh,18px)!important;
   min-height:0!important;
   overflow:hidden!important;
 }
@@ -11495,7 +11385,6 @@ html.audio-modal-open{
   order:3!important;
   flex:0 0 auto!important;
   margin:0!important;
-  padding:0 6px!important;
   position:static!important;
   transform:none!important;
 }
