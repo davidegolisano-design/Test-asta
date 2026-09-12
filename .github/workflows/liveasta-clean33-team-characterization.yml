@@ -1,4 +1,5 @@
 name: LIVEASTA DEV clean33 team characterization
+# retry with valid Mantra scenarios
 on:
   push:
     paths:
