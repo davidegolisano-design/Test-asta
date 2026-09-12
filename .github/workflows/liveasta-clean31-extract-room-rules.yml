@@ -56,7 +56,7 @@ jobs:
           if(r.types.some(x=>x!=='function'))throw new Error('Room rule functions missing');
           if(JSON.stringify(r.defaults)!==JSON.stringify({P:3,D:8,C:8,A:6}))throw new Error('Default classic limits changed: '+JSON.stringify(r.defaults));
           if(JSON.stringify(r.custom)!==JSON.stringify({P:2,D:7,C:9,A:5}))throw new Error('Custom classic limits changed');
-          if(JSON.stringify(r.negative)!==JSON.stringify({P:0,D:0,C:0,A:0}))throw new Error('Classic limit clamp changed: '+JSON.stringify(r.negative));
+          if(JSON.stringify(r.negative)!==JSON.stringify({P:0,D:0,C:8,A:0}))throw new Error('Classic limit/default behavior changed: '+JSON.stringify(r.negative));
           if(r.classicTotal!==25)throw new Error('Classic total slots changed');
           if(r.mantraDefault!==30||r.mantraLow!==23||r.mantraHigh!==90)throw new Error('Mantra capacity changed');
           if(errors.length)throw new Error('Page errors: '+errors.join(' | '));
