@@ -2798,7 +2798,6 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 /* ---------- LA MIA ROSA ---------- */
 #player-roster-list .roster-row{
     display:grid!important;
-    grid-template-columns:64px minmax(0,1fr) 58px!important;
     gap:12px!important;
     align-items:center!important;
     width:100%!important;
@@ -2808,8 +2807,6 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
     border-bottom:1px solid var(--theme-border)!important;
 }
 #player-roster-list .roster-row .role-badge{
-    width:56px!important;
-    min-width:56px!important;
 }
 #player-roster-list .player-roster-main{
     min-width:0!important;
@@ -2849,7 +2846,6 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
 /* ---------- ROSA APERTA DALLA STANZA ---------- */
 #player-room-team-roster-list .player-room-roster-line{
     display:grid!important;
-    grid-template-columns:64px minmax(0,1fr) 58px!important;
     gap:12px!important;
     align-items:center!important;
     width:100%!important;
@@ -2861,8 +2857,6 @@ html[data-live-theme="light-sand"] #screen-player-buzzer .player-budget-strip .m
     background:var(--theme-input)!important;
 }
 #player-room-team-roster-list .player-room-roster-line .role-badge{
-    width:56px!important;
-    min-width:56px!important;
 }
 #player-room-team-roster-list .player-room-roster-main b{
     color:var(--theme-text)!important;

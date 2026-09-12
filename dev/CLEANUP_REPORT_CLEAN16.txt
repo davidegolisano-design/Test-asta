@@ -1,0 +1,21 @@
+LIVEASTA CLEAN-16 - CONSERVATIVE GLOBAL CSS CASCADE
+===================================================
+Behavior-preserving same-selector cascade cleanup.
+
+core.css: groups consolidated=171; declarations removed=206; bytes 402749 -> 398416
+pwa.css: groups consolidated=0; declarations removed=0; bytes 16839 -> 16839
+refinements.css: groups consolidated=6; declarations removed=6; bytes 220429 -> 220195
+ui.css: groups consolidated=0; declarations removed=0; bytes 112122 -> 112122
+
+TOTAL groups consolidated: 177
+TOTAL dead declarations removed: 212
+
+Safety constraints:
+- same stylesheet only
+- exact same selector
+- exact same at-rule ancestry
+- exact same property
+- CSS importance respected when choosing the winner
+- colors/backgrounds/custom properties untouched
+- var/env/calc/clamp/min/max values untouched
+- vendor-prefixed fallbacks untouched
