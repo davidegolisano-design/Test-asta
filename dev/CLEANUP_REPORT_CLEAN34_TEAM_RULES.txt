@@ -1,0 +1,14 @@
+LIVEASTA CLEAN-34 - TEAM RULES MODULE EXTRACTION
+=================================================
+Behavior intended to be preserved exactly.
+
+Created: scripts/team-rules.js
+Moved functions: teamPurchases, teamCounts, findTeamByName, maxBidForTeam
+
+Dependencies intentionally remain external globals:
+ - purchasesCache / teamsCache state in app.js
+ - Classic/Mantra helpers in roles.js
+ - room capacity helpers in room-rules.js
+
+Persistent characterization test: tests/team-logic-smoke.mjs
+No realtime, Supabase, timer, READY/SKIP or auction event code was moved.
