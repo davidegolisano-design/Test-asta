@@ -224,32 +224,6 @@
             if(mantra)mantra.style.display=mode==='mantra'?'block':'none';
         }
 
-        const LIVEASTA_ASSET_BASE = '..';
-        function genericPlayerImage(role = '') {
-            const r=String(role||'').trim();
-            return (r.toUpperCase()==='P' || mantraRoleTokens(r).includes('Por'))
-                ? `${LIVEASTA_ASSET_BASE}/assets/players/generic-goalkeeper.webp`
-                : `${LIVEASTA_ASSET_BASE}/assets/players/generic-player.webp`;
-        }
-        function playerImageUrl(id, role = '') {
-            const clean = String(id ?? '').trim();
-            return clean ? `${LIVEASTA_ASSET_BASE}/assets/players/${encodeURIComponent(clean)}.webp` : genericPlayerImage(role);
-        }
-        function setPlayerImage(img, id, role = '') {
-            if (!img) return;
-            img.dataset.role = String(role || '').trim().toUpperCase();
-            img.dataset.localFallback = '0';
-            img.src = playerImageUrl(id, role);
-        }
-        function playerImageFallback(img) {
-            if (!img) return;
-            const role = img.dataset.role || '';
-            const fallback = genericPlayerImage(role);
-            if (img.dataset.localFallback === '1' && (img.getAttribute('src') || '').endsWith(fallback)) return;
-            img.dataset.localFallback = '1';
-            img.src = fallback;
-        }
-
         const SUPABASE_URL = 'https://qvkembahfeecfpsshepv.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2a2VtYmFoZmVlY2Zwc3NoZXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNTExNzksImV4cCI6MjEwNDcyNzE3OX0.NlICbHV5kcVlnizC-oc6pvIJYWYO3Ggddn8gGN_0ImU';
 

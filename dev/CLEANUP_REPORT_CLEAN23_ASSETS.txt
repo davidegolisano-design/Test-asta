@@ -1,0 +1,9 @@
+LIVEASTA CLEAN-23 - PLAYER ASSET MODULE EXTRACTION
+===============================================
+Behavior intended to be preserved.
+
+Created: scripts/player-assets.js
+Moved constant: LIVEASTA_ASSET_BASE
+Moved functions: genericPlayerImage, playerImageUrl, setPlayerImage, playerImageFallback
+
+The module is loaded immediately before app.js. The Mantra role helper remains owned by app.js and is resolved when genericPlayerImage is called.
