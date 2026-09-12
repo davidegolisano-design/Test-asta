@@ -1,0 +1,10 @@
+LIVEASTA CLEAN-36 - ROOM TIMER SETTINGS MODULE EXTRACTION
+=========================================================
+Behavior preserved by before/after characterization.
+
+Created: scripts/timer-settings.js
+Moved functions: auctionPrepStateKey, loadAuctionPrepSeconds, saveAuctionPrepSeconds, sealedTimerStateKey, loadSealedTimerSeconds, saveSealedTimerSeconds, sealedRevealStateKey, loadSealedRevealSeconds, saveSealedRevealSeconds
+
+Moved only local room timer normalization/key helpers.
+Kept roomAuctionExtraSettingsKey/load/save in app.js because those functions touch Supabase, self-raise, nomination and auto-random state.
+No realtime, READY/SKIP, bid event or Supabase logic was moved.
