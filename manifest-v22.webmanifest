@@ -3,7 +3,7 @@
   "name": "LIVEASTA TEST",
   "short_name": "LIVEASTA",
   "description": "LIVEASTA - ambiente Test-asta",
-  "start_url": "./?v=091-test",
+  "start_url": "./?v=092-test",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
