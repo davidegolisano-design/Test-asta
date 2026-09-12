@@ -20,7 +20,7 @@ jobs:
 
       - name: Remove only earlier identical declarations shadowed by same selector/context
         run: |
-          cat > /tmp/clean05.js <<'JS'
+          cat > clean05-temp.js <<'JS'
           const fs=require('fs');
           const path=require('path');
           const postcss=require('postcss');
@@ -68,7 +68,6 @@ jobs:
                 }
               }
             }
-            // Remove rule nodes left with comments/whitespace but no declarations or child rules.
             root.walkRules(rule=>{
               const meaningful=(rule.nodes||[]).some(n=>n.type==='decl'||n.type==='rule'||n.type==='atrule');
               if(!meaningful) rule.remove();
@@ -81,7 +80,8 @@ jobs:
           lines.push('',`TOTAL REDUNDANT DECLARATIONS REMOVED: ${totalRemoved}`);
           fs.writeFileSync('dev/CLEANUP_REPORT_CLEAN05.txt',lines.join('\n')+'\n','utf8');
           JS
-          node /tmp/clean05.js
+          node clean05-temp.js
+          rm -f clean05-temp.js
 
           python - <<'PY'
           from pathlib import Path
@@ -108,6 +108,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          rm -f .github/workflows/liveasta-clean05.yml
+          rm -f .github/workflows/liveasta-clean05.yml clean05-temp.js
           git add -A dev .github/workflows/liveasta-clean05.yml
           git diff --cached --quiet || (git commit -m "LIVEASTA DEV v0.94 clean05 remove redundant CSS declarations" && git push)
