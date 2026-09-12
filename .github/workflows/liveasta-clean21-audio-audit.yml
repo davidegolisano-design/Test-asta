@@ -1,0 +1,22 @@
+name: LIVEASTA DEV clean21 audio audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean21-audio-audit.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run CLEAN-21 audio dependency audit
+        run: python3 dev/tools/clean21_audio_audit.py
+      - name: Commit report and self-remove
+        run: |
+          rm -f .github/workflows/liveasta-clean21-audio-audit.yml dev/tools/clean21_audio_audit.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/CLEANUP_AUDIT_CLEAN21_AUDIO.txt .github/workflows/liveasta-clean21-audio-audit.yml dev/tools/clean21_audio_audit.py
+          git commit -m "LIVEASTA DEV clean21 audio dependency audit"
+          git push
