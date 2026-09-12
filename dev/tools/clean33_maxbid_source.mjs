@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import * as espree from 'espree';
+const src=fs.readFileSync('dev/scripts/app.js','utf8');
+const ast=espree.parse(src,{ecmaVersion:'latest',sourceType:'script',range:true});
+const fn=ast.body.find(n=>n.type==='FunctionDeclaration'&&n.id?.name==='maxBidForTeam');
+if(!fn)throw new Error('maxBidForTeam not found');
+const code=src.slice(fn.range[0],fn.range[1]);
+const before=src.slice(0,fn.range[0]);
+const line=before.split('\n').length;
+fs.writeFileSync('dev/CLEANUP_AUDIT_CLEAN33_MAXBID_SOURCE.txt',`LIVEASTA CLEAN-33 MAXBID SOURCE AUDIT\n==================================\nline: ${line}\n\n${code}\n`);
