@@ -1,0 +1,4 @@
+LIVEASTA CLEAN-17 - LITERAL NEWLINE FIX
+=======================================
+Removed two literal \n artifacts from dev/index.html head that were rendered as visible text above the app.
+No DOM application nodes or logic changed.
