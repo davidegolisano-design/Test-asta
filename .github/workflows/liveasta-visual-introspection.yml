@@ -1,0 +1,30 @@
+name: LIVEASTA visual introspection
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-visual-introspection.yml'
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start DEV locally
+        run: |
+          python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 &
+          sleep 2
+      - name: Introspect visual states
+        run: node dev/tests/visual-introspection.mjs
+      - name: Commit report and self-remove
+        run: |
+          rm -f .github/workflows/liveasta-visual-introspection.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/visual-audit/introspection.json dev/tests/visual-introspection.mjs .github/workflows/liveasta-visual-introspection.yml
+          git commit -m "LIVEASTA DEV visual state introspection"
+          git push
