@@ -1,0 +1,48 @@
+name: LIVEASTA DEV clean34 extract team rules
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean34-extract-team-rules.yml'
+permissions:
+  contents: write
+jobs:
+  clean34:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install parser and Playwright
+        run: |
+          npm install --no-save espree playwright
+          npx playwright install --with-deps chromium
+      - name: Apply CLEAN-34 team rules extraction
+        run: node dev/tools/clean34_extract_team_rules.mjs
+      - name: Validate JavaScript and ownership
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          grep -q 'scripts/team-rules.js?dev=094-clean34a' dev/index.html
+          grep -q 'function teamPurchases' dev/scripts/team-rules.js
+          grep -q 'function teamCounts' dev/scripts/team-rules.js
+          grep -q 'function findTeamByName' dev/scripts/team-rules.js
+          grep -q 'function maxBidForTeam' dev/scripts/team-rules.js
+          ! grep -q 'function teamPurchases' dev/scripts/app.js
+          ! grep -q 'function teamCounts' dev/scripts/app.js
+          ! grep -q 'function findTeamByName' dev/scripts/app.js
+          ! grep -q 'function maxBidForTeam' dev/scripts/app.js
+      - name: Start local server
+        run: |
+          python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 &
+          sleep 2
+      - name: Run general browser smoke
+        run: node dev/tests/smoke.mjs
+      - name: Run shared module regression
+        run: node dev/tests/regression-smoke.mjs
+      - name: Run team logic characterization after extraction
+        run: node dev/tests/team-logic-smoke.mjs
+      - name: Commit and self-remove temporary files
+        run: |
+          rm -f .github/workflows/liveasta-clean34-extract-team-rules.yml dev/tools/clean34_extract_team_rules.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/index.html dev/scripts/app.js dev/scripts/team-rules.js dev/CLEANUP_REPORT_CLEAN34_TEAM_RULES.txt .github/workflows/liveasta-clean34-extract-team-rules.yml dev/tools/clean34_extract_team_rules.mjs
+          git commit -m "LIVEASTA DEV clean34 extract team rules module"
+          git push
