@@ -1,4 +1,4 @@
-// === liveasta-v058-mobile-board-fix ===
+// === liveasta-mobile-board-fix ===
 (function(){
   const mq=window.matchMedia('(max-width:760px)');
 
@@ -72,7 +72,7 @@
   window.fitMobileAuctionNumbers=fitMobileAuctionNumbers;
 })();
 
-// === liveasta-v060-confirm-modal ===
+// === liveasta-confirm-modal ===
 (function(){
   let activeResolve=null;
   let previousFocus=null;
@@ -166,7 +166,7 @@
   });
 })();
 
-// === liveasta-v061-alert-modal-and-mobile-quads ===
+// === liveasta-alert-modal-and-mobile-quads ===
 (function(){
   /* ---------------------------
      ALERT INTERNO LIVEASTA
@@ -303,7 +303,7 @@
   mq.addEventListener?.('change',refreshMobileQuads);
 })();
 
-// === liveasta-v065-mobile-offer-cleaner ===
+// === liveasta-mobile-offer-cleaner ===
 (function(){
   const mq=window.matchMedia('(max-width:760px)');
   function clean(){
@@ -328,7 +328,7 @@
   }else start();
 })();
 
-// === liveasta-v066-mobile-winner-sync ===
+// === liveasta-mobile-winner-sync ===
 (function(){
   const mq=window.matchMedia('(max-width:760px)');
 
@@ -376,7 +376,7 @@
   mq.addEventListener?.('change',syncMobileWinner);
 })();
 
-// === liveasta-v070-popup-text-cleaner ===
+// === liveasta-popup-text-cleaner ===
 (function(){
   window.formatLiveAstaPopupText=function(value){
     let text;

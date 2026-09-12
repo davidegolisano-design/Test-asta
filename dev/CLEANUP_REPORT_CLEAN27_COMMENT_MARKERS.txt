@@ -1,0 +1,14 @@
+LIVEASTA CLEAN-27 - LEGACY VERSION MARKERS IN COMMENTS
+=====================================================
+Behavior-neutral cleanup. Only comment text was normalized.
+No identifiers, class names, IDs, strings, keys or executable expressions were renamed.
+
+Changed comment groups:
+ - app.js: 29 comment(s)
+ - bootstrap.js: 10 comment(s)
+ - runtime.js: 6 comment(s)
+ - theme.js: 1 comment(s)
+ - refinements.css: 3 comment(s)
+ - ui.css: 14 comment(s)
+
+Remaining standalone Vxx/vxxx markers inside comments: 0

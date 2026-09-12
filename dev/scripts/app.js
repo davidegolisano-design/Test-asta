@@ -152,7 +152,7 @@
         let roomsCache = [];
         let auctioneerRoomMode = null;
 
-        // V24: lock esclusivo del banditore per stanza.
+        // lock esclusivo del banditore per stanza.
         // Il lock vive in fanta_app_data ed è protetto dalla PK `key`,
         // quindi due banditori non possono acquisirlo contemporaneamente.
         let auctioneerLockKey = null;
@@ -174,7 +174,7 @@
         let currentWinner = "";
         let currentAuctionValue = 0;
 
-        // V94: anti-doppio rilancio configurabile.
+        // anti-doppio rilancio configurabile.
         // Default 0,5 secondi; il banditore resta l'autorità definitiva.
         const DEFAULT_NORMAL_BID_COOLDOWN_MS = 500;
         let normalBidCooldownMs = DEFAULT_NORMAL_BID_COOLDOWN_MS;
@@ -213,7 +213,7 @@
         let roomControlReturnScreen = 'screen-auctioneer-board';
         let nominationState={enabled:false,role:null,turn_team_id:null,order_team_ids:[]};
         let nominationAutoBidOneEnabled=false;
-        // V95 — modalità AUTO RANDOM: nomina automatica continua sui ruoli scelti.
+        // modalità AUTO RANDOM: nomina automatica continua sui ruoli scelti.
         let autoRandomEnabled=false;
         let autoRandomRoles=new Set(['P','D','C','A']);
         let autoRandomLaunchTimer=null;
@@ -292,7 +292,7 @@
             else if(auctioneerLockKey)saveBanditoreUiPrefs();
         }
 
-        // V59 - Busta chiusa
+        // Busta chiusa
         let sealedTimerSeconds=30;
         let sealedRevealSeconds=5;
         let sealedRevealInterval=null;
@@ -993,7 +993,7 @@
                 const role=String(p.role||'').trim();
 
                 if(isMantraRoom()){
-                    // V71: in Mantra un "Por" veniva contato due volte:
+                    // in Mantra un "Por" veniva contato due volte:
                     // una tramite il conteggio diretto del ruolo e una tramite mantraRoleTokens().
                     // In Mantra contiamo il portiere UNA SOLA VOLTA dai token.
                     if(mantraRoleTokens(role).includes('Por')){
@@ -1594,7 +1594,7 @@
             readyGateToken=String(gate.token||'');
             readyPlayers=new Set((gate.ready_ids||[]).map(String));
             readySkipPlayers=new Set((gate.skip_ids||[]).map(String));
-            readyOfflineExcludedIds=new Set(); // V95: offline non esclude dal READY
+            readyOfflineExcludedIds=new Set(); // offline non esclude dal READY
 
             // Mostra il giocatore corretto e la fase READY.
             restoreAuctioneerVisualFromState({player:p});
@@ -1630,7 +1630,7 @@
                 eligible=eligible.filter(team=>!absentTeamIds.has(String(team.id)));
             }
 
-            // V95 — OFFLINE NON ESCLUDE DAL READY.
+            // OFFLINE NON ESCLUDE DAL READY.
             // Se un giocatore perde connessione resta nella lista e continua a essere
             // obbligatorio. Le sole esclusioni valide sono ASSENTE volontario e slot/reparto completato.
 
@@ -1646,7 +1646,7 @@
 
 
         function readyMarkTeamOffline(teamId){
-            // V95: la disconnessione non modifica mai i partecipanti obbligati al READY.
+            // la disconnessione non modifica mai i partecipanti obbligati al READY.
             // Manteniamo la funzione come no-op per compatibilità con gli eventi realtime esistenti.
             return;
         }
@@ -1663,7 +1663,7 @@
         }
 
         function handleReadyPresenceLeave(payload){
-            // V95: offline = ancora obbligatorio. Nessuna modifica al gate READY.
+            // offline = ancora obbligatorio. Nessuna modifica al gate READY.
             return;
         }
 
@@ -1765,7 +1765,7 @@
             broadcastReadyState();
             closeReadyGateDedicated();
 
-            // V88 — nuova semantica READY/SKIP:
+            // nuova semantica READY/SKIP:
             // - se TUTTI scelgono SKIP => invenduto immediato a 0;
             // - se anche UNA sola squadra sceglie READY => l'asta parte e TUTTE
             //   le squadre abilitate possono partecipare, comprese quelle che avevano SKIP.
@@ -1932,7 +1932,7 @@
                 playerReadyChoice='ready';
             }
 
-            // V84: il READY non usa più un banner sovrapposto.
+            // il READY non usa più un banner sovrapposto.
             document.getElementById('player-ready-overlay')?.classList.remove('open');
             const reopen=document.getElementById('player-ready-reopen-btn');
             if(reopen)reopen.style.display='none';
@@ -1953,7 +1953,7 @@
         }
 
         function reopenPlayerReadyBanner(){
-            // Compatibilità V73: il READY ora è integrato nella schermata asta.
+            // Compatibilità il READY ora è integrato nella schermata asta.
             if(playerReadyToken)renderPlayerReadySidePanel();
         }
 
@@ -2757,7 +2757,7 @@
             const av=document.getElementById('view-auction');
             const stage=document.getElementById('nomination-stage');
 
-            /* V97 — fine asta: quando non esiste più alcun ruolo/turno disponibile,
+            /* fine asta: quando non esiste più alcun ruolo/turno disponibile,
                la plancia banditore diventa una schermata terminale a pieno schermo. */
             if(!role){
                 const readyDesktop=document.getElementById('auctioneer-ready-desktop');
@@ -2788,7 +2788,7 @@
             }
             stage?.classList.remove('auction-completed-fullscreen');
 
-            /* V94 — BANDITORE PC: niente più pagina full-screen per il turno.
+            /* BANDITORE PC: niente più pagina full-screen per il turno.
                Manteniamo i tre quadranti della banditura:
                sinistra = ultimo giocatore bandito, centro = turno,
                destra = classifica dell'ultima asta. */
@@ -2875,7 +2875,7 @@
             if(av){av.classList.add('auction-view-hidden');av.classList.remove('nomination-turn-desktop');av.style.display='none';}
             document.getElementById('auctioneer-turn-center')?.setAttribute('aria-hidden','true');
 
-            /* V91: sul PC del banditore il READY non usa più la pagina full-screen.
+            /* sul PC del banditore il READY non usa più la pagina full-screen.
                Smartphone banditore resta esattamente con la visualizzazione storica. */
             if(desktopReady){
                 document.getElementById('nomination-stage')?.classList.remove('open');
@@ -2996,7 +2996,7 @@
             const nextBtn=document.getElementById('btn-next');
             if(nextBtn)nextBtn.style.display='none';
 
-            // V97: a rose complete la schermata finale ha precedenza anche in modalità banditore+giocatore.
+            // a rose complete la schermata finale ha precedenza anche in modalità banditore+giocatore.
             if(!nominationState.role){
                 showScreen('screen-auctioneer-board');
                 showNominationTurnStage();
@@ -4467,7 +4467,7 @@
                     badge.style.setProperty('background',palette[priority][0],'important');
                     badge.style.setProperty('border-color',palette[priority][1],'important');
                 }else{
-                    // In V49 il display:inline-flex!important della classe generica
+                    // In il display:inline-flex!important della classe generica
                     // prevaleva sul display:none inline: appariva quindi un cerchio vuoto.
                     badge.style.setProperty('display','none','important');
                     badge.style.removeProperty('background');
@@ -6399,7 +6399,7 @@
             }
             if(player) {
                 currentAuctionPlayer = {...player,R:playerRole(player)};
-                // V86: una nuova banditura parte sempre da stato economico neutro,
+                // una nuova banditura parte sempre da stato economico neutro,
                 // prima ancora del READY, così non può ereditare vincitore/prezzo precedenti.
                 currentWinner='';
                 currentAuctionValue=0;
@@ -6913,7 +6913,7 @@
                 channel.on('broadcast', { event: 'timer_tick' }, (payload) => {
                     const t = clampNormalAuctionSeconds(payload.payload?.seconds);
 
-                    // Fallback V66: se il browser ha sospeso il timeout,
+                    // Fallback se il browser ha sospeso il timeout,
                     // il tick del banditore riattiva i pulsanti appena i intervallo configurato sono trascorsi.
                     if(
                         isAuctionActive &&
@@ -7135,7 +7135,7 @@
             const duration=Math.max(0,parseInt(durationMs)||normalBidCooldownMs);
             playerNormalBidCooldownUntil=Date.now()+duration;
 
-            // V67: i pulsanti restano colorati e cliccabili visivamente.
+            // i pulsanti restano colorati e cliccabili visivamente.
             // buzz() ignora localmente i tap nel cooldown e il banditore rimane
             // comunque l'autorità definitiva sul blocco configurato.
             playerNormalBidCooldownTimer=setTimeout(()=>{
@@ -7331,7 +7331,7 @@
 
 
         // ==========================================================
-        // LIVEASTA V79 — OFFERTA ESATTA CON PRESSIONE + SLIDER
+        // LIVEASTA OFFERTA ESATTA CON PRESSIONE + SLIDER
         // Il valore inviato al banditore è ASSOLUTO (non un incremento),
         // così un rilancio concorrente non può trasformare 50 in 55.
         // ==========================================================
@@ -7436,7 +7436,7 @@
             const y=Math.max(exactBidTopY,Math.min(exactBidOriginY,exactBidPointerY||exactBidOriginY));
             const lift=Math.max(0,exactBidOriginY-y);
 
-            // V86: la parte più bassa della corsa è una vera zona ANNULLA.
+            // la parte più bassa della corsa è una vera zona ANNULLA.
             // Se torni completamente giù (o negli ultimi pochi pixel) il valore
             // diventa 0 e, al rilascio, non viene inviata nessuna offerta.
             const cancelZone=Math.min(30,Math.max(16,Math.round(exactBidTrackHeight*.10)));
@@ -7587,7 +7587,7 @@
         function buzz(amount) {
             if (!isAuctionActive) return;
 
-            // V70: sicurezza logica indipendente dallo stato grafico/disabled del bottone.
+            // sicurezza logica indipendente dallo stato grafico/disabled del bottone.
             // Un rilancio non consentito (es. +2 oltre il max) NON può essere inviato.
             if(!isNormalBidAmountAllowed(amount))return;
 
@@ -8346,7 +8346,7 @@
 
             showSealedAuctionStage();
 
-            // V55: il banditore+giocatore usa lo stesso dispositivo del banditore,
+            // il banditore+giocatore usa lo stesso dispositivo del banditore,
             // quindi non riceve necessariamente il proprio broadcast sealed_bid_start.
             // Avviamo direttamente anche la sua interfaccia giocatore.
             if(isAuctioneerPlayerIdentity()){
@@ -8532,7 +8532,7 @@
             document.getElementById('current-value-display').textContent='--';
             document.getElementById('countdown-display').textContent='--';
 
-            // V29: prima del round 2 (e di ogni eventuale round successivo)
+            // prima del round 2 (e di ogni eventuale round successivo)
             // si rifà il READY. Grazie a readyRequiredTeams() lo ricevono
             // soltanto le squadre rimaste in parità.
             if(readyModeEnabled){
@@ -8696,7 +8696,7 @@
                 document.getElementById('current-value-display').textContent=winner?String(currentAuctionValue):'0';
                 document.getElementById('countdown-display').textContent='0';
 
-                // V25: dopo l'apertura buste mostra tutte le offerte ordinate.
+                // dopo l'apertura buste mostra tutte le offerte ordinate.
                 renderSealedBidRanking(bids);
                 if(isAuctioneerMobileBoard()){
                     setMobileBoardPhase(winner?'sealed-result':'unsold');
@@ -8897,7 +8897,7 @@
             normalBidCooldownUntil=0;
             clearPlayerNormalBidCooldown();
 
-            // V94: opzionale offerta iniziale di 1 credito della squadra che ha bandito.
+            // opzionale offerta iniziale di 1 credito della squadra che ha bandito.
             // Non apre il cooldown: è il valore di partenza dell'asta, non un tap concorrente.
             const autoBidTeam=nominationAutoBidTeam();
             if(autoBidTeam){
@@ -9774,7 +9774,7 @@
 
             currentAuctionPlayer={...player,R:playerRole(player)};
             player=currentAuctionPlayer;
-            // V86: nessun nuovo giocatore eredita esito/prezzo dell'asta precedente.
+            // nessun nuovo giocatore eredita esito/prezzo dell'asta precedente.
             currentWinner='';
             currentAuctionValue=0;
             currentTimer=0;
@@ -10938,5 +10938,5 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
             loadAudioSettings();
             installAuctionNameAutoFit();
             loadRooms();
-            // V74 test branch: service worker disabled to avoid stale HTML/cache while validating the single-file build.
+            // test branch: service worker disabled to avoid stale HTML/cache while validating the single-file build.
         });

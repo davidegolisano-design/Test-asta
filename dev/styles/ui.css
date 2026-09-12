@@ -1,4 +1,4 @@
-/* === management-design-v017 === */
+/* === management-design-=== */
 /* v0.17 — isolated management visual system */
 #screen-room-control#screen-room-control {--mg-border:#344354;--mg-muted:#a9b7c8;--mg-accent:#b6ed51;color:#eef3f9;}
 #screen-room-control#screen-room-control .control-grid {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:none!important;grid-auto-rows:max-content!important;align-content:start!important;align-items:start!important;gap:14px!important;padding:20px max(20px,calc((100vw - 1240px)/2)) 32px!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;flex:none!important;}
@@ -126,7 +126,7 @@
  #screen-room-control#screen-room-control .audio-mixer-card .audio-modal-actions {width:100%!important;justify-content:space-between!important;}
 }
 
-/* === liveasta-global-coherence-v019 === */
+/* === liveasta-global-coherence-=== */
 /* v0.19 — Gestione is the visual source of truth for the whole app. */
 html[data-live-theme] #screen-room-control#screen-room-control{
   --mg-border:var(--theme-border)!important;
@@ -219,7 +219,7 @@ html[data-live-theme] :is(#team-inline-status-dot,.team-inline-status-dot).offli
 html[data-live-theme] :is(#team-inline-status-dot,.team-inline-status-dot).connecting{background:#F59E0B!important;box-shadow:0 0 8px #F59E0B!important;}
 html[data-live-theme] :is(#team-inline-status-dot,.team-inline-status-dot).online{background:#22C55E!important;box-shadow:0 0 8px #22C55E!important;}
 
-/* === liveasta-global-coherence-v020 === */
+/* === liveasta-global-coherence-=== */
 /* v0.20 — Daily coherence + compact density pass.
    Visual-only: no auction logic, DOM structure or functional behavior changes. */
 
@@ -425,7 +425,7 @@ body :is(#list-filters-player,#list-filters-board,#list-filters-nomination,#list
   .player-listone-filter-row{grid-template-columns:minmax(0,1fr) 128px!important;}
 }
 
-/* === liveasta-visual-fixes-v021 === */
+/* === liveasta-visual-fixes-=== */
 /* v0.21 — targeted visual fixes from Daily-theme mobile screenshots.
    CSS-only: no auction logic or DOM behavior changes. */
 
@@ -647,7 +647,7 @@ html[data-live-theme="daily"] #screen-all-rosters .roster-team-name{
   color:var(--theme-text)!important;
 }
 
-/* === liveasta-visual-fixes-v022 === */
+/* === liveasta-visual-fixes-=== */
 /* v0.25 — screenshot-driven Daily coherence pass. CSS only. */
 
 /* DAILY: readable values in player top strip (legacy rules forced white). */
@@ -804,7 +804,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
   .audio-routing-row{padding:9px 10px!important;border-radius:10px!important;}
 }
 
-/* === liveasta-v075-room-select-fix === */
+/* === liveasta-room-select-fix === */
 /* LIVEASTA v0.93 — FIX SELECT STANZA BANDITORE */
 #screen-auctioneer-setup #auction-room-select{
   display:block!important;
@@ -832,7 +832,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
   }
 }
 
-/* === liveasta-v076-desktop-board === */
+/* === liveasta-desktop-board === */
 
 /* LIVEASTA v0.93 — BANDITORE DESKTOP TOOLBAR + GIÀ BANDITI */
 @media (min-width:761px){
@@ -1077,7 +1077,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
 }
 
 
-/* === auctioneer-desktop-theme-v081.css === */
+/* === auctioneer-desktop-theme-.css === */
 /* LIVEASTA v0.81 — Plancia banditore desktop coerente con tutti i temi */
 @media (min-width:761px){
   /* Le etichette "mobile" non devono comparire nella plancia desktop. */
@@ -1275,7 +1275,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
   }
 }
 
-/* === player-light-states-v082.css === */
+/* === player-light-states-.css === */
 /* LIVEASTA v0.82 — stati giocatore visibili nei temi chiari */
 :is(
   html[data-live-theme^="light-"],
@@ -1363,7 +1363,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
   box-shadow:0 0 0 2px rgba(193,70,91,.14),0 12px 30px rgba(0,0,0,.12)!important;
 }
 
-/* === sealed-desktop-v083.css === */
+/* === sealed-desktop-.css === */
 /* LIVEASTA v0.83 — BUSTE desktop: consegna/apertura */
 @media (min-width:761px){
   html body #screen-auctioneer-board.auctioneer-ui-desktop #auction-dashboard.mode-pc #view-auction.sealed-collecting .col-info > .mobile-offer-block{
@@ -1476,7 +1476,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
   }
 }
 
-/* === mobile-auctioneer-v084.css === */
+/* === mobile-auctioneer-.css === */
 /* LIVEASTA v0.84 — coerenza banditore smartphone */
 @media (max-width:760px){
   /* Il ruolo nella lista deve essere un badge circolare compatto, mai una pillola allungata. */
@@ -1520,7 +1520,7 @@ html[data-live-theme] #room-roster-player-preview-role.role-A{background:#EF4444
   }
 }
 
-/* === role-badges-v086.css === */
+/* === role-badges-.css === */
 /* LIVEASTA v0.86 — badge ruolo circolari coerenti */
 
 /* Base comune: 28x28, cerchio perfetto, lettera centrata. */
@@ -1627,7 +1627,7 @@ html body :is(
   -webkit-text-fill-color:#FFF!important;
 }
 
-/* === auction-complete-theme-v091.css === */
+/* === auction-complete-theme-.css === */
 /* LIVEASTA v0.91 — ASTA COMPLETATA coerente con il tema attivo */
 html[data-live-theme] #screen-auctioneer-board .nomination-stage.auction-completed-fullscreen{
   background:
@@ -1653,7 +1653,7 @@ html[data-live-theme] #screen-auctioneer-board .nomination-stage.auction-complet
   background:transparent!important;
 }
 
-/* === management-v093.css === */
+/* === management-.css === */
 /* LIVEASTA v0.93 — Gestione ordinata, senza minimizzazioni */
 
 /* Neutralizza completamente i vecchi sistemi di compressione. */

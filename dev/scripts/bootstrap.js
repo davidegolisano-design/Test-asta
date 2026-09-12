@@ -1,4 +1,4 @@
-// === liveasta-v73-runtime ===
+// === liveasta-runtime ===
 (function(){
   const TEAM_COLORS={
     'ATALANTA':['#111111','#1E71B8'],
@@ -59,7 +59,7 @@
       ${colors[2]} 66.666%,${colors[2]} 100%)`;
   }
 
-  // V73: disponibile anche alla preview fullscreen aperta dalle rose.
+  // disponibile anche alla preview fullscreen aperta dalle rose.
   window.liveastaTeamBackgroundForClub=function(club){
     return teamBackground(colorsFor(club));
   };
@@ -257,7 +257,7 @@
   window.updateLiveAstaTeamCards=applyTeamCards;
 })();
 
-// === liveasta-v73-home-qr ===
+// === liveasta-home-qr ===
 (function(){
   function publicLiveAstaUrl(){
     const u=new URL(window.location.href);
@@ -317,7 +317,7 @@
   window.renderHomeQR=renderHomeQR;
 })();
 
-// === liveasta-v19-portrait-lock ===
+// === liveasta-portrait-lock ===
 (function(){
   async function lockPortrait(){
     try{
@@ -346,7 +346,7 @@
   });
 })();
 
-// === liveasta-v28-auctioneer-lock-lifecycle ===
+// === liveasta-auctioneer-lock-lifecycle ===
 (function(){
   // Non interrompere manualmente l'heartbeat su pagehide/background.
   // Se la pagina viene davvero chiusa il JS termina da solo.
@@ -372,7 +372,7 @@
   });
 })();
 
-// === liveasta-v85-fit-auction-text ===
+// === liveasta-fit-auction-text ===
 (function(){
   function px(v){
     const n=parseFloat(v);
@@ -457,7 +457,7 @@
   function fitAuctioneerName(){
     const el=document.getElementById('auction-player-name-top');
     if(!el) return;
-    // V94: stessa presenza visiva del nome usato nel READY.
+    // stessa presenza visiva del nome usato nel READY.
     // Parte grande (64px) e si riduce solo se il nome non entra.
     if(typeof fitTextToBox==='function'){
       fitTextToBox(el,64,18,true);
@@ -511,7 +511,7 @@
   window.fitLiveAstaAuctionTypography=fitAll;
 })();
 
-// === liveasta-v87-access-wizard-script ===
+// === liveasta-access-wizard-script ===
 (function(){
   'use strict';
   let playerWizardStep=1;
@@ -647,7 +647,7 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 
-// === liveasta-v89-access-enter-retry-script ===
+// === liveasta-access-enter-retry-script ===
 (function(){
   'use strict';
 
@@ -890,7 +890,7 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 
-// === liveasta-v97-role-badge-sync ===
+// === liveasta-role-badge-sync ===
 (function(){
   const ids=['phone-player-role','auction-player-role','auctioneer-ready-player-role','room-roster-player-preview-role'];
   const roleClasses=['role-P','role-D','role-C','role-A'];

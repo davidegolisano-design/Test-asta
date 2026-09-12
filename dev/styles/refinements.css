@@ -1,4 +1,4 @@
-/* === liveasta-v023-refinement === */
+/* === liveasta-refinement === */
 /* v0.25 — targeted coherence and density fixes */
 
 /* One active green across the whole app. Disabled states remain intentionally muted. */
@@ -1375,7 +1375,7 @@ html[data-live-theme="light-blue"] .room-roster-player-preview-card::after,
 html[data-live-theme="light-sand"] .room-roster-player-preview-card::before,
 html[data-live-theme="light-sand"] .room-roster-player-preview-card::after{opacity:.08!important;}
 
-/* === liveasta-visual-fixes-v021 === */
+/* === liveasta-visual-fixes-=== */
 /* v0.21 — targeted visual fixes from Daily-theme mobile screenshots.
    CSS-only: no auction logic or DOM behavior changes. */
 
@@ -1559,7 +1559,7 @@ html[data-live-theme="light-sand"] #screen-all-rosters .roster-team-name{
   color:var(--theme-text)!important;
 }
 
-/* === liveasta-visual-fixes-v022 === */
+/* === liveasta-visual-fixes-=== */
 /* v0.25 — screenshot-driven Daily coherence pass. CSS only. */
 
 /* DAILY: readable values in player top strip (legacy rules forced white). */

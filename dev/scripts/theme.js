@@ -1,4 +1,4 @@
-// === liveasta-v035-theme-runtime-fix ===
+// === liveasta-theme-runtime-fix ===
 (function(){
   const KEY='liveasta_theme';
   const THEMES={
