@@ -33,14 +33,13 @@ async function newPage(label,width=390,height=844){
 
 async function loginAuctioneer(){
   const {c,p}=await newPage('auctioneer',1280,800);
-  await p.getByRole('button',{name:/Banditore/i}).click();
-  await p.getByRole('button',{name:/COMPUTER/i}).click();
-  await p.getByRole('button',{name:/ENTRA IN UNA STANZA/i}).click();
+  await p.evaluate(()=>setDeviceMode('pc'));
+  await p.evaluate(()=>setAuctioneerRoomMode('join'));
   await p.locator('#auction-room-select').selectOption(ROOM_ID);
   await p.locator('#auction-room-password').fill(ROOM_PASSWORD);
-  await p.locator('#auction-wizard-next').click();
-  await p.waitForTimeout(300);
-  if(await p.locator('#btn-apri-plancia').isVisible().catch(()=>false)) await p.locator('#btn-apri-plancia').click();
+  await p.evaluate(async()=>{ await joinAsAuctioneer(); });
+  const err=await p.locator('#auction-room-error').innerText().catch(()=>"");
+  if(err) console.log('AUCTIONEER_ERROR '+err);
   await p.waitForFunction(()=>document.querySelector('#screen-auctioneer-board')?.classList.contains('active'),{timeout:15000});
   mark('Banditore entra nella stanza',true);
   return {c,p};
@@ -56,7 +55,7 @@ async function loginPlayer(def,label){
   await p.locator('#player-team-select').selectOption(def.id);
   await p.locator('#player-wizard-next').click();
   await p.waitForTimeout(300);
-  const pin= p.locator('#player-pin');
+  const pin=p.locator('#player-pin');
   if(await pin.isVisible().catch(()=>false)) await pin.fill(def.pin);
   const confirm=p.locator('#player-pin-confirm');
   if(await confirm.isVisible().catch(()=>false)) await confirm.fill(def.pin);
@@ -72,28 +71,23 @@ try{
   const auctioneer=await loginAuctioneer();
   const alpha=await loginPlayer(PLAYERS[0],'alpha');
   const beta=await loginPlayer(PLAYERS[1],'beta');
-
   await auctioneer.p.waitForTimeout(1200);
   const onlineText=await auctioneer.p.locator('body').innerText();
   const seesAlpha=onlineText.includes('E2E Alpha');
   const seesBeta=onlineText.includes('E2E Beta');
   mark('Banditore riceve presenza giocatori',seesAlpha&&seesBeta,`alpha=${seesAlpha} beta=${seesBeta}`);
   if(!(seesAlpha&&seesBeta)) throw new Error('auctioneer did not render both online teams');
-
   await beta.c.close();
   mark('Beta disconnesso',true);
   await auctioneer.p.waitForTimeout(1800);
-
-  const beta2=await loginPlayer(PLAYERS[1],'beta-reconnect');
+  await loginPlayer(PLAYERS[1],'beta-reconnect');
   await auctioneer.p.waitForTimeout(1200);
   const onlineAfter=await auctioneer.p.locator('body').innerText();
   const reconnectVisible=onlineAfter.includes('E2E Beta');
   mark('Beta rientra dopo disconnessione',reconnectVisible);
   if(!reconnectVisible) throw new Error('beta reconnect not visible to auctioneer');
-
   const playerState=await alpha.p.evaluate(()=>({room:document.querySelector('#player-room-inline')?.textContent,team:document.querySelector('#display-team-name')?.textContent,status:document.querySelector('#player-connection-text')?.textContent}));
   mark('Identità giocatore coerente',playerState.team==='E2E Alpha' && playerState.status==='ONLINE',JSON.stringify(playerState));
-
   if(report.errors.length) throw new Error('Page errors: '+report.errors.join(' | '));
   console.log('E2E_REPORT '+JSON.stringify(report));
 } catch(e){
