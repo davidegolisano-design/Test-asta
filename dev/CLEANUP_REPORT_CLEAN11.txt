@@ -1,0 +1,19 @@
+LIVEASTA CLEAN-11 - ACCESS FLOW OWNERSHIP
+==========================================
+Behavior preserved; wrapper chains removed.
+
+Canonical ownership:
+- openPlayerLobby: app.js only; calls resetPlayerAccessWizard hook after lobby preparation
+- setAuctioneerRoomMode: app.js only; prepares wizard state then renders after room-mode setup
+- resetAuctioneerRoomMode: app.js only; stops retry, resets wizard state, resets DOM, renders wizard
+- playerAccessWizardBack: bootstrap.js only; stops player retry directly before existing back behavior
+- auctionAccessWizardBack: bootstrap.js only; stops auction retry directly before existing back behavior
+- player/auction wizard Next handlers remain bootstrap.js owners
+
+Removed wrapper chains:
+- oldOpenPlayerLobby
+- oldSetAuctioneerRoomMode
+- oldResetAuctioneerRoomMode
+- oldPlayerBack
+- oldAuctionBack
+- oldResetAuctionMode

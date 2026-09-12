@@ -5000,11 +5000,13 @@
                     sel.innerHTML='<option value="">Inserisci nome stanza e password...</option>';
                 }
             }
+            window.resetPlayerAccessWizard?.();
         }
 
         async function setAuctioneerRoomMode(mode) {
             if(mode!=='create' && mode!=='join') return;
 
+            window.prepareAuctionAccessWizard?.();
             auctioneerRoomMode = mode;
 
             const choice=document.getElementById('auction-mode-choice');
@@ -5026,9 +5028,12 @@
                 applyAuctioneerRoomVisibilityUI();
                 if(showRoomsToUsers) await loadRooms();
             }
+            window.renderAuctionAccessWizard?.();
         }
 
         function resetAuctioneerRoomMode(){
+            window.stopAuctioneerOccupiedRetryCountdown?.();
+            window.prepareAuctionAccessWizard?.();
             auctioneerRoomMode=null;
 
             const choice=document.getElementById('auction-mode-choice');
@@ -5048,6 +5053,7 @@
             if(password) password.value='';
 
             if(err) err.innerText='';
+            window.renderAuctionAccessWizard?.();
         }
 
         async function createRoom(name, password, config = {}) {

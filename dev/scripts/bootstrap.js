@@ -579,6 +579,7 @@
   };
 
   window.playerAccessWizardBack=function(){
+    window.stopPlayerOccupiedRetryCountdown?.();
     if(playerWizardStep<=1){
       if(typeof closePlayerSetupChannel==='function')closePlayerSetupChannel();
       showScreen('screen-role');return;
@@ -589,6 +590,9 @@
   };
 
   function resetPlayerWizard(){playerWizardStep=1;renderPlayerWizard();}
+  window.resetPlayerAccessWizard=resetPlayerWizard;
+
+  function prepareAuctionWizard(){auctionWizardStep=1;}
 
   function renderAuctionWizard(){
     const screen=document.getElementById('screen-auctioneer-setup');
@@ -608,9 +612,13 @@
     if(next)next.textContent=(auctioneerRoomMode==='create'&&auctionWizardStep===1)?'AVANTI':(auctioneerRoomMode==='create'?'CREA STANZA':'ENTRA');
   }
 
+  window.prepareAuctionAccessWizard=prepareAuctionWizard;
+  window.renderAuctionAccessWizard=renderAuctionWizard;
+
   window.auctionAccessWizardBack=function(){
+    window.stopAuctioneerOccupiedRetryCountdown?.();
     if(auctioneerRoomMode==='create'&&auctionWizardStep===2){auctionWizardStep=1;renderAuctionWizard();return;}
-    resetAuctioneerRoomMode();renderAuctionWizard();
+    resetAuctioneerRoomMode();
   };
 
   window.auctionAccessWizardNext=async function(){
@@ -626,13 +634,6 @@
     if(listoneGate?.disabled){if(err)err.textContent='Attendi il caricamento del listone ufficiale.';return;}
     await joinAsAuctioneer();
   };
-
-  const oldOpenPlayerLobby=window.openPlayerLobby;
-  if(typeof oldOpenPlayerLobby==='function')window.openPlayerLobby=async function(){const r=await oldOpenPlayerLobby.apply(this,arguments);resetPlayerWizard();return r;};
-  const oldSetAuctioneerRoomMode=window.setAuctioneerRoomMode;
-  if(typeof oldSetAuctioneerRoomMode==='function')window.setAuctioneerRoomMode=async function(mode){auctionWizardStep=1;const r=await oldSetAuctioneerRoomMode.apply(this,arguments);renderAuctionWizard();return r;};
-  const oldResetAuctioneerRoomMode=window.resetAuctioneerRoomMode;
-  if(typeof oldResetAuctioneerRoomMode==='function')window.resetAuctioneerRoomMode=function(){auctionWizardStep=1;const r=oldResetAuctioneerRoomMode.apply(this,arguments);renderAuctionWizard();return r;};
 
   function hardenInputs(root=document){
     root.querySelectorAll?.('form').forEach(f=>f.setAttribute('autocomplete','off'));
@@ -888,13 +889,6 @@
   },true);
 
   document.addEventListener('focusin',updateEnterHints,true);
-
-  const oldPlayerBack=window.playerAccessWizardBack;
-  if(typeof oldPlayerBack==='function')window.playerAccessWizardBack=function(){window.stopPlayerOccupiedRetryCountdown();return oldPlayerBack.apply(this,arguments);};
-  const oldAuctionBack=window.auctionAccessWizardBack;
-  if(typeof oldAuctionBack==='function')window.auctionAccessWizardBack=function(){window.stopAuctioneerOccupiedRetryCountdown();return oldAuctionBack.apply(this,arguments);};
-  const oldResetAuctionMode=window.resetAuctioneerRoomMode;
-  if(typeof oldResetAuctionMode==='function')window.resetAuctioneerRoomMode=function(){window.stopAuctioneerOccupiedRetryCountdown();return oldResetAuctionMode.apply(this,arguments);};
 
   function boot(){updateEnterHints();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
