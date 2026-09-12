@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const base=process.env.LIVEASTA_SMOKE_URL || 'http://127.0.0.1:4173/dev/?smoke=1';
+const base=process.env.LIVEASTA_SMOKE_URL || 'http://127.0.0.1:4173/dev/index.html?smoke=1';
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:390,height:844}});
 const pageErrors=[];
@@ -11,11 +11,16 @@ page.on('console',msg=>{ if(msg.type()==='error') consoleErrors.push(msg.text())
 function assert(condition,message){ if(!condition) throw new Error(message); }
 
 try{
-  await page.goto(base,{waitUntil:'domcontentloaded',timeout:30000});
+  const response=await page.goto(base,{waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForTimeout(1800);
 
   const title=await page.title();
+  console.log('Smoke URL:',page.url());
+  console.log('HTTP status:',response?.status());
+  console.log('Document title:',JSON.stringify(title));
+  assert(response && response.status()===200,'DEV index HTTP status is not 200');
   assert(/LIVEASTA DEV/.test(title),'DEV title missing');
+
   const marker=page.locator('#liveasta-dev-static-marker');
   await marker.waitFor({state:'visible',timeout:5000});
   assert((await marker.innerText()).includes('AMBIENTE DEV'),'DEV marker text missing');
