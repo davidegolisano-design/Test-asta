@@ -1,0 +1,10 @@
+LIVEASTA CLEAN-21 - AUDIO MODULE EXTRACTION
+===========================================
+Behavior intended to be preserved.
+
+Created: scripts/audio.js
+Moved constants: AUDIO_SETTINGS_KEY, defaultAudioSettings, audioSettings
+Moved functions: openAudioMixer, closeAudioMixer, loadAudioSettings, saveAudioSettings, updateAudioLabel, playSound, testAuctionAudio, speakBidValue, testBidVoice, speakFinalCountdownNumber, playAuctionFinalCountdown, testFinalCountdownAudio
+
+audio.js is loaded immediately before app.js because auction logic calls playSound/speakBidValue/playAuctionFinalCountdown.
+Audio routing/presence persistence remains in app.js for now.
