@@ -1,0 +1,28 @@
+name: LIVEASTA DEV clean19 app modularization audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean19-map.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install parser dependencies
+        run: npm install --no-save acorn eslint-scope
+      - name: Run CLEAN-19 app map
+        run: node .github/clean19_map.js
+      - name: Validate application sources
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          test -f dev/CLEANUP_AUDIT_CLEAN19_APP_MAP.txt
+      - name: Commit report and self-remove temporary files
+        run: |
+          rm -f .github/clean19_map.js .github/workflows/liveasta-clean19-map.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/CLEANUP_AUDIT_CLEAN19_APP_MAP.txt .github/clean19_map.js .github/workflows/liveasta-clean19-map.yml
+          git commit -m "LIVEASTA DEV clean19 app modularization audit"
+          git push
