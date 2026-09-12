@@ -1,0 +1,16 @@
+LIVEASTA CLEAN-10 - CANONICAL THEME RUNTIME
+===========================================
+Goal: one owner for theme state and application.
+
+Changes:
+- moved the effective theme implementation from runtime.js to scripts/theme.js
+- removed the older liveasta-v73 theme implementation from bootstrap.js
+- removed the later theme override block from runtime.js
+- retained theme menu open/close behavior in the canonical theme module
+- visibility reapply now uses the same canonical applyLiveAstaTheme implementation
+- theme palette, labels, localStorage key and final runtime values are preserved from the implementation that previously won the cascade
+
+Ownership after CLEAN-10:
+- applyLiveAstaTheme: theme.js only
+- setLiveAstaTheme: theme.js only
+- openLiveAstaThemeMenu / closeLiveAstaThemeMenu: theme.js only
