@@ -1,0 +1,14 @@
+LIVEASTA CLEAN-15 - DEAD PWA RUNTIME CLEANUP
+===========================================
+Behavior preserved.
+
+Removed from scripts/pwa.js:
+- obsolete cleanupMalformedLegacy() DOM walker
+- obsolete lookup/removal of #liveasta-v076-desktop-board
+- stale document.title override for CLEAN-11
+
+Ownership after CLEAN-15:
+- DEV page title: index.html only
+- PWA script: install-prompt handling only
+
+The removed cleanup targeted extraction artifacts that no longer exist in the structured DEV index.
