@@ -1,0 +1,8 @@
+LIVEASTA CLEAN-22 - UI FIT MODULE EXTRACTION
+============================================
+Behavior intended to be preserved.
+
+Created: scripts/ui-fit.js
+Moved functions: fitTextToBox, fitNominationStageTeam, fitAuctionNames, installAuctionNameAutoFit
+
+The module is loaded before app.js because app startup invokes installAuctionNameAutoFit and other modules may call fitAuctionNames.
