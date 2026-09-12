@@ -1,0 +1,26 @@
+name: LIVEASTA DEV clean18 versioned CSS selector audit
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean18-audit.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run CLEAN-18 audit
+        run: python .github/clean18_audit.py
+      - name: Validate application sources
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          test -f dev/CLEANUP_AUDIT_CLEAN18.txt
+      - name: Commit report and self-remove temporary files
+        run: |
+          rm -f .github/clean18_audit.py .github/workflows/liveasta-clean18-audit.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev/CLEANUP_AUDIT_CLEAN18.txt .github/clean18_audit.py .github/workflows/liveasta-clean18-audit.yml
+          git commit -m "LIVEASTA DEV clean18 versioned CSS selector audit"
+          git push
