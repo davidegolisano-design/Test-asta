@@ -1,0 +1,113 @@
+name: LIVEASTA DEV clean05 redundant declaration cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/liveasta-clean05.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  clean05:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install CSS parser
+        run: npm install --no-save postcss@8
+
+      - name: Remove only earlier identical declarations shadowed by same selector/context
+        run: |
+          cat > /tmp/clean05.js <<'JS'
+          const fs=require('fs');
+          const path=require('path');
+          const postcss=require('postcss');
+
+          const dir='dev/styles';
+          const files=fs.readdirSync(dir).filter(x=>x.endsWith('.css')).sort();
+          let totalRemoved=0;
+          const lines=['LIVEASTA CLEAN-05 - REDUNDANT DECLARATIONS','=========================================','Rule: remove an earlier declaration only when a later rule with the exact same selector and exact same at-rule ancestry repeats the same property, value and !important state.','','FILES'];
+
+          function contextKey(rule){
+            const chain=[];
+            let p=rule.parent;
+            while(p && p.type!=='root'){
+              if(p.type==='atrule') chain.unshift('@'+p.name+' '+String(p.params||'').trim());
+              p=p.parent;
+            }
+            return chain.join(' > ');
+          }
+
+          for(const name of files){
+            const file=path.join(dir,name);
+            const before=fs.readFileSync(file,'utf8');
+            const root=postcss.parse(before,{from:file});
+            const groups=new Map();
+            root.walkRules(rule=>{
+              const key=contextKey(rule)+'\u0000'+rule.selector;
+              if(!groups.has(key)) groups.set(key,[]);
+              groups.get(key).push(rule);
+            });
+            let removed=0;
+            for(const rules of groups.values()){
+              if(rules.length<2) continue;
+              const seen=new Set();
+              for(let r=rules.length-1;r>=0;r--){
+                const decls=[];
+                rules[r].each(n=>{if(n.type==='decl') decls.push(n);});
+                for(let d=decls.length-1;d>=0;d--){
+                  const n=decls[d];
+                  const sig=n.prop+'\u0000'+n.value+'\u0000'+(n.important?'1':'0');
+                  if(seen.has(sig)){
+                    n.remove(); removed++;
+                  } else {
+                    seen.add(sig);
+                  }
+                }
+              }
+            }
+            // Remove rule nodes left with comments/whitespace but no declarations or child rules.
+            root.walkRules(rule=>{
+              const meaningful=(rule.nodes||[]).some(n=>n.type==='decl'||n.type==='rule'||n.type==='atrule');
+              if(!meaningful) rule.remove();
+            });
+            const after=root.toString();
+            fs.writeFileSync(file,after,'utf8');
+            totalRemoved+=removed;
+            lines.push(`- ${name}: removed ${removed} redundant declarations; ${before.length.toLocaleString()} -> ${after.length.toLocaleString()} chars`);
+          }
+          lines.push('',`TOTAL REDUNDANT DECLARATIONS REMOVED: ${totalRemoved}`);
+          fs.writeFileSync('dev/CLEANUP_REPORT_CLEAN05.txt',lines.join('\n')+'\n','utf8');
+          JS
+          node /tmp/clean05.js
+
+          python - <<'PY'
+          from pathlib import Path
+          idx=Path('dev/index.html')
+          html=idx.read_text(encoding='utf-8',errors='ignore').replace('CLEAN-04','CLEAN-05').replace('094-clean04a','094-clean05a')
+          idx.write_text(html,encoding='utf-8')
+          p=Path('dev/scripts/pwa.js')
+          p.write_text(p.read_text(encoding='utf-8',errors='ignore').replace('CLEAN-04','CLEAN-05'),encoding='utf-8')
+          PY
+
+      - name: Validate
+        run: |
+          set -e
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          grep -q 'AMBIENTE DEV · v0.94 CLEAN-05' dev/index.html
+          test -f dev/CLEANUP_REPORT_CLEAN05.txt
+          node - <<'JS'
+          const fs=require('fs'),postcss=require('postcss');
+          for(const f of fs.readdirSync('dev/styles').filter(x=>x.endsWith('.css'))){postcss.parse(fs.readFileSync('dev/styles/'+f,'utf8'));}
+          console.log('CSS parse OK');
+          JS
+
+      - name: Commit and self-remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/liveasta-clean05.yml
+          git add -A dev .github/workflows/liveasta-clean05.yml
+          git diff --cached --quiet || (git commit -m "LIVEASTA DEV v0.94 clean05 remove redundant CSS declarations" && git push)
