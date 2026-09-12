@@ -1,0 +1,76 @@
+name: LIVEASTA DEV clean12 popup ownership cleanup
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean12-popup.yml'
+permissions:
+  contents: write
+jobs:
+  clean12:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Consolidate popup ownership
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('dev/scripts/runtime.js')
+          s=p.read_text(encoding='utf-8')
+
+          s=s.replace("      const danger=options.danger ?? isDangerMessage(message);", "      const formatted=window.formatLiveAstaPopupText?window.formatLiveAstaPopupText(message):String(message??'');\n      const danger=options.danger ?? isDangerMessage(formatted);")
+          s=s.replace("      text.textContent=String(message??'');", "      text.textContent=formatted;")
+          s=s.replace("      alertQueue.push({message,resolve});", "      const formatted=window.formatLiveAstaPopupText?window.formatLiveAstaPopupText(message):String(message??'');\n      alertQueue.push({message:formatted,resolve});")
+
+          old="""  const originalAppAlert=window.appAlert;
+  if(typeof originalAppAlert==='function'){
+    window.appAlert=function(message){
+      return originalAppAlert(window.formatLiveAstaPopupText(message));
+    };
+  }
+
+  const originalAppConfirm=window.appConfirm;
+  if(typeof originalAppConfirm==='function'){
+    window.appConfirm=function(message,options={}){
+      return originalAppConfirm(window.formatLiveAstaPopupText(message),options);
+    };
+  }
+
+  // alert() era già sostituito dal popup interno: lo riallinea al formatter.
+  window.alert=function(message){
+    return window.appAlert(window.formatLiveAstaPopupText(message));
+  };
+"""
+          if old not in s:
+              raise SystemExit('popup wrapper block not found')
+          s=s.replace(old,'')
+          p.write_text(s,encoding='utf-8')
+
+          idx=Path('dev/index.html')
+          html=idx.read_text(encoding='utf-8')
+          html=html.replace('CLEAN-11','CLEAN-12').replace('094-clean11a','094-clean12a')
+          idx.write_text(html,encoding='utf-8')
+
+          report=Path('dev/CLEANUP_REPORT_CLEAN12.txt')
+          report.write_text('''LIVEASTA CLEAN-12 - POPUP OWNERSHIP\n==================================\nBehavior preserved; duplicate global popup wrappers removed.\n\nCanonical ownership after CLEAN-12:\n- appConfirm: one assignment in runtime.js\n- appAlert: one assignment in runtime.js\n- alert: one assignment in runtime.js\n- formatLiveAstaPopupText remains the single text-normalization helper\n\nThe formatter is now called directly by the canonical appConfirm/appAlert implementations.\nThe late originalAppAlert/originalAppConfirm/alert wrapper chain was removed.\n''',encoding='utf-8')
+          PY
+      - name: Validate application sources
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('dev/scripts/runtime.js').read_text(encoding='utf-8')
+          assert s.count('window.appConfirm=function') == 1
+          assert s.count('window.appAlert=function') == 1
+          assert s.count('window.alert=function') == 1
+          assert 'originalAppAlert' not in s
+          assert 'originalAppConfirm' not in s
+          print('Popup ownership checks: OK')
+          PY
+      - name: Commit and self-remove workflow
+        run: |
+          rm -f .github/workflows/liveasta-clean12-popup.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev .github/workflows/liveasta-clean12-popup.yml
+          git commit -m "LIVEASTA DEV v0.94 clean12 consolidate popup ownership"
+          git push
