@@ -1,0 +1,210 @@
+LIVEASTA CLEAN-42 - CRITICAL AUCTION RULES AUDIT
+================================================
+Audit only. No application code changed.
+
+[readyRequiredTeams] owner=app.js
+top-level deps: currentAuctionPlayer, roomLimits, isMantraRoom, teamsCache, maxBidForTeam, teamCounts, totalRoomSlots, absentTeamIds, sealedAuctionModeActive, sealedEligibleIds
+external/builtins: String, undefined, Array, Set
+source:
+function readyRequiredTeams(includeAbsent=false){
+            const role=String(currentAuctionPlayer?.R||'');
+            const limits=roomLimits();
+
+            let eligible;
+            if(isMantraRoom()){
+                if(!role)return [];
+                eligible=teamsCache.filter(team=>maxBidForTeam(team,role)>=1);
+            }else{
+                const classicRole=role.toUpperCase();
+                if(!classicRole || limits[classicRole]===undefined) return [];
+                eligible=teamsCache.filter(team=>{
+                    const counts=teamCounts(team.id);
+                    const totalComplete=counts.total>=totalRoomSlots();
+                    const roleComplete=(counts[classicRole]||0)>=(limits[classicRole]||0);
+                    return !totalComplete && !roleComplete;
+                });
+            }
+
+            // Modalità ASSENTE:
+            // il READY non deve MAI aspettare una squadra assente.
+            // Questo vale anche con banditura a turni attiva.
+            // L'assenza NON modifica però l'ordine dei turni di banditura:
+            // quando arriva il suo turno, quella squadra deve comunque bandire.
+            if(!includeAbsent && absentTeamIds.size){
+                eligible=eligible.filter(team=>!absentTeamIds.has(String(team.id)));
+            }
+
+            // OFFLINE NON ESCLUDE DAL READY.
+            // Se un giocatore perde connessione resta nella lista e continua a essere
+            // obbligatorio. Le sole esclusioni valide sono ASSENTE volontario e slot/reparto completato.
+
+            // In busta chiusa il READY riguarda solo chi può partecipare
+            // a QUEL round. Nel round 2+ sono quindi soltanto i pari merito.
+            if(sealedAuctionModeActive && Array.isArray(sealedEligibleIds) && sealedEligibleIds.length){
+                const allowed=new Set(sealedEligibleIds.map(String));
+                return eligible.filter(team=>allowed.has(String(team.id)));
+            }
+
+            return eligible;
+        }
+
+[readyRequiredIds] owner=app.js
+top-level deps: readyRequiredTeams
+external/builtins: String
+source:
+function readyRequiredIds(){
+            return readyRequiredTeams().map(t=>String(t.id));
+        }
+
+[evaluateReadyGate] owner=app.js
+top-level deps: readyGateWaiting, readyRequiredIds, updateReadyGateDisplay, broadcastReadyState, readyPlayers, persistReadyGateState, readySkipPlayers, closeReadyGateDedicated, sealedAuctionModeActive, sealedAuctionToken, sealedEligibleIds, currentWinner, currentAuctionValue, playerSkippedCurrentAuction, showAuctionPanels, endAuction, startSealedAuctionTimer, startCountdown
+external/builtins: String, Set
+source:
+function evaluateReadyGate(){
+            if(!readyGateWaiting)return;
+
+            const req=readyRequiredIds();
+            updateReadyGateDisplay();
+            broadcastReadyState();
+
+            // OFFLINE continua a essere obbligatorio.
+            // Solo la modalità ASSENTE esplicita toglie una squadra dal READY.
+            // La banditura a turni resta comunque obbligatoria nel suo turno.
+            const allAnswered=req.length===0 || req.every(id=>readyPlayers.has(String(id)));
+            if(!allAnswered){
+                persistReadyGateState();
+                return;
+            }
+
+            const allSkipped=req.length>0 && req.every(id=>readySkipPlayers.has(String(id)));
+            readyGateWaiting=false;
+            broadcastReadyState();
+            closeReadyGateDedicated();
+
+            // nuova semantica READY/SKIP:
+            // - se TUTTI scelgono SKIP => invenduto immediato a 0;
+            // - se anche UNA sola squadra sceglie READY => l'asta parte e TUTTE
+            //   le squadre abilitate possono partecipare, comprese quelle che avevano SKIP.
+            if(allSkipped){
+                sealedAuctionModeActive=false;
+                sealedAuctionToken=null;
+                sealedEligibleIds=[];
+                currentWinner='';
+                currentAuctionValue=0;
+                playerSkippedCurrentAuction=false;
+                showAuctionPanels();
+                endAuction(true);
+                return;
+            }
+
+            // Da questo momento SKIP non è più un vincolo individuale: serviva solo
+            // a capire se la risposta era unanime. Ripuliamo lo stato prima dell'asta
+            // così reconnect, busta chiusa e offerte normali vedono tutti come abilitati.
+            readySkipPlayers=new Set();
+            playerSkippedCurrentAuction=false;
+
+            if(sealedAuctionModeActive){
+                startSealedAuctionTimer();
+            }else{
+                startCountdown();
+            }
+        }
+
+[isNormalBidAmountAllowed] owner=app.js
+top-level deps: myTeamId, teamsCache, findTeamByName, myTeamName, isAuctionActive, currentAuctionPlayer, isSelfRaiseBlockedForTeam, roomLimits, teamCounts, totalRoomSlots, isMantraRoom, maxBidForTeam, currentAuctionValue
+external/builtins: Math, parseInt, String, undefined
+source:
+function isNormalBidAmountAllowed(amount){
+            const inc=Math.max(1,parseInt(amount)||1);
+            const team = myTeamId
+                ? teamsCache.find(x => String(x.id) === String(myTeamId))
+                : findTeamByName(myTeamName);
+
+            if(!isAuctionActive || !currentAuctionPlayer || !team)return false;
+            if(isSelfRaiseBlockedForTeam(team))return false;
+
+            const role=String(currentAuctionPlayer?.R||'');
+            const limits=roomLimits();
+            const counts=teamCounts(team.id);
+            const totalFree=Math.max(0,totalRoomSlots()-counts.total);
+            const roleFree=isMantraRoom()
+                ? totalFree
+                : (limits[role.toUpperCase()]!==undefined
+                    ? Math.max(0,(limits[role.toUpperCase()]||0)-(counts[role.toUpperCase()]||0))
+                    : 0);
+
+            if(totalFree<=0 || roleFree<=0)return false;
+
+            const maxBid=maxBidForTeam(team,role);
+            return maxBid>0 && (currentAuctionValue+inc)<=maxBid;
+        }
+
+[isSelfRaiseBlockedForTeam] owner=app.js
+top-level deps: selfRaiseEnabled, currentWinner
+external/builtins: String
+source:
+function isSelfRaiseBlockedForTeam(team){
+            if(selfRaiseEnabled || !team)return false;
+            if(!currentWinner)return false;
+            return String(currentWinner).trim().toLowerCase()===String(team.name||'').trim().toLowerCase();
+        }
+
+[eligibleNominationTeams] owner=app.js
+top-level deps: isMantraRoom, teamsCache, teamCounts, mantraRosterMax, roomLimits
+external/builtins: (none)
+source:
+function eligibleNominationTeams(r=nominationState.role){
+            if(!r)return [];
+            if(isMantraRoom()){
+                return teamsCache.filter(t=>teamCounts(t.id).total<mantraRosterMax());
+            }
+            const l=roomLimits();
+            return teamsCache.filter(t=>(teamCounts(t.id)[r]||0)<(l[r]||0));
+        }
+
+[firstIncompleteRole] owner=app.js
+top-level deps: isMantraRoom, teamsCache, teamCounts, mantraRosterMax, roomLimits
+external/builtins: (none)
+source:
+function firstIncompleteRole(){
+            if(isMantraRoom()){
+                return teamsCache.some(t=>teamCounts(t.id).total<mantraRosterMax())?'ALL':null;
+            }
+            const l=roomLimits();
+            for(const r of ['P','D','C','A']) if((l[r]||0)>0 && teamsCache.some(t=>(teamCounts(t.id)[r]||0)<l[r])) return r;
+            return null;
+        }
+
+[maxBidForTeam] owner=team-rules.js
+top-level deps: teamCounts, isMantraRoom, mantraRosterMax, mantraRoleTokens, mantraMinGoalkeepers, roomLimits, totalRoomSlots
+external/builtins: Math, parseInt, String, undefined
+source:
+function maxBidForTeam(team, role) {
+            if (!team) return 0;
+
+            const counts = teamCounts(team.id);
+
+            if(isMantraRoom()){
+                const maxRoster=mantraRosterMax();
+                if(counts.total>=maxRoster)return 0;
+
+                const buyingKeeper=mantraRoleTokens(role).includes('Por');
+                const keepersAfter=counts.Por+(buyingKeeper?1:0);
+                const slotsAfter=Math.max(0,maxRoster-(counts.total+1));
+                const keepersStillNeeded=Math.max(0,mantraMinGoalkeepers()-keepersAfter);
+
+                // Non consentire un acquisto che renda matematicamente impossibile
+                // chiudere la rosa con almeno 2 portieri.
+                if(keepersStillNeeded>slotsAfter)return 0;
+
+                const remainingAfterPurchase=slotsAfter;
+                return Math.max(0,(parseInt(team.credits_remaining)||0)-remainingAfterPurchase);
+            }
+
+            const limits = roomLimits();
+            const classicRole=String(role||'').toUpperCase();
+            if (!classicRole || limits[classicRole] === undefined || counts[classicRole] >= limits[classicRole]) return 0;
+            const remainingAfterPurchase = Math.max(0, totalRoomSlots() - (counts.total + 1));
+            return Math.max(0, (parseInt(team.credits_remaining) || 0) - remainingAfterPurchase);
+        }
+
