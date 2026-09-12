@@ -196,10 +196,6 @@
   }
 
   function applyBrand(){
-    document.title='v0.93';
-    document.querySelectorAll('.admin-version-badge').forEach(el=>{
-      el.textContent='v0.93';
-    });
     document.querySelectorAll('.logo-text').forEach(el=>{
       const a=el.querySelector('.rosa');
       const b=el.querySelector('.rush');
