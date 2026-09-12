@@ -1,0 +1,36 @@
+name: LIVEASTA DEV clean16 conservative CSS cascade cleanup
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-clean16-css.yml'
+permissions:
+  contents: write
+jobs:
+  clean16:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install parser
+        run: npm install --no-save --package-lock=false postcss@8
+      - name: Apply CLEAN-16
+        run: node .github/clean16.mjs
+      - name: Validate application sources
+        run: |
+          for f in dev/scripts/*.js; do node --check "$f"; done
+          node - <<'NODE'
+          const fs=require('fs'); const postcss=require('postcss');
+          for(const f of fs.readdirSync('dev/styles').filter(x=>x.endsWith('.css'))){
+            postcss.parse(fs.readFileSync('dev/styles/'+f,'utf8'),{from:f});
+          }
+          const html=fs.readFileSync('dev/index.html','utf8');
+          if(!html.includes('CLEAN-16')||!html.includes('094-clean16a'))process.exit(1);
+          console.log('CLEAN-16 validation: OK');
+          NODE
+      - name: Commit and self-remove temporary files
+        run: |
+          rm -f .github/clean16.mjs .github/workflows/liveasta-clean16-css.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dev .github/clean16.mjs .github/workflows/liveasta-clean16-css.yml
+          git commit -m "LIVEASTA DEV v0.94 clean16 conservative CSS cascade cleanup"
+          git push
