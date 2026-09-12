@@ -1,0 +1,164 @@
+LIVEASTA CLEAN-35 - TIMER/ROOM SETTINGS DEPENDENCY AUDIT
+==========================================================
+Audit only. No application code changed.
+
+[auctionPrepStateKey]
+bytes: 114
+app-level deps: currentRoomId
+external/global deps: (none)
+source:
+function auctionPrepStateKey(){
+            return currentRoomId ? `auction_prep_${currentRoomId}` : '';
+        }
+
+[loadAuctionPrepSeconds]
+bytes: 226
+app-level deps: currentRoom, auctionPrepSeconds
+external/global deps: parseInt, Number, Math
+source:
+async function loadAuctionPrepSeconds(){
+            const n=parseInt(currentRoom?.prep_seconds);
+            auctionPrepSeconds=Number.isFinite(n)?Math.max(1,Math.min(15,n)):5;
+            return auctionPrepSeconds;
+        }
+
+[saveAuctionPrepSeconds]
+bytes: 174
+app-level deps: auctionPrepSeconds
+external/global deps: Math, parseInt
+source:
+async function saveAuctionPrepSeconds(seconds){
+            auctionPrepSeconds=Math.max(1,Math.min(15,parseInt(seconds)||5));
+            return auctionPrepSeconds;
+        }
+
+[sealedTimerStateKey]
+bytes: 114
+app-level deps: currentRoomId
+external/global deps: (none)
+source:
+function sealedTimerStateKey(){
+            return currentRoomId ? `sealed_timer_${currentRoomId}` : '';
+        }
+
+[loadSealedTimerSeconds]
+bytes: 236
+app-level deps: currentRoom, sealedTimerSeconds
+external/global deps: parseInt, Number, Math
+source:
+async function loadSealedTimerSeconds(){
+            const n=parseInt(currentRoom?.sealed_timer_seconds);
+            sealedTimerSeconds=Number.isFinite(n)?Math.max(5,Math.min(180,n)):30;
+            return sealedTimerSeconds;
+        }
+
+[saveSealedTimerSeconds]
+bytes: 176
+app-level deps: sealedTimerSeconds
+external/global deps: Math, parseInt
+source:
+async function saveSealedTimerSeconds(seconds){
+            sealedTimerSeconds=Math.max(5,Math.min(180,parseInt(seconds)||30));
+            return sealedTimerSeconds;
+        }
+
+[sealedRevealStateKey]
+bytes: 122
+app-level deps: currentRoomId
+external/global deps: (none)
+source:
+function sealedRevealStateKey(){
+            return currentRoomId ? `sealed_reveal_timer_${currentRoomId}` : '';
+        }
+
+[loadSealedRevealSeconds]
+bytes: 238
+app-level deps: currentRoom, sealedRevealSeconds
+external/global deps: parseInt, Number, Math
+source:
+async function loadSealedRevealSeconds(){
+            const n=parseInt(currentRoom?.sealed_reveal_seconds);
+            sealedRevealSeconds=Number.isFinite(n)?Math.max(1,Math.min(30,n)):5;
+            return sealedRevealSeconds;
+        }
+
+[saveSealedRevealSeconds]
+bytes: 177
+app-level deps: sealedRevealSeconds
+external/global deps: Math, parseInt
+source:
+async function saveSealedRevealSeconds(seconds){
+            sealedRevealSeconds=Math.max(1,Math.min(30,parseInt(seconds)||5));
+            return sealedRevealSeconds;
+        }
+
+[roomAuctionExtraSettingsKey]
+bytes: 132
+app-level deps: currentRoomId
+external/global deps: (none)
+source:
+function roomAuctionExtraSettingsKey(){
+            return currentRoomId ? `auction_extra_settings_${currentRoomId}` : '';
+        }
+
+[loadRoomAuctionExtraSettings]
+bytes: 1403
+app-level deps: normalBidCooldownMs, DEFAULT_NORMAL_BID_COOLDOWN_MS, selfRaiseEnabled, nominationAutoBidOneEnabled, autoRandomEnabled, autoRandomRoles, roomAuctionExtraSettingsKey, supabaseClient
+external/global deps: Set, parseInt, Number, Math, Array, String, e, console
+source:
+async function loadRoomAuctionExtraSettings(){
+            normalBidCooldownMs=DEFAULT_NORMAL_BID_COOLDOWN_MS;
+            selfRaiseEnabled=true;
+            nominationAutoBidOneEnabled=false;
+            autoRandomEnabled=false;
+            autoRandomRoles=new Set(['P','D','C','A']);
+            const key=roomAuctionExtraSettingsKey();
+            if(!key)return;
+            try{
+                const {data,error}=await supabaseClient.from('fanta_app_data')
+                    .select('data').eq('key',key).maybeSingle();
+                if(error)throw error;
+                const cfg=data?.data||{};
+                const ms=parseInt(cfg.normal_bid_cooldown_ms);
+                if(Number.isFinite(ms))normalBidCooldownMs=Math.max(100,Math.min(5000,ms));
+                selfRaiseEnabled=cfg.self_raise_enabled!==false;
+                nominationAutoBidOneEnabled=!!cfg.nomination_auto_bid_one;
+                autoRandomEnabled=!!cfg.auto_random_enabled;
+                const storedRoles=Array.isArray(cfg.auto_random_roles)?cfg.auto_random_roles:[];
+                const validRoles=storedRoles.map(r=>String(r||'').toUpperCase()).filter(r=>['P','D','C','A'].includes(r));
+                autoRandomRoles=new Set(validRoles.length?validRoles:['P','D','C','A']);
+            }catch(e){
+                console.warn('Caricamento impostazioni extra asta non riuscito',e);
+            }
+        }
+
+[saveRoomAuctionExtraSettings]
+bytes: 1150
+app-level deps: roomAuctionExtraSettingsKey, normalBidCooldownMs, DEFAULT_NORMAL_BID_COOLDOWN_MS, supabaseClient, selfRaiseEnabled, nominationAutoBidOneEnabled, autoRandomEnabled, autoRandomRoles
+external/global deps: Math, parseInt, Date, e, console
+source:
+async function saveRoomAuctionExtraSettings(){
+            const key=roomAuctionExtraSettingsKey();
+            if(!key)return false;
+            normalBidCooldownMs=Math.max(100,Math.min(5000,parseInt(normalBidCooldownMs)||DEFAULT_NORMAL_BID_COOLDOWN_MS));
+            try{
+                const {error}=await supabaseClient.from('fanta_app_data').upsert({
+                    key,
+                    data:{
+                        normal_bid_cooldown_ms:normalBidCooldownMs,
+                        self_raise_enabled:!!selfRaiseEnabled,
+                        nomination_auto_bid_one:!!nominationAutoBidOneEnabled,
+                        auto_random_enabled:!!autoRandomEnabled,
+                        auto_random_roles:[...autoRandomRoles]
+                    },
+                    file_name:'impostazioni-extra-asta',
+                    updated_at:new Date().toISOString()
+                },{onConflict:'key'});
+                if(error)throw error;
+                return true;
+            }catch(e){
+                console.warn('Salvataggio impostazioni extra asta non riuscito',e);
+                return false;
+            }
+        }
+
