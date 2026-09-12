@@ -713,7 +713,6 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
     font-size:clamp(12px,3.5vw,18px)!important;font-weight:900!important;letter-spacing:.08em!important;
     text-align:center!important;margin:0!important;
 }
-#screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready #winner-display{display:none!important;}
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready #countdown-display,
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready #current-value-display{
     font-size:clamp(52px,15vw,96px)!important;
@@ -1151,12 +1150,8 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
     text-align:center!important;
     white-space:nowrap!important;
     overflow:hidden!important;
-}
+}/* READY mantiene FVM / READY e non usa TIMER/OFFERTA */
 
-/* READY mantiene FVM / READY e non usa TIMER/OFFERTA */
-#screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .mobile-quad-label{
-    display:none!important;
-}
 
 /* Turni e buste hanno proprie etichette/stati */
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .mobile-quad-label,
@@ -1782,10 +1777,6 @@ html[data-live-theme="light-sand"] #screen-auctioneer-setup .auction-mode-icon{
 html[data-live-theme="light-neutral"] #screen-auctioneer-setup .auction-mode-big strong,
 html[data-live-theme="light-blue"] #screen-auctioneer-setup .auction-mode-big strong,
 html[data-live-theme="light-sand"] #screen-auctioneer-setup .auction-mode-big strong{color:var(--theme-text)!important;}
-
-html[data-live-theme="light-neutral"] #screen-auctioneer-setup .auction-mode-big small,
-html[data-live-theme="light-blue"] #screen-auctioneer-setup .auction-mode-big small,
-html[data-live-theme="light-sand"] #screen-auctioneer-setup .auction-mode-big small{color:var(--theme-muted)!important;}
 
 html[data-live-theme="light-neutral"] #screen-auctioneer-setup #auction-mode-selected-label,
 html[data-live-theme="light-blue"] #screen-auctioneer-setup #auction-mode-selected-label,
@@ -3841,12 +3832,8 @@ html[data-live-theme="carbon"] #auction-room-error.liveasta-access-retry.liveast
     #auction-dashboard.mode-mobile #view-auction .col-timer:has(#btn-next[style*="display:flex"]) #countdown-display{
         transform:translateY(-28px)!important;
     }
-}
+}/* Desktop: la label testuale non modifica il vecchio pulsante freccia. */
 
-/* Desktop: la label testuale non modifica il vecchio pulsante freccia. */
-@media (min-width:761px){
-    #btn-next .mobile-next-label{display:none!important;}
-}
 
 
 /* ==========================================================================
