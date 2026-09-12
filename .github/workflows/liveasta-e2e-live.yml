@@ -13,4 +13,4 @@ jobs:
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
       - run: python3 -m http.server 4173 >/tmp/liveasta-http.log 2>&1 & sleep 2
       - run: node dev/tests/e2e-live-smoke.mjs
-# e2e harness revision 3
+# e2e harness revision 4
