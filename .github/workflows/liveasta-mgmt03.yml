@@ -19,6 +19,16 @@ jobs:
       - name: Apply MGMT-03
         run: python3 dev/tools/apply_mgmt03.py
 
+      - name: Normalize generated newlines
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ['dev/scripts/management.js','dev/styles/management.css']:
+              p=Path(name)
+              s=p.read_text(encoding='utf-8')
+              p.write_text(s.replace('\\n','\n'),encoding='utf-8')
+          PY
+
       - name: Validate syntax and structure
         run: |
           node --check dev/scripts/app.js
