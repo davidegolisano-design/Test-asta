@@ -125,10 +125,11 @@
 
     // ---------- Automatic random ----------
     function normalizeStoredGroups(values){
+        const raw=(Array.isArray(values)?values:[]).map(value=>String(value||'').toUpperCase());
+        if(raw.includes('ALL'))return ['ALL'];
         const out=[];
-        (Array.isArray(values)?values:[]).forEach(value=>{
-            const direct=String(value||'').toUpperCase();
-            const group=GROUPS.includes(direct)?direct:normalizeGroup(value);
+        raw.forEach(value=>{
+            const group=GROUPS.includes(value)?value:normalizeGroup(value);
             if(group&&!out.includes(group))out.push(group);
         });
         return out;
@@ -153,12 +154,14 @@
     };
 
     autoRandomSelectedRolesFromControl=function(){
+        if(document.getElementById('auto-random-role-btn-ALL')?.getAttribute('aria-pressed')==='true')return ['ALL'];
         return activeGroups().filter(role=>document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true');
     };
 
     renderAutoRandomControlUI=function(){
         const roles=activeGroups();
-        if(isMantraRoom()){
+        const allMode=autoRandomRoles.has('ALL');
+        if(isMantraRoom()&&!allMode){
             const normalized=normalizeStoredGroups([...autoRandomRoles]);
             autoRandomRoles=new Set(normalized.length?normalized:GROUPS);
         }
@@ -174,19 +177,18 @@
             }
         }
         roles.forEach(role=>{
-            const selected=autoRandomRoles.has(role);
+            const selected=!allMode&&autoRandomRoles.has(role);
             const btn=document.getElementById('auto-random-role-btn-'+role);
             if(btn){btn.classList.toggle('selected',selected);btn.setAttribute('aria-pressed',selected?'true':'false');}
         });
-        const allSelected=roles.length>0&&roles.every(role=>autoRandomRoles.has(role));
         const allBtn=document.getElementById('auto-random-role-btn-ALL');
-        if(allBtn){allBtn.classList.toggle('selected',allSelected);allBtn.setAttribute('aria-pressed',allSelected?'true':'false');}
+        if(allBtn){allBtn.classList.toggle('selected',allMode);allBtn.setAttribute('aria-pressed',allMode?'true':'false');}
         const status=document.getElementById('auto-random-status');
         if(status){
-            const text=roles.filter(r=>autoRandomRoles.has(r)).map(categoryLabel).join(' · ')||'nessuna categoria';
+            const text=allMode?'TUTTI I DISPONIBILI':(roles.filter(r=>autoRandomRoles.has(r)).map(categoryLabel).join(' · ')||'nessuna categoria');
             status.innerHTML=autoRandomEnabled
                 ?`ATTIVO · <b>${escapeHtml(text)}</b> · la prossima asta parte automaticamente.`
-                :`DISATTIVO · categorie predisposte <b>${escapeHtml(text)}</b>.`;
+                :`DISATTIVO · selezione predisposta <b>${escapeHtml(text)}</b>.`;
             status.classList.toggle('active',!!autoRandomEnabled);
         }
     };
@@ -211,9 +213,8 @@
     };
 
     toggleAutoRandomAllRoles=async function(){
-        const roles=activeGroups();
-        const allSelected=roles.length>0&&roles.every(role=>autoRandomRoles.has(role));
-        autoRandomRoles=new Set(allSelected?[]:roles);
+        const allMode=autoRandomRoles.has('ALL');
+        autoRandomRoles=new Set(allMode?[]:['ALL']);
         if(autoRandomEnabled&&!autoRandomRoles.size){
             autoRandomEnabled=false;
             const master=document.getElementById('auto-random-enabled');if(master)master.checked=false;
@@ -227,12 +228,19 @@
     toggleAutoRandomRoleButton=function(role){
         const r=String(role||'').toUpperCase();
         if(!activeGroups().includes(r))return;
-        setAutoRandomRole(r,!autoRandomRoles.has(r));
+        const selected=!autoRandomRoles.has('ALL')&&autoRandomRoles.has(r);
+        setAutoRandomRole(r,!selected);
     };
     setAutoRandomRole=async function(role,checked){
         const r=String(role||'').toUpperCase();
         if(!activeGroups().includes(r))return;
-        if(checked)autoRandomRoles.add(r);else autoRandomRoles.delete(r);
+        if(checked){
+            autoRandomRoles.delete('ALL');
+            autoRandomRoles.add(r);
+        }else{
+            autoRandomRoles.delete('ALL');
+            autoRandomRoles.delete(r);
+        }
         if(autoRandomEnabled&&!autoRandomRoles.size){
             autoRandomEnabled=false;
             const master=document.getElementById('auto-random-enabled');if(master)master.checked=false;
@@ -244,6 +252,14 @@
         if(autoRandomEnabled&&!isAuctionActive&&!readyGateWaiting&&!auctionPrepInterval)scheduleAutoRandomAuction(180);
     };
     autoRandomCandidates=function(){
+        const allMode=autoRandomRoles.has('ALL');
+        if(allMode){
+            return getAvailablePlayers().filter(player=>{
+                if(isMantraRoom())return groupsForRole(playerRole(player)).some(group=>autoRandomHasBidderForRole(group));
+                const role=String(playerRole(player)||'').toUpperCase();
+                return autoRandomHasBidderForRole(role);
+            });
+        }
         const allowed=new Set([...autoRandomRoles].map(r=>String(r).toUpperCase()).filter(r=>activeGroups().includes(r)));
         if(!allowed.size)return [];
         return getAvailablePlayers().filter(player=>groupsForRole(playerRole(player)).some(group=>allowed.has(group)&&autoRandomHasBidderForRole(group)));

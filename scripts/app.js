@@ -2445,10 +2445,10 @@ function updateCreateRoomModeUI(){
             if(isMantraRoom()||!list)return;
             const order=ensureNominationRoleOrder();
             const allMode=!!nominationState.all_roles;
-            if(summary)summary.textContent=allMode?'TUTTI I RUOLI':order.join(' → ');
+            if(summary)summary.textContent=allMode?'TURNO LIBERO':order.join(' → ');
             const labels={P:'Portieri',D:'Difensori',C:'Centrocampisti',A:'Attaccanti'};
             list.classList.toggle('all-roles-active',allMode);
-            list.innerHTML=`<button id="nomination-all-roles-mode" class="btn btn-secondary mg-role-all-mode${allMode?' selected':''}" type="button" aria-pressed="${allMode}" onclick="toggleNominationAllRoles()"><span>TUTTI I RUOLI</span><small>Ogni squadra può bandire un giocatore di qualsiasi reparto ancora libero.</small></button>`+
+            list.innerHTML=`<button id="nomination-all-roles-mode" class="btn btn-secondary mg-role-all-mode${allMode?' selected':''}" type="button" aria-pressed="${allMode}" onclick="toggleNominationAllRoles()"><span>TURNO LIBERO</span><small>Al proprio turno ogni squadra può nominare qualsiasi giocatore ancora disponibile compatibile con gli slot liberi.</small></button>`+
                 order.map((role,i)=>`<div class="mg-role-order-row">
                 <span class="unified-role role-${role} selected" aria-hidden="true">${role}</span>
                 <span class="mg-role-order-name">${labels[role]}</span>
@@ -2597,7 +2597,7 @@ function updateCreateRoomModeUI(){
                 b.disabled=!mine;
                 b.classList.toggle('nomination-turn-active',!!mine);
             }
-            const r=document.getElementById('player-nominate-role');if(r)r.textContent=nominationState.role?(isMantraRoom()?'MANTRA · qualsiasi ruolo':nominationState.role==='ALL'?'TUTTI I RUOLI · qualsiasi ruolo':`Ruolo ${nominationState.role} · ${nominationRoleName(nominationState.role)}`):'Rosa completata';
+            const r=document.getElementById('player-nominate-role');if(r)r.textContent=nominationState.role?(isMantraRoom()?'MANTRA · qualsiasi ruolo':nominationState.role==='ALL'?'TURNO LIBERO · qualsiasi ruolo':`Ruolo ${nominationState.role} · ${nominationRoleName(nominationState.role)}`):'Rosa completata';
             const badge=document.getElementById('nomination-control-badge');if(badge){badge.textContent=nominationState.enabled?'ATTIVA':'DISATTIVA';badge.classList.toggle('active',!!nominationState.enabled);}
             const t=document.getElementById('nomination-toggle-btn');if(t){t.checked=!!nominationState.enabled;t.textContent=nominationState.enabled?'Disattiva banditura a turni':'Attiva banditura a turni';t.setAttribute('aria-checked',String(!!nominationState.enabled));}
             const st=document.getElementById('nomination-control-status');if(st)st.innerHTML=!nominationState.enabled?'Modalità disattivata.':!nominationState.role?'Tutte le rose sono complete.':(isMantraRoom()?`Banditura libera MANTRA · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`:nominationState.role==='ALL'?`Tutti i ruoli · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`:`Ruolo <b>${nominationState.role}</b> · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`);
@@ -2922,7 +2922,7 @@ function updateCreateRoomModeUI(){
             if(search)search.value='';
             const allClassic=!isMantraRoom()&&nominationState.role==='ALL';
             document.getElementById('nomination-picker-title').textContent=(isMantraRoom()||allClassic)?'Scegli un giocatore da bandire':`Scegli un ${nominationRoleName(nominationState.role)}`;
-            document.getElementById('nomination-picker-subtitle').textContent=isMantraRoom()?'MANTRA · banditura libera, qualsiasi ruolo':allClassic?'TUTTI I RUOLI · banditura libera':`Solo ruolo ${nominationState.role}`;
+            document.getElementById('nomination-picker-subtitle').textContent=isMantraRoom()?'MANTRA · banditura libera, qualsiasi ruolo':allClassic?'TURNO LIBERO · qualsiasi giocatore disponibile':`Solo ruolo ${nominationState.role}`;
             renderNominationCandidates();
             document.getElementById('nomination-picker-overlay').classList.add('open');
         }
