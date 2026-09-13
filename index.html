@@ -1034,13 +1034,13 @@
                                 <div class="mg-role-order-head"><div><b>Ordine ruoli</b><small>Scegli la sequenza dei reparti nella banditura a turni.</small></div><span id="nomination-role-order-summary">P → D → C → A</span></div>
                                 <div id="nomination-role-order-list" class="mg-role-order-list"></div>
                             </div>
-                            <label class="mg-inline-setting nomination-auto-bid-one-option">
+                            <div class="mg-inline-setting nomination-auto-bid-one-option">
                                 <span class="nomination-auto-bid-one-copy"><b>Offerta 1 banditore</b><small>Il giocatore bandito parte da 1 credito assegnato alla squadra che ha bandito.</small></span>
-                                <span class="mg-switch-label">
+                                <label class="mg-switch-label" for="nomination-auto-bid-one">
                                     <input id="nomination-auto-bid-one" type="checkbox" onchange="setNominationAutoBidOne(this.checked)">
                                     <span class="mg-switch-ui" aria-hidden="true"></span>
-                                </span>
-                            </label>
+                                </label>
+                            </div>
                             <div class="nomination-turn-nav mg-two-actions">
                                 <button class="btn btn-secondary" type="button" onclick="moveNominationTurn(-1)">← Turno precedente</button>
                                 <button class="btn btn-secondary" type="button" onclick="moveNominationTurn(1)">Turno successivo →</button>
