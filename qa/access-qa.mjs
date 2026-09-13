@@ -13,7 +13,7 @@ await page.waitForFunction(()=>/✅|532/.test(document.querySelector('#excel-sta
 const sel=page.locator('#auction-room-select');
 const value=await sel.locator('option').evaluateAll(opts=>opts.find(o=>o.textContent.trim()==='QA10P5T')?.value);
 await sel.selectOption(value);
-await page.locator('#auction-room-password').fill('qa0913');
+await page.locator('#auction-room-password').fill('testqa');
 await page.locator('#auction-wizard-next:visible, #btn-apri-plancia:visible').first().click();
 await page.waitForTimeout(2000);
 await page.screenshot({path:'qa-output/access-qa.png',fullPage:true});
