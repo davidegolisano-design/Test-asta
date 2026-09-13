@@ -1,4 +1,4 @@
-/* LIVEASTA DEV — canonical Gestione UI · v1.00 MGMT-06
+/* LIVEASTA DEV — canonical Gestione UI · v1.02 MGMT-08
    This file owns only #screen-room-control. Auction/business logic stays in app.js. */
 
 #screen-room-control{
@@ -325,4 +325,68 @@ body.mg-detail-open{overflow:hidden;}
   #management-team-detail .mg-team-detail-sheet{width:100%;max-width:none;max-height:88dvh;border-radius:18px 18px 0 0;border-bottom:0;}
   #management-team-detail .mg-team-detail-fields{grid-template-columns:1fr 115px;}
   #management-team-detail .mg-team-detail-metrics{grid-template-columns:repeat(5,minmax(52px,1fr));overflow-x:auto;padding-bottom:2px;}
+}
+
+/* === MGMT-08: desktop-only management page alignment === */
+/* Scope is intentionally tied to the auctioneer desktop mode. Smartphone rules remain untouched. */
+body.auctioneer-desktop #screen-room-control .mg-page.control-grid{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:0!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:auto!important;
+  min-height:100%!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+
+body.auctioneer-desktop #screen-room-control .mg-header{
+  width:100%!important;
+  min-width:0!important;
+  min-height:62px;
+  flex:0 0 auto;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:20px!important;
+  padding:10px max(24px,calc((100vw - 1240px)/2))!important;
+}
+body.auctioneer-desktop #screen-room-control .mg-header-main{
+  flex:1 1 auto!important;
+  min-width:0!important;
+}
+body.auctioneer-desktop #screen-room-control .mg-heading{
+  flex:0 1 auto!important;
+  min-width:0!important;
+}
+body.auctioneer-desktop #screen-room-control .mg-header-actions{
+  display:flex!important;
+  flex:0 0 auto!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  grid-template-columns:none!important;
+  width:auto!important;
+  min-width:0!important;
+  gap:8px!important;
+}
+body.auctioneer-desktop #screen-room-control .mg-header-actions .btn{
+  width:auto!important;
+  min-width:96px!important;
+  min-height:38px!important;
+  margin:0!important;
+  padding:8px 12px!important;
+  white-space:nowrap!important;
+}
+
+body.auctioneer-desktop #screen-room-control .mg-content{
+  flex:0 0 auto!important;
+  align-self:center!important;
+  width:min(1240px,calc(100% - 40px))!important;
+  max-width:1240px!important;
+  margin:0 auto!important;
+  padding:24px 0 48px!important;
 }
