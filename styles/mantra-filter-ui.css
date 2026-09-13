@@ -179,3 +179,128 @@ html body.liveasta-mantra .mantra-subfilter-token.selected{
 
 html body.liveasta-mantra .mantra-role-filter-row .unified-role-all{font-size:9px!important;font-weight:950!important;opacity:.48!important;}
 html body.liveasta-mantra .mantra-role-filter-row .unified-role-all.selected,html body.liveasta-mantra .mantra-role-filter-row .unified-role-all[aria-pressed="true"]{opacity:1!important;background:var(--theme-primary)!important;color:var(--theme-bg-deep)!important;border-color:var(--theme-primary)!important;}
+
+/* === Mantra: list geometry for up to three real-role badges === */
+html body.liveasta-mantra .nomination-player-row{
+  grid-template-columns:22px 76px minmax(0,1fr) 42px!important;
+  gap:6px!important;
+}
+html body.liveasta-mantra .nomination-player-row > .role-badge.role-badge-mantra{
+  width:74px!important;
+  min-width:74px!important;
+  max-width:74px!important;
+  justify-self:start!important;
+  justify-content:flex-start!important;
+  gap:2px!important;
+  overflow:visible!important;
+  clip-path:none!important;
+}
+html body.liveasta-mantra .nomination-player-row > .role-badge.role-badge-mantra .mantra-role-token{
+  width:23px!important;
+  height:23px!important;
+  min-width:23px!important;
+  min-height:23px!important;
+  flex:0 0 23px!important;
+  font-size:8px!important;
+}
+html body.liveasta-mantra .nomination-player-row .nomination-player-main{
+  min-width:0!important;
+  padding-left:0!important;
+}
+
+html body.liveasta-mantra #player-listone-overlay#player-listone-overlay #player-listone-list#player-listone-list .player-listone-row{
+  grid-template-columns:24px 76px minmax(0,1fr) 44px!important;
+}
+html body.liveasta-mantra #player-listone-overlay#player-listone-overlay #player-listone-list#player-listone-list .player-listone-row > .role-badge.role-badge-mantra{
+  width:74px!important;
+  min-width:74px!important;
+  max-width:74px!important;
+  gap:2px!important;
+  justify-content:flex-start!important;
+}
+html body.liveasta-mantra #player-listone-overlay#hlayer-listone-overlay #player-listone-list#player-listone-list .player-listone-row > .role-badge.role-badge-mantra .mantra-role-token{
+  width:23px!important;
+  height:23px!important;
+  min-width:23px!important;
+  min-height:23px!important;
+  flex:0 0 23px!important;
+  font-size:8px!important;
+}
+
+html body.liveasta-mantra .roster-row{
+  grid-template-columns:72px minmax(0,1fr) auto!important;
+}
+html body.liveasta-mantra .roster-player-line{
+  grid-template-columns:72px minmax(0,1fr) auto!important;
+}
+html body.liveasta-mantra .player-room-roster-line{
+  grid-template-columns:72px minmax(0,1fr) 48px!important;
+}
+html body.liveasta-mantra .auctioned-row{
+  grid-template-columns:72px minmax(0,1fr) auto!important;
+}
+html body.liveasta-mantra :is(.roster-row,.roster-player-line,.player-room-roster-line,.auctioned-row) .role-badge.role-badge-mantra{
+  width:70px!important;
+  min-width:70px!important;
+  max-width:70px!important;
+  gap:2px!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+}
+html body.liveasta-mantra :is(.roster-row,.roster-player-line,.player-room-roster-line,.auctioned-row) .role-badge.role-badge-mantra .mantra-role-token{
+  width:22px!important;
+  height:22px!important;
+  min-width:22px!important;
+  min-height:22px!important;
+  flex:0 0 22px!important;
+  font-size:7.5px!important;
+}
+
+/* Auctioneer mobile table: reserve enough real width for three badges. */
+html body.liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(1),
+html body.liveasta-mantra #screen-auctioneer-board .mode-mobile td:nth-child(1){
+  width:23%!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+  overflow:visible!important;
+}
+html body.liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(2){width:34%!important;}
+html body.liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(3){width:25%!important;}
+html body.liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(4){width:18%!important;}
+html body.liveasta-mantra #screen-auctioneer-board .mode-mobile td:nth-child(1) .role-badge-mantra{
+  gap:2px!important;
+  width:max-content!important;
+  max-width:none!important;
+}
+html body.liveasta-mantra #screen-auctioneer-board .mode-mobile td:nth-child(1) .mantra-role-token{
+  width:21px!important;
+  height:21px!important;
+  min-width:21px!important;
+  min-height:21px!important;
+  flex:0 0 21px!important;
+  font-size:7px!important;
+}
+
+@media(max-width:380px){
+  html body.liveasta-mantra .nomination-player-row{
+    grid-template-columns:20px 70px minmax(0,1fr) 38px!important;
+    gap:5px!important;
+  }
+  html body.liveasta-mantra .nomination-player-row > .role-badge.role-badge-mantra{
+    width:68px!important;
+    min-width:68px!important;
+    max-width:68px!important;
+  }
+  html body.liveasta-mantra .nomination-player-row > .role-badge.role-badge-mantra .mantra-role-token{
+    width:21px!important;height:21px!important;min-width:21px!important;min-height:21px!important;flex:0 0 21px!important;font-size:7px!important;
+  }
+  html body.liveasta-mantra #player-listone-overlay#hlayer-listone-overlay #player-listone-list#player-listone-list .player-listone-row{
+    grid-template-columns:22px 70px minmax(0,1fr) 40px!important;
+  }
+  html body.liveasta-mantra #player-listone-overlay#hlayer-listone-overlay #player-listone-list#player-listone-list .player-listone-row > .role-badge.role-badge-mantra{
+    width:68px!important;min-width:68px!important;max-width:68px!important;
+  }
+  html body.liveasta-mantra #player-listone-overlay#hlayer-listone-overlay #player-listone-list#player-listone-list .player-listone-row > .role-badge.role-badge-mantra .mantra-role-token{
+    width:21px!important;height:21px!important;min-width:21px!important;min-height:21px!important;flex:0 0 21px!important;font-size:7px!important;
+  }
+}
