@@ -1,5 +1,12 @@
-// LIVEASTA Classic / Mantra role domain helpers — CLEAN-24
+// LIVEASTA Classic / Mantra role domain helpers — v1.01
 const MANTRA_ROLE_ORDER=['Por','Dc','B','Dd','Ds','E','M','C','W','T','A','Pc'];
+const MANTRA_ROLE_FAMILY={
+    Por:'P',
+    Dc:'D',B:'D',Dd:'D',Ds:'D',
+    E:'C',M:'C',C:'C',
+    W:'A',T:'A',A:'A',Pc:'A'
+};
+const LIVEASTA_ROLE_BADGE_SELECTOR='.role-badge,#auction-player-role,#phone-player-role,#auctioneer-ready-player-role';
 
         function roomGameMode(room=currentRoom){
             return String(room?.game_mode||'classic').toLowerCase()==='mantra'?'mantra':'classic';
@@ -80,5 +87,102 @@ const MANTRA_ROLE_ORDER=['Por','Dc','B','Dd','Ds','E','M','C','W','T','A','Pc'];
         function mantraRoleMatches(player,role){
             if(!role || role==='ALL')return true;
             return mantraRoleTokens(playerRole(player)).includes(String(role));
+        }
+
+        function mantraRoleFamily(role){
+            return MANTRA_ROLE_FAMILY[normalizeMantraRole(role)]||'C';
+        }
+
+        function roleBadgeSourceFromElement(el){
+            if(!el)return '';
+            if(el.dataset?.mantraRoleSource && el.querySelector?.('.mantra-role-token')){
+                return el.dataset.mantraRoleSource;
+            }
+            return String(el.textContent||'').trim();
+        }
+
+        function clearMantraRoleBadgeState(el){
+            if(!el)return;
+            el.classList.remove('role-badge-mantra','role-badge-multi');
+            delete el.dataset.mantraRoleSource;
+        }
+
+        function renderRoleBadgesInto(el,value,room=currentRoom){
+            if(!el)return;
+            const raw=String(value??'').trim();
+
+            if(roomGameMode(room)!=='mantra'){
+                if(el.classList.contains('role-badge-mantra')){
+                    clearMantraRoleBadgeState(el);
+                    el.textContent=raw||'-';
+                }
+                return;
+            }
+
+            const normalized=normalizeMantraRole(raw);
+            const tokens=mantraRoleTokens(normalized);
+            if(!tokens.length){
+                clearMantraRoleBadgeState(el);
+                if(el.textContent!==(raw||'-'))el.textContent=raw||'-';
+                return;
+            }
+
+            if(
+                el.dataset.mantraRoleSource===normalized &&
+                el.querySelectorAll('.mantra-role-token').length===tokens.length
+            )return;
+
+            el.textContent='';
+            el.dataset.mantraRoleSource=normalized;
+            el.classList.add('role-badge-mantra');
+            el.classList.toggle('role-badge-multi',tokens.length>1);
+
+            tokens.forEach(token=>{
+                const badge=document.createElement('span');
+                badge.className=`mantra-role-token mantra-role-family-${mantraRoleFamily(token)}`;
+                badge.textContent=token;
+                badge.setAttribute('aria-label',`Ruolo ${token}`);
+                el.appendChild(badge);
+            });
+            el.setAttribute('aria-label',`Ruolo ${tokens.join(', ')}`);
+        }
+
+        function enhanceMantraRoleBadges(root=document){
+            if(!isMantraRoom() || !root)return;
+            const apply=el=>renderRoleBadgesInto(el,roleBadgeSourceFromElement(el));
+            if(root.nodeType===1 && root.matches?.(LIVEASTA_ROLE_BADGE_SELECTOR))apply(root);
+            root.querySelectorAll?.(LIVEASTA_ROLE_BADGE_SELECTOR).forEach(apply);
+        }
+
+        function installMantraRoleBadgeObserver(){
+            if(window.__liveastaMantraRoleBadgeObserver || !document.body)return;
+            enhanceMantraRoleBadges(document);
+
+            const observer=new MutationObserver(mutations=>{
+                if(!isMantraRoom())return;
+                mutations.forEach(mutation=>{
+                    if(mutation.type==='characterData'){
+                        const host=mutation.target.parentElement?.closest?.(LIVEASTA_ROLE_BADGE_SELECTOR);
+                        if(host)renderRoleBadgesInto(host,roleBadgeSourceFromElement(host));
+                        return;
+                    }
+
+                    const target=mutation.target?.nodeType===1?mutation.target:null;
+                    if(target?.matches?.(LIVEASTA_ROLE_BADGE_SELECTOR)){
+                        renderRoleBadgesInto(target,roleBadgeSourceFromElement(target));
+                    }
+                    mutation.addedNodes.forEach(node=>{
+                        if(node.nodeType===1)enhanceMantraRoleBadges(node);
+                    });
+                });
+            });
+            observer.observe(document.body,{childList:true,subtree:true,characterData:true});
+            window.__liveastaMantraRoleBadgeObserver=observer;
+        }
+
+        if(document.readyState==='loading'){
+            document.addEventListener('DOMContentLoaded',installMantraRoleBadgeObserver,{once:true});
+        }else{
+            installMantraRoleBadgeObserver();
         }
 
