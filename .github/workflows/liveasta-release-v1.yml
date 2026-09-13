@@ -1,0 +1,292 @@
+name: LIVEASTA v1.0 production release
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-release-v1.yml'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Promote DEV to production root
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # The tested DEV runtime becomes the only public frontend.
+          rm -rf styles scripts
+          cp -a dev/styles ./styles
+          cp -a dev/scripts ./scripts
+          cp dev/index.html ./index.html
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          h = p.read_text(encoding='utf-8')
+
+          # Production identity/version.
+          h = h.replace('<title>LIVEASTA DEV · v1.06 PLAYER-02</title>', '<title>LIVEASTA · v1.0</title>')
+          h = h.replace('    <!-- Test-asta: nuovo Supabase; asset binari remoti da repo live-asta -->\n', '')
+          h = h.replace('            v1.06\n', '            v1.0\n', 1)
+          h = h.replace('<div class="admin-version-badge">v0.94</div>', '<div class="admin-version-badge">v1.0</div>')
+
+          # Remove the DEV warning block completely.
+          h = re.sub(
+              r'\s*<div id="liveasta-dev-static-marker".*?</div>\s*',
+              '\n',
+              h,
+              count=1,
+              flags=re.S,
+          )
+
+          # Root deployment paths.
+          h = h.replace('href="../icon-192.png"', 'href="./icon-192.png"')
+          h = h.replace('src="../preparazione.mp3"', 'src="./preparazione.mp3"')
+          h = h.replace('src="../fischio.mp3"', 'src="./fischio.mp3"')
+          h = h.replace('src="../buzz.mp3"', 'src="./buzz.mp3"')
+          h = h.replace('src="../gong.mp3"', 'src="./gong.mp3"')
+
+          # One clean production cache-busting version for local CSS/JS.
+          h = re.sub(r'\?dev=[^"\']+', '?v=100', h)
+
+          # Production manifest, domain-independent.
+          manifest = '    <link rel="manifest" href="./manifest.webmanifest">\n'
+          if 'rel="manifest"' not in h:
+              h = h.replace(
+                  '    <link rel="apple-touch-icon" href="./icon-192.png">\n',
+                  '    <link rel="apple-touch-icon" href="./icon-192.png">\n' + manifest,
+                  1,
+              )
+
+          p.write_text(h, encoding='utf-8')
+
+          # Player images: from root page assets live under ./assets/players.
+          p = Path('scripts/player-assets.js')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace("const LIVEASTA_ASSET_BASE = '..';", "const LIVEASTA_ASSET_BASE = '.';")
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Install production PWA files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat > manifest.webmanifest <<'EOF'
+          {
+            "id": "./",
+            "name": "LIVEASTA",
+            "short_name": "LIVEASTA",
+            "description": "LIVEASTA - gestione aste fantacalcio in tempo reale",
+            "start_url": "./",
+            "scope": "./",
+            "display": "standalone",
+            "orientation": "portrait-primary",
+            "background_color": "#11151B",
+            "theme_color": "#11151B",
+            "icons": [
+              {
+                "src": "./icon-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any maskable"
+              },
+              {
+                "src": "./icon-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any maskable"
+              }
+            ]
+          }
+          EOF
+
+          cat > service-worker.js <<'EOF'
+          const CACHE = 'liveasta-v1.0';
+          const CORE = [
+            './',
+            './index.html',
+            './manifest.webmanifest',
+            './icon-192.png',
+            './icon-512.png'
+          ];
+
+          self.addEventListener('install', event => {
+            event.waitUntil(
+              caches.open(CACHE)
+                .then(cache => cache.addAll(CORE))
+                .then(() => self.skipWaiting())
+            );
+          });
+
+          self.addEventListener('activate', event => {
+            event.waitUntil(
+              caches.keys()
+                .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
+                .then(() => self.clients.claim())
+            );
+          });
+
+          self.addEventListener('fetch', event => {
+            if (event.request.method !== 'GET') return;
+
+            event.respondWith(
+              fetch(event.request)
+                .then(response => {
+                  if (response && response.status === 200 && response.type !== 'opaque') {
+                    const copy = response.clone();
+                    caches.open(CACHE).then(cache => cache.put(event.request, copy)).catch(() => {});
+                  }
+                  return response;
+                })
+                .catch(async () => {
+                  const cached = await caches.match(event.request);
+                  if (cached) return cached;
+                  if (event.request.mode === 'navigate') {
+                    return (await caches.match('./index.html')) || Response.error();
+                  }
+                  return Response.error();
+                })
+            );
+          });
+          EOF
+
+          cat > scripts/pwa.js <<'EOF'
+          (function(){
+            if(window.__liveastaPwaInstallLoaded) return;
+            window.__liveastaPwaInstallLoaded=true;
+
+            if('serviceWorker' in navigator){
+              window.addEventListener('load',()=>{
+                navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+              },{once:true});
+            }
+
+            const button=document.createElement('button');
+            button.id='liveasta-install-btn';
+            button.type='button';
+            button.textContent='Installa LIVEASTA';
+            document.body.appendChild(button);
+
+            let deferredPrompt=null;
+            window.addEventListener('beforeinstallprompt',event=>{
+              event.preventDefault();
+              deferredPrompt=event;
+              button.classList.add('show');
+            });
+
+            button.addEventListener('click',async()=>{
+              if(!deferredPrompt)return;
+              deferredPrompt.prompt();
+              try{await deferredPrompt.userChoice;}catch(_){}
+              deferredPrompt=null;
+              button.classList.remove('show');
+            });
+
+            window.addEventListener('appinstalled',()=>{
+              deferredPrompt=null;
+              button.classList.remove('show');
+            });
+          })();
+          EOF
+
+          touch .nojekyll
+
+      - name: Remove obsolete repository material
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Duplicate legacy thumbnails: production uses assets/players only.
+          find assets -maxdepth 1 -type f -name '*.webp' -delete
+
+          # Old monolithic/patch-era production artifacts replaced by styles/ + scripts/.
+          rm -f \
+            README_PRIMA_INSTALLAZIONE.txt \
+            auction-complete-theme-v091.css \
+            auctioneer-desktop-theme-v081.css \
+            management-mobile-v091.css management-mobile-v091.js \
+            management-mobile-v092.css management-mobile-v092.js \
+            management-v087.css management-v087.js \
+            management-v088.css management-v088.js \
+            management-v090.css management-v090.js \
+            management-v093.css management-v093.js \
+            manifest-v22.webmanifest \
+            mobile-auctioneer-v084.css \
+            player-light-states-v080.js player-light-states-v082.css \
+            pwa-install.js \
+            role-badges-v085.css role-badges-v086.css \
+            sealed-desktop-v083.css \
+            sealed-v088.js sealed-v089.js sealed-v090.js
+
+          # DEV contained audits/tests/backups; after promotion it is no longer a deploy target.
+          rm -rf dev
+
+      - name: Validate production package
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f index.html
+          test -f styles/core.css
+          test -f styles/ui.css
+          test -f styles/management.css
+          test -f styles/refinements.css
+          test -f scripts/app.js
+          test -f scripts/bootstrap.js
+          test -f scripts/player-assets.js
+          test -f manifest.webmanifest
+          test -f service-worker.js
+          test -f assets/players/generic-player.webp
+          test -f assets/players/generic-goalkeeper.webp
+          test ! -d dev
+
+          grep -q '<title>LIVEASTA · v1.0</title>' index.html
+          grep -q '^[[:space:]]*v1.0[[:space:]]*$' index.html
+          grep -q '<div class="admin-version-badge">v1.0</div>' index.html
+          grep -q 'href="./manifest.webmanifest"' index.html
+          grep -q "LIVEASTA_ASSET_BASE = '.'" scripts/player-assets.js
+
+          ! grep -Eq 'AMBIENTE DEV|NON È LA VERSIONE PUBBLICA|PLAYER-02|LIVEASTA DEV|Test-asta' index.html
+          ! grep -q '?dev=' index.html
+          ! grep -q '../preparazione.mp3' index.html
+          ! grep -q '../fischio.mp3' index.html
+          ! grep -q '../buzz.mp3' index.html
+          ! grep -q '../gong.mp3' index.html
+          ! find assets -maxdepth 1 -type f -name '*.webp' | grep -q .
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          h=Path('index.html').read_text(encoding='utf-8')
+          refs=[]
+          for raw in re.findall(r'(?:src|href)="(\./(?:styles|scripts)/[^"?#]+|\./[^"?#]+\.(?:mp3|png|webmanifest))',h):
+              refs.append(raw[2:])
+          missing=sorted({r for r in refs if not Path(r).exists()})
+          if missing:
+              raise SystemExit('Missing local runtime files: '+', '.join(missing))
+          PY
+
+          for f in scripts/*.js service-worker.js; do node --check "$f" >/dev/null; done
+
+      - name: Commit clean v1.0 release
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/liveasta-release-v1.yml
+          rmdir .github/workflows 2>/dev/null || true
+          rmdir .github 2>/dev/null || true
+
+          git config user.name 'liveasta-release-bot'
+          git config user.email 'liveasta-release-bot@users.noreply.github.com'
+          git add -A
+          git commit -m 'Release LIVEASTA v1.0 production'
+          git push origin main
