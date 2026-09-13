@@ -11,7 +11,7 @@
     };
     const ALL_TOKENS=GROUP_ORDER.flatMap(group=>GROUPS[group].tokens);
     const tokenCache=new Map();
-    const HOLD_MS=520;
+    const HOLD_MS=450;
 
     function cacheKey(view){
         let storage='';
@@ -19,32 +19,25 @@
         return `${storage}|${view}`;
     }
 
-    function groupForToken(token){
-        const normalized=normalizeMantraRole(token);
-        return GROUP_ORDER.find(group=>GROUPS[group].tokens.includes(normalized))||'';
-    }
-
     function initialTokens(view){
-        let selected=[];
         try{
             const key=listFilterStorageKey?.();
             const prefs=key?(safeReadLocalJson(key)||{}):{};
             const stored=prefs?.mantra_subfilters?.[view];
             if(Array.isArray(stored)){
-                selected=stored.map(normalizeMantraRole).filter(token=>ALL_TOKENS.includes(token));
+                return [...new Set(stored.map(normalizeMantraRole).filter(token=>ALL_TOKENS.includes(token)))];
             }
         }catch(_e){}
-        if(selected.length)return [...new Set(selected)];
 
         try{
             const groups=listFilterState(view)?.roles||GROUP_ORDER;
-            selected=GROUP_ORDER
+            const selected=GROUP_ORDER
                 .filter(group=>groups.includes(group))
                 .flatMap(group=>GROUPS[group].tokens);
+            return [...new Set(selected.length?selected:ALL_TOKENS)];
         }catch(_e){
-            selected=[...ALL_TOKENS];
+            return [...ALL_TOKENS];
         }
-        return [...new Set(selected.length?selected:ALL_TOKENS)];
     }
 
     function selectedTokens(view){
@@ -126,9 +119,9 @@
 
     function buttonCaption(view,group){
         const state=groupState(view,group);
-        let detail='—';
+        let detail='Off';
         if(state.all)detail='Tutti';
-        else if(state.active.length)detail=state.active.join(' ');
+        else if(state.active.length)detail=state.active.join(' · ');
         return `<span>${GROUPS[group].short}</span><small>${detail}</small>`;
     }
 
@@ -138,11 +131,14 @@
         btn.removeAttribute('onclick');
         let timer=null;
         let held=false;
+        let startX=0;
+        let startY=0;
 
         const clear=()=>{if(timer){clearTimeout(timer);timer=null;}};
         btn.addEventListener('pointerdown',event=>{
-            if(event.button!==undefined&&event.button!==0)return;
+            if(event.pointerType==='mouse'&&event.button!==0)return;
             held=false;
+            startX=event.clientX;startY=event.clientY;
             clear();
             timer=setTimeout(()=>{
                 timer=null;
@@ -150,15 +146,18 @@
                 openSubfilterPanel(view,group,root);
             },HOLD_MS);
         });
+        btn.addEventListener('pointermove',event=>{
+            if(Math.hypot(event.clientX-startX,event.clientY-startY)>10)clear();
+        });
         btn.addEventListener('pointerup',event=>{
-            if(event.button!==undefined&&event.button!==0)return;
+            if(event.pointerType==='mouse'&&event.button!==0)return;
             const wasHeld=held;
-            clear();
-            if(!wasHeld)toggleWholeGroup(view,group);
+            if(timer){clear();event.preventDefault();toggleWholeGroup(view,group);}
+            else if(wasHeld){event.preventDefault();}
             held=false;
         });
-        btn.addEventListener('pointercancel',clear);
-        btn.addEventListener('pointerleave',clear);
+        btn.addEventListener('pointercancel',()=>{clear();held=false;});
+        btn.addEventListener('pointerleave',event=>{if(event.pointerType==='mouse')clear();});
         btn.addEventListener('contextmenu',event=>{
             event.preventDefault();
             clear();
@@ -169,6 +168,9 @@
             if(event.key==='Enter'||event.key===' '){
                 event.preventDefault();
                 toggleWholeGroup(view,group);
+            }else if(event.key==='ArrowDown'){
+                event.preventDefault();
+                openSubfilterPanel(view,group,root);
             }
         });
     }
@@ -195,7 +197,7 @@
         const all=row.querySelector('.unified-role-all');
         bindAllButton(all,view,root);
         if(all){
-            all.textContent='Tutti';
+            all.textContent='TUTTI';
             all.classList.toggle('selected',selectedTokens(view).size===ALL_TOKENS.length);
             all.setAttribute('aria-pressed',String(selectedTokens(view).size===ALL_TOKENS.length));
         }
@@ -218,9 +220,7 @@
         });
 
         const panel=root.querySelector('.mantra-subfilter-panel');
-        if(panel?.dataset.group && GROUPS[panel.dataset.group]){
-            openSubfilterPanel(view,panel.dataset.group,root);
-        }
+        if(panel?.dataset.group&&GROUPS[panel.dataset.group])openSubfilterPanel(view,panel.dataset.group,root);
     }
 
     const baseRenderListFilters=renderListFilters;
@@ -251,10 +251,14 @@
                 const index=MANTRA_ROLE_ORDER.indexOf(token);
                 return index<0?99:index;
             }),99);
-            return {row,id,tokens,name:player.Nome||row.player_name||'',team:player.Squadra||row.club||'',role:roleIndex,value:playerListoneNumericValue(player),price:purchase?Number(purchase.price)||0:null,priority};
+            const categoryLabels=[...new Set(tokens.map(token=>{
+                const group=GROUP_ORDER.find(id=>GROUPS[id].tokens.includes(token));
+                return group?GROUPS[group].label:'';
+            }).filter(Boolean))];
+            return {row,id,tokens,name:player.Nome||row.player_name||'',team:player.Squadra||row.club||'',role:roleIndex,value:playerListoneNumericValue(player),price:purchase?Number(purchase.price)||0:null,priority,categoryLabels};
         }).filter(item=>{
             const matchesRole=item.tokens.some(token=>selected.has(token));
-            const haystack=`${item.name} ${item.team} ${item.tokens.join(' ')}`.toLocaleLowerCase('it');
+            const haystack=`${item.name} ${item.team} ${item.tokens.join(' ')} ${item.categoryLabels.join(' ')}`.toLocaleLowerCase('it');
             return matchesRole&&(!query||haystack.includes(query)||view==='purchases');
         });
 
