@@ -286,6 +286,7 @@ function updateCreateRoomModeUI(){
                 badge.classList.toggle('active',active);
             }
             if(btn){
+                btn.checked=!!active;
                 btn.textContent=active?'Disattiva banditore giocatore':'Attiva banditore giocatore';
                 btn.setAttribute('aria-checked',String(active));
                 btn.classList.toggle('active',active);
@@ -944,7 +945,7 @@ function updateCreateRoomModeUI(){
             const status=document.getElementById('self-raise-control-status');
             if(input)input.checked=!!selfRaiseEnabled;
             const toggle=document.getElementById('self-raise-toggle');
-            if(toggle)toggle.setAttribute('aria-checked',selfRaiseEnabled?'true':'false');
+            if(toggle){toggle.checked=!!selfRaiseEnabled;toggle.setAttribute('aria-checked',selfRaiseEnabled?'true':'false');}
             if(badge){
                 badge.textContent=selfRaiseEnabled?'ATTIVO':'DISATTIVO';
                 badge.classList.toggle('badge-warn',!selfRaiseEnabled);
@@ -1252,7 +1253,7 @@ function updateCreateRoomModeUI(){
             const btn=document.getElementById('ready-toggle-btn');
             const st=document.getElementById('ready-control-status');
             if(badge){badge.textContent=readyModeEnabled?'ATTIVO':'DISATTIVO';badge.classList.toggle('active',readyModeEnabled);}
-            if(btn){btn.textContent=readyModeEnabled?'Disattiva READY':'Attiva READY';btn.setAttribute('aria-checked',String(readyModeEnabled));}
+            if(btn){btn.checked=!!readyModeEnabled;btn.textContent=readyModeEnabled?'Disattiva READY':'Attiva READY';btn.setAttribute('aria-checked',String(readyModeEnabled));}
             if(st)st.textContent=readyModeEnabled?'Il countdown parte quando tutte le squadre abilitate hanno risposto. Se almeno uno sceglie READY, partecipano tutti; se fanno tutti SKIP il giocatore è subito invenduto.':'Il countdown parte subito dopo la scelta del calciatore.';
         }
 
@@ -2519,7 +2520,7 @@ function updateCreateRoomModeUI(){
             }
             const r=document.getElementById('player-nominate-role');if(r)r.textContent=nominationState.role?(isMantraRoom()?'MANTRA · qualsiasi ruolo':`Ruolo ${nominationState.role} · ${nominationRoleName(nominationState.role)}`):'Rosa completata';
             const badge=document.getElementById('nomination-control-badge');if(badge){badge.textContent=nominationState.enabled?'ATTIVA':'DISATTIVA';badge.classList.toggle('active',!!nominationState.enabled);}
-            const t=document.getElementById('nomination-toggle-btn');if(t){t.textContent=nominationState.enabled?'Disattiva banditura a turni':'Attiva banditura a turni';t.setAttribute('aria-checked',String(!!nominationState.enabled));}
+            const t=document.getElementById('nomination-toggle-btn');if(t){t.checked=!!nominationState.enabled;t.textContent=nominationState.enabled?'Disattiva banditura a turni':'Attiva banditura a turni';t.setAttribute('aria-checked',String(!!nominationState.enabled));}
             const st=document.getElementById('nomination-control-status');if(st)st.innerHTML=!nominationState.enabled?'Modalità disattivata.':!nominationState.role?'Tutte le rose sono complete.':(isMantraRoom()?`Banditura libera MANTRA · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`:`Ruolo <b>${nominationState.role}</b> · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`);
             renderNominationOrder();
         }

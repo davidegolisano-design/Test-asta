@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LIVEASTA DEV · v0.97 MGMT-03</title>
+    <title>LIVEASTA DEV · v0.98 MGMT-04</title>
     <!-- Test-asta: nuovo Supabase; asset binari remoti da repo live-asta -->
     <meta name="theme-color" content="#0D1117">
     <meta name="color-scheme" content="dark">
@@ -24,8 +24,8 @@
 
     <meta name="msapplication-navbutton-color" content="#0D1117">
 
-    <link rel="stylesheet" href="./styles/ui.css?dev=097-mgmt03">
-    <link rel="stylesheet" href="./styles/management.css?dev=097-mgmt03">
+    <link rel="stylesheet" href="./styles/ui.css?dev=098-mgmt04">
+    <link rel="stylesheet" href="./styles/management.css?dev=098-mgmt04">
     <link rel="stylesheet" href="./styles/pwa.css?dev=094-clean40a">
 </head>
 <body>
@@ -37,10 +37,10 @@
              aria-label="Apri Impostazioni LIVEASTA"
              onclick="openAdminLogin()"
              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminLogin();}">
-            v0.96
+            v0.98
         </div>
         <div class="setup-card">
-            <div id="liveasta-dev-static-marker" style="width:100%;box-sizing:border-box;margin:0 0 16px;padding:11px 12px;border:2px solid #ffb300;border-radius:12px;background:#332400;color:#ffd54f;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:900;letter-spacing:.04em;line-height:1.2;box-shadow:0 0 0 2px rgba(255,179,0,.12) inset;"><strong style="display:block;font-size:14px;">⚠ AMBIENTE DEV · v0.97 MGMT-03</strong><span style="display:block;margin-top:4px;font-size:11px;letter-spacing:.09em;color:#fff3c4;">NON È LA VERSIONE PUBBLICA</span></div>
+            <div id="liveasta-dev-static-marker" style="width:100%;box-sizing:border-box;margin:0 0 16px;padding:11px 12px;border:2px solid #ffb300;border-radius:12px;background:#332400;color:#ffd54f;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:900;letter-spacing:.04em;line-height:1.2;box-shadow:0 0 0 2px rgba(255,179,0,.12) inset;"><strong style="display:block;font-size:14px;">⚠ AMBIENTE DEV · v0.98 MGMT-04</strong><span style="display:block;margin-top:4px;font-size:11px;letter-spacing:.09em;color:#fff3c4;">NON È LA VERSIONE PUBBLICA</span></div>
             <h1 class="logo-text"><span class="rosa">LIVE</span><span class="rush">ASTA</span></h1>
             <p class="subtitle">Asta fantasy calcio realtime</p>
 
@@ -986,7 +986,7 @@
                     <article class="mg-card self-raise-control-card mg-setting-card">
                         <div class="mg-setting-head">
                             <div><h3>Autorilancio</h3><p>Consente al miglior offerente di rilanciare nuovamente su se stesso.</p></div>
-                            <button id="self-raise-toggle" class="mg-switch self-raise-switch" type="button" role="switch" aria-checked="true" aria-label="Autorilancio" onclick="toggleSelfRaiseFromUI(event)">Autorilancio</button>
+                            <label class="mg-switch-label" title="Autorilancio"><input id="self-raise-toggle" type="checkbox" onchange="toggleSelfRaiseFromUI(event)" aria-label="Autorilancio"><span class="mg-switch-ui" aria-hidden="true"></span></label>
                         </div>
                         <input id="self-raise-enabled" type="checkbox" tabindex="-1" aria-hidden="true" hidden>
                         <span id="self-raise-control-badge" class="mg-legacy-state">ATTIVO</span>
@@ -996,7 +996,7 @@
                     <article class="mg-card ready-control-card mg-setting-card">
                         <div class="mg-setting-head">
                             <div><h3>Ready prima dell'asta</h3><p>Le squadre rispondono READY o SKIP prima del countdown.</p></div>
-                            <button id="ready-toggle-btn" class="mg-switch" type="button" role="switch" aria-checked="false" aria-label="Ready prima dell'asta" onclick="toggleReadyMode()">Attiva READY</button>
+                            <label class="mg-switch-label" title="Ready prima dell'asta"><input id="ready-toggle-btn" type="checkbox" onchange="toggleReadyMode()" aria-label="Ready prima dell'asta"><span class="mg-switch-ui" aria-hidden="true"></span></label>
                         </div>
                         <span id="ready-control-badge" class="mg-legacy-state">DISATTIVO</span>
                         <div id="ready-control-status" class="mg-status-text" aria-live="polite">Modalità disattivata</div>
@@ -1012,10 +1012,10 @@
                             </label>
                         </div>
                         <div class="mg-role-choice" aria-label="Ruoli random automatico">
-                            <label class="mg-role-chip role-P"><input id="auto-random-role-P" type="checkbox" onchange="setAutoRandomRole('P',this.checked)"><span>P</span></label>
-                            <label class="mg-role-chip role-D"><input id="auto-random-role-D" type="checkbox" onchange="setAutoRandomRole('D',this.checked)"><span>D</span></label>
-                            <label class="mg-role-chip role-C"><input id="auto-random-role-C" type="checkbox" onchange="setAutoRandomRole('C',this.checked)"><span>C</span></label>
-                            <label class="mg-role-chip role-A"><input id="auto-random-role-A" type="checkbox" onchange="setAutoRandomRole('A',this.checked)"><span>A</span></label>
+                            <label class="mg-role-chip unified-role role-P"><input id="auto-random-role-P" type="checkbox" onchange="setAutoRandomRole('P',this.checked)"><span>P</span></label>
+                            <label class="mg-role-chip unified-role role-D"><input id="auto-random-role-D" type="checkbox" onchange="setAutoRandomRole('D',this.checked)"><span>D</span></label>
+                            <label class="mg-role-chip unified-role role-C"><input id="auto-random-role-C" type="checkbox" onchange="setAutoRandomRole('C',this.checked)"><span>C</span></label>
+                            <label class="mg-role-chip unified-role role-A"><input id="auto-random-role-A" type="checkbox" onchange="setAutoRandomRole('A',this.checked)"><span>A</span></label>
                         </div>
                         <div id="auto-random-status" class="mg-status-text auto-random-status">DISATTIVO</div>
                     </article>
@@ -1023,7 +1023,7 @@
                     <article class="mg-card nomination-control-card mg-setting-card mg-span-2">
                         <div class="mg-setting-head">
                             <div><h3>Banditura giocatori a turni</h3><p id="nomination-control-note">Si completa un ruolo alla volta. Chi ha completato il reparto viene saltato automaticamente.</p></div>
-                            <button id="nomination-toggle-btn" class="mg-switch" type="button" role="switch" aria-checked="false" aria-label="Banditura giocatori a turni" onclick="toggleNominationMode()">Attiva banditura a turni</button>
+                            <label class="mg-switch-label" title="Banditura giocatori a turni"><input id="nomination-toggle-btn" type="checkbox" onchange="toggleNominationMode()" aria-label="Banditura giocatori a turni"><span class="mg-switch-ui" aria-hidden="true"></span></label>
                         </div>
                         <span id="nomination-control-badge" class="mg-legacy-state">DISATTIVA</span>
                         <div id="nomination-control-status" class="mg-status-text nomination-control-status">Modalità disattivata</div>
@@ -1059,7 +1059,7 @@
                     <article class="mg-card auctioneer-player-control-card mg-setting-card">
                         <div class="mg-setting-head">
                             <div><h3>Banditore giocatore</h3><p>Il banditore partecipa usando una delle squadre libere.</p></div>
-                            <button id="auctioneer-player-toggle-btn" class="mg-switch" type="button" role="switch" aria-checked="false" aria-label="Banditore giocatore" onclick="toggleAuctioneerPlayerMode()">Attiva banditore giocatore</button>
+                            <label class="mg-switch-label" title="Banditore giocatore"><input id="auctioneer-player-toggle-btn" type="checkbox" onchange="toggleAuctioneerPlayerMode()" aria-label="Banditore giocatore"><span class="mg-switch-ui" aria-hidden="true"></span></label>
                         </div>
                         <span id="auctioneer-player-badge" class="mg-legacy-state">DISATTIVO</span>
                         <label class="mg-field"><span class="field-label">Squadra del banditore</span><select id="auctioneer-player-team-select" class="minimal-input" onchange="changeAuctioneerPlayerTeam()"></select></label>
@@ -1316,6 +1316,6 @@
 
 <script src="./scripts/pwa.js?dev=094-clean40a"></script>
 <script src="./scripts/sealed-auction.js?dev=094-clean40a"></script>
-<script src="./scripts/management.js?dev=097-mgmt03"></script>
+<script src="./scripts/management.js?dev=098-mgmt04"></script>
 </body>
 </html>
