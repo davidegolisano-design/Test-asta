@@ -44,7 +44,6 @@
         if(isMantraRoom()){
             const state=listFilterState(view);
             state.roles=(state.roles||[]).map(normalizeGroup).filter((r,i,a)=>GROUPS.includes(r)&&a.indexOf(r)===i);
-            if(!state.roles.length)state.roles=[...GROUPS];
         }
         baseRenderListFilters(view);
         if(!isMantraRoom())return;

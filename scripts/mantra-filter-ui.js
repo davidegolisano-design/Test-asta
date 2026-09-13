@@ -30,11 +30,12 @@
         }catch(_e){}
 
         try{
-            const groups=listFilterState(view)?.roles||GROUP_ORDER;
+            const groups=listFilterState(view)?.roles;
+            if(!Array.isArray(groups))return [...ALL_TOKENS];
             const selected=GROUP_ORDER
                 .filter(group=>groups.includes(group))
                 .flatMap(group=>GROUPS[group].tokens);
-            return [...new Set(selected.length?selected:ALL_TOKENS)];
+            return [...new Set(selected)];
         }catch(_e){
             return [...ALL_TOKENS];
         }
@@ -181,7 +182,8 @@
         btn.removeAttribute('onclick');
         btn.addEventListener('click',event=>{
             event.preventDefault();
-            tokenCache.set(cacheKey(view),new Set(ALL_TOKENS));
+            const allOn=selectedTokens(view).size===ALL_TOKENS.length;
+            tokenCache.set(cacheKey(view),new Set(allOn?[]:ALL_TOKENS));
             closeSubfilterPanel(root);
             refreshView(view);
         });
