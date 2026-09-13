@@ -74,7 +74,7 @@ function updateCreateRoomModeUI(){
         let auctioneerPlayerTeamId=null;
         let hybridReturnTimer=null;
         let roomControlReturnScreen = 'screen-auctioneer-board';
-        let nominationState={enabled:false,role:null,turn_team_id:null,order_team_ids:[],role_order:['P','D','C','A']};
+        let nominationState={enabled:false,role:null,turn_team_id:null,order_team_ids:[],role_order:['P','D','C','A'],all_roles:false};
         let nominationAutoBidOneEnabled=false;
         // modalità AUTO RANDOM: nomina automatica continua sui ruoli scelti.
         let autoRandomEnabled=false;
@@ -2444,14 +2444,29 @@ function updateCreateRoomModeUI(){
             if(card)card.hidden=isMantraRoom();
             if(isMantraRoom()||!list)return;
             const order=ensureNominationRoleOrder();
-            if(summary)summary.textContent=order.join(' → ');
+            const allMode=!!nominationState.all_roles;
+            if(summary)summary.textContent=allMode?'TUTTI I RUOLI':order.join(' → ');
             const labels={P:'Portieri',D:'Difensori',C:'Centrocampisti',A:'Attaccanti'};
-            list.innerHTML=order.map((role,i)=>`<div class="mg-role-order-row">
+            list.classList.toggle('all-roles-active',allMode);
+            list.innerHTML=`<button id="nomination-all-roles-mode" class="btn btn-secondary mg-role-all-mode${allMode?' selected':''}" type="button" aria-pressed="${allMode}" onclick="toggleNominationAllRoles()"><span>TUTTI I RUOLI</span><small>Ogni squadra può bandire un giocatore di qualsiasi reparto ancora libero.</small></button>`+
+                order.map((role,i)=>`<div class="mg-role-order-row">
                 <span class="unified-role role-${role} selected" aria-hidden="true">${role}</span>
                 <span class="mg-role-order-name">${labels[role]}</span>
-                <button class="btn btn-secondary mg-role-order-move" type="button" ${i===0?'disabled':''} onclick="moveNominationRole('${role}',-1)" aria-label="Sposta ${labels[role]} su">↑</button>
-                <button class="btn btn-secondary mg-role-order-move" type="button" ${i===order.length-1?'disabled':''} onclick="moveNominationRole('${role}',1)" aria-label="Sposta ${labels[role]} giù">↓</button>
+                <button class="btn btn-secondary mg-role-order-move" type="button" ${allMode||i===0?'disabled':''} onclick="moveNominationRole('${role}',-1)" aria-label="Sposta ${labels[role]} su">↑</button>
+                <button class="btn btn-secondary mg-role-order-move" type="button" ${allMode||i===order.length-1?'disabled':''} onclick="moveNominationRole('${role}',1)" aria-label="Sposta ${labels[role]} giù">↓</button>
             </div>`).join('');
+        }
+
+        async function toggleNominationAllRoles(){
+            if(isMantraRoom())return;
+            if(isAuctionActive){alert('Non puoi cambiare la modalità ruoli mentre è in corso un’asta.');return;}
+            nominationState.all_roles=!nominationState.all_roles;
+            nominationState.role=nominationState.enabled?firstIncompleteRole():null;
+            nominationState.turn_team_id=null;
+            if(nominationState.enabled)nominationReady=true;
+            await saveNominationState(nominationReady);
+            renderRoomControl();
+            if(nominationState.enabled)showNominationWaitingBoard();
         }
 
         async function moveNominationRole(role,delta){
@@ -2467,9 +2482,17 @@ function updateCreateRoomModeUI(){
             renderNominationRoleOrder();
         }
 
+        function classicTeamHasFreeNominationRole(team){
+            if(!team)return false;
+            const counts=teamCounts(team.id), limits=roomLimits();
+            return ['P','D','C','A'].some(role=>(counts[role]||0)<(limits[role]||0));
+        }
         function firstIncompleteRole(){
             if(isMantraRoom()){
                 return teamsCache.some(t=>teamCounts(t.id).total<mantraRosterMax())?'ALL':null;
+            }
+            if(nominationState.all_roles){
+                return teamsCache.some(classicTeamHasFreeNominationRole)?'ALL':null;
             }
             const l=roomLimits();
             for(const r of ensureNominationRoleOrder()) if((l[r]||0)>0 && teamsCache.some(t=>(teamCounts(t.id)[r]||0)<l[r])) return r;
@@ -2480,12 +2503,14 @@ function updateCreateRoomModeUI(){
             if(isMantraRoom()){
                 return teamsCache.filter(t=>teamCounts(t.id).total<mantraRosterMax());
             }
+            if(r==='ALL')return teamsCache.filter(classicTeamHasFreeNominationRole);
             const l=roomLimits();
             return teamsCache.filter(t=>(teamCounts(t.id)[r]||0)<(l[r]||0));
         }
         function normalizeNominationState(afterId=null){
             if(!nominationState.enabled){ensureNominationOrder();nominationState={...nominationState,enabled:false,role:null,turn_team_id:null};return;}
             let r=nominationState.role, l=roomLimits();
+            if(!isMantraRoom()&&nominationState.all_roles)r='ALL';
             if(isMantraRoom()){
                 r='ALL';
                 if(!teamsCache.some(t=>teamCounts(t.id).total<mantraRosterMax()))r=null;
@@ -2572,10 +2597,10 @@ function updateCreateRoomModeUI(){
                 b.disabled=!mine;
                 b.classList.toggle('nomination-turn-active',!!mine);
             }
-            const r=document.getElementById('player-nominate-role');if(r)r.textContent=nominationState.role?(isMantraRoom()?'MANTRA · qualsiasi ruolo':`Ruolo ${nominationState.role} · ${nominationRoleName(nominationState.role)}`):'Rosa completata';
+            const r=document.getElementById('player-nominate-role');if(r)r.textContent=nominationState.role?(isMantraRoom()?'MANTRA · qualsiasi ruolo':nominationState.role==='ALL'?'TUTTI I RUOLI · qualsiasi ruolo':`Ruolo ${nominationState.role} · ${nominationRoleName(nominationState.role)}`):'Rosa completata';
             const badge=document.getElementById('nomination-control-badge');if(badge){badge.textContent=nominationState.enabled?'ATTIVA':'DISATTIVA';badge.classList.toggle('active',!!nominationState.enabled);}
             const t=document.getElementById('nomination-toggle-btn');if(t){t.checked=!!nominationState.enabled;t.textContent=nominationState.enabled?'Disattiva banditura a turni':'Attiva banditura a turni';t.setAttribute('aria-checked',String(!!nominationState.enabled));}
-            const st=document.getElementById('nomination-control-status');if(st)st.innerHTML=!nominationState.enabled?'Modalità disattivata.':!nominationState.role?'Tutte le rose sono complete.':(isMantraRoom()?`Banditura libera MANTRA · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`:`Ruolo <b>${nominationState.role}</b> · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`);
+            const st=document.getElementById('nomination-control-status');if(st)st.innerHTML=!nominationState.enabled?'Modalità disattivata.':!nominationState.role?'Tutte le rose sono complete.':(isMantraRoom()?`Banditura libera MANTRA · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`:nominationState.role==='ALL'?`Tutti i ruoli · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`:`Ruolo <b>${nominationState.role}</b> · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`);
             renderNominationOrder();
             renderNominationRoleOrder();
         }
@@ -2663,7 +2688,7 @@ function updateCreateRoomModeUI(){
                 if(center)center.setAttribute('aria-hidden','false');
                 if(teamEl)teamEl.textContent=team?.name || (role?'SQUADRA NON DISPONIBILE':'ASTE COMPLETATE');
                 if(roleEl)roleEl.textContent=role
-                    ? (isMantraRoom()?'Può bandire qualsiasi giocatore disponibile':`Sceglie un ${nominationRoleName(role)} · Ruolo ${role}`)
+                    ? ((isMantraRoom()||role==='ALL')?'Può bandire qualsiasi giocatore disponibile':`Sceglie un ${nominationRoleName(role)} · Ruolo ${role}`)
                     : 'Tutte le rose sono complete';
 
                 // Se è la prima banditura della sessione non esiste ancora un giocatore precedente.
@@ -2895,8 +2920,9 @@ function updateCreateRoomModeUI(){
             loadPlayerUiPrefs();
             const search=document.getElementById('nomination-search');
             if(search)search.value='';
-            document.getElementById('nomination-picker-title').textContent=isMantraRoom()?'Scegli un giocatore da bandire':`Scegli un ${nominationRoleName(nominationState.role)}`;
-            document.getElementById('nomination-picker-subtitle').textContent=isMantraRoom()?'MANTRA · banditura libera, qualsiasi ruolo':`Solo ruolo ${nominationState.role}`;
+            const allClassic=!isMantraRoom()&&nominationState.role==='ALL';
+            document.getElementById('nomination-picker-title').textContent=(isMantraRoom()||allClassic)?'Scegli un giocatore da bandire':`Scegli un ${nominationRoleName(nominationState.role)}`;
+            document.getElementById('nomination-picker-subtitle').textContent=isMantraRoom()?'MANTRA · banditura libera, qualsiasi ruolo':allClassic?'TUTTI I RUOLI · banditura libera':`Solo ruolo ${nominationState.role}`;
             renderNominationCandidates();
             document.getElementById('nomination-picker-overlay').classList.add('open');
         }
@@ -2920,8 +2946,17 @@ function updateCreateRoomModeUI(){
             if(!box)return;
 
 
+            const turnTeam=currentNominationTeam();
+            const turnCounts=turnTeam?teamCounts(turnTeam.id):null;
+            const turnLimits=roomLimits();
+            const allClassic=!isMantraRoom()&&nominationState.role==='ALL';
             const eligible=playersList
-                .filter(p=>isMantraRoom() || String(playerRole(p)).toUpperCase()===String(nominationState.role))
+                .filter(p=>{
+                    if(isMantraRoom())return true;
+                    const role=String(playerRole(p)||'').toUpperCase();
+                    if(allClassic)return !!turnCounts&&(turnCounts[role]||0)<(turnLimits[role]||0);
+                    return role===String(nominationState.role).toUpperCase();
+                })
                 .filter(p=>!auctionedPlayerIds.has(String(p.Id)));
             const list=filterAndSortPlayers(eligible,'nomination').slice(0,150);
 
@@ -7793,15 +7828,19 @@ function updateCreateRoomModeUI(){
             const l=roomLimits();
             const c=t?teamCounts(t.id):null;
 
+            const selectedClassicRole=p?String(playerRole(p)||'').toUpperCase():'';
+            const allClassic=!isMantraRoom()&&nominationState.role==='ALL';
             const invalidClassic=
                 !isMantraRoom() &&
                 p &&
-                String(playerRole(p))!==String(nominationState.role);
+                !allClassic &&
+                selectedClassicRole!==String(nominationState.role);
 
+            const capacityRole=allClassic?selectedClassicRole:nominationState.role;
             const invalidCapacity=
                 isMantraRoom()
                     ?(!c || c.total>=mantraRosterMax())
-                    :(!c || (c[nominationState.role]||0)>=(l[nominationState.role]||0));
+                    :(!c || !p || !['P','D','C','A'].includes(String(capacityRole||'')) || (c[capacityRole]||0)>=(l[capacityRole]||0));
 
             const invalid=
                 String(d.team_id)!==String(nominationState.turn_team_id) ||

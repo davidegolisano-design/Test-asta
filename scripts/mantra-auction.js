@@ -170,7 +170,7 @@
             if(host.dataset.roleModeSignature!==signature){
                 host.dataset.roleModeSignature=signature;
                 host.classList.toggle('mantra-auto-random-role-grid',isMantraRoom());
-                host.innerHTML=roles.map(role=>`<button id="auto-random-role-btn-${role}" type="button" class="unified-role role-${role}" aria-pressed="false" aria-label="${categoryLabel(role)}" title="${categoryLabel(role)}" onclick="toggleAutoRandomRoleButton('${role}')">${isMantraRoom()?(SHORT_LABELS[role]||role):categoryLabel(role)}</button>`).join('');
+                host.innerHTML=`<button id="auto-random-role-btn-ALL" type="button" class="unified-role unified-role-all" aria-pressed="false" aria-label="Tutti i ruoli" title="Tutti i ruoli" onclick="toggleAutoRandomAllRoles()">TUTTI</button>`+roles.map(role=>`<button id="auto-random-role-btn-${role}" type="button" class="unified-role role-${role}" aria-pressed="false" aria-label="${categoryLabel(role)}" title="${categoryLabel(role)}" onclick="toggleAutoRandomRoleButton('${role}')">${isMantraRoom()?(SHORT_LABELS[role]||role):categoryLabel(role)}</button>`).join('');
             }
         }
         roles.forEach(role=>{
@@ -178,6 +178,9 @@
             const btn=document.getElementById('auto-random-role-btn-'+role);
             if(btn){btn.classList.toggle('selected',selected);btn.setAttribute('aria-pressed',selected?'true':'false');}
         });
+        const allSelected=roles.length>0&&roles.every(role=>autoRandomRoles.has(role));
+        const allBtn=document.getElementById('auto-random-role-btn-ALL');
+        if(allBtn){allBtn.classList.toggle('selected',allSelected);allBtn.setAttribute('aria-pressed',allSelected?'true':'false');}
         const status=document.getElementById('auto-random-status');
         if(status){
             const text=roles.filter(r=>autoRandomRoles.has(r)).map(categoryLabel).join(' · ')||'nessuna categoria';
@@ -205,6 +208,20 @@
         await saveRoomAuctionExtraSettings();
         renderAutoRandomControlUI();
         if(autoRandomEnabled)scheduleAutoRandomAuction(180);else cancelAutoRandomLaunch();
+    };
+
+    toggleAutoRandomAllRoles=async function(){
+        const roles=activeGroups();
+        const allSelected=roles.length>0&&roles.every(role=>autoRandomRoles.has(role));
+        autoRandomRoles=new Set(allSelected?[]:roles);
+        if(autoRandomEnabled&&!autoRandomRoles.size){
+            autoRandomEnabled=false;
+            const master=document.getElementById('auto-random-enabled');if(master)master.checked=false;
+            cancelAutoRandomLaunch();
+        }
+        await saveRoomAuctionExtraSettings();
+        renderAutoRandomControlUI();
+        if(autoRandomEnabled&&!isAuctionActive&&!readyGateWaiting&&!auctionPrepInterval)scheduleAutoRandomAuction(180);
     };
 
     toggleAutoRandomRoleButton=function(role){

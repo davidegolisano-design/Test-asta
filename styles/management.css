@@ -403,3 +403,31 @@ body.auctioneer-desktop #screen-room-control .ready-control-card{
   align-self:stretch!important;
   height:100%!important;
 }
+
+
+/* === ALL ROLE OPTIONS v1 === */
+#screen-room-control .mg-role-choice{grid-template-columns:repeat(5,minmax(0,1fr));}
+html body.liveasta-mantra #screen-room-control .mg-role-choice.mantra-auto-random-role-grid{grid-template-columns:repeat(6,minmax(0,1fr));}
+#screen-room-control .mg-role-choice .unified-role-all{
+  background:var(--mg-hover);color:var(--mg-text);border-color:var(--mg-border);opacity:.55;font-size:11px;padding:0 4px;
+}
+#screen-room-control .mg-role-choice .unified-role-all.selected,
+#screen-room-control .mg-role-choice .unified-role-all[aria-pressed="true"]{
+  background:var(--mg-primary);color:var(--mg-primary-ink);border-color:var(--mg-primary);opacity:1;
+}
+#screen-room-control .mg-role-all-mode{
+  width:100%;min-height:48px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;text-align:left;
+}
+#screen-room-control .mg-role-all-mode span{font-size:13px;font-weight:900;}
+#screen-room-control .mg-role-all-mode small{font-size:10px;font-weight:600;color:var(--mg-muted);}
+#screen-room-control .mg-role-all-mode.selected{
+  background:var(--mg-primary);color:var(--mg-primary-ink);border-color:var(--mg-primary);
+}
+#screen-room-control .mg-role-all-mode.selected small{color:var(--mg-primary-ink);opacity:.82;}
+#screen-room-control .mg-role-order-list.all-roles-active .mg-role-order-row{opacity:.55;}
+@media(max-width:760px){
+  #screen-room-control .mg-role-choice,
+  html body.liveasta-mantra #screen-room-control .mg-role-choice.mantra-auto-random-role-grid{gap:4px;}
+  #screen-room-control .mg-role-choice .unified-role{min-width:0;padding:0 3px;font-size:11px;}
+  #screen-room-control .mg-role-choice .unified-role-all{font-size:9px;}
+}
