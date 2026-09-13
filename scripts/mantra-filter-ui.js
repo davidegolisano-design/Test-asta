@@ -276,21 +276,38 @@
         return rows.map(item=>item.row);
     };
 
-    // Shared turn-board empty state: no fake role/club placeholders and theme-native panel.
+    // Shared turn-board empty state: no team colours, fake badges or placeholder punctuation.
     function ensureEmptyPreviousAuctionStyle(){
         if(document.getElementById('liveasta-empty-previous-auction-style'))return;
         const style=document.createElement('style');
         style.id='liveasta-empty-previous-auction-style';
         style.textContent=`
-            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous{
+            html[data-live-theme] #screen-auctioneer-board.auctioneer-ui-desktop #view-auction .auction-col.col-player.nomination-empty-previous,
+            html[data-live-theme] #screen-auctioneer-board.auctioneer-ui-mobile #view-auction .auction-col.col-player.nomination-empty-previous{
                 background:var(--theme-card)!important;
+                background-image:none!important;
+                background-color:var(--theme-card)!important;
                 color:var(--theme-text)!important;
                 border-color:var(--theme-border)!important;
+                filter:none!important;
                 justify-content:center!important;
                 align-items:center!important;
             }
-            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-name-top{
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous::before,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous::after,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-card::before,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-card::after,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-meta::before,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-meta::after{
+                content:none!important;
+                display:none!important;
+                background:none!important;
+                box-shadow:none!important;
+            }
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-name-top{
                 color:var(--theme-muted)!important;
+                -webkit-text-stroke:0!important;
+                paint-order:normal!important;
                 font-size:clamp(22px,2.3vw,42px)!important;
                 line-height:1.15!important;
                 letter-spacing:.04em!important;
@@ -299,10 +316,15 @@
                 max-width:85%!important;
                 text-align:center!important;
                 text-shadow:none!important;
+                filter:none!important;
             }
-            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-card,
-            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-meta{
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-card,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-meta,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-role,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous .meta-dot,
+            html[data-live-theme] #screen-auctioneer-board #view-auction .col-player.nomination-empty-previous #auction-player-club{
                 display:none!important;
+                visibility:hidden!important;
             }
         `;
         document.head.appendChild(style);
@@ -321,14 +343,16 @@
             ensureEmptyPreviousAuctionStyle();
             playerCol.classList.add('nomination-empty-previous');
             if(name)name.textContent='NESSUNA ASTA PRECEDENTE';
-            if(card)card.setAttribute('aria-hidden','true');
-            if(meta){meta.hidden=true;meta.setAttribute('aria-hidden','true');}
-            if(role)role.textContent='';
-            if(club)club.textContent='';
+            if(card){card.setAttribute('aria-hidden','true');card.style.display='none';}
+            if(meta){meta.hidden=true;meta.setAttribute('aria-hidden','true');meta.style.display='none';}
+            if(role){role.textContent='';role.style.display='none';}
+            if(club){club.textContent='';club.style.display='none';}
         }else{
             playerCol.classList.remove('nomination-empty-previous');
-            if(card)card.removeAttribute('aria-hidden');
-            if(meta){meta.hidden=false;meta.setAttribute('aria-hidden','false');}
+            if(card){card.removeAttribute('aria-hidden');card.style.removeProperty('display');}
+            if(meta){meta.hidden=false;meta.setAttribute('aria-hidden','false');meta.style.removeProperty('display');}
+            if(role)role.style.removeProperty('display');
+            if(club)club.style.removeProperty('display');
         }
     }
 
