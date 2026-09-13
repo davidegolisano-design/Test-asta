@@ -115,7 +115,7 @@ function renderListFilters(view){
 function filterAndSortPlayers(list,view){
     renderListFilters(view);
     const state=listFilterState(view);
-    const search=document.querySelector('#list-filters-'+view+' .unified-search');
+    const search=listFilterViews?.[view]?.search ? document.getElementById(listFilterViews[view].search) : document.querySelector('#list-filters-'+view+' .unified-search');
     const query=String(search?.value||'').trim().toLocaleLowerCase('it');
     const byId=new Map(playersList.map(p=>[String(p.Id),p]));
     const purchases=new Map(purchasesCache.map(p=>[String(p.player_id),p]));

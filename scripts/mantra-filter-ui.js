@@ -236,7 +236,7 @@
         if(!isMantraRoom())return baseFilterAndSortPlayers(list,view);
         renderListFilters(view);
         const selected=selectedTokens(view);
-        const search=document.querySelector('#list-filters-'+view+' .unified-search');
+        const search=listFilterViews?.[view]?.search ? document.getElementById(listFilterViews[view].search) : document.querySelector('#list-filters-'+view+' .unified-search');
         const query=String(search?.value||'').trim().toLocaleLowerCase('it');
         const byId=new Map(playersList.map(player=>[String(player.Id),player]));
         const purchases=new Map(purchasesCache.map(purchase=>[String(purchase.player_id),purchase]));
