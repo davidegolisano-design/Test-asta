@@ -1,0 +1,31 @@
+name: Fix random sequence card and management navigation
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-random-card-management.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply patch
+        run: python3 .github/fix-random-card-management.py
+      - name: Validate
+        run: |
+          node --check scripts/app.js
+          node --check scripts/mantra-auction.js
+          grep -q "sequenza predisposta" scripts/app.js
+          grep -q "baseAutoRandomCandidates" scripts/mantra-auction.js
+          grep -q "roomControlNavigationAuthorized" scripts/app.js
+          grep -q "if(currentAuctionPlayer)restoreAuctionCardVisibility" scripts/app.js
+      - name: Commit
+        run: |
+          git config user.name 'liveasta-release-bot'
+          git config user.email 'liveasta-release-bot@users.noreply.github.com'
+          git add index.html scripts/app.js scripts/mantra-auction.js
+          git rm .github/fix-random-card-management.py .github/workflows/fix-random-card-management.yml
+          git rm -f .github/workflows/apply-ignore-sequence.yml || true
+          git commit -m 'Fix random sequence card restore and management navigation'
+          git push
