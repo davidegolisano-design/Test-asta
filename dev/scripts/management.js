@@ -1,4 +1,4 @@
-/* LIVEASTA DEV — canonical Gestione helpers · v0.97 MGMT-03
+/* LIVEASTA DEV — canonical Gestione helpers · v0.98 MGMT-04
    UI-only: participant list/order/detail. Auction rules remain in app.js. */
 (function(){
   'use strict';
@@ -16,6 +16,7 @@
     const id=String(teamId);
     try{
       if(typeof absentTeamIds!=='undefined' && absentTeamIds?.has(id)) return {key:'absent',label:'ASSENTE'};
+      if(typeof auctioneerPlayerMode!=='undefined' && auctioneerPlayerMode && typeof auctioneerPlayerTeamId!=='undefined' && String(auctioneerPlayerTeamId||'')===id) return {key:'online',label:'ONLINE'};
       const p=(typeof onlinePlayers!=='undefined' && onlinePlayers?.get)?onlinePlayers.get(id):null;
       const raw=String(p?.state||p?.status||'').toLowerCase();
       if(raw.includes('connect')) return {key:'connecting',label:'CONNESSIONE'};
