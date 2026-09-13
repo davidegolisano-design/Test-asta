@@ -1,0 +1,109 @@
+name: LIVEASTA PLAYER-02 theme palette and final countdown
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-player02.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply PLAYER-02
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          css_path=Path('dev/styles/refinements.css')
+          css=css_path.read_text(encoding='utf-8')
+          marker='/* === PLAYER-01: player auction contrast + nomination role badge === */'
+          if marker in css:
+              css=css.split(marker,1)[0].rstrip()
+
+          patch=r'''
+
+/* === PLAYER-02: player theme palette + final countdown 3-0 === */
+html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer .player-live-side :is(
+  .player-timer-box span,
+  .player-timer-box small,
+  #player-auction-title,
+  .bid-label,
+  .credit-label
+){
+  color:var(--theme-muted)!important;
+  -webkit-text-fill-color:var(--theme-muted)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer .player-live-side :is(#player-countdown,#player-current-value){
+  color:var(--theme-number)!important;
+  -webkit-text-fill-color:var(--theme-number)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer .player-live-side #player-current-winner{
+  color:var(--theme-primary)!important;
+  -webkit-text-fill-color:var(--theme-primary)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+html[data-live-theme] body #screen-auctioneer-board#screen-auctioneer-board #countdown-display.liveasta-last3,
+html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer #player-countdown.liveasta-last3{
+  color:var(--theme-danger)!important;
+  -webkit-text-fill-color:var(--theme-danger)!important;
+  opacity:1!important;
+  text-shadow:0 0 14px color-mix(in srgb,var(--theme-danger) 38%,transparent)!important;
+}
+html[data-live-theme] body #screen-auctioneer-board#screen-auctioneer-board #view-auction.mobile-ready #countdown-display.liveasta-last3{
+  color:var(--theme-number)!important;
+  -webkit-text-fill-color:var(--theme-number)!important;
+  text-shadow:none!important;
+}
+html body #nomination-picker-overlay .nomination-player-row .role-badge{
+  width:28px!important;min-width:28px!important;max-width:28px!important;
+  height:28px!important;min-height:28px!important;max-height:28px!important;
+  padding:0!important;margin:0!important;flex:0 0 28px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:50%!important;line-height:1!important;font-size:12px!important;font-weight:900!important;
+}
+'''
+          css_path.write_text(css+patch,encoding='utf-8')
+
+          preload_path=Path('dev/scripts/theme-preload.js')
+          preload=preload_path.read_text(encoding='utf-8')
+          start=preload.find("    const stateStyle=document.createElement('style');")
+          end_token='    document.head.appendChild(stateStyle);'
+          if start!=-1:
+              end=preload.find(end_token,start)
+              if end!=-1:
+                  preload=preload[:start]+preload[end+len(end_token):]
+          preload_path.write_text(preload,encoding='utf-8')
+
+          index_path=Path('dev/index.html')
+          h=index_path.read_text(encoding='utf-8')
+          h=h.replace('LIVEASTA DEV · v1.05 PLAYER-01','LIVEASTA DEV · v1.06 PLAYER-02')
+          h=h.replace('AMBIENTE DEV · v1.05 PLAYER-01','AMBIENTE DEV · v1.06 PLAYER-02')
+          h=h.replace('            v1.05\n','            v1.06\n',1)
+          h=h.replace('105-player01','106-player02')
+          index_path.write_text(h,encoding='utf-8')
+          PY
+      - name: Validate
+        run: |
+          grep -q 'PLAYER-02: player theme palette' dev/styles/refinements.css
+          grep -q 'var(--theme-muted)' dev/styles/refinements.css
+          grep -q 'var(--theme-number)' dev/styles/refinements.css
+          grep -q 'var(--theme-primary)' dev/styles/refinements.css
+          grep -q 'var(--theme-danger)' dev/styles/refinements.css
+          ! grep -q 'liveasta-player-state-theme-text' dev/scripts/theme-preload.js
+          grep -q 'LIVEASTA DEV · v1.06 PLAYER-02' dev/index.html
+      - name: Commit
+        run: |
+          rm -f .github/workflows/liveasta-player02.yml
+          git config user.name 'liveasta-dev-bot'
+          git config user.email 'liveasta-dev-bot@users.noreply.github.com'
+          git add dev/index.html dev/styles/refinements.css dev/scripts/theme-preload.js .github/workflows/liveasta-player02.yml
+          git commit -m 'Use theme palette and final countdown PLAYER-02'
+          git push origin main
