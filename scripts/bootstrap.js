@@ -957,7 +957,7 @@
  root.querySelectorAll(notes).forEach(n=>n.classList.add('mg-description'));
  ['self-raise-control-status','self-raise-control-badge','ready-control-status','ready-control-badge','auctioneer-player-badge','nomination-control-badge'].forEach(id=>document.getElementById(id)?.classList.add('mg-description'));
  [['self-raise-toggle','Autorilancio',true],['ready-toggle-btn','Ready prima dell’asta',false],['auctioneer-player-toggle-btn','Banditore giocatore',false],['nomination-toggle-btn','Banditura a turni',false]].forEach(([id,label,initial])=>{
- const b=document.getElementById(id);b.classList.add('mg-switch');b.setAttribute('role','switch');b.setAttribute('aria-label',label);if(!b.hasAttribute('aria-checked'))b.setAttribute('aria-checked',String(initial));b.closest('.control-card').querySelector('.control-title').append(b);
+ const b=document.getElementById(id);if(!b)return;b.setAttribute('role','switch');b.setAttribute('aria-label',label);if(!b.hasAttribute('aria-checked'))b.setAttribute('aria-checked',String(initial));if(b.closest('.mg-switch-label'))return;b.classList.add('mg-switch');const legacyTitle=b.closest('.control-card')?.querySelector('.control-title');if(legacyTitle)legacyTitle.append(b);
  });
  root.querySelectorAll('input[type=checkbox]:not(#self-raise-enabled)').forEach(input=>{input.setAttribute('role','switch');if(input.id==='auto-random-enabled')input.setAttribute('aria-label','Random automatico');if(input.id.startsWith('auto-random-role-'))input.setAttribute('aria-label','Includi ruolo '+input.id.split('-').pop());});
  const fieldHelp={
