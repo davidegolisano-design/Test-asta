@@ -1,0 +1,76 @@
+name: LIVEASTA MGMT-07 random role fix
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/liveasta-mgmt07-random-role-fix.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply DEV-only fix
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index=Path('dev/index.html')
+          s=index.read_text()
+          old='''                            <button id="auto-random-role-btn-P" type="button" class="unified-role role-P" aria-pressed="false" onclick="toggleAutoRandomRoleButton('P')">P</button>\n                            <button id="auto-random-role-btn-D" type="button" class="unified-role role-D" aria-pressed="false" onclick="toggleAutoRandomRoleButton('D')">D</button>\n                            <button id="auto-random-role-btn-C" type="button" class="unified-role role-C" aria-pressed="false" onclick="toggleAutoRandomRoleButton('C')">C</button>\n                            <button id="auto-random-role-btn-A" type="button" class="unified-role role-A" aria-pressed="false" onclick="toggleAutoRandomRoleButton('A')">A</button>\n                            <input id="auto-random-role-P" type="checkbox" hidden aria-hidden="true" tabindex="-1">\n                            <input id="auto-random-role-D" type="checkbox" hidden aria-hidden="true" tabindex="-1">\n                            <input id="auto-random-role-C" type="checkbox" hidden aria-hidden="true" tabindex="-1">\n                            <input id="auto-random-role-A" type="checkbox" hidden aria-hidden="true" tabindex="-1">'''
+          new='''                            <button id="auto-random-role-btn-P" type="button" class="unified-role role-P" aria-pressed="false" onclick="toggleAutoRandomRoleButton('P')">P</button>\n                            <button id="auto-random-role-btn-D" type="button" class="unified-role role-D" aria-pressed="false" onclick="toggleAutoRandomRoleButton('D')">D</button>\n                            <button id="auto-random-role-btn-C" type="button" class="unified-role role-C" aria-pressed="false" onclick="toggleAutoRandomRoleButton('C')">C</button>\n                            <button id="auto-random-role-btn-A" type="button" class="unified-role role-A" aria-pressed="false" onclick="toggleAutoRandomRoleButton('A')">A</button>'''
+          if old not in s: raise SystemExit('Random role HTML block not found')
+          s=s.replace(old,new,1)
+          s=s.replace('LIVEASTA DEV · v1.00 MGMT-06','LIVEASTA DEV · v1.01 MGMT-07')
+          s=s.replace('100-mgmt06','101-mgmt07')
+          index.write_text(s)
+
+          app=Path('dev/scripts/app.js')
+          s=app.read_text()
+          old='''        function autoRandomSelectedRolesFromControl(){\n            return ['P','D','C','A'].filter(role=>document.getElementById('auto-random-role-'+role)?.checked);\n        }'''
+          new='''        function autoRandomSelectedRolesFromControl(){\n            return ['P','D','C','A'].filter(role=>document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true');\n        }'''
+          if old not in s: raise SystemExit('autoRandomSelectedRolesFromControl block not found')
+          s=s.replace(old,new,1)
+          old='''            ['P','D','C','A'].forEach(role=>{\n                const selected=autoRandomRoles.has(role);\n                const el=document.getElementById('auto-random-role-'+role);\n                if(el)el.checked=selected;\n                const btn=document.getElementById('auto-random-role-btn-'+role);\n                if(btn){\n                    btn.classList.toggle('selected',selected);\n                    btn.setAttribute('aria-pressed',selected?'true':'false');\n                }\n            });'''
+          new='''            ['P','D','C','A'].forEach(role=>{\n                const selected=autoRandomRoles.has(role);\n                const btn=document.getElementById('auto-random-role-btn-'+role);\n                if(btn){\n                    btn.classList.toggle('selected',selected);\n                    btn.setAttribute('aria-pressed',selected?'true':'false');\n                }\n            });'''
+          if old not in s: raise SystemExit('renderAutoRandomControlUI role block not found')
+          s=s.replace(old,new,1)
+          app.write_text(s)
+
+          css=Path('dev/styles/management.css')
+          s=css.read_text()
+          old='''#screen-room-control .mg-role-choice{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px;}\n#screen-room-control .mg-role-choice .unified-role{width:100%;height:42px;min-height:42px;margin:0;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;font-weight:900!important;line-height:1!important;}\n#screen-room-control .mg-role-choice>input[hidden]{display:none!important;}'''
+          new='''#screen-room-control .mg-role-choice{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px;}\n/* Same visual contract as the canonical PDCA list filters. */\n#screen-room-control .mg-role-choice .unified-role{\n  width:100%;min-width:0;max-width:none;height:40px;min-height:40px;margin:0;padding:0 7px;\n  display:flex;align-items:center;justify-content:center;box-sizing:border-box;\n  border:1px solid var(--theme-border);border-radius:9px;font-family:inherit;font-size:14px;font-weight:800;line-height:1;cursor:pointer;\n  background:var(--filter-role-color);color:#101820;opacity:.32;box-shadow:none;\n}\n#screen-room-control .mg-role-choice .unified-role.selected{opacity:1;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);}\n#screen-room-control .mg-role-choice .role-P{--filter-role-color:#ffda32;color:#101820;}\n#screen-room-control .mg-role-choice .role-D{--filter-role-color:#24c968;color:#101820;}\n#screen-room-control .mg-role-choice .role-C{--filter-role-color:#387ef5;color:#fff;}\n#screen-room-control .mg-role-choice .role-A{--filter-role-color:#ed3e46;color:#fff;}\n#screen-room-control .mg-role-choice .unified-role:focus-visible{outline:2px solid var(--theme-primary);outline-offset:2px;}'''
+          if old not in s: raise SystemExit('MGMT role CSS block not found')
+          s=s.replace(old,new,1)
+          css.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          node --check dev/scripts/app.js
+          python - <<'PY'
+          from pathlib import Path
+          h=Path('dev/index.html').read_text()
+          j=Path('dev/scripts/app.js').read_text()
+          c=Path('dev/styles/management.css').read_text()
+          assert 'v1.01 MGMT-07' in h
+          assert 'auto-random-role-P" type="checkbox"' not in h
+          assert 'auto-random-role-D" type="checkbox"' not in h
+          assert 'auto-random-role-C" type="checkbox"' not in h
+          assert 'auto-random-role-A" type="checkbox"' not in h
+          assert h.count('auto-random-role-btn-') == 4
+          assert "getAttribute('aria-pressed')==='true'" in j
+          assert '.mg-role-choice .unified-role.selected' in c
+          print('MGMT-07 validation OK')
+          PY
+      - name: Commit DEV-only changes
+        run: |
+          rm -f .github/workflows/liveasta-mgmt07-random-role-fix.yml
+          git config user.name 'liveasta-dev-bot'
+          git config user.email 'liveasta-dev-bot@users.noreply.github.com'
+          git add dev/index.html dev/scripts/app.js dev/styles/management.css .github/workflows/liveasta-mgmt07-random-role-fix.yml
+          git commit -m 'Fix DEV random role controls MGMT-07'
+          git push origin main
