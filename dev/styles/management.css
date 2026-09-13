@@ -89,9 +89,20 @@
 #screen-room-control .mg-switch-label:active .mg-switch-ui{transform:scale(.96);}
 #screen-room-control .sr-only{position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important;}
 
-#screen-room-control .mg-role-choice{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px;}
-#screen-room-control .mg-role-choice .unified-role{width:100%;height:42px;min-height:42px;margin:0;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;font-weight:900!important;line-height:1!important;}
-#screen-room-control .mg-role-choice>input[hidden]{display:none!important;}
+#screen-room-control .mg-role-choice{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px;}
+/* Same visual contract as the canonical PDCA list filters. */
+#screen-room-control .mg-role-choice .unified-role{
+  width:100%;min-width:0;max-width:none;height:40px;min-height:40px;margin:0;padding:0 7px;
+  display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+  border:1px solid var(--theme-border);border-radius:9px;font-family:inherit;font-size:14px;font-weight:800;line-height:1;cursor:pointer;
+  background:var(--filter-role-color);color:#101820;opacity:.32;box-shadow:none;
+}
+#screen-room-control .mg-role-choice .unified-role.selected{opacity:1;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);}
+#screen-room-control .mg-role-choice .role-P{--filter-role-color:#ffda32;color:#101820;}
+#screen-room-control .mg-role-choice .role-D{--filter-role-color:#24c968;color:#101820;}
+#screen-room-control .mg-role-choice .role-C{--filter-role-color:#387ef5;color:#fff;}
+#screen-room-control .mg-role-choice .role-A{--filter-role-color:#ed3e46;color:#fff;}
+#screen-room-control .mg-role-choice .unified-role:focus-visible{outline:2px solid var(--theme-primary);outline-offset:2px;}
 
 #screen-room-control .mg-role-order-card{margin-top:12px;padding:12px;border:1px solid var(--mg-border);border-radius:10px;background:var(--mg-input);}
 #screen-room-control .mg-role-order-card[hidden]{display:none!important;}

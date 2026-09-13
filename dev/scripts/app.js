@@ -1008,7 +1008,7 @@ function updateCreateRoomModeUI(){
         }
 
         function autoRandomSelectedRolesFromControl(){
-            return ['P','D','C','A'].filter(role=>document.getElementById('auto-random-role-'+role)?.checked);
+            return ['P','D','C','A'].filter(role=>document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true');
         }
 
         function renderAutoRandomControlUI(){
@@ -1016,8 +1016,6 @@ function updateCreateRoomModeUI(){
             if(master)master.checked=!!autoRandomEnabled;
             ['P','D','C','A'].forEach(role=>{
                 const selected=autoRandomRoles.has(role);
-                const el=document.getElementById('auto-random-role-'+role);
-                if(el)el.checked=selected;
                 const btn=document.getElementById('auto-random-role-btn-'+role);
                 if(btn){
                     btn.classList.toggle('selected',selected);
