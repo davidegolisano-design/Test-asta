@@ -76,12 +76,12 @@
     overlay.dataset.teamId=id;
     const state=presenceFor(id);
     const stateEl=document.getElementById('mg-team-detail-state');
-    stateEl.textContent=state.label; stateEl.className='mg-team-detail-state mg-state-'+state.key;
+    stateEl.textContent=state.label;
+    stateEl.className='mg-team-detail-state mg-state-'+state.key;
     document.getElementById('mg-team-detail-title').textContent=team.name;
-    const name=document.getElementById('mg-team-detail-name');
-    const credits=document.getElementById('mg-team-detail-credits');
-    name.id='ctl-team-name-'+id; credits.id='ctl-team-credits-'+id;
-    name.value=team.name||''; credits.value=team.credits_remaining??0;
+    document.getElementById('mg-team-detail-name').value=team.name||'';
+    document.getElementById('mg-team-detail-credits').value=team.credits_remaining??0;
+
     const counts=typeof teamCounts==='function'?teamCounts(team.id):{};
     const metrics=document.getElementById('mg-team-detail-metrics');
     if(typeof isMantraRoom==='function' && isMantraRoom()){
@@ -93,24 +93,43 @@
       const limits=typeof roomLimits==='function'?roomLimits():{P:0,D:0,C:0,A:0};
       metrics.innerHTML=metric('P',`${counts.P||0}/${limits.P||0}`)+metric('D',`${counts.D||0}/${limits.D||0}`)+metric('C',`${counts.C||0}/${limits.C||0}`)+metric('A',`${counts.A||0}/${limits.A||0}`)+metric('Tot.',`${counts.total||0}/${typeof totalRoomSlots==='function'?totalRoomSlots():0}`);
     }
-    const pin=document.getElementById('mg-team-detail-pin-value');
-    pin.innerHTML=typeof teamPinStatusHtml==='function'?teamPinStatusHtml(team.id):'--';
-    overlay.hidden=false; document.body.classList.add('mg-detail-open');
+    document.getElementById('mg-team-detail-pin-value').innerHTML=typeof teamPinStatusHtml==='function'?teamPinStatusHtml(team.id):'--';
+    overlay.hidden=false;
+    document.body.classList.add('mg-detail-open');
   };
 
   window.closeManagementTeamDetail=function(){
     const overlay=document.getElementById('management-team-detail');
     if(!overlay)return;
-    overlay.hidden=true; overlay.dataset.teamId=''; document.body.classList.remove('mg-detail-open');
+    overlay.hidden=true;
+    overlay.dataset.teamId='';
+    document.body.classList.remove('mg-detail-open');
   };
 
   window.saveManagementTeamDetail=async function(){
     const overlay=document.getElementById('management-team-detail');
     const id=String(overlay?.dataset.teamId||'');
     if(!id||typeof saveTeamControl!=='function')return;
-    const name=document.getElementById('ctl-team-name-'+id);
+    const name=document.getElementById('mg-team-detail-name');
+    const credits=document.getElementById('mg-team-detail-credits');
     if(!name?.value.trim()){alert('Il nome squadra è obbligatorio.');return;}
-    await saveTeamControl(id);
+
+    const bridgeName=document.createElement('input');
+    const bridgeCredits=document.createElement('input');
+    bridgeName.id='ctl-team-name-'+id;
+    bridgeCredits.id='ctl-team-credits-'+id;
+    bridgeName.value=name.value;
+    bridgeCredits.value=credits.value;
+    bridgeName.hidden=true;
+    bridgeCredits.hidden=true;
+    overlay.append(bridgeName,bridgeCredits);
+    try{
+      await saveTeamControl(id);
+    }finally{
+      bridgeName.remove();
+      bridgeCredits.remove();
+    }
+
     window.renderManagementTeamList();
     const still=(typeof teamsCache!=='undefined'?teamsCache:[]).some(t=>String(t.id)===id);
     if(still)window.openManagementTeamDetail(id); else window.closeManagementTeamDetail();
@@ -134,8 +153,15 @@
 
   function init(){
     cleanupOldManagement();
-    window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('management-team-detail')?.hidden)window.closeManagementTeamDetail();});
+    const presenceTarget=document.getElementById('online-player-list');
+    if(presenceTarget){
+      new MutationObserver(()=>window.renderManagementTeamList()).observe(presenceTarget,{childList:true,subtree:true,characterData:true});
+    }
+    window.addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&!document.getElementById('management-team-detail')?.hidden)window.closeManagementTeamDetail();
+    });
   }
+
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
