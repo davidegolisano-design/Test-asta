@@ -1,0 +1,46 @@
+name: Fix auto bid one control
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-auto-bid-one-control.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch control markup
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old='''                            <label class="mg-inline-setting nomination-auto-bid-one-option">
+                                <span class="nomination-auto-bid-one-copy"><b>Offerta 1 banditore</b><small>Il giocatore bandito parte da 1 credito assegnato alla squadra che ha bandito.</small></span>
+                                <span class="mg-switch-label">
+                                    <input id="nomination-auto-bid-one" type="checkbox" onchange="setNominationAutoBidOne(this.checked)">
+                                    <span class="mg-switch-ui" aria-hidden="true"></span>
+                                </span>
+                            </label>'''
+          new='''                            <div class="mg-inline-setting nomination-auto-bid-one-option">
+                                <span class="nomination-auto-bid-one-copy"><b>Offerta 1 banditore</b><small>Il giocatore bandito parte da 1 credito assegnato alla squadra che ha bandito.</small></span>
+                                <label class="mg-switch-label" for="nomination-auto-bid-one">
+                                    <input id="nomination-auto-bid-one" type="checkbox" onchange="setNominationAutoBidOne(this.checked)">
+                                    <span class="mg-switch-ui" aria-hidden="true"></span>
+                                </label>
+                            </div>'''
+          if old not in s:
+              raise SystemExit('target control markup not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+      - name: Validate and commit
+        run: |
+          grep -q '<div class="mg-inline-setting nomination-auto-bid-one-option">' index.html
+          grep -q '<label class="mg-switch-label" for="nomination-auto-bid-one">' index.html
+          git config user.name liveasta-release-bot
+          git config user.email liveasta-release-bot@users.noreply.github.com
+          git add index.html
+          git rm .github/workflows/fix-auto-bid-one-control.yml
+          git commit -m 'Fix Offerta 1 banditore switch interaction'
+          git push
