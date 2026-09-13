@@ -74,3 +74,4 @@ jobs:
           git add dev/index.html dev/scripts/app.js dev/styles/management.css .github/workflows/liveasta-mgmt07-random-role-fix.yml
           git commit -m 'Fix DEV random role controls MGMT-07'
           git push origin main
+# retry 2
