@@ -10931,3 +10931,46 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
             loadRooms();
             // test branch: service worker disabled to avoid stale HTML/cache while validating the single-file build.
         });
+
+
+// v1.0.117 — player main name single-line auto fit
+(function(){
+    if(typeof setPhonePlayerDisplayName!=='function')return;
+    const baseSetPhonePlayerDisplayName=setPhonePlayerDisplayName;
+
+    function fitMainPlayerNameSingleLine(){
+        const outer=document.getElementById('phone-player-name');
+        const text=document.getElementById('phone-player-name-text');
+        const badge=document.getElementById('phone-player-priority-badge');
+        if(!outer||!text)return;
+
+        if(!text.dataset.fitBasePx){
+            text.style.removeProperty('--player-main-name-size');
+            const base=parseFloat(getComputedStyle(text).fontSize)||16;
+            text.dataset.fitBasePx=String(base);
+        }
+
+        let size=Math.max(10,parseFloat(text.dataset.fitBasePx)||16);
+        const gap=parseFloat(getComputedStyle(outer).columnGap||getComputedStyle(outer).gap)||0;
+        const badgeVisible=badge && getComputedStyle(badge).display!=='none';
+        const badgeWidth=badgeVisible?badge.getBoundingClientRect().width+gap:0;
+        const available=Math.max(64,outer.clientWidth-badgeWidth-4);
+
+        text.style.setProperty('max-width',available+'px','important');
+        text.style.setProperty('--player-main-name-size',size+'px');
+
+        while(size>10 && text.scrollWidth>available+1){
+            size-=0.5;
+            text.style.setProperty('--player-main-name-size',size+'px');
+        }
+    }
+
+    setPhonePlayerDisplayName=function(){
+        const result=baseSetPhonePlayerDisplayName.apply(this,arguments);
+        requestAnimationFrame(fitMainPlayerNameSingleLine);
+        return result;
+    };
+
+    window.addEventListener('resize',()=>requestAnimationFrame(fitMainPlayerNameSingleLine),{passive:true});
+    window.fitMainPlayerNameSingleLine=fitMainPlayerNameSingleLine;
+})();

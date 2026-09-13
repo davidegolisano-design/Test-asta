@@ -1984,3 +1984,44 @@ html[data-live-theme] #nomination-picker-overlay .nomination-close-btn{
   line-height:1.04!important;
   max-width:100%!important;
 }
+
+
+/* v1.0.117 — player desktop nomination reminder + single-line name fit */
+#screen-player-buzzer #phone-player-name{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  flex-wrap:nowrap!important;
+  overflow:visible!important;
+}
+#screen-player-buzzer #phone-player-name-text{
+  font-size:var(--player-main-name-size,1.05rem)!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  line-height:1.05!important;
+  flex:0 1 auto!important;
+  min-width:0!important;
+}
+
+@media (min-width:761px){
+  #screen-player-buzzer #player-nominate-btn.nomination-turn-active{
+    width:min(420px,calc(100% - 32px))!important;
+    max-width:420px!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    margin:7px auto 8px!important;
+    padding:8px 12px!important;
+    overflow:hidden!important;
+  }
+  #screen-player-buzzer #player-nominate-btn.nomination-turn-active :is(.nominate-small,strong,#player-nominate-role){
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+    text-align:center!important;
+  }
+}
