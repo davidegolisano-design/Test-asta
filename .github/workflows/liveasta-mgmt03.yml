@@ -1,0 +1,53 @@
+name: LIVEASTA MGMT-03 implementation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-mgmt03.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply MGMT-03
+        run: python3 dev/tools/apply_mgmt03.py
+
+      - name: Validate syntax and structure
+        run: |
+          node --check dev/scripts/app.js
+          node --check dev/scripts/management.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('dev/index.html').read_text()
+          css=Path('dev/styles/management.css').read_text()
+          js=Path('dev/scripts/management.js').read_text()
+          assert 'v0.97 MGMT-03' in html
+          assert 'id="control-team-list"' in html
+          assert 'id="management-team-detail"' in html
+          assert 'id="nomination-order-list"' not in html
+          assert 'renderManagementTeamList' in js
+          assert 'moveManagementTeamOrder' in js
+          assert 'position:sticky' in css
+          ids=re.findall(r'id="([^"]+)"',html)
+          dup=[x for x in set(ids) if ids.count(x)>1]
+          assert not dup, f'duplicate ids: {dup}'
+          print('MGMT-03 static validation OK')
+          PY
+
+      - name: Commit DEV-only changes and remove temporary workflow/script
+        run: |
+          rm -f dev/tools/apply_mgmt03.py .github/workflows/liveasta-mgmt03.yml
+          git config user.name 'liveasta-dev-bot'
+          git config user.email 'liveasta-dev-bot@users.noreply.github.com'
+          git add dev/index.html dev/scripts/app.js dev/scripts/management.js dev/styles/management.css dev/tools/apply_mgmt03.py .github/workflows/liveasta-mgmt03.yml
+          git commit -m 'Implement DEV management participant order UI'
+          git pull --rebase origin main
+          git push origin main
