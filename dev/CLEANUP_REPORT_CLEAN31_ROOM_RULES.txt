@@ -1,9 +1,0 @@
-LIVEASTA CLEAN-31 - ROOM CAPACITY RULE MODULE EXTRACTION
-=====================================================
-Behavior intended to be preserved.
-
-Created: scripts/room-rules.js
-Moved functions: roomLimits, totalRoomSlots
-
-Only deterministic room-capacity rules were moved. teamPurchases, teamCounts, maxBidForTeam and all auction/realtime state remain in app.js.
-roles.js loads before room-rules.js so Mantra capacity continues to use isMantraRoom/mantraRosterMax.

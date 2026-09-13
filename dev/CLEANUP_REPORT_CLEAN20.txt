@@ -1,8 +1,0 @@
-LIVEASTA CLEAN-20 - BRAND/TITLE OWNERSHIP + BROWSER SMOKE
-=======================================================
-Removed legacy bootstrap runtime overrides that forced:
-- document.title = v0.93
-- .admin-version-badge text = v0.93
-
-index.html is now the canonical owner of DEV title/version labels.
-Browser smoke validation is executed after this migration.

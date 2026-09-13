@@ -1,8 +1,8 @@
-const CACHE = 'liveasta-test-v093-pwa1';
+const CACHE = 'liveasta-v1.0';
 const CORE = [
   './',
   './index.html',
-  './manifest-v22.webmanifest',
+  './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
 ];
@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });
@@ -35,9 +35,13 @@ self.addEventListener('fetch', event => {
         }
         return response;
       })
-      .catch(() =>
-        caches.match(event.request)
-          .then(cached => cached || caches.match('./index.html'))
-      )
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+        if (event.request.mode === 'navigate') {
+          return (await caches.match('./index.html')) || Response.error();
+        }
+        return Response.error();
+      })
   );
 });
