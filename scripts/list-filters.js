@@ -1,4 +1,4 @@
-// LIVEASTA shared list filters and sorting — v1.02
+// LIVEASTA shared list filters and sorting — v1.03
 const listFilterViews={
     player:{search:'player-listone-search',fields:['role','name','team','value','price','priority'],refresh:()=>renderPlayerListone({preserveScroll:false})},
     board:{search:'player-search',fields:['role','name','team','value'],refresh:()=>refreshPlayerLists()},
@@ -52,7 +52,11 @@ function listFilterState(view){
 function changeListFilter(view,field,value){
     const state=listFilterState(view);
     if(field==='role')state.roles=state.roles.includes(value)?state.roles.filter(r=>r!==value):[...state.roles,value];
-    if(field==='all')state.roles=listFilterRoles();
+    if(field==='all'){
+        const all=listFilterRoles();
+        const allSelected=all.length>0&&all.every(role=>state.roles.includes(role));
+        state.roles=allSelected?[]:[...all];
+    }
     if(field==='sort'&&listFilterViews[view].fields.includes(value))state.sort=value;
     if(field==='direction')state.direction=state.direction==='asc'?'desc':'asc';
     const key=listFilterStorageKey();
@@ -90,12 +94,14 @@ function renderListFilters(view){
     let controls=root.querySelector('.unified-filter-controls');
     if(!controls){controls=document.createElement('div');controls.className='unified-filter-controls';root.append(controls);}
     const locked=view==='nomination'&&!isMantraRoom()?String(nominationState.role):'';
-    const signature=JSON.stringify([state,listFilterRoles(),locked]);
+    const allRoles=listFilterRoles();
+    const allSelected=!locked&&allRoles.length>0&&allRoles.every(role=>state.roles.includes(role));
+    const signature=JSON.stringify([state,allRoles,locked,allSelected]);
     if(controls.dataset.signature===signature)return;
     controls.dataset.signature=signature;
     controls.innerHTML=`<div class="unified-role-row${isMantraRoom()?' mantra-role-filter-row':''}" aria-label="Filtra per ruolo">
-        <button type="button" class="unified-role-all" onclick="changeListFilter('${view}','all')" ${locked?'disabled':''}>Tutti</button>
-        ${listFilterRoles().map(role=>{
+        <button type="button" class="unified-role-all${allSelected?' selected':''}" aria-pressed="${allSelected}" onclick="changeListFilter('${view}','all')" ${locked?'disabled':''}>Tutti</button>
+        ${allRoles.map(role=>{
             const selected=locked?role===locked:state.roles.includes(role);
             const family=typeof roleUiFamily==='function'?roleUiFamily(role):role;
             return `<button type="button" class="unified-role role-${family}${selected?' selected':''}" aria-pressed="${selected}" ${locked?'disabled':''} onclick="changeListFilter('${view}','role','${role}')">${role}</button>`;
