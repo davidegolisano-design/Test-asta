@@ -1,8 +1,5 @@
 name: Fix empty previous auction state
-on:
-  push:
-    paths:
-      - '.github/workflows/fix-empty-previous-auction.yml'
+on: [push]
 permissions:
   contents: write
 jobs:
@@ -13,10 +10,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Patch
+        shell: bash
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
-
           p=Path('scripts/app.js')
           s=p.read_text()
           old="""                if(!currentAuctionPlayer){
@@ -59,28 +56,50 @@ jobs:
 """
           if old not in s:
               raise SystemExit('target app block not found')
-          s=s.replace(old,new,1)
-          p.write_text(s)
+          p.write_text(s.replace(old,new,1))
 
           p=Path('styles/ui.css')
           s=p.read_text()
-          marker='/* Empty previous-auction state: theme-native, no placeholder punctuation. */'
+          marker='/* Empty previous auction state */'
           if marker not in s:
-              s += '''\n\n/* Empty previous-auction state: theme-native, no placeholder punctuation. */\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous{\n  background:var(--theme-card)!important;\n  color:var(--theme-text)!important;\n  border-color:var(--theme-border)!important;\n  justify-content:center!important;\n  align-items:center!important;\n}\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-name-top{\n  color:var(--theme-muted)!important;\n  font-size:clamp(22px,2.3vw,42px)!important;\n  line-height:1.15!important;\n  letter-spacing:.04em!important;\n  margin:0!important;\n  padding:24px!important;\n  max-width:85%!important;\n  text-align:center!important;\n  text-shadow:none!important;\n}\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-card,\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-meta{\n  display:none!important;\n}\n'''
+              s += """
+
+/* Empty previous auction state */
+html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous{
+  background:var(--theme-card)!important;
+  color:var(--theme-text)!important;
+  border-color:var(--theme-border)!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-name-top{
+  color:var(--theme-muted)!important;
+  font-size:clamp(22px,2.3vw,42px)!important;
+  line-height:1.15!important;
+  letter-spacing:.04em!important;
+  margin:0!important;
+  padding:24px!important;
+  max-width:85%!important;
+  text-align:center!important;
+  text-shadow:none!important;
+}
+html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-card,
+html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-meta{
+  display:none!important;
+}
+"""
           p.write_text(s)
 
           p=Path('index.html')
-          s=p.read_text()
-          s=s.replace('styles/ui.css?v=100','styles/ui.css?v=109')
-          s=s.replace('scripts/app.js?v=100','scripts/app.js?v=109')
+          s=p.read_text().replace('styles/ui.css?v=100','styles/ui.css?v=109').replace('scripts/app.js?v=100','scripts/app.js?v=109')
           p.write_text(s)
           PY
       - name: Validate
         run: |
-          grep -q "nomination-empty-previous" scripts/app.js
-          grep -q "Empty previous-auction state" styles/ui.css
-          grep -q "styles/ui.css?v=109" index.html
-          grep -q "scripts/app.js?v=109" index.html
+          grep -q 'nomination-empty-previous' scripts/app.js
+          grep -q 'Empty previous auction state' styles/ui.css
+          grep -q 'styles/ui.css?v=109' index.html
+          grep -q 'scripts/app.js?v=109' index.html
       - name: Commit
         run: |
           git config user.name liveasta-release-bot
