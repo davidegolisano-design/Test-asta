@@ -1927,3 +1927,43 @@ html body .manual-price-card #manual-price-input{width:100%!important;min-height
 html body .manual-price-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
 html body .manual-price-actions .btn{width:100%!important;min-width:0!important;margin:0!important;}
 html body .manual-player-hint{margin:8px 0 0!important;color:var(--theme-muted,#aab4c3)!important;font-size:.9rem!important;line-height:1.4!important;text-align:center!important;}
+
+
+/* v1.0.115 — nomination picker mobile close control */
+html[data-live-theme] #nomination-picker-overlay .nomination-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:start!important;
+  gap:10px!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+html[data-live-theme] #nomination-picker-overlay .nomination-head > div:first-child{
+  min-width:0!important;
+}
+html[data-live-theme] #nomination-picker-overlay .nomination-close-btn{
+  width:auto!important;
+  min-width:76px!important;
+  max-width:none!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0 12px!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  flex:none!important;
+  font-size:12px!important;
+  line-height:1!important;
+}
+@media(max-width:420px){
+  html[data-live-theme] #nomination-picker-overlay .nomination-head{
+    gap:7px!important;
+  }
+  html[data-live-theme] #nomination-picker-overlay .nomination-close-btn{
+    min-width:68px!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 8px!important;
+    font-size:11px!important;
+  }
+}

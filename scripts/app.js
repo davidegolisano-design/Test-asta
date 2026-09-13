@@ -1039,7 +1039,7 @@ function updateCreateRoomModeUI(){
                         ? 'ATTIVO · <b>IGNORA SEQUENZA</b> · pesca tra tutti i ruoli disponibili.'
                         : 'DISATTIVO · <b>IGNORA SEQUENZA</b> predisposto.';
                 }else{
-                    const roles=['P','D','C','A'].filter(role=>autoRandomRoles.has(role)).join(' → ')||'nessun ruolo';
+                    const roles=autoRandomClassicSequenceOrder().join(' → ')||'nessun ruolo';
                     status.innerHTML=autoRandomEnabled
                         ? `ATTIVO · sequenza <b>${escapeHtml(roles)}</b> · la prossima asta parte automaticamente.`
                         : `DISATTIVO · sequenza predisposta <b>${escapeHtml(roles)}</b>.`;
@@ -1052,7 +1052,7 @@ function updateCreateRoomModeUI(){
             autoRandomIgnoreSequence=!!enabled;
             await saveRoomAuctionExtraSettings();
             renderAutoRandomControlUI();
-            if(autoRandomEnabled && !isAuctionActive && !readyGateWaiting && !auctionPrepInterval){
+            if(autoRandomEnabled && !document.getElementById('screen-room-control')?.classList.contains('active') && !isAuctionActive && !readyGateWaiting && !auctionPrepInterval){
                 scheduleAutoRandomAuction(180);
             }
         }
@@ -1069,6 +1069,29 @@ function updateCreateRoomModeUI(){
             });
         }
 
+        function autoRandomClassicSequenceOrder(){
+            const configured=(typeof ensureNominationRoleOrder==='function')
+                ? ensureNominationRoleOrder()
+                : ['P','D','C','A'];
+            return configured.filter(role=>autoRandomRoles.has(role));
+        }
+
+        function autoRandomClassicRoleComplete(role){
+            const r=String(role||'').toUpperCase();
+            const limits=roomLimits();
+            const limit=Math.max(0,parseInt(limits?.[r])||0);
+            if(limit<=0)return true;
+            if(!teamsCache.length)return false;
+            return teamsCache.every(team=>(teamCounts(team.id)[r]||0)>=limit);
+        }
+
+        function autoRandomClassicCurrentSequenceRole(){
+            for(const role of autoRandomClassicSequenceOrder()){
+                if(!autoRandomClassicRoleComplete(role))return role;
+            }
+            return null;
+        }
+
         function autoRandomCandidates(){
             const available=getAvailablePlayers();
             if(autoRandomIgnoreSequence){
@@ -1078,16 +1101,14 @@ function updateCreateRoomModeUI(){
                 });
             }
 
-            // Sequenza Classic: completa il primo reparto selezionato ancora bandibile
-            // prima di passare al successivo. I ruoli non selezionati vengono saltati.
-            for(const role of ['P','D','C','A']){
-                if(!autoRandomRoles.has(role) || !autoRandomHasBidderForRole(role))continue;
-                const roleCandidates=available.filter(player=>
-                    String(playerRole(player)||'').toUpperCase()===role
-                );
-                if(roleCandidates.length)return roleCandidates;
-            }
-            return [];
+            // Sequenza Classic rigorosa: non si passa al reparto seguente finché
+            // TUTTE le squadre non hanno completato gli slot del reparto corrente.
+            const role=autoRandomClassicCurrentSequenceRole();
+            if(!role)return [];
+            return available.filter(player=>
+                String(playerRole(player)||'').toUpperCase()===role &&
+                autoRandomHasBidderForRole(role)
+            );
         }
 
         function cancelAutoRandomLaunch(){
@@ -1106,16 +1127,25 @@ function updateCreateRoomModeUI(){
 
         async function startAutoRandomAuctionNow(){
             if(!autoRandomEnabled || autoRandomStarting || !currentRoomId)return false;
+            if(document.getElementById('screen-room-control')?.classList.contains('active')){
+                cancelAutoRandomLaunch();
+                return false;
+            }
             if(nominationState.enabled)return false;
             if(isAuctionActive || readyGateWaiting || auctionPrepInterval || sealedAuctionModeActive)return false;
 
             const candidates=autoRandomCandidates();
             if(!candidates.length){
+                const blockedRole=!autoRandomIgnoreSequence?autoRandomClassicCurrentSequenceRole():null;
                 autoRandomEnabled=false;
                 cancelAutoRandomLaunch();
                 await saveRoomAuctionExtraSettings();
                 renderAutoRandomControlUI();
-                alert('AUTO RANDOM terminato: non ci sono più giocatori disponibili nei ruoli selezionati con almeno una squadra abilitata a offrire.');
+                if(blockedRole && !autoRandomClassicRoleComplete(blockedRole)){
+                    alert(`AUTO RANDOM fermato sul ruolo ${blockedRole}: il reparto non è ancora completo per tutte le squadre, ma non ci sono giocatori disponibili/offerte possibili per continuare. Non verrà saltato automaticamente.`);
+                }else{
+                    alert('AUTO RANDOM terminato: non ci sono più giocatori disponibili nei ruoli selezionati con almeno una squadra abilitata a offrire.');
+                }
                 return false;
             }
 
@@ -1123,7 +1153,7 @@ function updateCreateRoomModeUI(){
             try{
                 const player=candidates[Math.floor(Math.random()*candidates.length)];
                 // L'asta può partire in background: Gestione resta aperta finché il banditore non usa ← Asta.
-                selectAndStartPlayer(player.Id,true);
+                await selectAndStartPlayer(player.Id,true);
                 return true;
             }finally{
                 setTimeout(()=>{autoRandomStarting=false;},120);
@@ -1150,7 +1180,7 @@ function updateCreateRoomModeUI(){
             autoRandomEnabled=!!enabled;
             await saveRoomAuctionExtraSettings();
             renderAutoRandomControlUI();
-            if(autoRandomEnabled)scheduleAutoRandomAuction(180);
+            if(autoRandomEnabled && !document.getElementById('screen-room-control')?.classList.contains('active'))scheduleAutoRandomAuction(180);
             else cancelAutoRandomLaunch();
         }
 
@@ -1173,7 +1203,7 @@ function updateCreateRoomModeUI(){
             }
             await saveRoomAuctionExtraSettings();
             renderAutoRandomControlUI();
-            if(autoRandomEnabled && !isAuctionActive && !readyGateWaiting && !auctionPrepInterval)scheduleAutoRandomAuction(180);
+            if(autoRandomEnabled && !document.getElementById('screen-room-control')?.classList.contains('active') && !isAuctionActive && !readyGateWaiting && !auctionPrepInterval)scheduleAutoRandomAuction(180);
         }
 
         function sealedBidsStateKey(token=sealedAuctionToken){
@@ -2955,9 +2985,9 @@ function updateCreateRoomModeUI(){
             const club=document.getElementById('auction-player-club');
 
             playerCol?.classList.remove('nomination-empty-previous');
-            if(card){card.removeAttribute('aria-hidden');card.style.removeProperty('display');card.style.removeProperty('visibility');}
-            if(meta){meta.hidden=false;meta.setAttribute('aria-hidden','false');meta.style.removeProperty('display');meta.style.removeProperty('visibility');}
-            if(img){img.style.removeProperty('display');img.style.visibility='visible';}
+            if(card){card.removeAttribute('aria-hidden');card.style.setProperty('display','flex','important');card.style.setProperty('visibility','visible','important');}
+            if(meta){meta.hidden=false;meta.setAttribute('aria-hidden','false');meta.style.setProperty('display','flex','important');meta.style.setProperty('visibility','visible','important');}
+            if(img){img.style.setProperty('display','block','important');img.style.setProperty('visibility','visible','important');}
             if(role){role.style.removeProperty('display');role.style.removeProperty('visibility');role.classList.remove('nomination-waiting-role');}
             if(club){club.style.removeProperty('display');club.style.removeProperty('visibility');}
             name?.classList.remove('nomination-waiting-team');
@@ -9374,6 +9404,12 @@ function updateCreateRoomModeUI(){
         function closeRoomControl(){
             roomControlNavigationAuthorized=true;
             setTimeout(()=>{roomControlNavigationAuthorized=false;},0);
+            setTimeout(()=>{
+                const managementStillOpen=document.getElementById('screen-room-control')?.classList.contains('active');
+                if(autoRandomEnabled && !managementStillOpen && !nominationState.enabled && !isAuctionActive && !readyGateWaiting && !auctionPrepInterval && !sealedAuctionModeActive){
+                    scheduleAutoRandomAuction(180);
+                }
+            },80);
             if(roomControlReturnScreen==='hybrid-context' && auctioneerPlayerMode){
                 roomControlReturnScreen='screen-auctioneer-board';
 

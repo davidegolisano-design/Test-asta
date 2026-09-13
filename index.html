@@ -24,7 +24,7 @@
 
     <meta name="msapplication-navbutton-color" content="#0D1117">
 
-    <link rel="stylesheet" href="./styles/ui.css?v=100">
+    <link rel="stylesheet" href="./styles/ui.css?v=115">
     <link rel="stylesheet" href="./styles/management.css?v=113">
     <link rel="stylesheet" href="./styles/pwa.css?v=100">
     <link rel="stylesheet" href="./styles/roles.css?v=106">
@@ -727,7 +727,7 @@
 
     <div id="nomination-picker-overlay" class="nomination-overlay" onclick="if(event.target===this)closeNominationPicker()">
         <div class="nomination-card">
-            <div class="nomination-head"><div><div class="nomination-kicker">BANDITURA A TURNI</div><h2 id="nomination-picker-title">Scegli giocatore</h2><div id="nomination-picker-subtitle">--</div></div><button class="btn btn-secondary btn-compact" onclick="closeNominationPicker()">Chiudi</button></div>
+            <div class="nomination-head"><div><div class="nomination-kicker">BANDITURA A TURNI</div><h2 id="nomination-picker-title">Scegli giocatore</h2><div id="nomination-picker-subtitle">--</div></div><button type="button" class="btn btn-secondary btn-compact nomination-close-btn" onclick="closeNominationPicker()">CHIUDI</button></div>
             <div class="nomination-tools">
                 <input id="nomination-search"
                        class="minimal-input"
@@ -1281,7 +1281,7 @@
     <script src="./scripts/player-assets.js?v=100"></script>
     <script src="./scripts/screen-wake-lock.js?v=100"></script>
     <script src="./scripts/list-filters.js?v=113"></script>
-    <script src="./scripts/app.js?v=114"></script>
+    <script src="./scripts/app.js?v=115"></script>
     <script src="./scripts/mantra-auction.js?v=114"></script>
     <script src="./scripts/mantra-filter-ui.js?v=109"></script>
 
