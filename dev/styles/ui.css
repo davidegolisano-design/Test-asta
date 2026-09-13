@@ -1859,4 +1859,56 @@ html body .v093-player-pin-card p{margin:0!important;color:var(--theme-muted,#aa
 html body .v093-player-pin-card input{width:100%!important;margin:0!important;box-sizing:border-box!important;}
 html body .v093-player-pin-error{min-height:18px!important;color:var(--theme-danger,#ef454a)!important;font-size:12px!important;font-weight:700!important;}
 html body .v093-player-pin-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
-html body .v093-player-pin-actions .btn{width:100%!important;margin:0!important;}
+html body .v093-player-pin-actions .btn{width:100%!important;min-width:0!important;margin:0!important;padding:12px 10px!important;font-size:clamp(.78rem,3.6vw,.98rem)!important;line-height:1.1!important;letter-spacing:.02em!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;}
+
+
+/* === v0.99 MGMT-05 — canonical access/manual assignment details === */
+#screen-auctioneer-setup #auction-join-box :is(#auction-room-select,#auction-room-name-input,#auction-room-password){
+  width:100%!important;height:52px!important;min-height:52px!important;max-height:52px!important;
+  margin:0 0 10px!important;padding:0 14px!important;box-sizing:border-box!important;
+  border:1px solid var(--theme-border)!important;border-radius:10px!important;
+  background:var(--theme-input)!important;color:var(--theme-text)!important;
+  font:500 1rem/1.2 Inter,system-ui,sans-serif!important;text-align:center!important;
+}
+#screen-auctioneer-setup #auction-room-password{letter-spacing:.02em!important;}
+
+html body .v093-player-pin-actions .btn{min-height:48px!important;}
+@media(max-width:340px){
+  html body .v093-player-pin-actions{grid-template-columns:1fr!important;}
+}
+
+html body .manual-player-list{
+  width:100%;max-height:min(36dvh,330px);overflow-y:auto;overscroll-behavior:contain;
+  display:flex;flex-direction:column;gap:6px;padding:6px;box-sizing:border-box;
+  border:1px solid var(--theme-border);border-radius:12px;background:var(--theme-input);
+}
+html body .manual-player-option{
+  width:100%;min-width:0;min-height:54px;margin:0;padding:7px 10px!important;
+  display:grid;grid-template-columns:38px minmax(0,1fr) 28px;align-items:center;gap:9px;
+  border:1px solid var(--theme-border)!important;border-radius:10px!important;
+  background:var(--theme-card)!important;color:var(--theme-text)!important;
+  text-align:left!important;text-transform:none!important;letter-spacing:0!important;box-shadow:none!important;
+}
+html body .manual-player-option.selected{
+  border-color:var(--theme-primary)!important;
+  background:color-mix(in srgb,var(--theme-primary) 10%,var(--theme-card))!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--theme-primary) 45%,transparent)!important;
+}
+html body .manual-player-role{
+  width:34px;height:34px;display:grid;place-items:center;border-radius:50%;
+  font-size:13px;font-weight:900;line-height:1;text-align:center;background:var(--theme-hover);color:var(--theme-text);
+}
+html body .manual-player-role.role-P{background:#ffda32;color:#101820;}
+html body .manual-player-role.role-D{background:#24c968;color:#101820;}
+html body .manual-player-role.role-C{background:#387ef5;color:#fff;}
+html body .manual-player-role.role-A{background:#ed3e46;color:#fff;}
+html body .manual-player-copy{min-width:0;display:flex;flex-direction:column;gap:2px;}
+html body .manual-player-copy strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2;color:var(--theme-text);}
+html body .manual-player-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;line-height:1.2;color:var(--theme-muted);}
+html body .manual-player-chevron{display:grid;place-items:center;color:var(--theme-muted);font-size:22px;font-weight:900;}
+html body #manual-player-select[hidden]{display:none!important;}
+html body .manual-player-empty{padding:16px 10px;text-align:center;color:var(--theme-muted);font-size:13px;}
+
+/* Auction outcome colors are semantic and theme-aware, especially on light themes. */
+html[data-live-theme] #screen-player-buzzer .phone-top-area.player-winning #player-current-winner{color:var(--theme-success)!important;}
+html[data-live-theme] #screen-player-buzzer .phone-top-area.player-losing #player-current-winner{color:var(--theme-danger)!important;}

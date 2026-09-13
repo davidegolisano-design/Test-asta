@@ -433,8 +433,13 @@ function updateCreateRoomModeUI(){
         }
 
         async function toggleAuctioneerPlayerMode(){
+            // A native checkbox changes visually before the async PIN check.
+            // Keep it on the authorised state until verification succeeds.
+            const visualToggle=document.getElementById('auctioneer-player-toggle-btn');
+            if(visualToggle)visualToggle.checked=!!auctioneerPlayerMode;
             if(auctioneerPlayerMode){
                 auctioneerPlayerMode=false;
+                restoreHybridPlayerNav();
                 myTeamId=null;
                 myTeamName='';
                 saveAuctioneerPlayerModeLocal();
@@ -600,7 +605,7 @@ function updateCreateRoomModeUI(){
             document.getElementById('player-auction-title').textContent='IN ATTESA';
             const winner=document.getElementById('player-current-winner');
             winner.textContent='Preparazione';
-            winner.style.color='var(--text-muted)';
+            winner.style.color='var(--theme-muted,var(--text-muted))';
             document.getElementById('player-current-value').textContent='0';
             document.getElementById('player-countdown').textContent='--';
 
@@ -620,7 +625,7 @@ function updateCreateRoomModeUI(){
 
             const winner=document.getElementById('player-current-winner');
             winner.textContent=required.includes(String(myTeamId))?'Conferma READY':'In attesa degli altri';
-            winner.style.color='var(--text-muted)';
+            winner.style.color='var(--theme-muted,var(--text-muted))';
 
             if(required.includes(String(myTeamId))){
                 showPlayerReadyBanner({
@@ -670,7 +675,7 @@ function updateCreateRoomModeUI(){
             document.getElementById('player-auction-title').textContent='MIGLIOR OFFERTA';
             const winner=document.getElementById('player-current-winner');
             winner.textContent=currentWinner||'Nessuno';
-            winner.style.color=currentWinner?(playerHasBidThisAuction?'var(--accent-green)':'var(--accent-red)'):'var(--text-muted)';
+            winner.style.color=currentWinner?(playerHasBidThisAuction?'var(--theme-success,var(--accent-green))':'var(--theme-danger,var(--accent-red))'):'var(--theme-muted,var(--text-muted))';
             document.getElementById('player-current-value').textContent=String(currentAuctionValue||0);
 
             setPlayerAuctionVisualState(playerHasBidThisAuction?'winning':'neutral');
@@ -706,10 +711,10 @@ function updateCreateRoomModeUI(){
 
             if(currentWinner===myTeamName){
                 playerHasBidThisAuction=true;
-                winner.style.color='var(--accent-green)';
+                winner.style.color='var(--theme-success,var(--accent-green))';
                 setPlayerAuctionVisualState('winning');
             }else{
-                winner.style.color=currentWinner?'var(--accent-red)':'var(--text-muted)';
+                winner.style.color=currentWinner?'var(--theme-danger,var(--accent-red))':'var(--theme-muted,var(--text-muted))';
                 setPlayerAuctionVisualState(playerHasBidThisAuction&&currentWinner?'losing':'neutral');
             }
 
@@ -737,7 +742,7 @@ function updateCreateRoomModeUI(){
             winner.textContent=allowed
                 ?(sealedRound>1?'Nuova offerta richiesta':'Inserisci la tua offerta')
                 :(sealedRound>1?'Spareggio in corso':'Non puoi partecipare');
-            winner.style.color=allowed?'var(--text-main)':'var(--text-muted)';
+            winner.style.color=allowed?'var(--theme-text,var(--text-main))':'var(--theme-muted,var(--text-muted))';
 
             document.getElementById('player-current-value').textContent='?';
             startPlayerSealedCountdownSeconds(sealedTimerSeconds,5);
@@ -752,7 +757,7 @@ function updateCreateRoomModeUI(){
 
             const winner=document.getElementById('player-current-winner');
             winner.textContent='ATTENDI';
-            winner.style.color='var(--text-muted)';
+            winner.style.color='var(--theme-muted,var(--text-muted))';
 
             document.getElementById('player-current-value').textContent='?';
             playerSealedRevealLocalEndAt=Date.now()+Math.max(1,parseInt(seconds)||5)*1000;
@@ -787,10 +792,10 @@ function updateCreateRoomModeUI(){
             winner.textContent=currentWinner||'INVENDUTO';
 
             if(currentWinner===myTeamName){
-                winner.style.color='var(--accent-green)';
+                winner.style.color='var(--theme-success,var(--accent-green))';
                 setPlayerAuctionVisualState('winning');
             }else{
-                winner.style.color=currentWinner?'var(--accent-red)':'var(--text-muted)';
+                winner.style.color=currentWinner?'var(--theme-danger,var(--accent-red))':'var(--theme-muted,var(--text-muted))';
                 setPlayerAuctionVisualState(playerHasBidThisAuction&&currentWinner?'losing':'neutral');
             }
 
@@ -817,13 +822,13 @@ function updateCreateRoomModeUI(){
             winner.textContent=noBids?'INVENDUTO':(winnerName||'--');
 
             if(noBids){
-                winner.style.color='var(--text-muted)';
+                winner.style.color='var(--theme-muted,var(--text-muted))';
                 setPlayerAuctionVisualState('neutral');
             }else if(String(winnerName||'')===String(myTeamName||'')){
-                winner.style.color='var(--accent-green)';
+                winner.style.color='var(--theme-success,var(--accent-green))';
                 setPlayerAuctionVisualState('winning');
             }else{
-                winner.style.color='var(--accent-red)';
+                winner.style.color='var(--theme-danger,var(--accent-red))';
                 setPlayerAuctionVisualState('losing');
             }
 
@@ -2069,10 +2074,10 @@ function updateCreateRoomModeUI(){
                     winnerEl.textContent=currentWinner||'Nessuno';
                     if(currentWinner===myTeamName){
                         playerHasBidThisAuction=true;
-                        winnerEl.style.color='var(--accent-green)';
+                        winnerEl.style.color='var(--theme-success,var(--accent-green))';
                         setPlayerAuctionVisualState('winning');
                     }else{
-                        winnerEl.style.color=currentWinner?'var(--accent-red)':'var(--text-muted)';
+                        winnerEl.style.color=currentWinner?'var(--theme-danger,var(--accent-red))':'var(--theme-muted,var(--text-muted))';
                         setPlayerAuctionVisualState('neutral');
                     }
                 }
@@ -5519,6 +5524,7 @@ function updateCreateRoomModeUI(){
                 screenId=hybridPreferredView==='player'?'screen-player-buzzer':'screen-auctioneer-board';
             }
             if(screenId==='screen-player-buzzer' && isAuctioneerPlayerIdentity())configureHybridPlayerIdentity();
+            if(screenId==='screen-player-buzzer' && !isAuctioneerPlayerIdentity())restoreHybridPlayerNav();
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
             syncHybridViewButtons();
@@ -5530,6 +5536,7 @@ function updateCreateRoomModeUI(){
 
             if (activeAuction && isAuctionActive && !await appConfirm("C’è un’asta in corso. Vuoi davvero uscire dalla plancia?")) return;
             if (!activeAuction && !await appConfirm("Vuoi uscire dalla stanza e tornare alla Home?")) return;
+            restoreHybridPlayerNav();
 
             setPlayerConnectionStatus('offline');
             stopFallbackOnlineHeartbeat();
@@ -6471,7 +6478,7 @@ function updateCreateRoomModeUI(){
                         winner.textContent=allowed
                             ?(round>1?'Nuova offerta richiesta':'Inserisci la tua offerta')
                             :(round>1?'Spareggio in corso':'Non puoi partecipare');
-                        winner.style.color=allowed?'var(--text-main)':'var(--text-muted)';
+                        winner.style.color=allowed?'var(--theme-text,var(--text-main))':'var(--theme-muted,var(--text-muted))';
                     }
                     if(val)val.textContent='?';
 
@@ -6504,7 +6511,7 @@ function updateCreateRoomModeUI(){
                     const val=document.getElementById('player-current-value');
                     const timer=document.getElementById('player-countdown');
                     if(title)title.textContent='APERTURA BUSTE';
-                    if(winner){winner.textContent='ATTENDI';winner.style.color='var(--text-muted)';}
+                    if(winner){winner.textContent='ATTENDI';winner.style.color='var(--theme-muted,var(--text-muted))';}
                     if(val)val.textContent='?';
                     const revealSeconds=safeSealedSeconds(d.seconds,5,30);
                     playerSealedRevealDeadlineAt=Number(d.deadline_at)||0;
@@ -6531,13 +6538,13 @@ function updateCreateRoomModeUI(){
                         if(winner){
                             winner.textContent=d.no_bids?'INVENDUTO':(d.winner||'--');
                             if(d.no_bids){
-                                winner.style.color='var(--text-muted)';
+                                winner.style.color='var(--theme-muted,var(--text-muted))';
                                 setPlayerAuctionVisualState('neutral');
                             }else if(String(d.winner||'')===String(myTeamName||'')){
-                                winner.style.color='var(--accent-green)';
+                                winner.style.color='var(--theme-success,var(--accent-green))';
                                 setPlayerAuctionVisualState('winning');
                             }else{
-                                winner.style.color='var(--accent-red)';
+                                winner.style.color='var(--theme-danger,var(--accent-red))';
                                 setPlayerAuctionVisualState('losing');
                             }
                         }
@@ -6752,7 +6759,7 @@ function updateCreateRoomModeUI(){
                     if(role)role.textContent='-';
                     if(club)club.textContent='-';
                     if(title)title.textContent='IN ATTESA';
-                    if(winner){winner.textContent='Nessuna asta in corso';winner.style.color='var(--text-muted)';}
+                    if(winner){winner.textContent='Nessuna asta in corso';winner.style.color='var(--theme-muted,var(--text-muted))';}
                     if(value)value.textContent='0';
                     if(timer){timer.textContent='--';timer.classList.remove('danger');}
 
@@ -9561,8 +9568,10 @@ function updateCreateRoomModeUI(){
 
         function renderManualPlayerOptions(){
             const sel=document.getElementById('manual-player-select');
+            const listBox=document.getElementById('manual-player-list');
             if(!sel)return;
 
+            const previous=String(sel.value||'');
             const list=filterAndSortPlayers(manualAvailablePlayers(),'manual');
 
             sel.innerHTML=list.length
@@ -9570,6 +9579,38 @@ function updateCreateRoomModeUI(){
                   list.map(p=>`<option value="${escapeHtml(String(p.Id))}">[${escapeHtml(playerRole(p)||'-')}] ${escapeHtml(p.Nome||'')} · ${escapeHtml(p.Squadra||'')}</option>`).join('')
                 : '<option value="">Nessun giocatore disponibile</option>';
 
+            if(previous && list.some(p=>String(p.Id)===previous))sel.value=previous;
+
+            if(listBox){
+                if(!list.length){
+                    listBox.innerHTML='<div class="manual-player-empty">Nessun giocatore disponibile</div>';
+                }else{
+                    listBox.innerHTML=list.map(p=>{
+                        const id=String(p.Id);
+                        const role=String(playerRole(p)||'-').toUpperCase();
+                        const roleClass=['P','D','C','A'].includes(role)?` role-${role}`:'';
+                        const selected=String(sel.value||'')===id?' selected':'';
+                        return `<button type="button" class="manual-player-option${selected}" role="option" aria-selected="${selected?'true':'false'}" data-player-id="${escapeHtml(id)}" onclick="selectManualPlayerFromList(this.dataset.playerId)">
+                            <span class="manual-player-role${roleClass}">${escapeHtml(role)}</span>
+                            <span class="manual-player-copy"><strong>${escapeHtml(p.Nome||'--')}</strong><small>${escapeHtml(p.Squadra||'--')}</small></span>
+                            <span class="manual-player-chevron" aria-hidden="true">›</span>
+                        </button>`;
+                    }).join('');
+                }
+            }
+
+            updateManualAssignPreview();
+        }
+
+        function selectManualPlayerFromList(playerId){
+            const sel=document.getElementById('manual-player-select');
+            if(!sel)return;
+            sel.value=String(playerId||'');
+            document.querySelectorAll('#manual-player-list .manual-player-option').forEach(row=>{
+                const active=String(row.dataset.playerId||'')===String(sel.value||'');
+                row.classList.toggle('selected',active);
+                row.setAttribute('aria-selected',active?'true':'false');
+            });
             updateManualAssignPreview();
         }
 

@@ -7672,11 +7672,6 @@ html[data-live-theme] body::before,
   order:-2!important;
   font-size:.62rem!important;
 }
-#screen-room-control .control-action-audio{
-  grid-column:span 2!important;
-  order:-1!important;
-  font-size:.62rem!important;
-}
 #screen-room-control .control-grid > .control-card{
   padding:10px!important;
   border-radius:12px!important;
