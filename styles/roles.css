@@ -1,13 +1,13 @@
-/* LIVEASTA role presentation — v1.02
+/* LIVEASTA role presentation — v1.03
    Classic keeps the existing single PDCA badge.
-   Mantra uses one circular token per role and five operational colour families. */
+   Mantra uses one circular token per real role and five operational colour families. */
 
 .role-badge-mantra{
   display:inline-flex!important;
   align-items:center!important;
-  justify-content:center!important;
+  justify-content:flex-start!important;
   gap:3px!important;
-  width:auto!important;
+  width:max-content!important;
   min-width:0!important;
   max-width:none!important;
   height:auto!important;
@@ -24,6 +24,7 @@
   white-space:nowrap!important;
   line-height:1!important;
   flex-shrink:0!important;
+  clip-path:none!important;
 }
 
 .mantra-role-token{
@@ -47,6 +48,7 @@
   text-shadow:none!important;
   box-shadow:none!important;
   overflow:visible!important;
+  clip-path:none!important;
 }
 
 /* Mantra canonical colours */
@@ -57,11 +59,11 @@
 .mantra-role-family-A{background:#EF4444!important;color:#fff!important;}
 
 /* Same families for filters, random and budget category controls. */
-:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor).role-P{background:#F4C20D!important;color:#111!important;border-color:#D6A900!important;}
-:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor).role-D{background:#28C76F!important;color:#07140b!important;border-color:#20A85C!important;}
-:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor).role-C{background:#3F82F7!important;color:#fff!important;border-color:#2F69D1!important;}
-:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor).role-T{background:#8B5CF6!important;color:#fff!important;border-color:#7446D6!important;}
-:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor).role-A{background:#EF4444!important;color:#fff!important;border-color:#D73737!important;}
+:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor,.mantra-subfilter-token).role-P{background:#F4C20D!important;color:#111!important;border-color:#D6A900!important;}
+:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor,.mantra-subfilter-token).role-D{background:#28C76F!important;color:#07140b!important;border-color:#20A85C!important;}
+:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor,.mantra-subfilter-token).role-C{background:#3F82F7!important;color:#fff!important;border-color:#2F69D1!important;}
+:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor,.mantra-subfilter-token).role-T{background:#8B5CF6!important;color:#fff!important;border-color:#7446D6!important;}
+:is(.unified-role,.random-role-btn,.mantra-role-choice-btn,.budget-role,.budget-donor,.mantra-subfilter-token).role-A{background:#EF4444!important;color:#fff!important;border-color:#D73737!important;}
 
 .liveasta-mantra :is(.unified-role,.random-role-btn,.mantra-role-choice-btn):not(.selected):not([aria-pressed="true"]){opacity:.72;}
 .liveasta-mantra :is(.unified-role,.random-role-btn,.mantra-role-choice-btn).selected,
@@ -70,15 +72,14 @@
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.38)!important;
 }
 
-/* High-specificity reset: old single-role rules must never crop a Mantra group. */
-html body.liveasta-mantra #screen-auctioneer-board .role-badge.role-badge-mantra,
-html body.liveasta-mantra #screen-room-control .role-badge.role-badge-mantra,
-html body.liveasta-mantra #screen-player-buzzer .role-badge.role-badge-mantra,
+/* Any Mantra role group must escape the old single-badge geometry. */
+html body.liveasta-mantra .role-badge.role-badge-mantra,
 html body.liveasta-mantra #screen-player-buzzer #phone-player-role.role-badge-mantra,
 html body.liveasta-mantra #screen-auctioneer-board #auction-player-role.role-badge-mantra,
 html body.liveasta-mantra #screen-auctioneer-board #auctioneer-ready-player-role.role-badge-mantra{
   display:inline-flex!important;
-  width:auto!important;
+  justify-content:flex-start!important;
+  width:max-content!important;
   min-width:0!important;
   max-width:none!important;
   height:auto!important;
@@ -94,6 +95,7 @@ html body.liveasta-mantra #screen-auctioneer-board #auctioneer-ready-player-role
   border-radius:0!important;
   box-shadow:none!important;
   flex-wrap:nowrap!important;
+  clip-path:none!important;
 }
 
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-player-role.role-badge-mantra .mantra-role-token,
@@ -108,16 +110,38 @@ html body.liveasta-mantra #screen-auctioneer-board #auctioneer-ready-player-role
   width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;flex-basis:28px!important;font-size:10px!important;
 }
 
-/* Player list: reserve enough room for two role circles. */
+/* Player list really has four columns: priority | role | player | value. */
 .liveasta-mantra #player-listone-list .player-listone-row{
-  grid-template-columns:42px 58px minmax(0,1fr) minmax(58px,auto) 56px!important;
+  grid-template-columns:26px 60px minmax(0,1fr) 48px!important;
+  gap:7px!important;
 }
-.liveasta-mantra #player-listone-list .player-listone-row .role-badge-mantra{justify-self:start!important;}
+.liveasta-mantra #player-listone-list .player-listone-row .role-badge-mantra{
+  justify-self:start!important;
+  width:max-content!important;
+  min-width:0!important;
+  max-width:none!important;
+  overflow:visible!important;
+  clip-path:none!important;
+}
 .liveasta-mantra #player-listone-list .player-listone-row .role-badge-mantra .mantra-role-token{
   width:25px!important;height:25px!important;min-width:25px!important;min-height:25px!important;flex-basis:25px!important;font-size:9px!important;
 }
 
-/* Auctioneer smartphone list: two circles need a real column, not the old single-badge slot. */
+/* The same no-crop rule for rosters, nomination, purchases and tables. */
+.liveasta-mantra :is(.roster-row,.roster-player-line,.player-room-roster-line,.auctioned-row,.nomination-player-row) .role-badge-mantra{
+  width:max-content!important;
+  min-width:0!important;
+  max-width:none!important;
+  overflow:visible!important;
+  flex-shrink:0!important;
+}
+.liveasta-mantra #screen-auctioneer-board td:has(.role-badge-mantra),
+.liveasta-mantra #screen-room-control td:has(.role-badge-mantra){
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+
+/* Auctioneer smartphone list: reserve a real role column for two circles. */
 .liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(1),
 .liveasta-mantra #screen-auctioneer-board .mode-mobile td:nth-child(1){
   width:18%!important;
@@ -127,19 +151,115 @@ html body.liveasta-mantra #screen-auctioneer-board #auctioneer-ready-player-role
 .liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(2){width:37%!important;}
 .liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(3){width:27%!important;}
 .liveasta-mantra #screen-auctioneer-board .mode-mobile th:nth-child(4){width:18%!important;}
-.liveasta-mantra #screen-auctioneer-board td:has(.role-badge-mantra),
-.liveasta-mantra #screen-room-control td:has(.role-badge-mantra){
-  overflow:visible!important;
-  text-overflow:clip!important;
-}
-:is(.roster-row,.roster-player-line,.player-room-roster-line,.auctioned-row,.nomination-player-row) .role-badge-mantra{flex-shrink:0!important;}
 
-/* Five operational categories: full labels, readable on every screen. */
-.liveasta-mantra .mantra-role-filter-row,
-.liveasta-mantra #random-role-grid.mantra-random-grid{
+/* Category filters: compact abbreviations with the active subroles visible below. */
+.liveasta-mantra .mantra-role-filter-row{
   display:grid!important;
   grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:7px!important;
+  width:100%!important;
+  align-items:stretch!important;
+}
+.liveasta-mantra .mantra-role-filter-row :is(.unified-role-all,.unified-role){
+  min-width:0!important;
+  min-height:48px!important;
+  margin:0!important;
+  padding:7px 5px!important;
+  border-radius:10px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:2px!important;
+  white-space:normal!important;
+  line-height:1!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  touch-action:manipulation!important;
+}
+.liveasta-mantra .mantra-role-filter-row .unified-role > span{
+  font-size:12px!important;
+  font-weight:950!important;
+  letter-spacing:.35px!important;
+}
+.liveasta-mantra .mantra-role-filter-row .unified-role > small{
+  display:block!important;
+  width:100%!important;
+  min-height:11px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:8px!important;
+  font-weight:800!important;
+  opacity:.86!important;
+  text-transform:none!important;
+}
+.liveasta-mantra .mantra-role-filter-row .unified-role.partial{
+  opacity:1!important;
+  outline:2px dashed color-mix(in srgb,currentColor 62%,transparent)!important;
+  outline-offset:-4px!important;
+}
+.liveasta-mantra .mantra-role-filter-row .unified-role.off{
+  opacity:.42!important;
+  box-shadow:none!important;
+}
+
+/* Long-press subfilter drawer. */
+.liveasta-mantra .mantra-subfilter-panel{
+  width:100%!important;
+  margin:8px 0 2px!important;
+  padding:10px!important;
+  box-sizing:border-box!important;
+  border:1px solid var(--theme-border)!important;
+  border-radius:12px!important;
+  background:var(--theme-input)!important;
+  color:var(--theme-text)!important;
+}
+.liveasta-mantra .mantra-subfilter-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  margin-bottom:8px!important;
+}
+.liveasta-mantra .mantra-subfilter-head > div{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  text-align:left!important;
+}
+.liveasta-mantra .mantra-subfilter-head b{font-size:13px!important;}
+.liveasta-mantra .mantra-subfilter-head small{font-size:10px!important;color:var(--theme-muted)!important;}
+.liveasta-mantra .mantra-subfilter-close{
+  width:34px!important;height:34px!important;min-width:34px!important;padding:0!important;margin:0!important;
+  border:1px solid var(--theme-border)!important;border-radius:9px!important;background:transparent!important;color:var(--theme-text)!important;
+  font-size:20px!important;line-height:1!important;
+}
+.liveasta-mantra .mantra-subfilter-grid{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
   gap:6px!important;
+}
+.liveasta-mantra .mantra-subfilter-token{
+  min-width:0!important;
+  min-height:38px!important;
+  padding:7px 4px!important;
+  border:1px solid transparent!important;
+  border-radius:9px!important;
+  font-weight:900!important;
+  font-size:12px!important;
+  opacity:.42!important;
+}
+.liveasta-mantra .mantra-subfilter-token.selected{
+  opacity:1!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)!important;
+}
+
+/* Random and automatic random still use the five full category names. */
+.liveasta-mantra #random-role-grid.mantra-random-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
   width:100%!important;
 }
 .liveasta-mantra .mantra-auto-random-role-grid{
@@ -148,7 +268,7 @@ html body.liveasta-mantra #screen-auctioneer-board #auctioneer-ready-player-role
   gap:6px!important;
   width:100%!important;
 }
-.liveasta-mantra :is(.mantra-role-filter-row,.mantra-auto-random-role-grid,#random-role-grid.mantra-random-grid) button{
+.liveasta-mantra :is(.mantra-auto-random-role-grid,#random-role-grid.mantra-random-grid) button{
   min-width:0!important;
   white-space:normal!important;
   line-height:1.05!important;
@@ -158,20 +278,34 @@ html body.liveasta-mantra #screen-auctioneer-board #auctioneer-ready-player-role
 }
 
 @media(max-width:560px){
-  .liveasta-mantra .mantra-role-filter-row,
-  .liveasta-mantra .mantra-auto-random-role-grid,
-  .liveasta-mantra #random-role-grid.mantra-random-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  .liveasta-mantra .mantra-role-filter-row{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
   }
+  .liveasta-mantra .mantra-role-filter-row :is(.unified-role-all,.unified-role){
+    min-height:46px!important;
+    border-radius:9px!important;
+  }
+  .liveasta-mantra .mantra-role-filter-row .unified-role > span{font-size:11px!important;}
+  .liveasta-mantra .mantra-role-filter-row .unified-role > small{font-size:7.5px!important;}
+
   .liveasta-mantra #player-listone-list .player-listone-row{
-    grid-template-columns:34px 52px minmax(0,1fr) minmax(48px,68px) 48px!important;
-    gap:5px!important;
+    grid-template-columns:24px 56px minmax(0,1fr) 44px!important;
+    gap:6px!important;
+    padding-left:8px!important;
+    padding-right:8px!important;
   }
-  .liveasta-mantra #player-listone-list .player-listone-row .role-badge-mantra{gap:2px!important;}
+  .liveasta-mantra #player-listone-list .player-listone-row .role-badge-mantra{
+    gap:3px!important;
+    max-width:none!important;
+    overflow:visible!important;
+  }
   .liveasta-mantra #player-listone-list .player-listone-row .role-badge-mantra .mantra-role-token{
-    width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;flex-basis:24px!important;font-size:8.5px!important;
+    width:25px!important;height:25px!important;min-width:25px!important;min-height:25px!important;flex-basis:25px!important;font-size:8.5px!important;
   }
-  .liveasta-mantra #player-budget-rows{
-    grid-template-columns:1fr!important;
-  }
+
+  .liveasta-mantra .mantra-subfilter-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+  .liveasta-mantra #random-role-grid.mantra-random-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .liveasta-mantra .mantra-auto-random-role-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .liveasta-mantra #player-budget-rows{grid-template-columns:1fr!important;}
 }
