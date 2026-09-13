@@ -2,14 +2,15 @@ name: LIVEASTA QA smoke
 on:
   push:
     paths:
-      - 'qa/home-smoke.mjs'
-      - 'qa/access-qa.mjs'
+      - 'qa/live-lib.mjs'
+      - 'qa/three-team-core.mjs'
       - '.github/workflows/qa-home-smoke.yml'
 permissions:
   contents: read
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,11 +18,10 @@ jobs:
           node-version: '20'
       - run: npm init -y && npm install playwright@1.55.0
       - run: npx playwright install --with-deps chromium
-      - run: node qa/home-smoke.mjs
-      - run: node qa/access-qa.mjs
+      - run: node qa/three-team-core.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: liveasta-access-qa
+          name: liveasta-three-team-core
           path: qa-output/
           retention-days: 1
