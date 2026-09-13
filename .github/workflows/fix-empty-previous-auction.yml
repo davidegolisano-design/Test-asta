@@ -1,0 +1,91 @@
+name: Fix empty previous auction state
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-empty-previous-auction.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('scripts/app.js')
+          s=p.read_text()
+          old="""                if(!currentAuctionPlayer){
+                    clearSealedBidRanking();
+                    const name=document.getElementById('auction-player-name-top');
+                    const img=document.getElementById('card-image');
+                    const roleNode=document.getElementById('auction-player-role');
+                    const clubNode=document.getElementById('auction-player-club');
+                    if(name)name.textContent='NESSUNA ASTA PRECEDENTE';
+                    if(img){img.removeAttribute('src');img.style.visibility='hidden';}
+                    if(roleNode)roleNode.textContent='-';
+                    if(clubNode)clubNode.textContent='-';
+                }else{
+                    restoreAuctionCardVisibility();
+                }
+"""
+          new="""                if(!currentAuctionPlayer){
+                    clearSealedBidRanking();
+                    const playerCol=document.querySelector('#view-auction .col-player');
+                    const name=document.getElementById('auction-player-name-top');
+                    const card=document.getElementById('auction-player-card');
+                    const img=document.getElementById('card-image');
+                    const meta=document.getElementById('auction-player-meta');
+                    const roleNode=document.getElementById('auction-player-role');
+                    const clubNode=document.getElementById('auction-player-club');
+                    playerCol?.classList.add('nomination-empty-previous');
+                    if(name)name.textContent='NESSUNA ASTA PRECEDENTE';
+                    if(card)card.setAttribute('aria-hidden','true');
+                    if(img){img.removeAttribute('src');img.style.visibility='hidden';}
+                    if(meta){meta.hidden=true;meta.setAttribute('aria-hidden','true');}
+                    if(roleNode)roleNode.textContent='';
+                    if(clubNode)clubNode.textContent='';
+                }else{
+                    document.querySelector('#view-auction .col-player')?.classList.remove('nomination-empty-previous');
+                    document.getElementById('auction-player-card')?.removeAttribute('aria-hidden');
+                    const meta=document.getElementById('auction-player-meta');
+                    if(meta){meta.hidden=false;meta.setAttribute('aria-hidden','false');}
+                    restoreAuctionCardVisibility();
+                }
+"""
+          if old not in s:
+              raise SystemExit('target app block not found')
+          s=s.replace(old,new,1)
+          p.write_text(s)
+
+          p=Path('styles/ui.css')
+          s=p.read_text()
+          marker='/* Empty previous-auction state: theme-native, no placeholder punctuation. */'
+          if marker not in s:
+              s += '''\n\n/* Empty previous-auction state: theme-native, no placeholder punctuation. */\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous{\n  background:var(--theme-card)!important;\n  color:var(--theme-text)!important;\n  border-color:var(--theme-border)!important;\n  justify-content:center!important;\n  align-items:center!important;\n}\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-name-top{\n  color:var(--theme-muted)!important;\n  font-size:clamp(22px,2.3vw,42px)!important;\n  line-height:1.15!important;\n  letter-spacing:.04em!important;\n  margin:0!important;\n  padding:24px!important;\n  max-width:85%!important;\n  text-align:center!important;\n  text-shadow:none!important;\n}\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-card,\nhtml[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-meta{\n  display:none!important;\n}\n'''
+          p.write_text(s)
+
+          p=Path('index.html')
+          s=p.read_text()
+          s=s.replace('styles/ui.css?v=100','styles/ui.css?v=109')
+          s=s.replace('scripts/app.js?v=100','scripts/app.js?v=109')
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q "nomination-empty-previous" scripts/app.js
+          grep -q "Empty previous-auction state" styles/ui.css
+          grep -q "styles/ui.css?v=109" index.html
+          grep -q "scripts/app.js?v=109" index.html
+      - name: Commit
+        run: |
+          git config user.name liveasta-release-bot
+          git config user.email liveasta-release-bot@users.noreply.github.com
+          git add index.html scripts/app.js styles/ui.css
+          git rm .github/workflows/fix-empty-previous-auction.yml
+          git commit -m 'Polish empty previous auction panel'
+          git push
