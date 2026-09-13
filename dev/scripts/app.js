@@ -9274,27 +9274,7 @@ function updateCreateRoomModeUI(){
             const revealInput=document.getElementById('control-sealed-reveal-timer'); if(revealInput) revealInput.value=sealedRevealSeconds||5;
             const l=roomLimits(); ['P','D','C','A'].forEach(r=>document.getElementById('control-limit-'+r).value=l[r]);
             document.getElementById('control-team-count').innerText=`${teamsCache.length} squadre`;
-            const head=document.getElementById('control-teams-head-row');
-            if(head){
-                head.innerHTML=mantra
-                    ?'<th>Squadra</th><th>Crediti</th><th>Por</th><th>Rosa</th><th>Liberi</th><th>Min.</th><th>Max.</th><th>PIN</th><th>Azioni</th>'
-                    :'<th>Squadra</th><th>Crediti</th><th>P</th><th>D</th><th>C</th><th>A</th><th>Tot.</th><th>PIN</th><th>Azioni</th>';
-            }
-            const tb=document.getElementById('control-teams-body');
-            tb.innerHTML=teamsCache.length?teamsCache.map(t=>{const c=teamCounts(t.id);return `<tr>
-                <td data-label="Squadra"><input id="ctl-team-name-${t.id}" class="minimal-input" style="margin:0;padding:7px;text-align:left" value="${escapeHtml(t.name)}"></td>
-                <td data-label="Crediti"><input id="ctl-team-credits-${t.id}" type="number" class="minimal-input" style="margin:0;padding:7px" value="${t.credits_remaining}"></td>
-                ${mantra
-                    ? `<td data-label="Por">${c.Por}/${mantraMinGoalkeepers()}</td><td data-label="Rosa">${c.total}</td><td data-label="Liberi">${Math.max(0,mantraRosterMax()-c.total)}</td><td data-label="Min.">${mantraRosterMin()}</td><td data-label="Max.">${mantraRosterMax()}</td>`
-                    : `<td data-label="P">${c.P}/${l.P}</td><td data-label="D">${c.D}/${l.D}</td><td data-label="C">${c.C}/${l.C}</td><td data-label="A">${c.A}/${l.A}</td><td data-label="Tot.">${c.total}/${totalRoomSlots()}</td>`}
-                <td data-label="PIN">${teamPinStatusHtml(t.id)}</td>
-                <td data-label="Azioni">
-                    <div class="control-teams-actions">
-                        <button class="btn btn-green btn-small manual-assign-btn" onclick="openManualAssign('${t.id}')">+ Assegna giocatore</button>
-                        <button class="btn btn-small" onclick="saveTeamControl('${t.id}')">Salva</button>
-                        <button class="btn btn-danger btn-small control-team-delete" onclick="deleteTeamControl('${t.id}')">🗑 Elimina</button>
-                    </div>
-                </td></tr>`}).join(''):'<tr><td colspan="9">Nessuna squadra</td></tr>';
+            if(typeof window.renderManagementTeamList==='function') window.renderManagementTeamList();
             renderControlPurchases();
         }
 

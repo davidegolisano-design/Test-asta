@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LIVEASTA DEV · v0.96 MGMT-02</title>
+    <title>LIVEASTA DEV · v0.97 MGMT-03</title>
     <!-- Test-asta: nuovo Supabase; asset binari remoti da repo live-asta -->
     <meta name="theme-color" content="#0D1117">
     <meta name="color-scheme" content="dark">
@@ -24,8 +24,8 @@
 
     <meta name="msapplication-navbutton-color" content="#0D1117">
 
-    <link rel="stylesheet" href="./styles/ui.css?dev=096-mgmt02">
-    <link rel="stylesheet" href="./styles/management.css?dev=096-mgmt02">
+    <link rel="stylesheet" href="./styles/ui.css?dev=097-mgmt03">
+    <link rel="stylesheet" href="./styles/management.css?dev=097-mgmt03">
     <link rel="stylesheet" href="./styles/pwa.css?dev=094-clean40a">
 </head>
 <body>
@@ -40,7 +40,7 @@
             v0.96
         </div>
         <div class="setup-card">
-            <div id="liveasta-dev-static-marker" style="width:100%;box-sizing:border-box;margin:0 0 16px;padding:11px 12px;border:2px solid #ffb300;border-radius:12px;background:#332400;color:#ffd54f;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:900;letter-spacing:.04em;line-height:1.2;box-shadow:0 0 0 2px rgba(255,179,0,.12) inset;"><strong style="display:block;font-size:14px;">⚠ AMBIENTE DEV · v0.96 MGMT-02</strong><span style="display:block;margin-top:4px;font-size:11px;letter-spacing:.09em;color:#fff3c4;">NON È LA VERSIONE PUBBLICA</span></div>
+            <div id="liveasta-dev-static-marker" style="width:100%;box-sizing:border-box;margin:0 0 16px;padding:11px 12px;border:2px solid #ffb300;border-radius:12px;background:#332400;color:#ffd54f;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:900;letter-spacing:.04em;line-height:1.2;box-shadow:0 0 0 2px rgba(255,179,0,.12) inset;"><strong style="display:block;font-size:14px;">⚠ AMBIENTE DEV · v0.97 MGMT-03</strong><span style="display:block;margin-top:4px;font-size:11px;letter-spacing:.09em;color:#fff3c4;">NON È LA VERSIONE PUBBLICA</span></div>
             <h1 class="logo-text"><span class="rosa">LIVE</span><span class="rush">ASTA</span></h1>
             <p class="subtitle">Asta fantasy calcio realtime</p>
 
@@ -917,7 +917,7 @@
                 <button class="btn btn-secondary mg-back" type="button" onclick="closeRoomControl()">← Asta</button>
                 <div class="mg-heading">
                     <h1>Gestione asta</h1>
-                    <div class="room-pill mg-room-pill" id="control-room-pill">STANZA <b>--</b></div>
+                    <div id="control-room-pill" hidden>STANZA <b>--</b></div>
                 </div>
             </div>
             <div class="mg-header-actions">
@@ -1040,13 +1040,6 @@
                                 <button class="btn btn-secondary" type="button" onclick="moveNominationTurn(-1)">← Turno precedente</button>
                                 <button class="btn btn-secondary" type="button" onclick="moveNominationTurn(1)">Turno successivo →</button>
                             </div>
-                            <div class="nomination-order-box">
-                                <div class="nomination-order-head">
-                                    <div><b>Ordine al tavolo</b><small>Disponi le squadre nell'ordine di banditura.</small></div>
-                                    <button class="btn btn-secondary" type="button" onclick="resetNominationOrder()">Ripristina</button>
-                                </div>
-                                <div id="nomination-order-list" class="nomination-order-list"></div>
-                            </div>
                             <div class="mg-card-actions nomination-control-actions">
                                 <button class="btn btn-secondary" type="button" onclick="recalculateNominationTurn()">Ricalcola turno</button>
                             </div>
@@ -1061,10 +1054,7 @@
                     <p>Stato collegamenti, partecipanti e storico acquisti.</p>
                 </div>
                 <div class="mg-grid-2">
-                    <article class="mg-card online-players-card">
-                        <div class="mg-card-head"><div><h3>Giocatori online</h3><p>Presenza corrente nella stanza.</p></div><span id="online-player-count" class="mg-count">0 online</span></div>
-                        <div id="online-player-list" class="online-player-list"><div class="online-empty">Nessun giocatore online</div></div>
-                    </article>
+                    <div class="mg-presence-legacy" hidden><span id="online-player-count">0 online</span><div id="online-player-list"></div></div>
 
                     <article class="mg-card auctioneer-player-control-card mg-setting-card">
                         <div class="mg-setting-head">
@@ -1082,10 +1072,7 @@
                             <input id="control-new-team-name" class="minimal-input" type="text" maxlength="40" placeholder="Nome nuova squadra" autocomplete="off" onkeydown="if(event.key==='Enter')createTeamControl()">
                             <button class="btn btn-green" type="button" onclick="createTeamControl()">+ Aggiungi squadra</button>
                         </div>
-                        <div class="control-table-wrap"><table class="control-table teams-control-table">
-                            <thead><tr id="control-teams-head-row"><th>Squadra</th><th>Crediti</th><th>P</th><th>D</th><th>C</th><th>A</th><th>Tot.</th><th>PIN</th><th>Azioni</th></tr></thead>
-                            <tbody id="control-teams-body"></tbody>
-                        </table></div>
+                        <div id="control-team-list" class="mg-team-list" aria-label="Ordine partecipanti"></div>
                     </article>
 
                     <article class="mg-card purchases-card mg-span-2">
@@ -1106,6 +1093,32 @@
                 </div>
             </section>
         </main>
+
+
+        <div id="management-team-detail" class="mg-team-detail-overlay" hidden onclick="if(event.target===this)closeManagementTeamDetail()">
+            <section class="mg-team-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="mg-team-detail-title">
+                <header class="mg-team-detail-head">
+                    <div>
+                        <span id="mg-team-detail-state" class="mg-team-detail-state">OFFLINE</span>
+                        <h2 id="mg-team-detail-title">Squadra</h2>
+                    </div>
+                    <button class="btn btn-secondary mg-team-detail-close" type="button" onclick="closeManagementTeamDetail()" aria-label="Chiudi">×</button>
+                </header>
+                <div class="mg-team-detail-body">
+                    <div class="mg-team-detail-fields">
+                        <label><span class="field-label">Squadra</span><input id="mg-team-detail-name" class="minimal-input" maxlength="40"></label>
+                        <label><span class="field-label">Crediti</span><input id="mg-team-detail-credits" class="minimal-input" type="number" min="0" inputmode="numeric"></label>
+                    </div>
+                    <div id="mg-team-detail-metrics" class="mg-team-detail-metrics"></div>
+                    <div class="mg-team-detail-pin"><span>PIN giocatore</span><div id="mg-team-detail-pin-value"></div></div>
+                </div>
+                <footer class="mg-team-detail-actions">
+                    <button class="btn btn-green" type="button" onclick="assignFromManagementTeamDetail()">+ Assegna giocatore</button>
+                    <button class="btn btn-secondary" type="button" onclick="saveManagementTeamDetail()">Salva modifiche</button>
+                    <button class="btn btn-danger" type="button" onclick="deleteManagementTeamDetail()">🗑 Elimina squadra</button>
+                </footer>
+            </section>
+        </div>
 
         <div id="audio-mixer-modal" class="audio-mixer-overlay" onclick="if(event.target===this)closeAudioMixer()">
             <div class="control-card audio-mixer-card">
@@ -1303,6 +1316,6 @@
 
 <script src="./scripts/pwa.js?dev=094-clean40a"></script>
 <script src="./scripts/sealed-auction.js?dev=094-clean40a"></script>
-<script src="./scripts/management.js?dev=096-mgmt02"></script>
+<script src="./scripts/management.js?dev=097-mgmt03"></script>
 </body>
 </html>

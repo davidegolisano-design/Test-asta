@@ -1,4 +1,4 @@
-/* LIVEASTA DEV — canonical Gestione UI · v0.96 MGMT-02
+/* LIVEASTA DEV — canonical Gestione UI · v0.97 MGMT-03
    This file owns only #screen-room-control. Auction/business logic stays in app.js. */
 
 #screen-room-control{
@@ -15,7 +15,7 @@
   --mg-primary-hover:var(--theme-primary-hover,var(--accent-blue-hover,#25c982));
   --mg-primary-ink:var(--theme-bg-deep,#0d1117);
   --mg-danger:var(--theme-danger,var(--accent-red,#ff5d73));
-  width:100%; height:100dvh; padding:0; overflow-x:hidden; overflow-y:auto;
+  width:100vw!important; max-width:none!important; margin:0!important; height:100dvh; padding:0!important; overflow-x:hidden; overflow-y:auto;
   justify-content:flex-start; align-items:stretch; text-align:left;
   background:var(--mg-bg); color:var(--mg-text); scrollbar-gutter:stable;
 }
@@ -27,7 +27,7 @@
 #screen-room-control .mg-heading h1{margin:0; font-size:20px; line-height:1.15; letter-spacing:0; text-transform:none; color:var(--mg-text); white-space:nowrap;}
 #screen-room-control .mg-room-pill{margin:0; min-height:34px; padding:7px 11px; border:1px solid var(--mg-border); border-radius:999px; background:var(--mg-panel); color:var(--mg-muted); font-size:11px; letter-spacing:.08em; white-space:nowrap;}
 #screen-room-control .mg-room-pill b{color:var(--mg-primary);}
-#screen-room-control .mg-header-actions{display:grid; grid-template-columns:repeat(4,max-content); gap:8px;}
+#screen-room-control .mg-header-actions{display:grid; grid-template-columns:repeat(2,minmax(120px,1fr)); gap:8px; min-width:280px;}
 #screen-room-control .mg-content{width:min(1240px,100%); margin:0 auto; padding:22px 18px 44px; display:flex; flex-direction:column; gap:30px;}
 #screen-room-control .mg-section{display:flex; flex-direction:column; gap:12px;}
 #screen-room-control .mg-section-head{display:flex; align-items:end; justify-content:space-between; gap:20px; padding:0 2px;}
@@ -146,15 +146,15 @@
 
 @media(max-width:760px){
   #screen-room-control{scrollbar-gutter:auto;}
-  #screen-room-control .mg-header{position:static; flex-direction:column; align-items:stretch; gap:10px; padding:12px;}
-  #screen-room-control .mg-header-main{align-items:flex-start;}
-  #screen-room-control .mg-heading{flex:1 1 auto; flex-direction:column; align-items:flex-start; gap:5px;}
+  #screen-room-control .mg-header{position:sticky; top:0; z-index:60; flex-direction:column; align-items:stretch; gap:8px; padding:8px;}
+  #screen-room-control .mg-header-main{align-items:center; justify-content:flex-start;}
+  #screen-room-control .mg-heading{flex:1 1 auto; flex-direction:row; align-items:center; gap:8px;}
   #screen-room-control .mg-heading h1{font-size:19px;}
   #screen-room-control .mg-room-pill{min-height:26px; padding:4px 8px; font-size:10px;}
   #screen-room-control .mg-back{min-width:68px;}
-  #screen-room-control .mg-header-actions{grid-template-columns:repeat(4,minmax(0,1fr));}
+  #screen-room-control .mg-header-actions{grid-template-columns:repeat(2,minmax(0,1fr)); min-width:0;}
   #screen-room-control .mg-header-actions .btn{width:100%; padding:8px 5px; font-size:11px;}
-  #screen-room-control .mg-content{padding:18px 12px 36px; gap:26px;}
+  #screen-room-control .mg-content{width:100%; max-width:none; padding:12px 8px 36px; gap:22px;}
   #screen-room-control .mg-section-head{align-items:flex-start; flex-direction:column; gap:4px;}
   #screen-room-control .mg-section-head p{text-align:left; font-size:12px;}
   #screen-room-control .mg-section-head h2{font-size:18px;}
@@ -205,7 +205,6 @@
 }
 
 @media(max-width:430px){
-  #screen-room-control .mg-header-actions{grid-template-columns:repeat(2,minmax(0,1fr));}
   #screen-room-control .mg-role-choice{gap:6px;}
   #screen-room-control .mg-inline-setting{padding:10px;}
   #screen-room-control .control-teams-actions{grid-template-columns:1fr 1fr;}
@@ -215,4 +214,98 @@
 
 @media(prefers-reduced-motion:reduce){
   #screen-room-control *{transition:none!important;}
+}
+
+
+/* === MGMT-03: fixed compact header, reliable switches, participant/order unification === */
+#screen-room-control .mg-header-actions .control-action-audio{grid-column:1;grid-row:1;}
+#screen-room-control .mg-header-actions .control-action-reset{grid-column:2;grid-row:1;}
+#screen-room-control .mg-header-actions .control-action-import-csv{grid-column:1;grid-row:2;}
+#screen-room-control .mg-header-actions .control-action-csv{grid-column:2;grid-row:2;}
+
+/* ui.css still contains legacy global theme rules: the canonical management component wins here. */
+#screen-room-control button.mg-switch{
+  appearance:none!important;-webkit-appearance:none!important;position:relative!important;display:block!important;
+  flex:0 0 52px!important;width:52px!important;min-width:52px!important;max-width:52px!important;
+  height:30px!important;min-height:30px!important;max-height:30px!important;padding:0!important;margin:0!important;
+  border:1px solid var(--mg-border)!important;border-radius:999px!important;
+  background:color-mix(in srgb,var(--mg-muted) 34%,var(--mg-hover))!important;background-image:none!important;
+  color:transparent!important;font-size:0!important;overflow:hidden!important;box-shadow:none!important;
+}
+#screen-room-control button.mg-switch::before{content:none!important;display:none!important;}
+#screen-room-control button.mg-switch::after{content:''!important;display:block!important;position:absolute!important;top:3px!important;left:3px!important;
+  width:22px!important;height:22px!important;border-radius:50%!important;background:var(--mg-card)!important;
+  box-shadow:0 1px 3px rgba(0,0,0,.22)!important;transform:none!important;transition:transform .16s ease,background .16s ease!important;}
+#screen-room-control button.mg-switch[aria-checked="true"]{background:var(--mg-primary)!important;border-color:var(--mg-primary)!important;}
+#screen-room-control button.mg-switch[aria-checked="true"]::after{transform:translateX(22px)!important;background:var(--mg-primary-ink)!important;}
+#screen-room-control .mg-switch-label>input,#screen-room-control .mg-role-chip>input{
+  appearance:none!important;-webkit-appearance:none!important;position:absolute!important;opacity:0!important;pointer-events:none!important;
+  width:1px!important;min-width:1px!important;max-width:1px!important;height:1px!important;min-height:1px!important;max-height:1px!important;
+  margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;
+}
+#screen-room-control .mg-switch-label>input::after,#screen-room-control .mg-role-chip>input::after{content:none!important;display:none!important;}
+#screen-room-control .mg-switch-ui{background:color-mix(in srgb,var(--mg-muted) 34%,var(--mg-hover))!important;border-color:var(--mg-border)!important;}
+#screen-room-control .mg-switch-label>input:checked + .mg-switch-ui{background:var(--mg-primary)!important;border-color:var(--mg-primary)!important;}
+#screen-room-control .mg-switch-label>input:checked + .mg-switch-ui::after{transform:translateX(22px)!important;background:var(--mg-primary-ink)!important;}
+#screen-room-control .mg-role-chip{background:var(--mg-input)!important;}
+#screen-room-control .mg-role-chip:has(input:checked){background:color-mix(in srgb,currentColor 11%,var(--mg-input))!important;border-color:currentColor!important;box-shadow:inset 0 0 0 1px currentColor!important;}
+#screen-room-control .mg-role-chip span{position:relative!important;z-index:1!important;display:block!important;}
+
+#screen-room-control .mg-team-list{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
+#screen-room-control .mg-team-empty{padding:16px;border:1px dashed var(--mg-border);border-radius:10px;color:var(--mg-muted);text-align:center;}
+#screen-room-control .mg-team-row{position:relative;display:grid;grid-template-columns:7px minmax(0,1fr) auto 38px;align-items:center;gap:8px;min-height:56px;padding:6px 6px 6px 0;overflow:hidden;border:1px solid var(--mg-border);border-radius:11px;background:var(--mg-input);cursor:pointer;}
+#screen-room-control .mg-team-row:focus-visible{outline:2px solid var(--mg-primary);outline-offset:2px;}
+#screen-room-control .mg-team-state-bar{align-self:stretch;width:7px;border-radius:0 6px 6px 0;background:#ef4444;}
+#screen-room-control .mg-team-online .mg-team-state-bar{background:#22c55e;}
+#screen-room-control .mg-team-absent .mg-team-state-bar{background:#a874ff;}
+#screen-room-control .mg-team-connecting .mg-team-state-bar{background:#f59e0b;}
+#screen-room-control .mg-team-offline .mg-team-state-bar{background:#ef4444;}
+#screen-room-control .mg-team-current{border-color:var(--mg-primary);box-shadow:inset 0 0 0 1px var(--mg-primary);}
+#screen-room-control .mg-team-row-main{min-width:0;display:flex;flex-direction:column;gap:2px;}
+#screen-room-control .mg-team-row-main strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--mg-text);}
+#screen-room-control .mg-team-row-main span{font-size:10px;font-weight:800;letter-spacing:.06em;color:var(--mg-muted);}
+#screen-room-control .mg-team-online .mg-team-row-main span{color:#16a34a;}
+#screen-room-control .mg-team-absent .mg-team-row-main span{color:#8b5cf6;}
+#screen-room-control .mg-team-connecting .mg-team-row-main span{color:#d97706;}
+#screen-room-control .mg-team-offline .mg-team-row-main span{color:#dc2626;}
+#screen-room-control .mg-team-order-actions{display:grid;grid-template-columns:34px 34px;gap:5px;}
+#screen-room-control .mg-team-order-btn,#screen-room-control .mg-team-open{display:flex;align-items:center;justify-content:center;height:36px;min-height:36px;padding:0;border:1px solid var(--mg-border);border-radius:9px;background:var(--mg-hover);color:var(--mg-text);font:900 18px/1 Inter,system-ui,sans-serif;box-shadow:none;}
+#screen-room-control .mg-team-order-btn:disabled{opacity:.28;}
+#screen-room-control .mg-team-open{width:36px;font-size:24px;}
+
+#management-team-detail[hidden]{display:none!important;}
+#management-team-detail{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,11,20,.55);backdrop-filter:blur(5px);}
+#management-team-detail .mg-team-detail-sheet{width:min(620px,100%);max-height:min(760px,90dvh);overflow:auto;background:var(--mg-card);color:var(--mg-text);border:1px solid var(--mg-border);border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.28);}
+#management-team-detail .mg-team-detail-head{position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px;border-bottom:1px solid var(--mg-border);background:var(--mg-card);}
+#management-team-detail .mg-team-detail-head h2{margin:3px 0 0;font-size:21px;color:var(--mg-text);}
+#management-team-detail .mg-team-detail-state{display:inline-flex;font-size:10px;font-weight:900;letter-spacing:.08em;color:var(--mg-muted);}
+#management-team-detail .mg-state-online{color:#16a34a;}#management-team-detail .mg-state-absent{color:#8b5cf6;}#management-team-detail .mg-state-connecting{color:#d97706;}#management-team-detail .mg-state-offline{color:#dc2626;}
+#management-team-detail .mg-team-detail-close{width:40px;min-width:40px;height:40px;padding:0;font-size:22px;}
+#management-team-detail .mg-team-detail-body{padding:16px;display:flex;flex-direction:column;gap:14px;}
+#management-team-detail .mg-team-detail-fields{display:grid;grid-template-columns:1fr 140px;gap:10px;}
+#management-team-detail .mg-team-detail-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;}
+#management-team-detail .mg-team-metric{padding:9px 6px;border:1px solid var(--mg-border);border-radius:9px;background:var(--mg-input);text-align:center;}
+#management-team-detail .mg-team-metric span{display:block;font-size:10px;font-weight:800;color:var(--mg-muted);}
+#management-team-detail .mg-team-metric strong{display:block;margin-top:3px;font-size:15px;color:var(--mg-text);}
+#management-team-detail .mg-team-detail-pin{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px;border:1px solid var(--mg-border);border-radius:9px;background:var(--mg-input);font-size:12px;color:var(--mg-muted);}
+#management-team-detail .mg-team-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px;}
+#management-team-detail .mg-team-detail-actions .btn:first-child{grid-column:1/-1;}
+#management-team-detail .mg-team-detail-actions .btn{width:100%;}
+body.mg-detail-open{overflow:hidden;}
+
+@media(max-width:760px){
+  #screen-room-control .mg-header{box-shadow:0 6px 18px rgba(0,0,0,.08);}
+  #screen-room-control .mg-header-main{min-height:38px;}
+  #screen-room-control .mg-heading h1{font-size:18px;}
+  #screen-room-control .mg-back{min-width:62px;padding:7px 9px;}
+  #screen-room-control .mg-header-actions{width:100%;}
+  #screen-room-control .mg-header-actions .btn{min-height:36px!important;padding:7px 8px!important;font-size:11px!important;}
+  #screen-room-control .mg-card{padding:12px;}
+  #screen-room-control .mg-team-row{grid-template-columns:7px minmax(0,1fr) auto 36px;min-height:54px;}
+  #screen-room-control .mg-team-order-actions{grid-template-columns:32px 32px;}
+  #screen-room-control .mg-team-order-btn,#screen-room-control .mg-team-open{height:34px;min-height:34px;}
+  #management-team-detail{align-items:flex-end;padding:0;}
+  #management-team-detail .mg-team-detail-sheet{width:100%;max-width:none;max-height:88dvh;border-radius:18px 18px 0 0;border-bottom:0;}
+  #management-team-detail .mg-team-detail-fields{grid-template-columns:1fr 115px;}
+  #management-team-detail .mg-team-detail-metrics{grid-template-columns:repeat(5,minmax(52px,1fr));overflow-x:auto;padding-bottom:2px;}
 }
