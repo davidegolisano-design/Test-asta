@@ -1,0 +1,31 @@
+name: Apply ignore sequence controls v2
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-ignore-sequence-v2.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch stable base
+        run: git fetch origin 0ae5ccf49db65488a09c1aed3c516c61fde52ab1 --depth=1
+      - name: Restore stable files
+        run: git checkout FETCH_HEAD -- index.html scripts/app.js scripts/list-filters.js scripts/mantra-auction.js styles/management.css
+      - name: Apply implementation
+        run: python3 .github/apply-ignore-sequence.py
+      - name: Validate JavaScript
+        run: |
+          node --check scripts/app.js
+          node --check scripts/list-filters.js
+          node --check scripts/mantra-auction.js
+      - name: Commit
+        run: |
+          git config user.name 'liveasta-release-bot'
+          git config user.email 'liveasta-release-bot@users.noreply.github.com'
+          git add index.html scripts/app.js scripts/list-filters.js scripts/mantra-auction.js styles/management.css
+          git rm .github/apply-ignore-sequence.py .github/workflows/apply-ignore-sequence.yml .github/workflows/apply-ignore-sequence-v2.yml
+          git commit -m 'Replace ALL modes with ignore-sequence toggles'
+          git push
