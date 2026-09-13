@@ -5309,3 +5309,62 @@ body.liveasta-alert-open{
       justify-self:end!important;
   }
 }
+
+/* === PLAYER-01: player auction contrast + nomination role badge === */
+/* Player auction: stable readable text on the right information column. */
+html[data-live-theme] #screen-player-buzzer .player-live-side :is(
+  .player-timer-box span,
+  .player-timer-box small,
+  #player-auction-title,
+  #player-current-winner,
+  #player-countdown,
+  #player-current-value,
+  .bid-label,
+  .credit-label
+){
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.72)!important;
+}
+
+/* On ordinary light-theme surfaces use dark ink. Semantic winning/losing panels keep white ink. */
+:is(
+  html[data-live-theme^="light-"],
+  html[data-live-theme$="-daily"],
+  html[data-live-theme="daily"]
+) #screen-player-buzzer .phone-top-area:not(.player-winning):not(.player-losing) .player-live-side :is(
+  .player-timer-box span,
+  .player-timer-box small,
+  #player-auction-title,
+  #player-current-winner,
+  #player-countdown,
+  #player-current-value,
+  .bid-label,
+  .credit-label
+){
+  color:#14212b!important;
+  -webkit-text-fill-color:#14212b!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+
+/* Nomination picker: same circular role badge geometry used throughout LIVEASTA. */
+html body #nomination-picker-overlay .nomination-player-row .role-badge{
+  width:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  height:28px!important;
+  min-height:28px!important;
+  max-height:28px!important;
+  padding:0!important;
+  margin:0!important;
+  flex:0 0 28px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:50%!important;
+  line-height:1!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
