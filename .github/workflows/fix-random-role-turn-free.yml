@@ -10,103 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply focused fixes
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          # 1) Random automatico: Classic and Mantra must use different role semantics.
-          p=Path('scripts/mantra-auction.js')
-          s=p.read_text()
-          old="""    autoRandomCandidates=function(){
-        const allMode=autoRandomRoles.has('ALL');
-        if(allMode){
-            return getAvailablePlayers().filter(player=>{
-                if(isMantraRoom())return groupsForRole(playerRole(player)).some(group=>autoRandomHasBidderForRole(group));
-                const role=String(playerRole(player)||'').toUpperCase();
-                return autoRandomHasBidderForRole(role);
-            });
-        }
-        const allowed=new Set([...autoRandomRoles].map(r=>String(r).toUpperCase()).filter(r=>activeGroups().includes(r)));
-        if(!allowed.size)return [];
-        return getAvailablePlayers().filter(player=>groupsForRole(playerRole(player)).some(group=>allowed.has(group)&&autoRandomHasBidderForRole(group)));
-    };"""
-          new="""    autoRandomCandidates=function(){
-        const allMode=autoRandomRoles.has('ALL');
-
-        // Classic: P/D/C/A are exact roles. Never pass them through Mantra token mapping.
-        if(!isMantraRoom()){
-            const available=getAvailablePlayers();
-            if(allMode){
-                return available.filter(player=>{
-                    const role=String(playerRole(player)||'').toUpperCase();
-                    return ['P','D','C','A'].includes(role) && autoRandomHasBidderForRole(role);
-                });
-            }
-            const allowed=new Set([...autoRandomRoles]
-                .map(r=>String(r).toUpperCase())
-                .filter(r=>['P','D','C','A'].includes(r)));
-            if(!allowed.size)return [];
-            return available.filter(player=>{
-                const role=String(playerRole(player)||'').toUpperCase();
-                return allowed.has(role) && autoRandomHasBidderForRole(role);
-            });
-        }
-
-        // Mantra: ALL means every available player; category mode uses the five families.
-        if(allMode){
-            return getAvailablePlayers().filter(player=>
-                groupsForRole(playerRole(player)).some(group=>autoRandomHasBidderForRole(group))
-            );
-        }
-        const allowed=new Set([...autoRandomRoles]
-            .map(r=>String(r).toUpperCase())
-            .filter(r=>GROUPS.includes(r)));
-        if(!allowed.size)return [];
-        return getAvailablePlayers().filter(player=>
-            groupsForRole(playerRole(player)).some(group=>allowed.has(group)&&autoRandomHasBidderForRole(group))
-        );
-    };"""
-          if old not in s:
-              raise SystemExit('autoRandomCandidates target not found')
-          p.write_text(s.replace(old,new,1))
-
-          # 2) Turno libero Classic: ALL is a mode, not a literal role filter.
-          p=Path('scripts/list-filters.js')
-          s=p.read_text()
-          old="const locked=view==='nomination'&&!isMantraRoom()?String(nominationState.role):'';"
-          new="const locked=view==='nomination'&&!isMantraRoom()&&String(nominationState.role)!=='ALL'?String(nominationState.role):'';"
-          if old not in s:
-              raise SystemExit('nomination locked target not found')
-          s=s.replace(old,new,1)
-
-          old="const matchesRole=view==='nomination'&&!isMantraRoom()?item.tokens.includes(String(nominationState.role)):item.tokens.some(r=>state.roles.includes(r));"
-          new="const nominationLocked=view==='nomination'&&!isMantraRoom()&&String(nominationState.role)!=='ALL';\n        const matchesRole=nominationLocked?item.tokens.includes(String(nominationState.role)):item.tokens.some(r=>state.roles.includes(r));"
-          if old not in s:
-              raise SystemExit('nomination matchesRole target not found')
-          p.write_text(s.replace(old,new,1))
-
-          # 3) Force browsers to load the fixed scripts. Home version remains v1.0.
-          p=Path('index.html')
-          s=p.read_text()
-          s,n1=re.subn(r'list-filters\.js\?v=\d+', 'list-filters.js?v=112', s, count=1)
-          s,n2=re.subn(r'mantra-auction\.js\?v=\d+', 'mantra-auction.js?v=112', s, count=1)
-          if n1!=1 or n2!=1:
-              raise SystemExit(f'cache refs not found: list={n1}, mantra={n2}')
-          p.write_text(s)
-          PY
-      - name: Validate JavaScript
+      - name: Apply patch
+        run: python3 .github/fix_random_role_turn_free.py
+      - name: Validate
         run: |
           node --check scripts/list-filters.js
           node --check scripts/mantra-auction.js
-          grep -q "nominationState.role)!=='ALL'" scripts/list-filters.js
-          grep -q "Classic: P/D/C/A are exact roles" scripts/mantra-auction.js
-      - name: Commit fixes
+      - name: Commit
         run: |
           git config user.name 'liveasta-release-bot'
           git config user.email 'liveasta-release-bot@users.noreply.github.com'
           git add scripts/list-filters.js scripts/mantra-auction.js index.html
-          git rm .github/workflows/fix-random-role-turn-free.yml
+          git rm .github/fix_random_role_turn_free.py .github/workflows/fix-random-role-turn-free.yml
           git commit -m 'Fix automatic random role filters and free-turn picker'
           git push
