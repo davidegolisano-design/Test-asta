@@ -9,18 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Show nomination and manual assign functions
+      - name: Show target functions
         run: |
           python - <<'PY'
           from pathlib import Path
           s=Path('dev/scripts/app.js').read_text()
-          needles=['function recalculateNominationTurn','function moveNominationTurn','function toggleNominationMode','function normalizeNominationState','function updateNomination','nominationState.role','function renderManualPlayerOptions','function confirmManualAssign','function updateManualAssignPreview']
+          needles=['function renderAutoRandomControlUI','function setAutoRandomRole','function setAutoRandomEnabled','function loadAutoRandom','function renderRoomControl']
           lines=s.splitlines()
           for needle in needles:
               print('\n###',needle)
               for i,line in enumerate(lines):
                   if needle in line:
-                      a=max(0,i-8); b=min(len(lines),i+90)
+                      a=max(0,i-8); b=min(len(lines),i+100)
                       for j in range(a,b): print(f'{j+1}: {lines[j]}')
                       break
           PY
