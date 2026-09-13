@@ -5337,10 +5337,10 @@ html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer .player-li
 }
 html[data-live-theme] body #screen-auctioneer-board#screen-auctioneer-board #countdown-display.liveasta-last3,
 html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer #player-countdown.liveasta-last3{
-  color:var(--theme-danger)!important;
-  -webkit-text-fill-color:var(--theme-danger)!important;
+  color:#FF334F!important;
+  -webkit-text-fill-color:#FF334F!important;
   opacity:1!important;
-  text-shadow:0 0 14px color-mix(in srgb,var(--theme-danger) 38%,transparent)!important;
+  text-shadow:0 0 14px rgba(255,51,79,.34)!important;
 }
 html[data-live-theme] body #screen-auctioneer-board#screen-auctioneer-board #view-auction.mobile-ready #countdown-display.liveasta-last3{
   color:var(--theme-number)!important;
