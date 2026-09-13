@@ -276,6 +276,17 @@
         if(note)note.textContent='In Mantra il budget è un piano di spesa per categorie: verde sotto soglia, arancione dalla soglia, rosso al raggiungimento del budget. I doppi ruoli vengono conteggiati una sola volta nella categoria del primo ruolo indicato.';
     }
 
+    function ensureClassicBudgetRows(){
+        const box=document.getElementById('player-budget-rows');
+        if(!box||isMantraRoom())return;
+        box.querySelector('[data-role=\"T\"]')?.remove();
+        box.dataset.mode='classic';
+        const copy=document.querySelector('#player-budget-overlay .player-budget-toggle-row small');
+        if(copy)copy.textContent='Colora crediti e slot in base al piano P / D / C / A.';
+        const note=document.querySelector('#player-budget-overlay .player-budget-note');
+        if(note)note.textContent='Quando il budget è attivo, un reparto è verde se il budget residuo può ancora coprire gli slot mancanti (almeno 1 credito per slot); altrimenti diventa rosso.';
+    }
+
     defaultPlayerBudgetPlan=function(){
         if(!isMantraRoom())return baseDefaultPlayerBudgetPlan();
         const values=splitBudget(playerBudgetTotalCredits(),GROUPS);
@@ -379,7 +390,7 @@
         playerBudgetPlan.enabled=!!enabled;renderPlayerBudgetManager();updatePlayerBudgetVisuals();schedulePlayerBudgetSave();
     };
     openPlayerBudgetManager=async function(){
-        if(!isMantraRoom())return baseOpenPlayerBudgetManager();
+        if(!isMantraRoom()){ensureClassicBudgetRows();return baseOpenPlayerBudgetManager();}
         if(!currentRoomId||!myTeamId)return;
         try{document.activeElement?.blur?.();}catch(_){}
         document.getElementById('player-budget-overlay')?.classList.add('open');
@@ -387,7 +398,7 @@
         try{await loadPlayerBudgetPlan();renderPlayerBudgetManager();}catch(err){console.warn('Budget plan Mantra load failed',err);}
     };
     renderPlayerBudgetManager=function(){
-        if(!isMantraRoom())return baseRenderPlayerBudgetManager();
+        if(!isMantraRoom()){ensureClassicBudgetRows();return baseRenderPlayerBudgetManager();}
         if(!document.getElementById('player-budget-overlay'))return;
         ensureBudgetRows();
         const total=playerBudgetTotalCredits(),spent=playerBudgetSpentByRole();
