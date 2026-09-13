@@ -1,0 +1,61 @@
+name: LIVEASTA MGMT-04 finalize
+
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-mgmt04-finalize.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply MGMT-04 final patch
+        run: python3 dev/tools/apply_mgmt04_final.py
+
+      - name: Validate MGMT-04
+        run: |
+          node --check dev/scripts/app.js
+          node --check dev/scripts/management.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('dev/index.html').read_text(encoding='utf-8')
+          app=Path('dev/scripts/app.js').read_text(encoding='utf-8')
+          mg=Path('dev/scripts/management.js').read_text(encoding='utf-8')
+          css=Path('dev/styles/management.css').read_text(encoding='utf-8')
+          assert 'v0.98 MGMT-04' in html
+          assert 'dev=098-mgmt04' in html
+          for control in ['self-raise-toggle','ready-toggle-btn','nomination-toggle-btn','auctioneer-player-toggle-btn']:
+              assert re.search(rf'id="{control}"[^>]*type="checkbox"',html), control
+          for role in 'PDCA':
+              assert f'class="mg-role-chip unified-role role-{role}"' in html
+          assert 'toggle.checked=!!selfRaiseEnabled' in app
+          assert 'btn.checked=!!readyModeEnabled' in app
+          assert 'btn.checked=!!active' in app
+          assert 't.checked=!!nominationState.enabled' in app
+          assert "auctioneerPlayerMode &&" in mg and "return {key:'online',label:'ONLINE'}" in mg
+          assert '.control-action-audio{grid-column:1;grid-row:1;}' in css
+          assert '.control-action-reset{grid-column:2;grid-row:1;}' in css
+          assert '.control-action-import-csv{grid-column:1;grid-row:2;}' in css
+          assert '.control-action-csv{grid-column:2;grid-row:2;}' in css
+          assert 'padding:12px 6px 36px' in css
+          assert 'background:#facc15' in css and 'background:#22c55e' in css and 'background:#3b82f6' in css and 'background:#ef4444' in css
+          print('MGMT-04 validation OK')
+          PY
+
+      - name: Commit DEV-only changes and remove temporary files
+        run: |
+          rm -f dev/tools/apply_mgmt04_final.py .github/workflows/liveasta-mgmt04-finalize.yml
+          git config user.name 'liveasta-dev-bot'
+          git config user.email 'liveasta-dev-bot@users.noreply.github.com'
+          git add dev/index.html dev/scripts/app.js dev/tools/apply_mgmt04_final.py .github/workflows/liveasta-mgmt04-finalize.yml
+          git commit -m 'Finalize DEV management canonical switches and cache'
+          git pull --rebase origin main
+          git push origin main
