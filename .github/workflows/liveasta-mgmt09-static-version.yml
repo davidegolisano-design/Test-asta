@@ -1,0 +1,40 @@
+name: LIVEASTA MGMT-09 static version fix
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-mgmt09-static-version.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update DEV version markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('dev/index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('LIVEASTA DEV · v1.02 MGMT-08','LIVEASTA DEV · v1.03 MGMT-09')
+          s=s.replace('            v0.99\n','            v1.03\n',1)
+          s=s.replace('⚠ AMBIENTE DEV · v1.00 MGMT-06','⚠ AMBIENTE DEV · v1.03 MGMT-09')
+          s=s.replace('102-mgmt08','103-mgmt09')
+          s=s.replace('./scripts/management.js?dev=098-mgmt04','./scripts/management.js?dev=103-mgmt09')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate
+        run: |
+          grep -q 'LIVEASTA DEV · v1.03 MGMT-09' dev/index.html
+          grep -q 'AMBIENTE DEV · v1.03 MGMT-09' dev/index.html
+          grep -q 'management.js?dev=103-mgmt09' dev/index.html
+      - name: Commit
+        run: |
+          rm -f .github/workflows/liveasta-mgmt09-static-version.yml
+          git config user.name 'liveasta-dev-bot'
+          git config user.email 'liveasta-dev-bot@users.noreply.github.com'
+          git add dev/index.html .github/workflows/liveasta-mgmt09-static-version.yml
+          git commit -m 'Fix DEV static version markers MGMT-09'
+          git push origin main
