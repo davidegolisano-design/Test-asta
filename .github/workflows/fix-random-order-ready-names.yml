@@ -1,0 +1,29 @@
+name: Fix random activation order and READY names
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-random-order-ready-names.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply patch
+        run: python3 .github/fix-random-order-ready-names.py
+      - name: Validate
+        run: |
+          node --check scripts/app.js
+          node --check scripts/mantra-auction.js
+          grep -q "ordine in cui i pulsanti ruolo sono stati attivati" scripts/app.js
+          grep -q "ready-team-name-size" styles/ui.css
+          grep -q "app.js?v=116" index.html
+      - name: Commit
+        run: |
+          git config user.name 'liveasta-release-bot'
+          git config user.email 'liveasta-release-bot@users.noreply.github.com'
+          git add index.html scripts/app.js scripts/mantra-auction.js styles/ui.css
+          git rm .github/fix-random-order-ready-names.py .github/workflows/fix-random-order-ready-names.yml
+          git commit -m 'Use activation order for auto random and fit READY names'
+          git push
