@@ -1,4 +1,4 @@
-const CACHE = 'liveasta-v1.0';
+const CACHE = 'liveasta-v1.0-115';
 const CORE = [
   './',
   './index.html',
