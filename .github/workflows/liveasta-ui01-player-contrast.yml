@@ -13,77 +13,18 @@ jobs:
         with:
           fetch-depth: 0
       - name: Apply player-only UI fixes
+        env:
+          PLAYER_CSS_B64: Ci8qID09PSBQTEFZRVItMDE6IHBsYXllciBhdWN0aW9uIGNvbnRyYXN0ICsgbm9taW5hdGlvbiByb2xlIGJhZGdlID09PSAqLwovKiBQbGF5ZXIgYXVjdGlvbjogc3RhYmxlIHJlYWRhYmxlIHRleHQgb24gdGhlIHJpZ2h0IGluZm9ybWF0aW9uIGNvbHVtbi4gKi8KaHRtbFtkYXRhLWxpdmUtdGhlbWVdICNzY3JlZW4tcGxheWVyLWJ1enplciAucGxheWVyLWxpdmUtc2lkZSA6aXMoCiAgLnBsYXllci10aW1lci1ib3ggc3BhbiwKICAucGxheWVyLXRpbWVyLWJveCBzbWFsbCwKICAjcGxheWVyLWF1Y3Rpb24tdGl0bGUsCiAgI3BsYXllci1jdXJyZW50LXdpbm5lciwKICAjcGxheWVyLWNvdW50ZG93biwKICAjcGxheWVyLWN1cnJlbnQtdmFsdWUsCiAgLmJpZC1sYWJlbCwKICAuY3JlZGl0LWxhYmVsCil7CiAgY29sb3I6I2ZmZiFpbXBvcnRhbnQ7CiAgLXdlYmtpdC10ZXh0LWZpbGwtY29sb3I6I2ZmZiFpbXBvcnRhbnQ7CiAgb3BhY2l0eToxIWltcG9ydGFudDsKICB0ZXh0LXNoYWRvdzowIDFweCAycHggcmdiYSgwLDAsMCwuNzIpIWltcG9ydGFudDsKfQoKLyogT24gb3JkaW5hcnkgbGlnaHQtdGhlbWUgc3VyZmFjZXMgdXNlIGRhcmsgaW5rLiBTZW1hbnRpYyB3aW5uaW5nL2xvc2luZyBwYW5lbHMga2VlcCB3aGl0ZSBpbmsuICovCjppcygKICBodG1sW2RhdGEtbGl2ZS10aGVtZV49ImxpZ2h0LSJdLAogIGh0bWxbZGF0YS1saXZlLXRoZW1lJD0iLWRhaWx5Il0sCiAgaHRtbFtkYXRhLWxpdmUtdGhlbWU9ImRhaWx5Il0KKSAjc2NyZWVuLXBsYXllci1idXp6ZXIgLnBob25lLXRvcC1hcmVhOm5vdCgucGxheWVyLXdpbm5pbmcpOm5vdCgucGxheWVyLWxvc2luZykgLnBsYXllci1saXZlLXNpZGUgOmlzKAogIC5wbGF5ZXItdGltZXItYm94IHNwYW4sCiAgLnBsYXllci10aW1lci1ib3ggc21hbGwsCiAgI3BsYXllci1hdWN0aW9uLXRpdGxlLAogICNwbGF5ZXItY3VycmVudC13aW5uZXIsCiAgI3BsYXllci1jb3VudGRvd24sCiAgI3BsYXllci1jdXJyZW50LXZhbHVlLAogIC5iaWQtbGFiZWwsCiAgLmNyZWRpdC1sYWJlbAopewogIGNvbG9yOiMxNDIxMmIhaW1wb3J0YW50OwogIC13ZWJraXQtdGV4dC1maWxsLWNvbG9yOiMxNDIxMmIhaW1wb3J0YW50OwogIG9wYWNpdHk6MSFpbXBvcnRhbnQ7CiAgdGV4dC1zaGFkb3c6bm9uZSFpbXBvcnRhbnQ7Cn0KCi8qIE5vbWluYXRpb24gcGlja2VyOiBzYW1lIGNpcmN1bGFyIHJvbGUgYmFkZ2UgZ2VvbWV0cnkgdXNlZCB0aHJvdWdob3V0IExJVkVBU1RBLiAqLwpodG1sIGJvZHkgI25vbWluYXRpb24tcGlja2VyLW92ZXJsYXkgLm5vbWluYXRpb24tcGxheWVyLXJvdyAucm9sZS1iYWRnZXsKICB3aWR0aDoyOHB4IWltcG9ydGFudDsKICBtaW4td2lkdGg6MjhweCFpbXBvcnRhbnQ7CiAgbWF4LXdpZHRoOjI4cHghaW1wb3J0YW50OwogIGhlaWdodDoyOHB4IWltcG9ydGFudDsKICBtaW4taGVpZ2h0OjI4cHghaW1wb3J0YW50OwogIG1heC1oZWlnaHQ6MjhweCFpbXBvcnRhbnQ7CiAgcGFkZGluZzowIWltcG9ydGFudDsKICBtYXJnaW46MCFpbXBvcnRhbnQ7CiAgZmxleDowIDAgMjhweCFpbXBvcnRhbnQ7CiAgZGlzcGxheTppbmxpbmUtZmxleCFpbXBvcnRhbnQ7CiAgYWxpZ24taXRlbXM6Y2VudGVyIWltcG9ydGFudDsKICBqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyIWltcG9ydGFudDsKICBib3JkZXItcmFkaXVzOjUwJSFpbXBvcnRhbnQ7CiAgbGluZS1oZWlnaHQ6MSFpbXBvcnRhbnQ7CiAgZm9udC1zaXplOjEycHghaW1wb3J0YW50OwogIGZvbnQtd2VpZ2h0OjkwMCFpbXBvcnRhbnQ7Cn0K
         run: |
           python - <<'PY'
+          import os,base64
           from pathlib import Path
-
           css = Path('dev/styles/refinements.css')
           s = css.read_text(encoding='utf-8')
           marker = '/* === PLAYER-01: player auction contrast + nomination role badge === */'
           if marker not in s:
-              s += r'''
-
-/* === PLAYER-01: player auction contrast + nomination role badge === */
-/* Player auction: stable readable text on the right information column. */
-html[data-live-theme] #screen-player-buzzer .player-live-side :is(
-  .player-timer-box span,
-  .player-timer-box small,
-  #player-auction-title,
-  #player-current-winner,
-  #player-countdown,
-  #player-current-value,
-  .bid-label,
-  .credit-label
-){
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-  opacity:1!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.72)!important;
-}
-
-/* On ordinary light-theme surfaces use dark ink. Semantic winning/losing panels keep white ink. */
-:is(
-  html[data-live-theme^="light-"],
-  html[data-live-theme$="-daily"],
-  html[data-live-theme="daily"]
-) #screen-player-buzzer .phone-top-area:not(.player-winning):not(.player-losing) .player-live-side :is(
-  .player-timer-box span,
-  .player-timer-box small,
-  #player-auction-title,
-  #player-current-winner,
-  #player-countdown,
-  #player-current-value,
-  .bid-label,
-  .credit-label
-){
-  color:#14212b!important;
-  -webkit-text-fill-color:#14212b!important;
-  opacity:1!important;
-  text-shadow:none!important;
-}
-
-/* Nomination picker: same circular role badge geometry used throughout LIVEASTA. */
-html body #nomination-picker-overlay .nomination-player-row .role-badge{
-  width:28px!important;
-  min-width:28px!important;
-  max-width:28px!important;
-  height:28px!important;
-  min-height:28px!important;
-  max-height:28px!important;
-  padding:0!important;
-  margin:0!important;
-  flex:0 0 28px!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border-radius:50%!important;
-  line-height:1!important;
-  font-size:12px!important;
-  font-weight:900!important;
-}
-'''
-          css.write_text(s, encoding='utf-8')
-
+              s += base64.b64decode(os.environ['PLAYER_CSS_B64']).decode('utf-8')
+          css.write_text(s,encoding='utf-8')
           index = Path('dev/index.html')
           h = index.read_text(encoding='utf-8')
           h = h.replace('LIVEASTA DEV · v1.04 MGMT-10','LIVEASTA DEV · v1.05 PLAYER-01')
