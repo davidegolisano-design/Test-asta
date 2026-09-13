@@ -4,6 +4,7 @@
 (function(){
     const GROUPS=['P','D','C','T','A'];
     const LABELS={P:'Portieri',D:'Difensori',C:'Centrocampisti',T:'Trequartisti',A:'Attaccanti'};
+    const SHORT_LABELS={P:'POR',D:'DIF',C:'CEN',T:'TRQ',A:'ATT'};
 
     function groupForToken(token){
         if(typeof mantraRoleFamily==='function')return mantraRoleFamily(token);
@@ -169,7 +170,7 @@
             if(host.dataset.roleModeSignature!==signature){
                 host.dataset.roleModeSignature=signature;
                 host.classList.toggle('mantra-auto-random-role-grid',isMantraRoom());
-                host.innerHTML=roles.map(role=>`<button id="auto-random-role-btn-${role}" type="button" class="unified-role role-${role}" aria-pressed="false" onclick="toggleAutoRandomRoleButton('${role}')">${categoryLabel(role)}</button>`).join('');
+                host.innerHTML=roles.map(role=>`<button id="auto-random-role-btn-${role}" type="button" class="unified-role role-${role}" aria-pressed="false" aria-label="${categoryLabel(role)}" title="${categoryLabel(role)}" onclick="toggleAutoRandomRoleButton('${role}')">${isMantraRoom()?(SHORT_LABELS[role]||role):categoryLabel(role)}</button>`).join('');
             }
         }
         roles.forEach(role=>{

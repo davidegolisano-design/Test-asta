@@ -306,6 +306,34 @@ html body.liveasta-mantra #screen-auctioneer-board #auctioneer-ready-player-role
 
   .liveasta-mantra .mantra-subfilter-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
   .liveasta-mantra #random-role-grid.mantra-random-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
-  .liveasta-mantra .mantra-auto-random-role-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .liveasta-mantra .mantra-auto-random-role-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;}
   .liveasta-mantra #player-budget-rows{grid-template-columns:1fr!important;}
+}
+
+
+/* Compact five-category AUTO RANDOM controls. */
+.liveasta-mantra #screen-room-control .mantra-auto-random-role-grid{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:5px!important;
+  width:100%!important;
+}
+.liveasta-mantra #screen-room-control .mantra-auto-random-role-grid .unified-role{
+  min-width:0!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:6px 3px!important;
+  white-space:nowrap!important;
+  font-size:11px!important;
+  font-weight:950!important;
+  line-height:1!important;
+}
+@media(max-width:560px){
+  .liveasta-mantra #screen-room-control .mantra-auto-random-role-grid{gap:4px!important;}
+  .liveasta-mantra #screen-room-control .mantra-auto-random-role-grid .unified-role{
+    min-height:40px!important;
+    padding:5px 1px!important;
+    font-size:10px!important;
+    border-radius:9px!important;
+  }
 }
