@@ -1013,7 +1013,11 @@ function updateCreateRoomModeUI(){
         }
 
         function autoRandomSelectedRolesFromControl(){
-            return ['P','D','C','A'].filter(role=>document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true');
+            // Il Set mantiene l'ordine di attivazione dei pulsanti.
+            return [...autoRandomRoles].filter(role=>
+                ['P','D','C','A'].includes(role) &&
+                document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true'
+            );
         }
 
         function renderAutoRandomControlUI(){
@@ -1070,10 +1074,9 @@ function updateCreateRoomModeUI(){
         }
 
         function autoRandomClassicSequenceOrder(){
-            const configured=(typeof ensureNominationRoleOrder==='function')
-                ? ensureNominationRoleOrder()
-                : ['P','D','C','A'];
-            return configured.filter(role=>autoRandomRoles.has(role));
+            // La sequenza AUTO RANDOM e' indipendente dalla banditura a turni:
+            // coincide esattamente con l'ordine in cui i pulsanti ruolo sono stati attivati.
+            return [...autoRandomRoles].filter(role=>['P','D','C','A'].includes(role));
         }
 
         function autoRandomClassicRoleComplete(role){
@@ -1193,7 +1196,11 @@ function updateCreateRoomModeUI(){
         async function setAutoRandomRole(role,checked){
             const r=String(role||'').toUpperCase();
             if(!['P','D','C','A'].includes(r))return;
-            if(checked)autoRandomRoles.add(r); else autoRandomRoles.delete(r);
+            if(checked){
+                // Riattivare un ruolo lo sposta in fondo alla sequenza.
+                autoRandomRoles.delete(r);
+                autoRandomRoles.add(r);
+            }else autoRandomRoles.delete(r);
             if(autoRandomEnabled && !autoRandomIgnoreSequence && !autoRandomRoles.size){
                 autoRandomEnabled=false;
                 const master=document.getElementById('auto-random-enabled');
@@ -1731,9 +1738,12 @@ function updateCreateRoomModeUI(){
                 const absent=absentTeamIds.has(id);
                 const done=readySet.has(id);
                 const nominated=nominatorId && id===nominatorId;
+                const teamName=String(team.name||'Squadra');
+                const chars=[...teamName].length;
+                const nameSize=chars>=30?'.52rem':chars>=26?'.56rem':chars>=22?'.60rem':chars>=18?'.66rem':chars>=14?'.72rem':'.80rem';
                 return `<div class="player-ready-team-row${absent?' absent':''}${done?' ready':''}${nominated?' nominator':''}">
                     <div class="player-ready-team-copy">
-                        <strong>${escapeHtml(team.name||'Squadra')}</strong>
+                        <strong style="--ready-team-name-size:${nameSize}">${escapeHtml(teamName)}</strong>
                         ${nominated?'<small>HA BANDITO</small>':''}
                     </div>
                     <span class="player-ready-team-status">${absent?'ASSENTE':done?'PRONTO':'IN ATTESA'}</span>

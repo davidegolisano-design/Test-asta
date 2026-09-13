@@ -161,7 +161,7 @@
 
     autoRandomSelectedRolesFromControl=function(){
         if(!isMantraRoom())return baseAutoRandomSelectedRolesFromControl.apply(this,arguments);
-        return activeGroups().filter(role=>document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true');
+        return [...autoRandomRoles].filter(role=>activeGroups().includes(role)&&document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true');
     };
 
     renderAutoRandomControlUI=function(){
@@ -240,7 +240,7 @@
         if(!isMantraRoom())return baseSetAutoRandomRole.apply(this,arguments);
         const r=String(role||'').toUpperCase();
         if(!activeGroups().includes(r))return;
-        if(checked)autoRandomRoles.add(r);else autoRandomRoles.delete(r);
+        if(checked){autoRandomRoles.delete(r);autoRandomRoles.add(r);}else autoRandomRoles.delete(r);
         if(autoRandomEnabled&&!autoRandomIgnoreSequence&&!autoRandomRoles.size){
             autoRandomEnabled=false;
             const master=document.getElementById('auto-random-enabled');if(master)master.checked=false;

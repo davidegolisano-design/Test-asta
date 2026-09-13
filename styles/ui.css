@@ -1967,3 +1967,20 @@ html[data-live-theme] #nomination-picker-overlay .nomination-close-btn{
     font-size:11px!important;
   }
 }
+
+
+/* v1.0.116 — READY player names always fully visible */
+#screen-player-buzzer .player-ready-team-copy{
+  min-width:0!important;
+  overflow:visible!important;
+}
+#screen-player-buzzer .player-ready-team-copy strong{
+  font-size:var(--ready-team-name-size,.80rem)!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+  line-height:1.04!important;
+  max-width:100%!important;
+}
