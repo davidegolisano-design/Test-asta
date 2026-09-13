@@ -1,0 +1,39 @@
+name: Release LIVEASTA v1.01 Mantra roles
+on:
+  push:
+    paths:
+      - '.github/workflows/release-v101-mantra-roles.yml'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch v1.01 references
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          s=s.replace('<title>LIVEASTA · v1.0</title>','<title>LIVEASTA · v1.01</title>',1)
+          s=s.replace('            v1.0\n        </div>\n        <div class="setup-card">','            v1.01\n        </div>\n        <div class="setup-card">',1)
+          if './styles/roles.css?v=101' not in s:
+              s=s.replace('    <link rel="stylesheet" href="./styles/pwa.css?v=100">','    <link rel="stylesheet" href="./styles/pwa.css?v=100">\n    <link rel="stylesheet" href="./styles/roles.css?v=101">',1)
+          s=s.replace('./scripts/roles.js?v=100','./scripts/roles.js?v=101')
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'LIVEASTA · v1.01' index.html
+          grep -q 'styles/roles.css?v=101' index.html
+          grep -q 'scripts/roles.js?v=101' index.html
+      - name: Commit release
+        run: |
+          git config user.name 'liveasta-release-bot'
+          git config user.email 'liveasta-release-bot@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Release v1.01 Mantra multi-role badges'
+          git push
