@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+import fs from 'node:fs';
+fs.mkdirSync('qa-output',{recursive:true});
+const browser=await chromium.launch({headless:true});
+const page=await browser.newPage({viewport:{width:390,height:844}});
+const errors=[];
+page.on('pageerror',e=>errors.push(String(e)));
+page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+await page.goto('https://davidegolisano-design.github.io/Test-asta/',{waitUntil:'networkidle',timeout:60000});
+await page.screenshot({path:'qa-output/home.png',fullPage:true});
+const result=await page.evaluate(()=>({title:document.title,w:innerWidth,h:innerHeight,scrollWidth:document.documentElement.scrollWidth,bodyText:document.body.innerText.slice(0,500)}));
+fs.writeFileSync('qa-output/home.json',JSON.stringify({result,errors},null,2));
+console.log(JSON.stringify({result,errors}));
+await browser.close();
