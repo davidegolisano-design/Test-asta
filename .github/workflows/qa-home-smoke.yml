@@ -1,0 +1,24 @@
+name: LIVEASTA QA home smoke
+on:
+  push:
+    paths:
+      - 'qa/home-smoke.mjs'
+      - '.github/workflows/qa-home-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm init -y && npm install playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - run: node qa/home-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: liveasta-home-smoke
+          path: qa-output/
+          retention-days: 1
