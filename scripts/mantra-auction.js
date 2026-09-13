@@ -253,16 +253,37 @@
     };
     autoRandomCandidates=function(){
         const allMode=autoRandomRoles.has('ALL');
-        if(allMode){
-            return getAvailablePlayers().filter(player=>{
-                if(isMantraRoom())return groupsForRole(playerRole(player)).some(group=>autoRandomHasBidderForRole(group));
+
+        if(!isMantraRoom()){
+            const available=getAvailablePlayers();
+            if(allMode){
+                return available.filter(player=>{
+                    const role=String(playerRole(player)||'').toUpperCase();
+                    return ['P','D','C','A'].includes(role) && autoRandomHasBidderForRole(role);
+                });
+            }
+            const allowed=new Set([...autoRandomRoles]
+                .map(r=>String(r).toUpperCase())
+                .filter(r=>['P','D','C','A'].includes(r)));
+            if(!allowed.size)return [];
+            return available.filter(player=>{
                 const role=String(playerRole(player)||'').toUpperCase();
-                return autoRandomHasBidderForRole(role);
+                return allowed.has(role) && autoRandomHasBidderForRole(role);
             });
         }
-        const allowed=new Set([...autoRandomRoles].map(r=>String(r).toUpperCase()).filter(r=>activeGroups().includes(r)));
+
+        if(allMode){
+            return getAvailablePlayers().filter(player=>
+                groupsForRole(playerRole(player)).some(group=>autoRandomHasBidderForRole(group))
+            );
+        }
+        const allowed=new Set([...autoRandomRoles]
+            .map(r=>String(r).toUpperCase())
+            .filter(r=>GROUPS.includes(r)));
         if(!allowed.size)return [];
-        return getAvailablePlayers().filter(player=>groupsForRole(playerRole(player)).some(group=>allowed.has(group)&&autoRandomHasBidderForRole(group)));
+        return getAvailablePlayers().filter(player=>
+            groupsForRole(playerRole(player)).some(group=>allowed.has(group)&&autoRandomHasBidderForRole(group))
+        );
     };
 
     // ---------- Budget ----------

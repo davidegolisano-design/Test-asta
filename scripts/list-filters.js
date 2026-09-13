@@ -93,7 +93,7 @@ function renderListFilters(view){
 
     let controls=root.querySelector('.unified-filter-controls');
     if(!controls){controls=document.createElement('div');controls.className='unified-filter-controls';root.append(controls);}
-    const locked=view==='nomination'&&!isMantraRoom()?String(nominationState.role):'';
+    const locked=view==='nomination'&&!isMantraRoom()&&String(nominationState.role)!=='ALL'?String(nominationState.role):'';
     const allRoles=listFilterRoles();
     const allSelected=!locked&&allRoles.length>0&&allRoles.every(role=>state.roles.includes(role));
     const signature=JSON.stringify([state,allRoles,locked,allSelected]);
@@ -132,7 +132,8 @@ function filterAndSortPlayers(list,view){
             role:Math.min(...tokens.map(r=>{const index=roles.indexOf(r);return index<0?99:index;}),99),
             value:playerListoneNumericValue(player),price:purchase?Number(purchase.price)||0:null,priority};
     }).filter(item=>{
-        const matchesRole=view==='nomination'&&!isMantraRoom()?item.tokens.includes(String(nominationState.role)):item.tokens.some(r=>state.roles.includes(r));
+        const nominationLocked=view==='nomination'&&!isMantraRoom()&&String(nominationState.role)!=='ALL';
+        const matchesRole=nominationLocked?item.tokens.includes(String(nominationState.role)):item.tokens.some(r=>state.roles.includes(r));
         return matchesRole&&(!query||`${item.name} ${item.team} ${item.tokens.join(' ')}`.toLocaleLowerCase('it').includes(query)||view==='purchases');
     });
     const direction=state.direction==='asc'?1:-1;
