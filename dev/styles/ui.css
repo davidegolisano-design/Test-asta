@@ -1912,3 +1912,18 @@ html body .manual-player-empty{padding:16px 10px;text-align:center;color:var(--t
 /* Auction outcome colors are semantic and theme-aware, especially on light themes. */
 html[data-live-theme] #screen-player-buzzer .phone-top-area.player-winning #player-current-winner{color:var(--theme-success)!important;}
 html[data-live-theme] #screen-player-buzzer .phone-top-area.player-losing #player-current-winner{color:var(--theme-danger)!important;}
+
+
+/* MGMT-06 — manual assignment price step */
+html body .manual-price-dialog{width:min(92vw,440px)!important;max-width:440px!important;padding:0!important;border:1px solid var(--theme-border,#475569)!important;border-radius:16px!important;background:var(--theme-card,#17212e)!important;color:var(--theme-text,#f8fafc)!important;box-shadow:0 24px 70px rgba(0,0,0,.38)!important;}
+html body .manual-price-dialog::backdrop{background:rgba(5,9,14,.66)!important;backdrop-filter:blur(4px)!important;}
+html body .manual-price-card{display:flex!important;flex-direction:column!important;gap:12px!important;padding:18px!important;margin:0!important;}
+html body .manual-price-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;}
+html body .manual-price-head h3{margin:0!important;color:var(--theme-text,#f8fafc)!important;font-size:1.15rem!important;}
+html body .manual-price-close{width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;color:var(--theme-text,#f8fafc)!important;font-size:28px!important;}
+html body .manual-price-copy{display:flex!important;flex-direction:column!important;gap:4px!important;padding:12px!important;border:1px solid var(--theme-border,#475569)!important;border-radius:12px!important;background:var(--theme-panel,#111821)!important;color:var(--theme-muted,#aab4c3)!important;text-align:left!important;}
+html body .manual-price-copy strong{color:var(--theme-text,#f8fafc)!important;font-size:1.1rem!important;}
+html body .manual-price-card #manual-price-input{width:100%!important;min-height:52px!important;height:52px!important;margin:0!important;text-align:center!important;font-size:1.35rem!important;font-weight:800!important;background:var(--theme-input,#111821)!important;color:var(--theme-text,#f8fafc)!important;border:1px solid var(--theme-border,#475569)!important;border-radius:12px!important;}
+html body .manual-price-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+html body .manual-price-actions .btn{width:100%!important;min-width:0!important;margin:0!important;}
+html body .manual-player-hint{margin:8px 0 0!important;color:var(--theme-muted,#aab4c3)!important;font-size:.9rem!important;line-height:1.4!important;text-align:center!important;}

@@ -74,7 +74,7 @@ function updateCreateRoomModeUI(){
         let auctioneerPlayerTeamId=null;
         let hybridReturnTimer=null;
         let roomControlReturnScreen = 'screen-auctioneer-board';
-        let nominationState={enabled:false,role:null,turn_team_id:null,order_team_ids:[]};
+        let nominationState={enabled:false,role:null,turn_team_id:null,order_team_ids:[],role_order:['P','D','C','A']};
         let nominationAutoBidOneEnabled=false;
         // modalità AUTO RANDOM: nomina automatica continua sui ruoli scelti.
         let autoRandomEnabled=false;
@@ -1015,8 +1015,14 @@ function updateCreateRoomModeUI(){
             const master=document.getElementById('auto-random-enabled');
             if(master)master.checked=!!autoRandomEnabled;
             ['P','D','C','A'].forEach(role=>{
+                const selected=autoRandomRoles.has(role);
                 const el=document.getElementById('auto-random-role-'+role);
-                if(el)el.checked=autoRandomRoles.has(role);
+                if(el)el.checked=selected;
+                const btn=document.getElementById('auto-random-role-btn-'+role);
+                if(btn){
+                    btn.classList.toggle('selected',selected);
+                    btn.setAttribute('aria-pressed',selected?'true':'false');
+                }
             });
             const status=document.getElementById('auto-random-status');
             if(status){
@@ -1112,6 +1118,12 @@ function updateCreateRoomModeUI(){
             renderAutoRandomControlUI();
             if(autoRandomEnabled)scheduleAutoRandomAuction(180);
             else cancelAutoRandomLaunch();
+        }
+
+        function toggleAutoRandomRoleButton(role){
+            const r=String(role||'').toUpperCase();
+            if(!['P','D','C','A'].includes(r))return;
+            setAutoRandomRole(r,!autoRandomRoles.has(r));
         }
 
         async function setAutoRandomRole(role,checked){
@@ -2418,12 +2430,51 @@ function updateCreateRoomModeUI(){
             showNominationWaitingBoard();
         }
 
+        function ensureNominationRoleOrder(){
+            const allowed=['P','D','C','A'];
+            const stored=Array.isArray(nominationState.role_order)
+                ? nominationState.role_order.map(r=>String(r).toUpperCase()).filter((r,i,a)=>allowed.includes(r)&&a.indexOf(r)===i)
+                : [];
+            nominationState.role_order=[...stored,...allowed.filter(r=>!stored.includes(r))];
+            return nominationState.role_order;
+        }
+
+        function renderNominationRoleOrder(){
+            const card=document.getElementById('nomination-role-order-card');
+            const list=document.getElementById('nomination-role-order-list');
+            const summary=document.getElementById('nomination-role-order-summary');
+            if(card)card.hidden=isMantraRoom();
+            if(isMantraRoom()||!list)return;
+            const order=ensureNominationRoleOrder();
+            if(summary)summary.textContent=order.join(' → ');
+            const labels={P:'Portieri',D:'Difensori',C:'Centrocampisti',A:'Attaccanti'};
+            list.innerHTML=order.map((role,i)=>`<div class="mg-role-order-row">
+                <span class="unified-role role-${role} selected" aria-hidden="true">${role}</span>
+                <span class="mg-role-order-name">${labels[role]}</span>
+                <button class="btn btn-secondary mg-role-order-move" type="button" ${i===0?'disabled':''} onclick="moveNominationRole('${role}',-1)" aria-label="Sposta ${labels[role]} su">↑</button>
+                <button class="btn btn-secondary mg-role-order-move" type="button" ${i===order.length-1?'disabled':''} onclick="moveNominationRole('${role}',1)" aria-label="Sposta ${labels[role]} giù">↓</button>
+            </div>`).join('');
+        }
+
+        async function moveNominationRole(role,delta){
+            if(isMantraRoom())return;
+            if(isAuctionActive){alert('Non puoi cambiare l’ordine dei ruoli mentre è in corso un’asta.');return;}
+            const arr=[...ensureNominationRoleOrder()];
+            const i=arr.indexOf(String(role).toUpperCase());
+            const j=i+Number(delta);
+            if(i<0||j<0||j>=arr.length)return;
+            [arr[i],arr[j]]=[arr[j],arr[i]];
+            nominationState.role_order=arr;
+            await saveNominationState(nominationReady);
+            renderNominationRoleOrder();
+        }
+
         function firstIncompleteRole(){
             if(isMantraRoom()){
                 return teamsCache.some(t=>teamCounts(t.id).total<mantraRosterMax())?'ALL':null;
             }
             const l=roomLimits();
-            for(const r of ['P','D','C','A']) if((l[r]||0)>0 && teamsCache.some(t=>(teamCounts(t.id)[r]||0)<l[r])) return r;
+            for(const r of ensureNominationRoleOrder()) if((l[r]||0)>0 && teamsCache.some(t=>(teamCounts(t.id)[r]||0)<l[r])) return r;
             return null;
         }
         function eligibleNominationTeams(r=nominationState.role){
@@ -2528,6 +2579,7 @@ function updateCreateRoomModeUI(){
             const t=document.getElementById('nomination-toggle-btn');if(t){t.checked=!!nominationState.enabled;t.textContent=nominationState.enabled?'Disattiva banditura a turni':'Attiva banditura a turni';t.setAttribute('aria-checked',String(!!nominationState.enabled));}
             const st=document.getElementById('nomination-control-status');if(st)st.innerHTML=!nominationState.enabled?'Modalità disattivata.':!nominationState.role?'Tutte le rose sono complete.':(isMantraRoom()?`Banditura libera MANTRA · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`:`Ruolo <b>${nominationState.role}</b> · turno <b style="color:var(--lime)">${escapeHtml(currentNominationTeam()?.name||'--')}</b>`);
             renderNominationOrder();
+            renderNominationRoleOrder();
         }
 
         function isMyNominationTurn(){
@@ -9602,7 +9654,7 @@ function updateCreateRoomModeUI(){
             updateManualAssignPreview();
         }
 
-        function selectManualPlayerFromList(playerId){
+        async function selectManualPlayerFromList(playerId){
             const sel=document.getElementById('manual-player-select');
             if(!sel)return;
             sel.value=String(playerId||'');
@@ -9611,7 +9663,55 @@ function updateCreateRoomModeUI(){
                 row.classList.toggle('selected',active);
                 row.setAttribute('aria-selected',active?'true':'false');
             });
-            updateManualAssignPreview();
+            const player=playersList.find(p=>String(p.Id)===String(sel.value||''));
+            const team=teamsCache.find(t=>String(t.id)===String(manualAssignTeamId));
+            if(!player||!team)return;
+            const price=await requestManualAssignPrice(player,team);
+            if(price==null)return;
+            const input=document.getElementById('manual-player-price');
+            if(input)input.value=String(price);
+            await confirmManualAssign();
+        }
+
+        let manualAssignPriceDialog=null;
+        function buildManualAssignPriceDialog(){
+            if(manualAssignPriceDialog)return manualAssignPriceDialog;
+            const dlg=document.createElement('dialog');
+            dlg.className='manual-price-dialog';
+            dlg.innerHTML=`<form method="dialog" class="manual-price-card">
+                <div class="manual-price-head"><h3>Prezzo assegnazione</h3><button type="button" class="manual-price-close" aria-label="Chiudi">×</button></div>
+                <div id="manual-price-copy" class="manual-price-copy"></div>
+                <input id="manual-price-input" type="number" min="1" step="1" inputmode="numeric" autocomplete="off">
+                <div id="manual-price-error" class="form-error"></div>
+                <div class="manual-price-actions"><button type="button" class="btn btn-secondary manual-price-cancel">Annulla</button><button type="submit" class="btn btn-green">Continua</button></div>
+            </form>`;
+            document.body.appendChild(dlg);
+            manualAssignPriceDialog=dlg;
+            return dlg;
+        }
+
+        function requestManualAssignPrice(player,team){
+            const dlg=buildManualAssignPriceDialog();
+            const form=dlg.querySelector('form');
+            const input=dlg.querySelector('#manual-price-input');
+            const copy=dlg.querySelector('#manual-price-copy');
+            const error=dlg.querySelector('#manual-price-error');
+            const close=dlg.querySelector('.manual-price-close');
+            const cancel=dlg.querySelector('.manual-price-cancel');
+            const role=playerRole(player);
+            const max=Math.max(0,maxBidForTeam(team,role));
+            copy.innerHTML=`<strong>${escapeHtml(player.Nome||'Giocatore')}</strong><span>${escapeHtml(role||'-')} · ${escapeHtml(player.Squadra||'-')}</span><span>Assegna a <b>${escapeHtml(team.name||'Squadra')}</b> · massimo <b>${max}</b> crediti</span>`;
+            input.value='1';input.max=String(max);error.textContent='';
+            return new Promise(resolve=>{
+                let settled=false;
+                const finish=value=>{if(settled)return;settled=true;form.removeEventListener('submit',submit);close.removeEventListener('click',abort);cancel.removeEventListener('click',abort);dlg.removeEventListener('cancel',onCancel);if(dlg.open)dlg.close();resolve(value);};
+                const abort=()=>finish(null);
+                const onCancel=e=>{e.preventDefault();finish(null);};
+                const submit=e=>{e.preventDefault();const value=parseInt(input.value);if(!Number.isFinite(value)||value<1){error.textContent='Inserisci un prezzo valido.';input.focus();return;}if(value>max){error.textContent=`Il prezzo massimo per questa squadra è ${max} crediti.`;input.focus();return;}finish(value);};
+                form.addEventListener('submit',submit);close.addEventListener('click',abort);cancel.addEventListener('click',abort);dlg.addEventListener('cancel',onCancel);
+                if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+                setTimeout(()=>{input.focus();input.select();},40);
+            });
         }
 
         function updateManualAssignPreview(){
@@ -9688,7 +9788,7 @@ function updateCreateRoomModeUI(){
                 return;
             }
 
-            if(!await appConfirm(`Assegnare ${player.Nome} a "${team.name}" per ${price} crediti?`))return;
+            if(!await appConfirm(`CONFERMA ASSEGNAZIONE\n\nGiocatore: ${player.Nome}\nRuolo: ${role||'-'}\nSquadra reale: ${player.Squadra||'-'}\nAssegna a: ${team.name}\nPrezzo: ${price} crediti`))return;
 
             const {error}=await supabaseClient.rpc('fanta_assign_player',{
                 p_room_id:currentRoomId,
