@@ -276,6 +276,71 @@
         return rows.map(item=>item.row);
     };
 
+    // Shared turn-board empty state: no fake role/club placeholders and theme-native panel.
+    function ensureEmptyPreviousAuctionStyle(){
+        if(document.getElementById('liveasta-empty-previous-auction-style'))return;
+        const style=document.createElement('style');
+        style.id='liveasta-empty-previous-auction-style';
+        style.textContent=`
+            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous{
+                background:var(--theme-card)!important;
+                color:var(--theme-text)!important;
+                border-color:var(--theme-border)!important;
+                justify-content:center!important;
+                align-items:center!important;
+            }
+            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-name-top{
+                color:var(--theme-muted)!important;
+                font-size:clamp(22px,2.3vw,42px)!important;
+                line-height:1.15!important;
+                letter-spacing:.04em!important;
+                margin:0!important;
+                padding:24px!important;
+                max-width:85%!important;
+                text-align:center!important;
+                text-shadow:none!important;
+            }
+            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-card,
+            html[data-live-theme] .nomination-turn-desktop .col-player.nomination-empty-previous #auction-player-meta{
+                display:none!important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function syncEmptyPreviousAuctionPanel(){
+        const playerCol=document.querySelector('#view-auction .col-player');
+        const name=document.getElementById('auction-player-name-top');
+        const card=document.getElementById('auction-player-card');
+        const meta=document.getElementById('auction-player-meta');
+        const role=document.getElementById('auction-player-role');
+        const club=document.getElementById('auction-player-club');
+        if(!playerCol)return;
+
+        if(nominationState?.enabled && !currentAuctionPlayer){
+            ensureEmptyPreviousAuctionStyle();
+            playerCol.classList.add('nomination-empty-previous');
+            if(name)name.textContent='NESSUNA ASTA PRECEDENTE';
+            if(card)card.setAttribute('aria-hidden','true');
+            if(meta){meta.hidden=true;meta.setAttribute('aria-hidden','true');}
+            if(role)role.textContent='';
+            if(club)club.textContent='';
+        }else{
+            playerCol.classList.remove('nomination-empty-previous');
+            if(card)card.removeAttribute('aria-hidden');
+            if(meta){meta.hidden=false;meta.setAttribute('aria-hidden','false');}
+        }
+    }
+
+    if(typeof showNominationTurnStage==='function'){
+        const baseShowNominationTurnStage=showNominationTurnStage;
+        showNominationTurnStage=function(){
+            const result=baseShowNominationTurnStage.apply(this,arguments);
+            requestAnimationFrame(syncEmptyPreviousAuctionPanel);
+            return result;
+        };
+    }
+
     window.liveastaMantraFilterUI={
         selectedTokens,
         openSubfilterPanel,
