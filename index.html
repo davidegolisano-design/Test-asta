@@ -25,7 +25,7 @@
     <meta name="msapplication-navbutton-color" content="#0D1117">
 
     <link rel="stylesheet" href="./styles/ui.css?v=100">
-    <link rel="stylesheet" href="./styles/management.css?v=102">
+    <link rel="stylesheet" href="./styles/management.css?v=113">
     <link rel="stylesheet" href="./styles/pwa.css?v=100">
     <link rel="stylesheet" href="./styles/roles.css?v=106">
     <link rel="stylesheet" href="./styles/mantra-filter-ui.css?v=108">
@@ -1018,6 +1018,13 @@
                             <button id="auto-random-role-btn-C" type="button" class="unified-role role-C" aria-pressed="false" onclick="toggleAutoRandomRoleButton('C')">C</button>
                             <button id="auto-random-role-btn-A" type="button" class="unified-role role-A" aria-pressed="false" onclick="toggleAutoRandomRoleButton('A')">A</button>
                         </div>
+                        <div class="mg-inline-setting sequence-ignore-option auto-random-ignore-sequence-option">
+                            <span class="nomination-auto-bid-one-copy"><b>Ignora sequenza</b><small>Pesca casualmente tra tutti i ruoli disponibili, ignorando i ruoli selezionati.</small></span>
+                            <label class="mg-switch-label" for="auto-random-ignore-sequence">
+                                <input id="auto-random-ignore-sequence" type="checkbox" onchange="setAutoRandomIgnoreSequence(this.checked)">
+                                <span class="mg-switch-ui" aria-hidden="true"></span>
+                            </label>
+                        </div>
                         <div id="auto-random-status" class="mg-status-text auto-random-status">DISATTIVO</div>
                     </article>
 
@@ -1030,6 +1037,13 @@
                         <div id="nomination-control-status" class="mg-status-text nomination-control-status">Modalità disattivata</div>
 
                         <div class="mg-nomination-details">
+                            <div id="nomination-ignore-sequence-option" class="mg-inline-setting sequence-ignore-option nomination-ignore-sequence-option">
+                                <span class="nomination-auto-bid-one-copy"><b>Ignora sequenza</b><small>Mantiene i turni, ma chi è di turno può bandire un giocatore di qualsiasi ruolo con slot ancora disponibile.</small></span>
+                                <label class="mg-switch-label" for="nomination-ignore-sequence">
+                                    <input id="nomination-ignore-sequence" type="checkbox" onchange="setNominationIgnoreSequence(this.checked)">
+                                    <span class="mg-switch-ui" aria-hidden="true"></span>
+                                </label>
+                            </div>
                             <div id="nomination-role-order-card" class="mg-role-order-card">
                                 <div class="mg-role-order-head"><div><b>Ordine ruoli</b><small>Scegli la sequenza dei reparti nella banditura a turni.</small></div><span id="nomination-role-order-summary">P → D → C → A</span></div>
                                 <div id="nomination-role-order-list" class="mg-role-order-list"></div>
@@ -1266,9 +1280,9 @@
     <script src="./scripts/timer-settings.js?v=100"></script>
     <script src="./scripts/player-assets.js?v=100"></script>
     <script src="./scripts/screen-wake-lock.js?v=100"></script>
-    <script src="./scripts/list-filters.js?v=112"></script>
-    <script src="./scripts/app.js?v=111"></script>
-    <script src="./scripts/mantra-auction.js?v=112"></script>
+    <script src="./scripts/list-filters.js?v=113"></script>
+    <script src="./scripts/app.js?v=113"></script>
+    <script src="./scripts/mantra-auction.js?v=113"></script>
     <script src="./scripts/mantra-filter-ui.js?v=109"></script>
 
     <div id="player-availability-modal" class="modal-overlay" style="display:none;">
