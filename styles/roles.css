@@ -1,0 +1,145 @@
+/* LIVEASTA role presentation — v1.01
+   Classic keeps the existing single PDCA badge.
+   Mantra renders each role token in its own circular badge. */
+
+.role-badge-mantra{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  width:auto!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:nowrap!important;
+  line-height:1!important;
+}
+
+.mantra-role-token{
+  width:26px!important;
+  height:26px!important;
+  min-width:26px!important;
+  min-height:26px!important;
+  padding:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 26px!important;
+  border-radius:50%!important;
+  border:1px solid rgba(0,0,0,.16)!important;
+  box-sizing:border-box!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:-.25px!important;
+  line-height:1!important;
+  text-transform:none!important;
+  text-shadow:none!important;
+  box-shadow:none!important;
+}
+
+.mantra-role-family-P{background:#ffd43b!important;color:#111!important;}
+.mantra-role-family-D{background:#42d66b!important;color:#07140b!important;}
+.mantra-role-family-C{background:#4c8dff!important;color:#fff!important;}
+.mantra-role-family-A{background:#ff4d55!important;color:#fff!important;}
+
+/* Banditore: il contenitore del ruolo diventa un gruppo, non una pillola. */
+#screen-auctioneer-board #auction-player-role.role-badge-mantra,
+#screen-auctioneer-board #auctioneer-ready-player-role.role-badge-mantra{
+  width:auto!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  max-width:none!important;
+  overflow:visible!important;
+  flex-wrap:nowrap!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+}
+
+#screen-auctioneer-board.auctioneer-ui-mobile #auction-player-role.role-badge-mantra .mantra-role-token,
+#screen-auctioneer-board.auctioneer-ui-mobile #auctioneer-ready-player-role.role-badge-mantra .mantra-role-token{
+  width:29px!important;
+  height:29px!important;
+  min-width:29px!important;
+  min-height:29px!important;
+  flex-basis:29px!important;
+  font-size:10.5px!important;
+}
+
+#screen-auctioneer-board.auctioneer-ui-desktop #auction-player-role.role-badge-mantra .mantra-role-token,
+#screen-auctioneer-board.auctioneer-ui-desktop #auctioneer-ready-player-role.role-badge-mantra .mantra-role-token{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  flex-basis:34px!important;
+  font-size:12px!important;
+}
+
+/* Giocatore: stesso linguaggio grafico della plancia banditore. */
+#screen-player-buzzer #phone-player-role.role-badge-mantra{
+  display:inline-flex!important;
+  width:auto!important;
+  max-width:none!important;
+  overflow:visible!important;
+  flex-wrap:nowrap!important;
+  background:transparent!important;
+  border:0!important;
+}
+#screen-player-buzzer #phone-player-role.role-badge-mantra .mantra-role-token{
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  min-height:28px!important;
+  flex-basis:28px!important;
+  font-size:10px!important;
+}
+
+/* Listone giocatore: due ruoli devono restare nella colonna senza invadere il nome. */
+#player-listone-list .player-listone-row .role-badge-mantra{
+  justify-self:start!important;
+}
+#player-listone-list .player-listone-row .role-badge-mantra .mantra-role-token{
+  width:23px!important;
+  height:23px!important;
+  min-width:23px!important;
+  min-height:23px!important;
+  flex-basis:23px!important;
+  font-size:8.5px!important;
+}
+
+/* Liste banditore e tabelle: niente ellissi sul gruppo ruolo. */
+#screen-auctioneer-board td:has(.role-badge-mantra),
+#screen-room-control td:has(.role-badge-mantra){
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+
+/* Rosa, acquisti, nomination e altre liste condividono lo stesso badge canonico. */
+:is(.roster-row,.roster-player-line,.player-room-roster-line,.auctioned-row,.nomination-player-row) .role-badge-mantra{
+  flex-shrink:0!important;
+}
+
+@media(max-width:420px){
+  #player-listone-list .player-listone-row .role-badge-mantra{
+    gap:2px!important;
+  }
+  #player-listone-list .player-listone-row .role-badge-mantra .mantra-role-token{
+    width:21px!important;
+    height:21px!important;
+    min-width:21px!important;
+    min-height:21px!important;
+    flex-basis:21px!important;
+    font-size:8px!important;
+  }
+}
