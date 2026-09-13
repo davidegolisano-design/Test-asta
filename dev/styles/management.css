@@ -1,4 +1,4 @@
-/* LIVEASTA DEV — canonical Gestione UI · v1.02 MGMT-08
+/* LIVEASTA DEV — canonical Gestione UI · v1.04 MGMT-10
    This file owns only #screen-room-control. Auction/business logic stays in app.js. */
 
 #screen-room-control{
@@ -389,4 +389,17 @@ body.auctioneer-desktop #screen-room-control .mg-content{
   max-width:1240px!important;
   margin:0 auto!important;
   padding:24px 0 48px!important;
+}
+
+
+/* === MGMT-10: desktop tidy === */
+body.auctioneer-desktop #screen-room-control .auctioneer-player-control-card{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  max-width:none!important;
+}
+body.auctioneer-desktop #screen-room-control .self-raise-control-card,
+body.auctioneer-desktop #screen-room-control .ready-control-card{
+  align-self:stretch!important;
+  height:100%!important;
 }
