@@ -16,23 +16,21 @@ jobs:
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text()
-          old='''                            <label class="mg-inline-setting nomination-auto-bid-one-option">
-                                <span class="nomination-auto-bid-one-copy"><b>Offerta 1 banditore</b><small>Il giocatore bandito parte da 1 credito assegnato alla squadra che ha bandito.</small></span>
-                                <span class="mg-switch-label">
-                                    <input id="nomination-auto-bid-one" type="checkbox" onchange="setNominationAutoBidOne(this.checked)">
-                                    <span class="mg-switch-ui" aria-hidden="true"></span>
-                                </span>
-                            </label>'''
-          new='''                            <div class="mg-inline-setting nomination-auto-bid-one-option">
-                                <span class="nomination-auto-bid-one-copy"><b>Offerta 1 banditore</b><small>Il giocatore bandito parte da 1 credito assegnato alla squadra che ha bandito.</small></span>
-                                <label class="mg-switch-label" for="nomination-auto-bid-one">
-                                    <input id="nomination-auto-bid-one" type="checkbox" onchange="setNominationAutoBidOne(this.checked)">
-                                    <span class="mg-switch-ui" aria-hidden="true"></span>
-                                </label>
-                            </div>'''
-          if old not in s:
-              raise SystemExit('target control markup not found')
-          p.write_text(s.replace(old,new,1))
+          start=s.index('<label class="mg-inline-setting nomination-auto-bid-one-option">')
+          end=s.index('<div class="nomination-turn-nav',start)
+          block=s[start:end]
+          block=block.replace('<label class="mg-inline-setting nomination-auto-bid-one-option">','<div class="mg-inline-setting nomination-auto-bid-one-option">',1)
+          block=block.replace('<span class="mg-switch-label">','<label class="mg-switch-label" for="nomination-auto-bid-one">',1)
+          marker='<span class="mg-switch-ui" aria-hidden="true"></span>'
+          pos=block.index(marker)+len(marker)
+          close_span=block.index('</span>',pos)
+          block=block[:close_span]+'</label>'+block[close_span+7:]
+          outer_close=block.rfind('</label>')
+          if outer_close<0:
+              raise SystemExit('outer label close not found')
+          block=block[:outer_close]+'</div>'+block[outer_close+8:]
+          s=s[:start]+block+s[end:]
+          p.write_text(s)
           PY
       - name: Validate and commit
         run: |
