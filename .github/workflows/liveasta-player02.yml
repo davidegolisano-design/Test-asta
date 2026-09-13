@@ -15,62 +15,19 @@ jobs:
       - name: Apply PLAYER-02
         run: |
           python - <<'PY'
+          import base64
           from pathlib import Path
+          patch_b64='LyogPT09IFBMQVlFUi0wMjogcGxheWVyIHRoZW1lIHBhbGV0dGUgKyBmaW5hbCBjb3VudGRvd24gMy0wID09PSAqLwpodG1sW2RhdGEtbGl2ZS10aGVtZV0gYm9keSAjc2NyZWVuLXBsYXllci1idXp6ZXIjc2NyZWVuLXBsYXllci1idXp6ZXIgLnBsYXllci1saXZlLXNpZGUgOmlzKAogIC5wbGF5ZXItdGltZXItYm94IHNwYW4sCiAgLnBsYXllci10aW1lci1ib3ggc21hbGwsCiAgI3BsYXllci1hdWN0aW9uLXRpdGxlLAogIC5iaWQtbGFiZWwsCiAgLmNyZWRpdC1sYWJlbAopewogIGNvbG9yOnZhcigtLXRoZW1lLW11dGVkKSFpbXBvcnRhbnQ7CiAgLXdlYmtpdC10ZXh0LWZpbGwtY29sb3I6dmFyKC0tdGhlbWUtbXV0ZWQpIWltcG9ydGFudDsKICBvcGFjaXR5OjEhaW1wb3J0YW50OwogIHRleHQtc2hhZG93Om5vbmUhaW1wb3J0YW50Owp9Cmh0bWxbZGF0YS1saXZlLXRoZW1lXSBib2R5ICNzY3JlZW4tcGxheWVyLWJ1enplciNzY3JlZW4tcGxheWVyLWJ1enplciAucGxheWVyLWxpdmUtc2lkZSA6aXMoI3BsYXllci1jb3VudGRvd24sI3BsYXllci1jdXJyZW50LXZhbHVlKXsKICBjb2xvcjp2YXIoLS10aGVtZS1udW1iZXIpIWltcG9ydGFudDsKICAtd2Via2l0LXRleHQtZmlsbC1jb2xvcjp2YXIoLS10aGVtZS1udW1iZXIpIWltcG9ydGFudDsKICBvcGFjaXR5OjEhaW1wb3J0YW50OwogIHRleHQtc2hhZG93Om5vbmUhaW1wb3J0YW50Owp9Cmh0bWxbZGF0YS1saXZlLXRoZW1lXSBib2R5ICNzY3JlZW4tcGxheWVyLWJ1enplciNzY3JlZW4tcGxheWVyLWJ1enplciAucGxheWVyLWxpdmUtc2lkZSAjcGxheWVyLWN1cnJlbnQtd2lubmVyewogIGNvbG9yOnZhcigtLXRoZW1lLXByaW1hcnkpIWltcG9ydGFudDsKICAtd2Via2l0LXRleHQtZmlsbC1jb2xvcjp2YXIoLS10aGVtZS1wcmltYXJ5KSFpbXBvcnRhbnQ7CiAgb3BhY2l0eToxIWltcG9ydGFudDsKICB0ZXh0LXNoYWRvdzpub25lIWltcG9ydGFudDsKfQpodG1sW2RhdGEtbGl2ZS10aGVtZV0gYm9keSAjc2NyZWVuLWF1Y3Rpb25lZXItYm9hcmQjc2NyZWVuLWF1Y3Rpb25lZXItYm9hcmQgI2NvdW50ZG93bi1kaXNwbGF5LmxpdmVhc3RhLWxhc3QzLApodG1sW2RhdGEtbGl2ZS10aGVtZV0gYm9keSAjc2NyZWVuLXBsYXllci1idXp6ZXIjc2NyZWVuLXBsYXllci1idXp6ZXIgI3BsYXllci1jb3VudGRvd24ubGl2ZWFzdGEtbGFzdDN7CiAgY29sb3I6dmFyKC0tdGhlbWUtZGFuZ2VyKSFpbXBvcnRhbnQ7CiAgLXdlYmtpdC10ZXh0LWZpbGwtY29sb3I6dmFyKC0tdGhlbWUtZGFuZ2VyKSFpbXBvcnRhbnQ7CiAgb3BhY2l0eToxIWltcG9ydGFudDsKICB0ZXh0LXNoYWRvdzowIDAgMTRweCBjb2xvci1taXgoaW4gc3JnYix2YXIoLS10aGVtZS1kYW5nZXIpIDM4JSx0cmFuc3BhcmVudCkhaW1wb3J0YW50Owp9Cmh0bWxbZGF0YS1saXZlLXRoZW1lXSBib2R5ICNzY3JlZW4tYXVjdGlvbmVlci1ib2FyZCNzY3JlZW4tYXVjdGlvbmVlci1ib2FyZCAjdmlldy1hdWN0aW9uLm1vYmlsZS1yZWFkeSAjY291bnRkb3duLWRpc3BsYXkubGl2ZWFzdGEtbGFzdDN7CiAgY29sb3I6dmFyKC0tdGhlbWUtbnVtYmVyKSFpbXBvcnRhbnQ7CiAgLXdlYmtpdC10ZXh0LWZpbGwtY29sb3I6dmFyKC0tdGhlbWUtbnVtYmVyKSFpbXBvcnRhbnQ7CiAgdGV4dC1zaGFkb3c6bm9uZSFpbXBvcnRhbnQ7Cn0KaHRtbCBib2R5ICNub21pbmF0aW9uLXBpY2tlci1vdmVybGF5IC5ub21pbmF0aW9uLXBsYXllci1yb3cgLnJvbGUtYmFkZ2V7CiAgd2lkdGg6MjhweCFpbXBvcnRhbnQ7bWluLXdpZHRoOjI4cHghaW1wb3J0YW50O21heC13aWR0aDoyOHB4IWltcG9ydGFudDsKICBoZWlnaHQ6MjhweCFpbXBvcnRhbnQ7bWluLWhlaWdodDoyOHB4IWltcG9ydGFudDttYXgtaGVpZ2h0OjI4cHghaW1wb3J0YW50OwogIHBhZGRpbmc6MCFpbXBvcnRhbnQ7bWFyZ2luOjAhaW1wb3J0YW50O2ZsZXg6MCAwIDI4cHghaW1wb3J0YW50OwogIGRpc3BsYXk6aW5saW5lLWZsZXghaW1wb3J0YW50O2FsaWduLWl0ZW1zOmNlbnRlciFpbXBvcnRhbnQ7anVzdGlmeS1jb250ZW50OmNlbnRlciFpbXBvcnRhbnQ7CiAgYm9yZGVyLXJhZGl1czo1MCUhaW1wb3J0YW50O2xpbmUtaGVpZ2h0OjEhaW1wb3J0YW50O2ZvbnQtc2l6ZToxMnB4IWltcG9ydGFudDtmb250LXdlaWdodDo5MDAhaW1wb3J0YW50Owp9Cg=='
+          patch=base64.b64decode(patch_b64).decode('utf-8')
 
           css_path=Path('dev/styles/refinements.css')
           css=css_path.read_text(encoding='utf-8')
           marker='/* === PLAYER-01: player auction contrast + nomination role badge === */'
           if marker in css:
               css=css.split(marker,1)[0].rstrip()
-
-          patch=r'''
-
-/* === PLAYER-02: player theme palette + final countdown 3-0 === */
-html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer .player-live-side :is(
-  .player-timer-box span,
-  .player-timer-box small,
-  #player-auction-title,
-  .bid-label,
-  .credit-label
-){
-  color:var(--theme-muted)!important;
-  -webkit-text-fill-color:var(--theme-muted)!important;
-  opacity:1!important;
-  text-shadow:none!important;
-}
-html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer .player-live-side :is(#player-countdown,#player-current-value){
-  color:var(--theme-number)!important;
-  -webkit-text-fill-color:var(--theme-number)!important;
-  opacity:1!important;
-  text-shadow:none!important;
-}
-html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer .player-live-side #player-current-winner{
-  color:var(--theme-primary)!important;
-  -webkit-text-fill-color:var(--theme-primary)!important;
-  opacity:1!important;
-  text-shadow:none!important;
-}
-html[data-live-theme] body #screen-auctioneer-board#screen-auctioneer-board #countdown-display.liveasta-last3,
-html[data-live-theme] body #screen-player-buzzer#screen-player-buzzer #player-countdown.liveasta-last3{
-  color:var(--theme-danger)!important;
-  -webkit-text-fill-color:var(--theme-danger)!important;
-  opacity:1!important;
-  text-shadow:0 0 14px color-mix(in srgb,var(--theme-danger) 38%,transparent)!important;
-}
-html[data-live-theme] body #screen-auctioneer-board#screen-auctioneer-board #view-auction.mobile-ready #countdown-display.liveasta-last3{
-  color:var(--theme-number)!important;
-  -webkit-text-fill-color:var(--theme-number)!important;
-  text-shadow:none!important;
-}
-html body #nomination-picker-overlay .nomination-player-row .role-badge{
-  width:28px!important;min-width:28px!important;max-width:28px!important;
-  height:28px!important;min-height:28px!important;max-height:28px!important;
-  padding:0!important;margin:0!important;flex:0 0 28px!important;
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  border-radius:50%!important;line-height:1!important;font-size:12px!important;font-weight:900!important;
-}
-'''
-          css_path.write_text(css+patch,encoding='utf-8')
+          elif '/* === PLAYER-02: player theme palette + final countdown 3-0 === */' in css:
+              css=css.split('/* === PLAYER-02: player theme palette + final countdown 3-0 === */',1)[0].rstrip()
+          css_path.write_text(css+'\n\n'+patch,encoding='utf-8')
 
           preload_path=Path('dev/scripts/theme-preload.js')
           preload=preload_path.read_text(encoding='utf-8')
