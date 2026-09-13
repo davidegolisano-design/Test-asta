@@ -152,11 +152,20 @@
         renderAutoRandomControlUI();
     };
 
+    const baseAutoRandomSelectedRolesFromControl=autoRandomSelectedRolesFromControl;
+    const baseRenderAutoRandomControlUI=renderAutoRandomControlUI;
+    const baseSetAutoRandomEnabled=setAutoRandomEnabled;
+    const baseToggleAutoRandomRoleButton=toggleAutoRandomRoleButton;
+    const baseSetAutoRandomRole=setAutoRandomRole;
+    const baseAutoRandomCandidates=autoRandomCandidates;
+
     autoRandomSelectedRolesFromControl=function(){
+        if(!isMantraRoom())return baseAutoRandomSelectedRolesFromControl.apply(this,arguments);
         return activeGroups().filter(role=>document.getElementById('auto-random-role-btn-'+role)?.getAttribute('aria-pressed')==='true');
     };
 
     renderAutoRandomControlUI=function(){
+        if(!isMantraRoom())return baseRenderAutoRandomControlUI.apply(this,arguments);
         const roles=activeGroups();
         if(isMantraRoom()){
             const normalized=normalizeStoredGroups([...autoRandomRoles]);
@@ -202,6 +211,7 @@
     };
 
     setAutoRandomEnabled=async function(enabled){
+        if(!isMantraRoom())return baseSetAutoRandomEnabled.apply(this,arguments);
         const selected=autoRandomSelectedRolesFromControl();
         if(enabled&&!autoRandomIgnoreSequence&&!selected.length){
             alert(isMantraRoom()?'Seleziona almeno una categoria.':'Seleziona almeno un ruolo tra P, D, C e A.');
@@ -221,11 +231,13 @@
     };
 
     toggleAutoRandomRoleButton=function(role){
+        if(!isMantraRoom())return baseToggleAutoRandomRoleButton.apply(this,arguments);
         const r=String(role||'').toUpperCase();
         if(!activeGroups().includes(r))return;
         setAutoRandomRole(r,!autoRandomRoles.has(r));
     };
     setAutoRandomRole=async function(role,checked){
+        if(!isMantraRoom())return baseSetAutoRandomRole.apply(this,arguments);
         const r=String(role||'').toUpperCase();
         if(!activeGroups().includes(r))return;
         if(checked)autoRandomRoles.add(r);else autoRandomRoles.delete(r);
@@ -240,6 +252,7 @@
         if(autoRandomEnabled&&!isAuctionActive&&!readyGateWaiting&&!auctionPrepInterval)scheduleAutoRandomAuction(180);
     };
     autoRandomCandidates=function(){
+        if(!isMantraRoom())return baseAutoRandomCandidates.apply(this,arguments);
         if(autoRandomIgnoreSequence){
             return getAvailablePlayers().filter(player=>
                 groupsForRole(playerRole(player)).some(group=>autoRandomHasBidderForRole(group))
