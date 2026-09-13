@@ -32,6 +32,27 @@
     if(scheme)scheme.content=light?'light':'dark';
     let ms=document.querySelector('meta[name="msapplication-navbutton-color"]');
     if(ms)ms.content=t.meta;
+
+    const stateStyle=document.createElement('style');
+    stateStyle.id='liveasta-player-state-theme-text';
+    stateStyle.textContent=`
+      html[data-live-theme][data-theme-choice] body #screen-player-buzzer#screen-player-buzzer .phone-top-area:is(.player-winning,.player-losing) .player-live-side.player-live-side :is(
+        .player-timer-box span,
+        .player-timer-box small,
+        #player-auction-title,
+        #player-current-winner,
+        #player-countdown,
+        #player-current-value,
+        .bid-label,
+        .credit-label
+      ){
+        color:var(--theme-text)!important;
+        -webkit-text-fill-color:var(--theme-text)!important;
+        opacity:1!important;
+        text-shadow:none!important;
+      }
+    `;
+    document.head.appendChild(stateStyle);
   }catch(e){
     document.documentElement.setAttribute('data-live-theme','broadcast');
     document.documentElement.setAttribute('data-theme-choice','broadcast');
