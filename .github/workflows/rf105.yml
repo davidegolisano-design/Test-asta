@@ -1,0 +1,42 @@
+name: RF105
+on:
+  push:
+    paths: ['.github/workflows/rf105.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/mantra-filter-ui.js'); s=p.read_text()
+          s=s.replace("tokenCache.set(cacheKey(view),new Set(ALL_TOKENS));","const allOn=selectedTokens(view).size===ALL_TOKENS.length;\n            tokenCache.set(cacheKey(view),new Set(allOn?[]:ALL_TOKENS));")
+          s=s.replace("const groups=listFilterState(view)?.roles||GROUP_ORDER;","const groups=listFilterState(view)?.roles;\n            if(!Array.isArray(groups))return [...ALL_TOKENS];")
+          s=s.replace("return [...new Set(selected.length?selected:ALL_TOKENS)];","return [...new Set(selected)];")
+          p.write_text(s)
+          p=Path('scripts/mantra-auction.js'); s=p.read_text().replace("            if(!state.roles.length)state.roles=[...GROUPS];\n",""); p.write_text(s)
+          p=Path('styles/mantra-filter-ui.css'); s=p.read_text()
+          s=s.replace('grid-template-columns:repeat(3,minmax(0,1fr))!important;','grid-template-columns:repeat(6,minmax(0,1fr))!important;',1)
+          s=s.replace('gap:7px!important;\n  width:100%!important;','gap:4px!important;\n  width:100%!important;',1)
+          s=s.replace('min-height:50px!important;\n  padding:7px 5px!important;','min-height:44px!important;\n  padding:5px 2px!important;',1)
+          s=s.replace('html body.liveasta-mantra .mantra-role-filter-row{gap:6px!important;}','html body.liveasta-mantra .mantra-role-filter-row{gap:3px!important;}')
+          s=s.replace('min-height:47px!important;','min-height:42px!important;')
+          s += '\nhtml body.liveasta-mantra .mantra-role-filter-row .unified-role-all{font-size:9px!important;font-weight:950!important;opacity:.48!important;}\nhtml body.liveasta-mantra .mantra-role-filter-row .unified-role-all.selected,html body.liveasta-mantra .mantra-role-filter-row .unified-role-all[aria-pressed="true"]{opacity:1!important;background:var(--theme-primary)!important;color:var(--theme-bg-deep)!important;border-color:var(--theme-primary)!important;}\n'
+          p.write_text(s)
+          p=Path('index.html'); s=p.read_text()
+          for a,b in [('mantra-filter-ui.css?v=104','mantra-filter-ui.css?v=105'),('list-filters.js?v=102','list-filters.js?v=105'),('mantra-auction.js?v=102','mantra-auction.js?v=105'),('mantra-filter-ui.js?v=104','mantra-filter-ui.js?v=105')]: s=s.replace(a,b)
+          p.write_text(s)
+          PY
+      - name: Commit
+        run: |
+          git config user.name liveasta-release-bot
+          git config user.email liveasta-release-bot@users.noreply.github.com
+          git add index.html scripts/mantra-filter-ui.js scripts/mantra-auction.js styles/mantra-filter-ui.css
+          git rm .github/workflows/rf105.yml
+          git commit -m 'Unify role filters and one-row Mantra controls'
+          git push
