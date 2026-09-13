@@ -1,0 +1,53 @@
+name: LIVEASTA MGMT-05 apply
+
+on:
+  push:
+    paths:
+      - '.github/workflows/liveasta-mgmt05.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply MGMT-05 patch
+        run: python .github/liveasta_mgmt05_patch.py
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check dev/scripts/app.js
+          node --check dev/scripts/theme-preload.js
+          node --check dev/scripts/theme.js
+
+      - name: Validate DEV structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('dev/index.html').read_text(encoding='utf-8')
+          ids=re.findall(r'\bid="([^"]+)"',html)
+          dup=sorted({x for x in ids if ids.count(x)>1})
+          if dup:
+              raise SystemExit('Duplicate IDs: '+', '.join(dup))
+          required=['player-exit-btn','auctioneer-player-toggle-btn','manual-player-list','manual-player-select','auction-room-password']
+          missing=[x for x in required if f'id="{x}"' not in html]
+          if missing:
+              raise SystemExit('Missing required IDs: '+', '.join(missing))
+          print('HTML structure OK; IDs:',len(ids))
+          PY
+
+      - name: Commit DEV-only changes and remove temporary files
+        run: |
+          git config user.name "liveasta-dev-bot"
+          git config user.email "liveasta-dev-bot@users.noreply.github.com"
+          rm -f .github/liveasta_mgmt05_patch.py .github/workflows/liveasta-mgmt05.yml
+          git add dev .github
+          git commit -m "Refine DEV access theme and management UI v0.99" || exit 0
+          git push
