@@ -75,3 +75,5 @@ s=s.replace(
 
 fs.writeFileSync(p,s);
 console.log(`Adapted stress harness for ${mode}: ${ROOM}`);
+
+// QA retrigger after clearing stale MANTRA auctioneer lock.
