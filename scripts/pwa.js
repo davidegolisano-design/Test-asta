@@ -47,9 +47,8 @@
     button.classList.remove('show');
   });
 
-  // Install the miniature fallback synchronously. Session resume can render
-  // player cards immediately, before dynamically appended feature scripts
-  // have necessarily executed.
+  // Secondary safety net. The primary fallback is installed by theme-preload
+  // in <head>, before body parsing can fire inline image error handlers.
   if(typeof window.playerImageFallback!=='function'){
     const fallbackSvg="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='48' fill='%23141820'/%3E%3Ccircle cx='256' cy='190' r='92' fill='%23343c49'/%3E%3Cpath d='M96 470c14-103 74-158 160-158s146 55 160 158' fill='%23343c49'/%3E%3C/svg%3E";
     window.playerImageFallback=function playerImageFallback(img){
@@ -70,7 +69,7 @@
     './scripts/image-fallback-fix.js?v=1031',
     './scripts/player-access-race-fix.js?v=1031',
     './scripts/ready-gate-cleanup-fix.js?v=1031',
-    './scripts/sealed-submission-resume-fix.js?v=1031',
+    './scripts/sealed-submission-resume-fix.js?v=1032',
     './scripts/session-resume.js?v=103'
   ];
   featureScripts.forEach(src=>{
