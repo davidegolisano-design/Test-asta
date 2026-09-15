@@ -28,6 +28,15 @@ jobs:
           echo $! > /tmp/liveasta-http.pid
           sleep 2
           curl -fsS http://127.0.0.1:4173/ >/dev/null
+      - name: Adapt QA to room-list visibility setting
+        run: |
+          python3 - <<'PY'
+          p='qa/ten-player-stress.mjs'
+          s=open(p,encoding='utf-8').read()
+          s=s.replace("await selectText(page,'#auction-room-select',ROOM);await page.locator('#auction-room-password').fill(PASS);", "if(await page.locator('#auction-room-select').isVisible())await selectText(page,'#auction-room-select',ROOM);else await page.locator('#auction-room-name-input').fill(ROOM);await page.locator('#auction-room-password').fill(PASS);")
+          s=s.replace("await page.getByRole('button',{name:/Giocatore/i}).click();await selectText(page,'#player-room-select',ROOM);await page.locator('#player-room-password').fill(PASS);", "await page.getByRole('button',{name:/Giocatore/i}).click();if(await page.locator('#player-room-select').isVisible())await selectText(page,'#player-room-select',ROOM);else await page.locator('#player-room-name-input').fill(ROOM);await page.locator('#player-room-password').fill(PASS);")
+          open(p,'w',encoding='utf-8').write(s)
+          PY
       - name: Syntax checks
         run: |
           node --check scripts/debug-v103.js
