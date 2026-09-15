@@ -57,7 +57,7 @@
     try{
       if(!token || !(sealedBids instanceof Map) || String(sealedAuctionToken||'')!==token)return;
       const submitted=[...sealedBids.keys()].map(String);
-      const key=`liveasta_live_${currentRoomId}`;
+      const key=`live_auction_${currentRoomId}`;
       const now=new Date().toISOString();
       const {data,error}=await supabaseClient.from('fanta_app_data').select('data').eq('key',key).maybeSingle();
       if(error)throw error;
