@@ -9,6 +9,9 @@
   let confirmedPlayerToken='';
   let pendingGuardUntil=0;
   let guardTimer=null;
+  let banditorePersistTimer=null;
+  let persistInFlight=false;
+  let lastPersistSignature='';
 
   function currentToken(){try{return String(playerSealedToken||'');}catch(_){return '';}}
   function currentTeam(){try{return String(myTeamId||'');}catch(_){return '';}}
@@ -40,9 +43,6 @@
     },40);
   }
 
-  function submittedIdsFromState(state){
-    return Array.isArray(state?.sealed_submitted_ids)?state.sealed_submitted_ids.map(String):[];
-  }
   function markConfirmedFromPayload(payload){
     try{
       const token=String(payload?.token||payload?.sealed_token||'');
@@ -54,24 +54,48 @@
   }
 
   async function persistSubmittedIds(token){
+    if(persistInFlight)return false;
     try{
-      if(!token || !(sealedBids instanceof Map) || String(sealedAuctionToken||'')!==token)return;
+      if(!token || !(sealedBids instanceof Map) || String(sealedAuctionToken||'')!==token)return false;
+      if(typeof saveLiveAuctionState!=='function')return false;
       const submitted=[...sealedBids.keys()].map(String);
-      const key=`live_auction_${currentRoomId}`;
-      const now=new Date().toISOString();
-      const {data,error}=await supabaseClient.from('fanta_app_data').select('data').eq('key',key).maybeSingle();
-      if(error)throw error;
-      const base=(data?.data&&typeof data.data==='object')?data.data:{};
-      if(base.phase!=='sealed' || String(base.sealed_token||'')!==token)return;
-      const merged=[...new Set([...submittedIdsFromState(base),...submitted])];
-      const next={...base,sealed_submitted_ids:merged,updated_at:now};
-      const {error:writeError}=await supabaseClient.from('fanta_app_data').upsert({key,data:next,file_name:'live-auction-state',updated_at:now},{onConflict:'key'});
-      if(writeError)throw writeError;
-      if(liveAuctionState?.phase==='sealed' && String(liveAuctionState?.sealed_token||'')===token){
-        liveAuctionState={...liveAuctionState,sealed_submitted_ids:merged,updated_at:now};
-      }
-      try{channel?.send({type:'broadcast',event:'live_state',payload:typeof liveStateForBroadcast==='function'?liveStateForBroadcast():liveAuctionState}).catch(()=>{});}catch(_){}
-    }catch(error){try{console.warn('Persistenza identità buste non riuscita',error);}catch(_){}}
+      const signature=`${token}|${submitted.slice().sort().join(',')}`;
+      if(signature===lastPersistSignature)return true;
+      persistInFlight=true;
+      await saveLiveAuctionState({sealed_submitted_ids:submitted});
+      lastPersistSignature=signature;
+      try{
+        channel?.send({
+          type:'broadcast',event:'live_state',
+          payload:typeof liveStateForBroadcast==='function'?liveStateForBroadcast():liveAuctionState
+        }).catch(()=>{});
+      }catch(_){}
+      return true;
+    }catch(error){
+      try{console.warn('Persistenza identità buste non riuscita',error);}catch(_){}
+      return false;
+    }finally{
+      persistInFlight=false;
+    }
+  }
+
+  function ensureBanditorePersistTimer(){
+    if(banditorePersistTimer)return;
+    banditorePersistTimer=setInterval(()=>{
+      try{
+        const isBanditore=typeof auctioneerLockKey!=='undefined' && !!auctioneerLockKey;
+        const token=String(typeof sealedAuctionToken!=='undefined'?(sealedAuctionToken||''):'');
+        const active=typeof sealedAuctionModeActive!=='undefined' && !!sealedAuctionModeActive;
+        const phase=String(typeof liveAuctionState!=='undefined'?(liveAuctionState?.phase||''):'');
+        if(!isBanditore || !active || !token || phase!=='sealed' || !(sealedBids instanceof Map)){
+          if(!active || !token)lastPersistSignature='';
+          return;
+        }
+        const submitted=[...sealedBids.keys()].map(String);
+        const signature=`${token}|${submitted.slice().sort().join(',')}`;
+        if(signature!==lastPersistSignature)persistSubmittedIds(token);
+      }catch(_){}
+    },60);
   }
 
   function installChannelGuard(){
@@ -103,7 +127,7 @@
         try{beforeSize=sealedBids instanceof Map?sealedBids.size:-1;token=String(sealedAuctionToken||'');}catch(_){}
         const result=await originalReceive.apply(this,args);
         try{
-          if(beforeSize>=0 && sealedBids instanceof Map && sealedBids.size>beforeSize && liveAuctionState?.phase==='sealed' && token && String(sealedAuctionToken||'')===token){
+          if(beforeSize>=0 && sealedBids instanceof Map && sealedBids.size>beforeSize && token && String(sealedAuctionToken||'')===token){
             await persistSubmittedIds(token);
           }
         }catch(_){}
@@ -123,9 +147,10 @@
       };
       wrappedSubmit.__liveastaSealedPlayerSubmitGuardWrapped=true;window.submitPlayerSealedBid=wrappedSubmit;
     }
-    installChannelGuard();ensureGuardTimer();return true;
+    installChannelGuard();ensureGuardTimer();ensureBanditorePersistTimer();return true;
   }
 
+  ensureBanditorePersistTimer();
   if(install())return;
   const timer=setInterval(()=>{if(install() || ++attempts>=150)clearInterval(timer);},20);
 })();
