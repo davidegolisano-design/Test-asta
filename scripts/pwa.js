@@ -28,7 +28,7 @@
     './scripts/image-fallback-fix.js?v=1031',
     './scripts/player-access-race-fix.js?v=1031',
     './scripts/ready-gate-cleanup-fix.js?v=1031',
-    './scripts/sealed-submission-resume-fix.js?v=1033',
+    './scripts/sealed-submission-resume-fix.js?v=1034',
     './scripts/sealed-ui-race-fix.js?v=1031',
     './scripts/session-resume.js?v=103'
   ];
