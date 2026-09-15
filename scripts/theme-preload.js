@@ -1,4 +1,16 @@
 (function(){
+  // Must exist before the body parser can fire <img onerror> handlers.
+  // The full player-assets module loaded later can replace/use the same global.
+  if(typeof window.playerImageFallback!=='function'){
+    const earlyPlayerFallback="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='48' fill='%23141820'/%3E%3Ccircle cx='256' cy='190' r='92' fill='%23343c49'/%3E%3Cpath d='M96 470c14-103 74-158 160-158s146 55 160 158' fill='%23343c49'/%3E%3C/svg%3E";
+    window.playerImageFallback=function playerImageFallbackEarly(img){
+      if(!img || img.dataset.liveastaEarlyFallback==='1')return;
+      img.dataset.liveastaEarlyFallback='1';
+      img.onerror=null;
+      img.src=earlyPlayerFallback;
+    };
+  }
+
   const KEY='liveasta_theme';
   const THEMES={
     broadcast:{base:'broadcast',bg:'#11151B',deep:'#0B0E12',card:'#1A2028',panel:'#151A21',hover:'#242C36',input:'#171D24',border:'#3A4654',text:'#F6F2E8',muted:'#B8B1A3',soft:'#8E887E',primary:'#C9A84E',primaryHover:'#B5933E',accent:'#D5B45A',number:'#D5B45A',danger:'#D84A55',success:'#2DA66F',meta:'#11151B'},
