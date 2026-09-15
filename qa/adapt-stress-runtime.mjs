@@ -55,6 +55,10 @@ s=s.replace(
   "for(const p of [ps[7],ps[8],ps[9]]){await p.page.locator('#player-ready-choice-controls').waitFor({state:'visible',timeout:15000});await p.page.locator('#player-ready-choice-ready').click();}await a.waitForFunction(()=>!readyGateWaiting,null,{timeout:20000});check('READY completato dopo rientri',await a.evaluate(()=>!readyGateWaiting));await waitBid(ps[0]);");
 
 s=s.replace(
+  "await waitBid(ps[0]);await ps[0].page.locator('.btn-plus-2').click();await sleep(8500);",
+  "await waitBid(ps[0]);const readyBid=ps[0].page.locator('.btn-plus-2:visible,.btn-plus-1:visible').first();await readyBid.waitFor({state:'visible',timeout:5000});await readyBid.click({timeout:5000});await sleep(8500);");
+
+s=s.replace(
   "async function allSkip(a,ps){await nextPlayer(a);await Promise.all(ps.map(p=>p.page.locator('#player-ready-choice-controls').waitFor({state:'visible',timeout:15000})));await Promise.all(ps.map(p=>p.page.locator('#player-ready-choice-skip').click()));",
   "async function allSkip(a,ps){await nextPlayer(a);await sleep(700);const required=await a.evaluate(()=>readyRequiredIds().map(String));check('READY richiesto ad almeno una squadra',required.length>0,JSON.stringify(required));for(const p of ps){const id=await p.page.evaluate(()=>String(myTeamId||''));if(!required.includes(id))continue;await p.page.locator('#player-ready-choice-controls').waitFor({state:'visible',timeout:15000});await p.page.locator('#player-ready-choice-skip').click();}await a.waitForFunction(()=>!readyGateWaiting,null,{timeout:20000});");
 
@@ -75,5 +79,3 @@ s=s.replace(
 
 fs.writeFileSync(p,s);
 console.log(`Adapted stress harness for ${mode}: ${ROOM}`);
-
-// QA retrigger after clearing stale MANTRA auctioneer lock.
