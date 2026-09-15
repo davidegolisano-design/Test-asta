@@ -1,0 +1,72 @@
+name: LIVEASTA QA 10-player MANTRA stress
+on:
+  push:
+    branches:
+      - qa/ten-player-stress-v103
+    paths:
+      - 'scripts/**'
+      - 'qa/ten-player-stress.mjs'
+      - '.github/workflows/qa-ten-player-mantra-stress.yml'
+  workflow_dispatch:
+concurrency:
+  group: liveasta-qa-mantra-10-player
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  stress-mantra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm init -y && npm install playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - name: Start local LIVEASTA
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/liveasta-http.log 2>&1 &
+          echo $! > /tmp/liveasta-http.pid
+          sleep 2
+          curl -fsS http://127.0.0.1:4173/ >/dev/null
+      - name: Adapt QA to MANTRA runtime settings
+        run: |
+          python3 - <<'PY'
+          p='qa/ten-player-stress.mjs'
+          s=open(p,encoding='utf-8').read()
+          s=s.replace("const ROOM='QA10P5T';", "const ROOM='QA10M5T';")
+          s=s.replace("const names=Array.from({length:10},(_,i)=>`ST${RUN}-${String(i+1).padStart(2,'0')}`);", "const names=Array.from({length:10},(_,i)=>`QA-MANTRA-${String(i+1).padStart(2,'0')}`);")
+          s=s.replace("await selectText(page,'#auction-room-select',ROOM);await page.locator('#auction-room-password').fill(PASS);", "await page.waitForTimeout(1800);await page.evaluate(room=>{const input=document.querySelector('#auction-room-name-input');if(input){input.value=room;input.dispatchEvent(new Event('input',{bubbles:true}));}const sel=document.querySelector('#auction-room-select');if(sel){const opt=[...sel.options].find(o=>o.textContent.includes(room));if(opt){sel.value=opt.value;sel.dispatchEvent(new Event('change',{bubbles:true}));}}},ROOM);await page.locator('#auction-room-password').fill(PASS);")
+          s=s.replace("await page.getByRole('button',{name:/Giocatore/i}).click();await selectText(page,'#player-room-select',ROOM);await page.locator('#player-room-password').fill(PASS);", "await page.getByRole('button',{name:/Giocatore/i}).click();await page.waitForTimeout(1800);await page.evaluate(room=>{const input=document.querySelector('#player-room-name-input');if(input){input.value=room;input.dispatchEvent(new Event('input',{bubbles:true}));}const sel=document.querySelector('#player-room-select');if(sel){const opt=[...sel.options].find(o=>o.textContent.includes(room));if(opt){sel.value=opt.value;sel.dispatchEvent(new Event('change',{bubbles:true}));}}},ROOM);await page.locator('#player-room-password').fill(PASS);")
+          s=s.replace("await page.locator('#auction-room-password').fill(PASS);await page.locator('#auction-wizard-next:visible,#btn-apri-plancia:visible').first().click();", "await page.locator('#auction-room-password').fill(PASS);await page.waitForFunction(()=>typeof playersList!=='undefined'&&Array.isArray(playersList)&&playersList.length>0,null,{timeout:30000});await page.locator('#auction-wizard-next:visible,#btn-apri-plancia:visible').first().click();")
+          s=s.replace("step('Banditore collegato');}", "step('Banditore collegato');check('Stanza MANTRA valida',await page.evaluate(()=>isMantraRoom()&&firstIncompleteRole()==='ALL'&&mantraRosterMin()===23&&mantraMinGoalkeepers()===2&&listoneHasMantraRoles()));}")
+          s=s.replace("for(let i=0;i<3&&!await page.locator('#screen-player-buzzer.active').count();i++){await page.locator('#player-wizard-next:visible,#player-enter-btn:visible').first().click();await sleep(750);}", "for(let i=0;i<3&&!await page.locator('#screen-player-buzzer.active').count();i++){await page.evaluate(()=>window.playerAccessWizardNext?.());await sleep(1000);}")
+          s=s.replace("await page.locator('#screen-player-buzzer.active').waitFor({timeout:20000});return {ctx,page,name,pin,index};", "try{await page.locator('#screen-player-buzzer.active').waitFor({timeout:35000});}catch(e){const diag=await page.evaluate(()=>({active:[...document.querySelectorAll('.screen.active')].map(x=>x.id),roomError:document.querySelector('#player-room-error')?.textContent||'',pinError:document.querySelector('#player-pin-error')?.textContent||'',step:document.querySelector('#player-wizard-step-label')?.textContent||'',team:document.querySelector('#player-team-select')?.value||'',pinMode:typeof playerPinMode==='undefined'?'':playerPinMode}));console.log('LOGIN_DIAG',name,JSON.stringify(diag));await page.screenshot({path:`${OUT}/login-fail-${index+1}.png`,fullPage:true}).catch(()=>{});throw e;}return {ctx,page,name,pin,index};")
+          s=s.replace("await sleep(350);}}await a.locator('#control-room-timer')", "await sleep(150);const ok=a.locator('#liveasta-alert-overlay button').last();if(await ok.isVisible())await ok.click();await sleep(150);}}await a.locator('#control-room-timer')")
+          s=s.replace("await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(700);await mgClose(a);", "const conf=a.locator('#liveasta-confirm-overlay.open button').last();if(await conf.isVisible())await conf.click();await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(250);const saveOk=a.locator('#liveasta-alert-overlay button').last();if(await saveOk.isVisible())await saveOk.click();await sleep(450);await mgClose(a);")
+          s=s.replace("await a.evaluate(id=>selectAndStartPlayer(id),id);", "await a.evaluate(id=>selectAndStartPlayer(id,true),id);")
+          s=s.replace("async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await e.click();await sleep(500);}}", "async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await a.evaluate(([id,want])=>{const el=document.getElementById(id);if(!el)return;el.checked=want;el.dispatchEvent(new Event('change',{bubbles:true}));},[id,want]);await sleep(150);const confirm=a.locator('#liveasta-confirm-overlay.open button').last();if(await confirm.isVisible())await confirm.click();await sleep(700);}}")
+          s=s.replace("for(const p of [ps[7],ps[8],ps[9]]){const ready=p.page.locator('#player-ready-choice-ready');if(await ready.isVisible())await ready.click();}await waitBid(ps[0]);", "for(const p of [ps[7],ps[8],ps[9]]){await p.page.locator('#player-ready-choice-controls').waitFor({state:'visible',timeout:15000});await p.page.locator('#player-ready-choice-ready').click();}await a.waitForFunction(()=>!readyGateWaiting,null,{timeout:20000});check('READY completato dopo rientri',await a.evaluate(()=>!readyGateWaiting));await waitBid(ps[0]);")
+          s=s.replace("await sleep(1800);check('Tutti SKIP = invenduto',await a.evaluate(()=>!isAuctionActive));step('All SKIP');", "await sleep(1800);check('Tutti SKIP = invenduto',await a.evaluate(()=>!isAuctionActive));const gate=await a.evaluate(()=>loadReadyGateState());check('READY gate chiuso dopo tutti SKIP',!gate?.active,JSON.stringify(gate));step('All SKIP');")
+          s=s.replace("const vals=await ps[0].page.evaluate(()=>[...document.querySelectorAll('.player-room-team-row')].map(r=>({t:r.textContent,m:r.classList.contains('mine')})));check('Crediti avversari nascosti',vals.filter(x=>!x.m).every(x=>!/Crediti\\s*\\d/i.test(x.t)),JSON.stringify(vals.slice(0,2)));", "const vals=await ps[0].page.evaluate(()=>[...document.querySelectorAll('.player-room-team-row')].map(r=>{const stat=r.querySelector('.player-room-team-stats > span:first-child');return {m:r.classList.contains('mine'),hidden:!!stat&&getComputedStyle(stat).display==='none'};}));check('Crediti avversari nascosti',vals.filter(x=>!x.m).every(x=>x.hidden)&&vals.filter(x=>x.m).every(x=>!x.hidden),JSON.stringify(vals.slice(0,3)));")
+          s=s.replace("await ps[0].page.locator('#nomination-candidates > *').first().click();await waitBid(ps[1]);", "await ps[0].page.locator('#nomination-candidates .nomination-player-row').first().click();await sleep(150);const nomConfirm=ps[0].page.locator('#liveasta-confirm-overlay.open button').last();if(await nomConfirm.isVisible())await nomConfirm.click();await a.waitForFunction(()=>isAuctionActive,null,{timeout:20000});check('Nomina MANTRA avvia asta',await a.evaluate(()=>isAuctionActive&&nominationState.role==='ALL'));await waitBid(ps[1]);")
+          s=s.replace("await a.locator('#players-tbody tr').first().click();await sleep(450);if(await a.locator('#sealed-player-picker-overlay').isVisible())", "await a.locator('#players-tbody tr').first().click();await sleep(150);const sealedConfirm=a.locator('#liveasta-confirm-overlay.open button').last();if(await sealedConfirm.isVisible())await sealedConfirm.click();await sleep(450);if(await a.locator('#sealed-player-picker-overlay').isVisible())")
+          open(p,'w',encoding='utf-8').write(s)
+          PY
+      - name: Syntax checks
+        run: |
+          node --check scripts/sealed-submission-resume-fix.js
+          node --check scripts/sealed-ui-race-fix.js
+          node --check scripts/session-resume.js
+          node --check qa/ten-player-stress.mjs
+      - name: Run MANTRA 10-player simulation
+        env:
+          LIVEASTA_SITE: http://127.0.0.1:4173/
+        run: node qa/ten-player-stress.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: liveasta-10-player-mantra-stress
+          path: qa-output-10p/
+          retention-days: 3
