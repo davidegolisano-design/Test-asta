@@ -41,11 +41,11 @@ jobs:
         run: node qa/adapt-stress-runtime.mjs
       - name: Syntax checks
         run: |
-          node --check scripts/sealed-submission-resume-fix.js
-          node --check scripts/sealed-ui-race-fix.js
+          node --check scripts/stability-core.js
           node --check scripts/session-resume.js
           node --check scripts/pwa.js
           node --check qa/ten-player-stress.mjs
+          node --check qa/adapt-stress-runtime.mjs
       - name: Run ${{ matrix.mode }} 10-player stress
         env:
           LIVEASTA_SITE: http://127.0.0.1:4173/
