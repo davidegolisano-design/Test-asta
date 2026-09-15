@@ -194,8 +194,33 @@ function updateCreateRoomModeUI(){
         let showRoomsToUsers=true;
         let playerRoomRefreshTimer=null;
 
+        // Diagnostics are optional and must never prevent startup or bidding.
+        const roomDebug = (() => {
+            try {
+                return window.LiveAstaDebug.create({
+                    apiOrigin: SUPABASE_URL,
+                    getClient: () => supabaseClient,
+                    getContext: () => ({
+                        room_id:currentRoomId, room_password:currentRoom?.password,
+                        team_id:myTeamId || null,
+                        actor:auctioneerLockKey?'auctioneer':myTeamId?'player':'observer',
+                        phase:readyGateWaiting || playerReadyToken?'ready':isAuctionActive?'active':liveAuctionState?.phase || 'idle',
+                        player_id:String(currentAuctionPlayer?.Id || ''),
+                        ready_token:readyGateToken || playerReadyToken || '',
+                        auction_active:!!isAuctionActive, ready_waiting:!!readyGateWaiting,
+                        seconds:currentTimer, value:currentAuctionValue
+                    })
+                });
+            } catch (_) {
+                return {record(){},flush(){},attachChannel(c){return c;},fetch:window.fetch.bind(window),
+                    async download(){throw new Error('Registro non disponibile. Ricarica la pagina.');}};
+            }
+        })();
+
         try {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                global:{fetch:roomDebug.fetch}
+            });
             window.supabaseClient = supabaseClient;
         } catch (e) {
             alert("Errore critico nell'avvio del database.");
@@ -1644,6 +1669,7 @@ function updateCreateRoomModeUI(){
                 return;
             }
 
+            roomDebug.record('ready.completed',{token:readyGateToken,required_ids:req,ready_ids:[...readyPlayers],skip_ids:[...readySkipPlayers]});
             const allSkipped=req.length>0 && req.every(id=>readySkipPlayers.has(String(id)));
             readyGateWaiting=false;
             broadcastReadyState();
@@ -1860,6 +1886,7 @@ function updateCreateRoomModeUI(){
         }
 
         function confirmPlayerReady(choice='ready'){
+            roomDebug.record('ready.tap',{choice,token:playerReadyToken,active:!playerReadySent});
             if(playerAvailabilityMode==='absent'||absentTeamIds.has(String(myTeamId)))return;
             const selected=choice==='skip'?'skip':'ready';
             if(!playerReadyToken||playerReadySent||!myTeamId)return;
@@ -5389,6 +5416,8 @@ function updateCreateRoomModeUI(){
             channel = supabaseClient.channel(`fanta-room-${room.id}`,{
                 config:{presence:{key:createPresenceClientKey()}}
             });
+            roomDebug.attachChannel(channel);
+            roomDebug.record('room.connected');
             localStorage.setItem('fanta-last-room-id', room.id);
             return channel;
         }
@@ -5634,8 +5663,34 @@ function updateCreateRoomModeUI(){
                             <span>${r.approved?'APPROVATA':'IN ATTESA'}</span>
                         </label>
                     </td>
-                    <td data-label="Azioni"><div class="room-actions"><button class="btn btn-small" onclick="adminManageRoom('${r.id}')">Gestisci asta</button><button class="btn btn-small" onclick="openAdminTeamPinManager('${r.id}')">PIN giocatori</button><button class="btn btn-small" onclick="adminSaveRoom('${r.id}')">Salva</button><button class="btn btn-danger btn-small" onclick="adminDeleteRoom('${r.id}')">Elimina</button></div></td>
+                    <td data-label="Azioni"><div class="room-actions"><button class="btn btn-small" onclick="adminManageRoom('${r.id}')">Gestisci asta</button><button class="btn btn-small" onclick="openAdminTeamPinManager('${r.id}')">PIN giocatori</button><button class="btn btn-small" onclick="adminDownloadRoomDebug('${r.id}',this)">Scarica log</button><button class="btn btn-small" onclick="adminSaveRoom('${r.id}')">Salva</button><button class="btn btn-danger btn-small" onclick="adminDeleteRoom('${r.id}')">Elimina</button></div></td>
                 </tr>`).join('');
+        }
+
+        async function adminDownloadRoomDebug(id, button) {
+            if(!adminSessionPassword){openAdminLogin();return;}
+            const password=adminSessionPassword;
+            const room=roomsCache.find(r=>String(r.id)===String(id));
+            if(!room)return;
+            const label=button?.textContent;
+            if(button){button.disabled=true;button.textContent='Preparazione…';}
+            try{
+                const log=await roomDebug.download(id,room.name,password,
+                    count=>{if(button)button.textContent=`${count} eventi…`;},
+                    ()=>adminSessionPassword===password);
+                if(!log.event_count){
+                    alert('Nessun evento disponibile per questa stanza. Il registro raccoglie gli eventi dai dispositivi che utilizzano la nuova versione; lo storico precedente non è ricostruibile.');
+                    return;
+                }
+                const blob=new Blob([JSON.stringify(log,null,2)],{type:'application/json'});
+                const url=URL.createObjectURL(blob);
+                const link=document.createElement('a');
+                link.href=url;
+                link.download=`LIVEASTA_log_${String(room.name).replace(/[^a-zA-Z0-9_-]/g,'_')}_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;
+                document.body.appendChild(link);link.click();link.remove();
+                setTimeout(()=>URL.revokeObjectURL(url),60000);
+            }catch(e){alert(e.message || 'Download del registro non riuscito.');}
+            finally{if(button){button.disabled=false;button.textContent=label;}}
         }
 
         async function adminToggleRoomApproval(id,approved,checkbox){
@@ -7474,6 +7529,7 @@ function updateCreateRoomModeUI(){
         }
 
         function submitExactBid(target){
+            roomDebug.record('bid.exact_tap',{target});
             const range=exactBidRange();
             const exact=Math.max(1,parseInt(target)||0);
             if(!range.valid || exact<range.min || exact>range.max)return;
@@ -7502,14 +7558,15 @@ function updateCreateRoomModeUI(){
         }
 
         function buzz(amount) {
-            if (!isAuctionActive) return;
+            if (!isAuctionActive) {roomDebug.record('bid.tap',{amount,reason:'inactive'});return;}
 
             // sicurezza logica indipendente dallo stato grafico/disabled del bottone.
             // Un rilancio non consentito (es. +2 oltre il max) NON può essere inviato.
-            if(!isNormalBidAmountAllowed(amount))return;
+            if(!isNormalBidAmountAllowed(amount)){roomDebug.record('bid.tap',{amount,reason:'not_allowed'});return;}
 
             // I pulsanti restano colorati durante il cooldown, ma il tap non produce offerte.
-            if (Date.now() < playerNormalBidCooldownUntil) return;
+            if (Date.now() < playerNormalBidCooldownUntil) {roomDebug.record('bid.tap',{amount,reason:'cooldown'});return;}
+            roomDebug.record('bid.tap',{amount,reason:'send'});
 
             if (navigator.vibrate) navigator.vibrate(40);
 
@@ -8063,10 +8120,11 @@ function updateCreateRoomModeUI(){
                 })
                 .on('broadcast',{event:'player_ready'},(payload)=>{
                     const d=payload.payload||{};
-                    if(!readyGateWaiting||String(d.token)!==String(readyGateToken))return;
+                    if(!readyGateWaiting||String(d.token)!==String(readyGateToken)){roomDebug.record('ready.rejected',{token:d.token,team_id:d.team_id,reason:'inactive_or_stale_token'},'warning');return;}
 
                     const required=readyRequiredIds();
-                    if(!required.includes(String(d.team_id)))return;
+                    if(!required.includes(String(d.team_id))){roomDebug.record('ready.rejected',{token:d.token,team_id:d.team_id,reason:'not_required'},'warning');return;}
+                    roomDebug.record('ready.accepted',{token:d.token,team_id:d.team_id,choice:d.choice});
 
                     readyPlayers.add(String(d.team_id));
                     if(String(d.choice||'ready')==='skip')readySkipPlayers.add(String(d.team_id));
@@ -8322,6 +8380,7 @@ function updateCreateRoomModeUI(){
                 return;
             }
 
+            roomDebug.record('sealed.accepted',{token:sealedAuctionToken,team_id:teamId});
             sealedBids.set(teamId,{
                 team_id:teamId,
                 team_name:team.name,
@@ -8891,7 +8950,8 @@ function updateCreateRoomModeUI(){
         }
 
         function handleBuzzReceived(teamName, amount, teamId = null, bidId = null) {
-            if (!isAuctionActive || !currentAuctionPlayer) return;
+            const debugBid=(reason,accepted=false)=>roomDebug.record(accepted?'bid.accepted':'bid.rejected',{bid_id:bidId,team_id:teamId,reason,value:currentAuctionValue},accepted?'info':'warning');
+            if (!isAuctionActive || !currentAuctionPlayer) {debugBid('inactive');return;}
 
             const receivedAt=Date.now();
 
@@ -8899,7 +8959,7 @@ function updateCreateRoomModeUI(){
             // dello STESSO tap da rete/browser.
             if(bidId){
                 const id=String(bidId);
-                if(recentNormalBidIds.has(id))return;
+                if(recentNormalBidIds.has(id)){debugBid('duplicate');return;}
                 recentNormalBidIds.set(id,receivedAt);
 
                 for(const [oldId,ts] of recentNormalBidIds.entries()){
@@ -8909,11 +8969,12 @@ function updateCreateRoomModeUI(){
 
             // Il primo rilancio valido vince la finestra; le offerte arrivate durante
             // il blocco configurato vengono ignorate senza cambiare graficamente i pulsanti.
-            if(receivedAt<normalBidCooldownUntil)return;
+            if(receivedAt<normalBidCooldownUntil){debugBid('cooldown');return;}
 
             const team = teamId ? teamsCache.find(t => String(t.id) === String(teamId)) : findTeamByName(teamName);
-            if (!team) return;
+            if (!team) {debugBid('team_missing');return;}
             if(isSelfRaiseBlockedForTeam(team)){
+                debugBid('self_raise');
                 if(channel)channel.send({type:'broadcast',event:'bid_rejected',payload:{team_id:team.id,reason:'AUTORILANCIO DISATTIVATO'}}).catch(()=>{});
                 return;
             }
@@ -8921,6 +8982,7 @@ function updateCreateRoomModeUI(){
             const proposed = currentAuctionValue + raise;
             const maxBid = maxBidForTeam(team, currentAuctionPlayer.R);
             if (proposed > maxBid) {
+                debugBid('max_bid');
                 const counts=teamCounts(team.id), limits=roomLimits();
                 const roleKey=String(currentAuctionPlayer.R||'').toUpperCase();
                 const reason = isMantraRoom()
@@ -8943,6 +9005,7 @@ function updateCreateRoomModeUI(){
 
             // Registra il massimo valore effettivamente offerto da questa squadra.
             recordNormalBid(team,currentAuctionValue);
+            debugBid('accepted',true);
             const currentBidRanking=normalBidRanking();
 
             saveLiveAuctionState({
@@ -8984,25 +9047,27 @@ function updateCreateRoomModeUI(){
 
 
         function handleExactBidReceived(teamName,targetValue,teamId=null,bidId=null){
-            if(!isAuctionActive || !currentAuctionPlayer)return;
+            const debugBid=(reason,accepted=false)=>roomDebug.record(accepted?'bid.accepted':'bid.rejected',{bid_id:bidId,team_id:teamId,reason,value:currentAuctionValue},accepted?'info':'warning');
+            if(!isAuctionActive || !currentAuctionPlayer){debugBid('inactive');return;}
 
             const receivedAt=Date.now();
             if(bidId){
                 const id=String(bidId);
-                if(recentNormalBidIds.has(id))return;
+                if(recentNormalBidIds.has(id)){debugBid('duplicate');return;}
                 recentNormalBidIds.set(id,receivedAt);
                 for(const [oldId,ts] of recentNormalBidIds.entries()){
                     if(receivedAt-ts>10000)recentNormalBidIds.delete(oldId);
                 }
             }
 
-            if(receivedAt<normalBidCooldownUntil)return;
+            if(receivedAt<normalBidCooldownUntil){debugBid('cooldown');return;}
 
             const team=teamId
                 ? teamsCache.find(t=>String(t.id)===String(teamId))
                 : findTeamByName(teamName);
-            if(!team)return;
+            if(!team){debugBid('team_missing');return;}
             if(isSelfRaiseBlockedForTeam(team)){
+                debugBid('self_raise');
                 if(channel)channel.send({type:'broadcast',event:'bid_rejected',payload:{team_id:team.id,reason:'AUTORILANCIO DISATTIVATO'}}).catch(()=>{});
                 return;
             }
@@ -9013,6 +9078,7 @@ function updateCreateRoomModeUI(){
             // Il target è assoluto. Se nel frattempo qualcun altro ha superato
             // la cifra scelta, non la trasformiamo in un incremento: la rifiutiamo.
             if(proposed<=currentAuctionValue){
+                debugBid('outbid');
                 if(channel)channel.send({
                     type:'broadcast',event:'bid_rejected',
                     payload:{team_id:team.id,reason:`OFFERTA SUPERATA · MIN ${currentAuctionValue+1}`,max_bid:maxBid}
@@ -9021,6 +9087,7 @@ function updateCreateRoomModeUI(){
             }
 
             if(proposed>maxBid){
+                debugBid('max_bid');
                 const counts=teamCounts(team.id),limits=roomLimits();
                 const roleKey=String(currentAuctionPlayer.R||'').toUpperCase();
                 const reason=isMantraRoom()
@@ -9043,6 +9110,7 @@ function updateCreateRoomModeUI(){
             currentTimer=normalAuctionConfiguredSeconds();
 
             recordNormalBid(team,currentAuctionValue);
+            debugBid('accepted',true);
             const currentBidRanking=normalBidRanking();
 
             saveLiveAuctionState({
@@ -9296,6 +9364,7 @@ function updateCreateRoomModeUI(){
             );
             if(!ok)return;
 
+            roomDebug.record('auction.reset_confirmed');
             // Ferma timer locali del banditore.
             if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
             if(auctionPrepInterval){clearInterval(auctionPrepInterval);auctionPrepInterval=null;}
