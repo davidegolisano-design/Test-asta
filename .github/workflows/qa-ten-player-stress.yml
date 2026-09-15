@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/debug-v103.js'
       - 'scripts/player-access-race-fix.js'
+      - 'scripts/ready-gate-cleanup-fix.js'
       - 'scripts/pwa.js'
       - 'qa/ten-player-stress.mjs'
       - '.github/workflows/qa-ten-player-stress.yml'
@@ -46,8 +47,9 @@ jobs:
           s=s.replace("await sleep(350);}}await a.locator('#control-room-timer')", "await sleep(150);const ok=a.locator('#liveasta-alert-overlay button').last();if(await ok.isVisible())await ok.click();await sleep(150);}}await a.locator('#control-room-timer')")
           s=s.replace("await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(700);await mgClose(a);", "const conf=a.locator('#liveasta-confirm-overlay.open button').last();if(await conf.isVisible())await conf.click();await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(250);const saveOk=a.locator('#liveasta-alert-overlay button').last();if(await saveOk.isVisible())await saveOk.click();await sleep(450);await mgClose(a);")
           s=s.replace("await a.evaluate(id=>selectAndStartPlayer(id),id);", "await a.evaluate(id=>selectAndStartPlayer(id,true),id);")
-          s=s.replace("async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await e.click();await sleep(500);}}", "async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await a.evaluate(([id,want])=>{const el=document.getElementById(id);if(!el)return;el.checked=want;el.dispatchEvent(new Event('change',{bubbles:true}));},[id,want]);await sleep(700);}}")
+          s=s.replace("async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await e.click();await sleep(500);}}", "async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await a.evaluate(([id,want])=>{const el=document.getElementById(id);if(!el)return;el.checked=want;el.dispatchEvent(new Event('change',{bubbles:true}));},[id,want]);await sleep(150);const confirm=a.locator('#liveasta-confirm-overlay.open button').last();if(await confirm.isVisible())await confirm.click();await sleep(700);}}")
           s=s.replace("for(const p of [ps[7],ps[8],ps[9]]){const ready=p.page.locator('#player-ready-choice-ready');if(await ready.isVisible())await ready.click();}await waitBid(ps[0]);", "for(const p of [ps[7],ps[8],ps[9]]){await p.page.locator('#player-ready-choice-controls').waitFor({state:'visible',timeout:15000});await p.page.locator('#player-ready-choice-ready').click();}await a.waitForFunction(()=>!readyGateWaiting,null,{timeout:20000});check('READY completato dopo rientri',await a.evaluate(()=>!readyGateWaiting));await waitBid(ps[0]);")
+          s=s.replace("await sleep(1800);check('Tutti SKIP = invenduto',await a.evaluate(()=>!isAuctionActive));step('All SKIP');", "await sleep(1800);check('Tutti SKIP = invenduto',await a.evaluate(()=>!isAuctionActive));const gate=await a.evaluate(()=>loadReadyGateState());check('READY gate chiuso dopo tutti SKIP',!gate?.active,JSON.stringify(gate));step('All SKIP');")
           s=s.replace("const vals=await ps[0].page.evaluate(()=>[...document.querySelectorAll('.player-room-team-row')].map(r=>({t:r.textContent,m:r.classList.contains('mine')})));check('Crediti avversari nascosti',vals.filter(x=>!x.m).every(x=>!/Crediti\\s*\\d/i.test(x.t)),JSON.stringify(vals.slice(0,2)));", "const vals=await ps[0].page.evaluate(()=>[...document.querySelectorAll('.player-room-team-row')].map(r=>{const stat=r.querySelector('.player-room-team-stats > span:first-child');return {m:r.classList.contains('mine'),hidden:!!stat&&getComputedStyle(stat).display==='none'};}));check('Crediti avversari nascosti',vals.filter(x=>!x.m).every(x=>x.hidden)&&vals.filter(x=>x.m).every(x=>!x.hidden),JSON.stringify(vals.slice(0,3)));")
           s=s.replace("await ps[0].page.locator('#nomination-candidates > *').first().click();await waitBid(ps[1]);", "await ps[0].page.locator('#nomination-candidates .nomination-player-row').first().click();await sleep(150);const nomConfirm=ps[0].page.locator('#liveasta-confirm-overlay.open button').last();if(await nomConfirm.isVisible())await nomConfirm.click();await a.waitForFunction(()=>isAuctionActive,null,{timeout:20000});check('Nomina avvia asta',await a.evaluate(()=>isAuctionActive));await waitBid(ps[1]);")
           open(p,'w',encoding='utf-8').write(s)
@@ -56,6 +58,7 @@ jobs:
         run: |
           node --check scripts/debug-v103.js
           node --check scripts/player-access-race-fix.js
+          node --check scripts/ready-gate-cleanup-fix.js
           node --check scripts/pwa.js
           node --check scripts/session-resume.js
           node --check scripts/opponent-credits.js
