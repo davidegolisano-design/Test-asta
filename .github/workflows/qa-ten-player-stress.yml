@@ -10,6 +10,9 @@ on:
       - 'qa/ten-player-stress.mjs'
       - '.github/workflows/qa-ten-player-stress.yml'
   workflow_dispatch:
+concurrency:
+  group: liveasta-qa-10-player
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -29,7 +32,7 @@ jobs:
           echo $! > /tmp/liveasta-http.pid
           sleep 2
           curl -fsS http://127.0.0.1:4173/ >/dev/null
-      - name: Adapt QA to room-list visibility setting
+      - name: Adapt QA to runtime settings
         run: |
           python3 - <<'PY'
           p='qa/ten-player-stress.mjs'
@@ -37,6 +40,7 @@ jobs:
           s=s.replace("await selectText(page,'#auction-room-select',ROOM);await page.locator('#auction-room-password').fill(PASS);", "await page.waitForTimeout(900);if(await page.locator('#auction-room-name-input').isVisible())await page.locator('#auction-room-name-input').fill(ROOM);else await selectText(page,'#auction-room-select',ROOM);await page.locator('#auction-room-password').fill(PASS);")
           s=s.replace("await page.getByRole('button',{name:/Giocatore/i}).click();await selectText(page,'#player-room-select',ROOM);await page.locator('#player-room-password').fill(PASS);", "await page.getByRole('button',{name:/Giocatore/i}).click();await page.waitForTimeout(900);if(await page.locator('#player-room-name-input').isVisible())await page.locator('#player-room-name-input').fill(ROOM);else await selectText(page,'#player-room-select',ROOM);await page.locator('#player-room-password').fill(PASS);")
           s=s.replace("await page.locator('#auction-room-password').fill(PASS);await page.locator('#auction-wizard-next:visible,#btn-apri-plancia:visible').first().click();", "await page.locator('#auction-room-password').fill(PASS);await page.waitForFunction(()=>typeof playersList!=='undefined'&&Array.isArray(playersList)&&playersList.length>0,null,{timeout:30000});await page.locator('#auction-wizard-next:visible,#btn-apri-plancia:visible').first().click();")
+          s=s.replace("for(let i=0;i<3&&!await page.locator('#screen-player-buzzer.active').count();i++){await page.locator('#player-wizard-next:visible,#player-enter-btn:visible').first().click();await sleep(750);}", "for(let i=0;i<3&&!await page.locator('#screen-player-buzzer.active').count();i++){await page.evaluate(()=>window.playerAccessWizardNext?.());await sleep(1000);}")
           open(p,'w',encoding='utf-8').write(s)
           PY
       - name: Syntax checks
