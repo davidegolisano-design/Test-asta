@@ -1,0 +1,47 @@
+name: LIVEASTA QA 10-player stress
+on:
+  push:
+    branches:
+      - qa/ten-player-stress-v103
+    paths:
+      - 'scripts/debug-v103.js'
+      - 'scripts/pwa.js'
+      - 'qa/ten-player-stress.mjs'
+      - '.github/workflows/qa-ten-player-stress.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  stress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm init -y && npm install playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - name: Start local LIVEASTA
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/liveasta-http.log 2>&1 &
+          echo $! > /tmp/liveasta-http.pid
+          sleep 2
+          curl -fsS http://127.0.0.1:4173/ >/dev/null
+      - name: Syntax checks
+        run: |
+          node --check scripts/debug-v103.js
+          node --check scripts/pwa.js
+          node --check scripts/session-resume.js
+          node --check scripts/opponent-credits.js
+          node --check qa/ten-player-stress.mjs
+      - name: Run 10-player simulation
+        env:
+          LIVEASTA_SITE: http://127.0.0.1:4173/
+        run: node qa/ten-player-stress.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: liveasta-10-player-stress
+          path: qa-output-10p/
+          retention-days: 3
