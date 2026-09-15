@@ -49,9 +49,10 @@
 
   // Feature modules kept separate from the auction core to avoid adding more
   // unrelated logic to the already large app.js/runtime.js files.
+  // Credit visibility hooks connectToRoom first; session resume is loaded second.
   const featureScripts=[
-    './scripts/session-resume.js?v=103',
-    './scripts/opponent-credits.js?v=103'
+    './scripts/opponent-credits.js?v=103',
+    './scripts/session-resume.js?v=103'
   ];
   featureScripts.forEach(src=>{
     const script=document.createElement('script');
