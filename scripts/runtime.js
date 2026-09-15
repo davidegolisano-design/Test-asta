@@ -399,3 +399,52 @@
   };
 
 })();
+
+// === liveasta-room-access-visibility-v1.03 ===
+/*
+ * ui.css contiene ancora una regola legacy v0.93 che forza
+ * #auction-room-select a display:block!important. La logica applicativa usa
+ * invece lo style inline per scegliere tra select stanza e input nome stanza.
+ * Qui facciamo rispettare lo stato applicativo senza toccare la logica di accesso.
+ */
+(function(){
+  const ids=[
+    'auction-room-select',
+    'auction-room-name-input',
+    'player-room-select',
+    'player-room-name-input'
+  ];
+
+  function enforceHiddenPriority(el){
+    if(!el)return;
+    const display=String(el.style.getPropertyValue('display')||'').trim().toLowerCase();
+    const priority=el.style.getPropertyPriority('display');
+    if(display==='none' && priority!=='important'){
+      el.style.setProperty('display','none','important');
+    }
+  }
+
+  function refreshRoomAccessVisibility(){
+    ids.forEach(id=>enforceHiddenPriority(document.getElementById(id)));
+  }
+
+  function start(){
+    refreshRoomAccessVisibility();
+    ids.forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      new MutationObserver(()=>enforceHiddenPriority(el)).observe(el,{
+        attributes:true,
+        attributeFilter:['style']
+      });
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',start,{once:true});
+  }else{
+    start();
+  }
+
+  window.refreshRoomAccessVisibility=refreshRoomAccessVisibility;
+})();
