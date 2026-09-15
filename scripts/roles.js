@@ -7,7 +7,7 @@ const MANTRA_ROLE_FAMILY={
     W:'T',T:'T',
     A:'A',Pc:'A'
 };
-const LIVEASTA_ROLE_BADGE_SELECTOR='.role-badge,#auction-player-role,#phone-player-role,#auctioneer-ready-player-role';
+const LIVEASTA_ROLE_BADGE_SELECTOR='.role-badge,.manual-player-role,#auction-player-role,#phone-player-role,#auctioneer-ready-player-role,#room-roster-player-preview-role';
 
 function roomGameMode(room=currentRoom){
     return String(room?.game_mode||'classic').toLowerCase()==='mantra'?'mantra':'classic';
