@@ -1,0 +1,58 @@
+name: LIVEASTA QA reproducible Classic + Mantra
+on:
+  push:
+    branches:
+      - qa/ten-player-stress-v103
+    paths:
+      - 'scripts/**'
+      - 'qa/ten-player-stress.mjs'
+      - 'qa/adapt-stress-runtime.mjs'
+      - '.github/workflows/qa-repro-stress.yml'
+  workflow_dispatch:
+concurrency:
+  group: liveasta-qa-repro-stress
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  stress:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [classic, mantra]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm init -y && npm install playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - name: Start local LIVEASTA
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/liveasta-http.log 2>&1 &
+          echo $! > /tmp/liveasta-http.pid
+          sleep 2
+          curl -fsS http://127.0.0.1:4173/ >/dev/null
+      - name: Adapt stress harness
+        env:
+          QA_MODE: ${{ matrix.mode }}
+        run: node qa/adapt-stress-runtime.mjs
+      - name: Syntax checks
+        run: |
+          node --check scripts/sealed-submission-resume-fix.js
+          node --check scripts/sealed-ui-race-fix.js
+          node --check scripts/session-resume.js
+          node --check scripts/pwa.js
+          node --check qa/ten-player-stress.mjs
+      - name: Run ${{ matrix.mode }} 10-player stress
+        env:
+          LIVEASTA_SITE: http://127.0.0.1:4173/
+        run: node qa/ten-player-stress.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: liveasta-repro-${{ matrix.mode }}
+          path: qa-output-10p/
+          retention-days: 3
