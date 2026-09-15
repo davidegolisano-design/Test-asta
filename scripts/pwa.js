@@ -47,11 +47,11 @@
     button.classList.remove('show');
   });
 
-  // Feature modules kept separate from the auction core to avoid adding more
-  // unrelated logic to the already large app.js/runtime.js files.
-  // Credit visibility hooks connectToRoom first; session resume is loaded second.
+  // Feature modules kept separate from the auction core. Diagnostics loads
+  // before session-resume so accidental-close recovery is observable too.
   const featureScripts=[
     './scripts/opponent-credits.js?v=103',
+    './scripts/debug-v103.js?v=1032',
     './scripts/session-resume.js?v=103'
   ];
   featureScripts.forEach(src=>{
