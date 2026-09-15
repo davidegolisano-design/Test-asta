@@ -46,6 +46,7 @@ jobs:
           s=s.replace("await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(700);await mgClose(a);", "await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(250);const saveOk=a.locator('#liveasta-alert-overlay button').last();if(await saveOk.isVisible())await saveOk.click();await sleep(450);await mgClose(a);")
           s=s.replace("await a.evaluate(id=>selectAndStartPlayer(id),id);", "await a.evaluate(id=>selectAndStartPlayer(id,true),id);")
           s=s.replace("async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await e.click();await sleep(500);}}", "async function toggle(a,id,want){const e=a.locator('#'+id);if((await e.isChecked())!==want){await a.evaluate(([id,want])=>{const el=document.getElementById(id);if(!el)return;el.checked=want;el.dispatchEvent(new Event('change',{bubbles:true}));},[id,want]);await sleep(700);}}")
+          s=s.replace("for(const p of [ps[7],ps[8],ps[9]]){const ready=p.page.locator('#player-ready-choice-ready');if(await ready.isVisible())await ready.click();}await waitBid(ps[0]);", "for(const p of [ps[7],ps[8],ps[9]]){await p.page.locator('#player-ready-choice-controls').waitFor({state:'visible',timeout:15000});await p.page.locator('#player-ready-choice-ready').click();}await a.waitForFunction(()=>!readyGateWaiting,null,{timeout:20000});check('READY completato dopo rientri',await a.evaluate(()=>!readyGateWaiting));await waitBid(ps[0]);")
           open(p,'w',encoding='utf-8').write(s)
           PY
       - name: Syntax checks
