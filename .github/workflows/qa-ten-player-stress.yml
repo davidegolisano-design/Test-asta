@@ -44,6 +44,7 @@ jobs:
           s=s.replace("for(let i=0;i<3&&!await page.locator('#screen-player-buzzer.active').count();i++){await page.locator('#player-wizard-next:visible,#player-enter-btn:visible').first().click();await sleep(750);}", "for(let i=0;i<3&&!await page.locator('#screen-player-buzzer.active').count();i++){await page.evaluate(()=>window.playerAccessWizardNext?.());await sleep(1000);}")
           s=s.replace("await sleep(350);}}await a.locator('#control-room-timer')", "await sleep(150);const ok=a.locator('#liveasta-alert-overlay button').last();if(await ok.isVisible())await ok.click();await sleep(150);}}await a.locator('#control-room-timer')")
           s=s.replace("await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(700);await mgClose(a);", "await a.getByRole('button',{name:/Salva impostazioni/i}).click();await sleep(250);const saveOk=a.locator('#liveasta-alert-overlay button').last();if(await saveOk.isVisible())await saveOk.click();await sleep(450);await mgClose(a);")
+          s=s.replace("await a.evaluate(id=>selectAndStartPlayer(id),id);", "await a.evaluate(id=>selectAndStartPlayer(id,true),id);")
           open(p,'w',encoding='utf-8').write(s)
           PY
       - name: Syntax checks
