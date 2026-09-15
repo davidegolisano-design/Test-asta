@@ -52,8 +52,10 @@
   const featureScripts=[
     './scripts/opponent-credits.js?v=103',
     './scripts/debug-v103.js?v=1032',
+    './scripts/image-fallback-fix.js?v=1031',
     './scripts/player-access-race-fix.js?v=1031',
     './scripts/ready-gate-cleanup-fix.js?v=1031',
+    './scripts/sealed-submission-resume-fix.js?v=1031',
     './scripts/session-resume.js?v=103'
   ];
   featureScripts.forEach(src=>{
