@@ -5,6 +5,7 @@ on:
       - qa/ten-player-stress-v103
     paths:
       - 'scripts/debug-v103.js'
+      - 'scripts/player-access-race-fix.js'
       - 'scripts/pwa.js'
       - 'qa/ten-player-stress.mjs'
       - '.github/workflows/qa-ten-player-stress.yml'
@@ -41,6 +42,7 @@ jobs:
       - name: Syntax checks
         run: |
           node --check scripts/debug-v103.js
+          node --check scripts/player-access-race-fix.js
           node --check scripts/pwa.js
           node --check scripts/session-resume.js
           node --check scripts/opponent-credits.js
