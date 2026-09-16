@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const DEV_VERSION='v1.04.11';
+  const DEV_VERSION='v1.04.12';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -19,14 +19,19 @@
   }
 
   /*
-    DEV MOBILE presentation layer.
+    DEV MOBILE presentation layers.
     Loaded after refinements.css so smartphone fixes have one clear owner.
     No auction/realtime logic is changed here.
   */
   const mobileDevCss=document.createElement('link');
   mobileDevCss.rel='stylesheet';
-  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10411';
+  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10412';
   document.head.appendChild(mobileDevCss);
+
+  const mobileSealedDevCss=document.createElement('link');
+  mobileSealedDevCss.rel='stylesheet';
+  mobileSealedDevCss.href='./styles/auctioneer-mobile-sealed-dev.css?v=10412';
+  document.head.appendChild(mobileSealedDevCss);
 
   /* Keep both semantic mobile labels synchronized with the existing phase class. */
   function syncMobilePhaseLabels(){
@@ -53,6 +58,15 @@
     }else if(view.classList.contains('mobile-sealed-collecting')){
       left.textContent='TIMER BUSTE';
       right.textContent='';
+    }else if(view.classList.contains('mobile-sealed-result')){
+      left.textContent='OFFERTA';
+      right.textContent='';
+      const resultValue=document.getElementById('current-value-display')?.textContent?.trim();
+      const leftValue=document.getElementById('countdown-display');
+      if(leftValue && resultValue) leftValue.textContent=resultValue;
+    }else if(view.classList.contains('mobile-unsold') && view.classList.contains('sealed-collecting')){
+      left.textContent='OFFERTA';
+      right.textContent='ESITO';
     }else if(view.classList.contains('mobile-turn')){
       left.textContent='';
       right.textContent='';
