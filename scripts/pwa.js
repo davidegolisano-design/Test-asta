@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const DEV_VERSION='v1.04.12';
+  const DEV_VERSION='v1.04.13';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -20,18 +20,22 @@
 
   /*
     DEV MOBILE presentation layers.
-    Loaded after refinements.css so smartphone fixes have one clear owner.
-    No auction/realtime logic is changed here.
+    Loaded after refinements.css. No auction/realtime logic is changed here.
   */
   const mobileDevCss=document.createElement('link');
   mobileDevCss.rel='stylesheet';
-  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10412';
+  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10413';
   document.head.appendChild(mobileDevCss);
 
   const mobileSealedDevCss=document.createElement('link');
   mobileSealedDevCss.rel='stylesheet';
-  mobileSealedDevCss.href='./styles/auctioneer-mobile-sealed-dev.css?v=10412';
+  mobileSealedDevCss.href='./styles/auctioneer-mobile-sealed-dev.css?v=10413';
   document.head.appendChild(mobileSealedDevCss);
+
+  const mobileSealedDevScript=document.createElement('script');
+  mobileSealedDevScript.src='./scripts/auctioneer-mobile-sealed-dev.js?v=10413';
+  mobileSealedDevScript.async=false;
+  document.head.appendChild(mobileSealedDevScript);
 
   /* Keep both semantic mobile labels synchronized with the existing phase class. */
   function syncMobilePhaseLabels(){
@@ -54,13 +58,13 @@
       right.textContent='OFFERTA';
     }else if(view.classList.contains('mobile-sealed-opening')){
       left.textContent='APERTURA';
-      right.textContent='';
+      right.textContent='CONSEGNATE';
     }else if(view.classList.contains('mobile-sealed-collecting')){
       left.textContent='TIMER BUSTE';
-      right.textContent='';
+      right.textContent='CONSEGNATE';
     }else if(view.classList.contains('mobile-sealed-result')){
       left.textContent='OFFERTA';
-      right.textContent='';
+      right.textContent='AGGIUDICATO A';
       const resultValue=document.getElementById('current-value-display')?.textContent?.trim();
       const leftValue=document.getElementById('countdown-display');
       if(leftValue && resultValue) leftValue.textContent=resultValue;
