@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111936">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>LIVEASTA Admin</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="../icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="loadingLine" class="loading-line hidden" aria-hidden="true"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1 class="brand-title">LIVEASTA Admin</h1>
+        <p class="brand-subtitle" id="sessionLabel">Accesso amministratore</p>
+      </div>
+      <div class="top-actions">
+        <span id="pendingBadge" class="pending-badge hidden" title="Richieste pendenti">0</span>
+        <button id="logoutButton" class="icon-button hidden" type="button" title="Esci" aria-label="Esci">↪</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="loginView" class="login-wrap">
+        <form id="loginForm" class="login-card card" autocomplete="on">
+          <h2>Accesso Admin</h2>
+          <p>L’accesso usa Supabase Auth. La password amministratore storica di LIVEASTA non viene usata né salvata in questa PWA.</p>
+          <div class="field">
+            <label for="emailInput">Email</label>
+            <input id="emailInput" name="email" type="email" autocomplete="username" inputmode="email" required>
+          </div>
+          <div class="field">
+            <label for="passwordInput">Password</label>
+            <input id="passwordInput" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <button id="loginButton" class="primary-button" type="submit">Accedi</button>
+          <p id="loginError" class="login-error hidden" role="alert"></p>
+        </form>
+      </section>
+
+      <section id="dashboardView" class="dashboard hidden" aria-live="polite">
+        <div>
+          <div class="section-head">
+            <div>
+              <h2>Richieste pendenti</h2>
+              <p>Le stanze restano inutilizzabili finché non vengono approvate.</p>
+            </div>
+            <div class="section-actions">
+              <button id="refreshButton" class="secondary-button" type="button">Aggiorna</button>
+            </div>
+          </div>
+          <div id="pendingList" class="room-list"></div>
+        </div>
+
+        <div>
+          <div class="section-head">
+            <div>
+              <h2>Storico recente</h2>
+              <p>Ultime approvazioni e rifiuti.</p>
+            </div>
+          </div>
+          <div class="history-card card">
+            <div id="historyList" class="history-list"></div>
+          </div>
+        </div>
+
+        <p id="globalError" class="global-error hidden" role="alert"></p>
+      </section>
+
+      <p class="footer-info"><span id="versionLabel"></span></p>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
