@@ -63,11 +63,11 @@
     const status=document.getElementById('theme-save-status');
     if(status)status.textContent='Salvato su questo dispositivo';
 
-    let meta=document.querySelector('meta[name="theme-color"]');
+    const meta=document.querySelector('meta[name="theme-color"]');
     if(meta)meta.content=t.meta;
-    let scheme=document.querySelector('meta[name="color-scheme"]');
+    const scheme=document.querySelector('meta[name="color-scheme"]');
     if(scheme)scheme.content=isLight(name)?'light':'dark';
-    let ms=document.querySelector('meta[name="msapplication-navbutton-color"]');
+    const ms=document.querySelector('meta[name="msapplication-navbutton-color"]');
     if(ms)ms.content=t.meta;
 
     if(persist){
@@ -82,11 +82,17 @@
     return name;
   }
 
+  function reapplySaved(){
+    let saved='broadcast';
+    try{saved=localStorage.getItem(KEY)||'broadcast';}catch(_){}
+    apply(saved,false);
+  }
+
   window.applyLiveAstaTheme=apply;
   window.setLiveAstaTheme=name=>apply(name,true);
   window.LiveAstaElectricThemes=THEMES;
 
-  let saved='broadcast';
-  try{saved=localStorage.getItem(KEY)||'broadcast';}catch(_){}
-  apply(saved,false);
+  reapplySaved();
+  /* theme.js has an older pageshow listener; this later listener restores the DEV electric palette. */
+  window.addEventListener('pageshow',reapplySaved);
 })();
