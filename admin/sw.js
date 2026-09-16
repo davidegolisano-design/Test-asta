@@ -1,4 +1,4 @@
-const CACHE_NAME = 'liveasta-admin-mvp-0.1.0';
+const CACHE_NAME = 'liveasta-admin-dev-0.2.0';
 const APP_SHELL = ['./','./index.html','./styles.css','./config.js','./app.js','./manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
@@ -35,7 +35,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request)));
 });
 
-// Fase 2: il push handler verrà aggiunto dopo la validazione dell'MVP.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const target = event.notification?.data?.url || './';
