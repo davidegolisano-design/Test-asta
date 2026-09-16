@@ -16,7 +16,7 @@
     <header class="topbar">
       <div class="brand">
         <h1 class="brand-title">LIVEASTA Admin</h1>
-        <p class="brand-subtitle" id="sessionLabel">Accesso amministratore</p>
+        <p class="brand-subtitle" id="sessionLabel">Accesso Superuser</p>
       </div>
       <div class="top-actions">
         <span id="pendingBadge" class="pending-badge hidden" title="Richieste pendenti">0</span>
@@ -26,16 +26,12 @@
 
     <main>
       <section id="loginView" class="login-wrap">
-        <form id="loginForm" class="login-card card" autocomplete="on">
+        <form id="loginForm" class="login-card card" autocomplete="off">
           <h2>Accesso Admin</h2>
-          <p>L’accesso usa Supabase Auth. La password amministratore storica di LIVEASTA non viene usata né salvata in questa PWA.</p>
+          <p>Usa la stessa password Superuser già presente in LIVEASTA. La password resta solo nella memoria della pagina e non viene salvata nel browser.</p>
           <div class="field">
-            <label for="emailInput">Email</label>
-            <input id="emailInput" name="email" type="email" autocomplete="username" inputmode="email" required>
-          </div>
-          <div class="field">
-            <label for="passwordInput">Password</label>
-            <input id="passwordInput" name="password" type="password" autocomplete="current-password" required>
+            <label for="passwordInput">Password Superuser</label>
+            <input id="passwordInput" name="password" type="password" autocomplete="off" required>
           </div>
           <button id="loginButton" class="primary-button" type="submit">Accedi</button>
           <p id="loginError" class="login-error hidden" role="alert"></p>
@@ -43,11 +39,19 @@
       </section>
 
       <section id="dashboardView" class="dashboard hidden" aria-live="polite">
+        <div class="card notification-card">
+          <div>
+            <strong>Notifiche nuove stanze</strong>
+            <p id="notificationStatus">Non attive.</p>
+          </div>
+          <button id="notificationButton" class="secondary-button" type="button">Attiva notifiche</button>
+        </div>
+
         <div>
           <div class="section-head">
             <div>
               <h2>Richieste pendenti</h2>
-              <p>Le stanze restano inutilizzabili finché non vengono approvate.</p>
+              <p>Ogni nuova stanza nasce non approvata e compare qui.</p>
             </div>
             <div class="section-actions">
               <button id="refreshButton" class="secondary-button" type="button">Aggiorna</button>
@@ -59,8 +63,8 @@
         <div>
           <div class="section-head">
             <div>
-              <h2>Storico recente</h2>
-              <p>Ultime approvazioni e rifiuti.</p>
+              <h2>Approvate di recente</h2>
+              <p>Ultime stanze abilitate.</p>
             </div>
           </div>
           <div class="history-card card">
