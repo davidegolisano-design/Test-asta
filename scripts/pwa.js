@@ -2,19 +2,34 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
+  const DEV_VERSION='v1.04.04';
+  const isDevPreview=/raw\.githack\.com$/i.test(location.hostname);
+
   function applyLiveAstaVersion(){
-    document.title='LIVEASTA · DEV MOBILE v1.04.03';
-    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{el.textContent='DEV MOBILE · v1.04.03';});
+    document.title='LIVEASTA · DEV MOBILE '+DEV_VERSION;
+    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{el.textContent='DEV MOBILE · '+DEV_VERSION;});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyLiveAstaVersion,{once:true});else applyLiveAstaVersion();
 
-  /* Foglio DEV isolato: tutti i selettori sono limitati alla plancia Banditore smartphone. */
+  /* Il CSS DEV viene caricato con URL univoco. */
   const mobileDevCss=document.createElement('link');
   mobileDevCss.rel='stylesheet';
-  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10403';
+  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10404';
+  mobileDevCss.dataset.liveastaDevVersion='10404';
   document.head.appendChild(mobileDevCss);
 
-  if('serviceWorker' in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(()=>{});},{once:true});
+  /* Nella preview raw.githack niente Service Worker: evita che una build DEV precedente
+     continui a servire asset vecchi. La produzione non viene toccata. */
+  if(isDevPreview){
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(reg=>reg.unregister()))).catch(()=>{});
+    }
+    if('caches' in window){
+      caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))).catch(()=>{});
+    }
+  }else if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(()=>{});},{once:true});
+  }
 
   const button=document.createElement('button');
   button.id='liveasta-install-btn';button.type='button';button.textContent='Installa LIVEASTA';document.body.appendChild(button);
