@@ -1,4 +1,4 @@
-const CACHE = 'liveasta-v1.04-122';
+const CACHE = 'liveasta-v1.04-123';
 const CORE = [
   './',
   './index.html',
@@ -27,7 +27,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-store' })
       .then(response => {
         if (response && response.status === 200 && response.type !== 'opaque') {
           const copy = response.clone();
