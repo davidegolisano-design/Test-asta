@@ -1,10 +1,10 @@
 {
-  "id": "/admin/",
+  "id": "./",
   "name": "LIVEASTA Admin",
   "short_name": "LA Admin",
   "description": "Pannello amministrativo LIVEASTA per la moderazione delle stanze",
-  "start_url": "/admin/",
-  "scope": "/admin/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#0b1020",
