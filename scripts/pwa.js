@@ -111,7 +111,8 @@
     './scripts/room-chat-entry-sync.js?v=10417',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
-    './scripts/session-resume.js?v=103'
+    './scripts/session-resume.js?v=103',
+    './scripts/room-creation-contact.js?v=10418'
   ];
 
   featureScripts.forEach(src=>{
