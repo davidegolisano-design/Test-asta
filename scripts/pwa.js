@@ -2,8 +2,8 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const DEV_VERSION='v1.04.04';
-  const isDevPreview=/raw\.githack\.com$/i.test(location.hostname);
+  const DEV_VERSION='v1.04.05';
+  const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA · DEV MOBILE '+DEV_VERSION;
@@ -11,22 +11,47 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyLiveAstaVersion,{once:true});else applyLiveAstaVersion();
 
-  /* Il CSS DEV viene caricato con URL univoco. */
-  const mobileDevCss=document.createElement('link');
-  mobileDevCss.rel='stylesheet';
-  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10404';
-  mobileDevCss.dataset.liveastaDevVersion='10404';
-  document.head.appendChild(mobileDevCss);
+  /* DEV: CSS inline nello stesso script che aggiorna la versione.
+     Se compare v1.04.05, queste regole sono necessariamente state eseguite. */
+  const mobileDevStyle=document.createElement('style');
+  mobileDevStyle.id='liveasta-mobile-dev-inline';
+  mobileDevStyle.textContent=`
+@media (max-width:760px){
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-player{
+    grid-template-rows:clamp(30px,5.2dvh,38px) minmax(0,1fr) 38px!important;
+    padding:6px 8px 8px!important;
+    gap:2px!important;
+  }
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-name-top{
+    height:auto!important;min-height:0!important;max-width:100%!important;
+    font-size:clamp(25px,7vw,38px)!important;line-height:1!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-meta{
+    width:100%!important;height:38px!important;min-height:38px!important;
+    margin:0!important;padding:2px 8px!important;box-sizing:border-box!important;
+    display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+    align-items:center!important;justify-content:center!important;gap:6px!important;overflow:hidden!important;
+  }
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-meta .meta-dot{
+    display:none!important;
+  }
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-role{
+    flex:0 0 auto!important;width:auto!important;height:auto!important;min-width:0!important;
+    margin:0!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  }
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-club{
+    flex:0 1 auto!important;width:auto!important;min-width:0!important;max-width:48%!important;
+    margin:0!important;padding:0!important;font-size:clamp(14px,3.8vw,18px)!important;line-height:1!important;
+    text-align:left!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+}`;
+  document.head.appendChild(mobileDevStyle);
 
-  /* Nella preview raw.githack niente Service Worker: evita che una build DEV precedente
-     continui a servire asset vecchi. La produzione non viene toccata. */
-  if(isDevPreview){
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(reg=>reg.unregister()))).catch(()=>{});
-    }
-    if('caches' in window){
-      caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))).catch(()=>{});
-    }
+  /* Preview DEV: niente Service Worker/cache applicativa. */
+  if(IS_RAWGITHACK && 'serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
+    if(window.caches)caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))).catch(()=>{});
   }else if('serviceWorker' in navigator){
     window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(()=>{});},{once:true});
   }
