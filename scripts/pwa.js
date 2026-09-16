@@ -2,26 +2,126 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
+  const DEV_VERSION='v1.04.16';
+  const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
+
   function applyLiveAstaVersion(){
-    document.title='LIVEASTA · v1.04';
-    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{el.textContent='v1.04';});
+    document.title='LIVEASTA · DEV MOBILE '+DEV_VERSION;
+    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{
+      el.textContent='DEV MOBILE · '+DEV_VERSION;
+    });
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyLiveAstaVersion,{once:true});else applyLiveAstaVersion();
 
-  if('serviceWorker' in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(()=>{});},{once:true});
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',applyLiveAstaVersion,{once:true});
+  }else{
+    applyLiveAstaVersion();
+  }
 
+  function loadCss(href){
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href=href;
+    document.head.appendChild(link);
+  }
+
+  /* DEV layers loaded after refinements.css. */
+  loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10416');
+  loadCss('./styles/game-glow-dev.css?v=10416');
+  loadCss('./styles/room-chat.css?v=10416');
+
+  /* Branch preview must not be polluted by an old installed service worker/cache. */
+  if(IS_RAWGITHACK && 'serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations()
+      .then(regs=>regs.forEach(reg=>reg.unregister()))
+      .catch(()=>{});
+    if(window.caches){
+      caches.keys()
+        .then(keys=>Promise.all(keys.map(key=>caches.delete(key))))
+        .catch(()=>{});
+    }
+  }else if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+    },{once:true});
+  }
+
+  /* Install CTA: solo homepage, mai dentro lobby/plance/gestione/chat.
+     Se l'app gira già in modalità installata/standalone il pulsante non viene mostrato. */
   const button=document.createElement('button');
-  button.id='liveasta-install-btn';button.type='button';button.textContent='Installa LIVEASTA';document.body.appendChild(button);
+  button.id='liveasta-install-btn';
+  button.type='button';
+  button.textContent='Installa LIVEASTA';
+  document.body.appendChild(button);
+
   let deferredPrompt=null;
-  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPrompt=event;button.classList.add('show');});
-  button.addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(_){}deferredPrompt=null;button.classList.remove('show');});
-  window.addEventListener('appinstalled',()=>{deferredPrompt=null;button.classList.remove('show');});
+  let installed=false;
+
+  function isStandalone(){
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      window.navigator.standalone===true;
+  }
+
+  function isHomeActive(){
+    return document.getElementById('screen-role')?.classList.contains('active')===true;
+  }
+
+  function syncInstallButton(){
+    installed=installed||isStandalone();
+    const shouldShow=!!deferredPrompt && !installed && isHomeActive();
+    button.classList.toggle('show',shouldShow);
+    button.hidden=!shouldShow;
+  }
+
+  /* Nascondilo da subito: beforeinstallprompt deciderà se il dispositivo è installabile. */
+  button.hidden=true;
+
+  window.addEventListener('beforeinstallprompt',event=>{
+    event.preventDefault();
+    deferredPrompt=event;
+    syncInstallButton();
+  });
+
+  button.addEventListener('click',async()=>{
+    if(!deferredPrompt||installed||!isHomeActive())return;
+    deferredPrompt.prompt();
+    try{await deferredPrompt.userChoice;}catch(_){}
+    deferredPrompt=null;
+    syncInstallButton();
+  });
+
+  window.addEventListener('appinstalled',()=>{
+    installed=true;
+    deferredPrompt=null;
+    button.classList.remove('show');
+    button.hidden=true;
+  });
+
+  const homeScreen=document.getElementById('screen-role');
+  if(homeScreen){
+    new MutationObserver(syncInstallButton).observe(homeScreen,{attributes:true,attributeFilter:['class']});
+  }
+  window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);
+  window.addEventListener('pageshow',syncInstallButton);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncInstallButton();});
+  syncInstallButton();
 
   const featureScripts=[
+    './scripts/theme-glow-dev.js?v=10416',
+    './scripts/auctioneer-mobile-board-dev.js?v=10416',
     './scripts/opponent-credits.js?v=103',
+    './scripts/room-chat.js?v=10416',
+    './scripts/room-chat-entry-sync.js?v=10416',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
     './scripts/session-resume.js?v=103'
   ];
-  featureScripts.forEach(src=>{const script=document.createElement('script');script.src=src;script.async=false;document.head.appendChild(script);});
+
+  featureScripts.forEach(src=>{
+    const script=document.createElement('script');
+    script.src=src;
+    script.async=false;
+    document.head.appendChild(script);
+  });
 })();
