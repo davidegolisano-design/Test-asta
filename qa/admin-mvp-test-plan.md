@@ -1,41 +1,41 @@
-# LIVEASTA Admin MVP - piano test
+# LIVEASTA Admin DEV - piano test
 
 ## Precondizioni
-- Eseguire esclusivamente su Supabase DEV/branch.
-- Migrazione `20260916143000_liveasta_admin_mvp.sql` applicata.
-- Edge Function `liveasta-admin-api` deployata con JWT verification attiva.
-- Esiste un utente Supabase Auth con `app_metadata.role = "liveasta_admin"`.
-- Frontend `admin/` servito via HTTPS o localhost.
+- usare esclusivamente la branch GitHub `admin-push-dev`
+- nessuna modifica a `main`
+- nessuna migrazione/Edge Function nuova su Supabase
+- frontend Admin servito via HTTPS
 
-## Sicurezza
-1. Senza sessione Auth: la funzione deve rispondere 401.
-2. Utente Auth senza ruolo admin: 403.
-3. Utente admin: snapshot consentito.
-4. Tentativo anon di impostare `approved=true` direttamente su `fanta_rooms`: deve fallire/essere impedito.
-5. Creazione stanza normale con payload manipolato `approved=true`: la stanza deve nascere `approved=false`, `approval_status=pending`.
-6. Nessuna service/secret key deve essere presente nel bundle `admin/`.
-7. La password Superuser storica non deve essere richiesta o memorizzata dalla Admin PWA.
+## Accesso
+1. Password Superuser errata: accesso negato.
+2. Password corretta: dashboard visibile.
+3. Refresh pagina: richiede nuovamente la password, perché non viene memorizzata.
+4. Logout: password cancellata dalla RAM e dashboard chiusa.
 
-## Funzionale
-1. Creare una stanza dalla LIVEASTA utente: compare in Pending.
-2. Badge: numero uguale alle richieste pendenti.
-3. Realtime: nuova stanza visibile senza refresh manuale.
-4. Approva: `approved=true`, `approval_status=approved`, sparisce da Pending e compare nello storico.
-5. Rifiuta: `approved=false`, `approval_status=rejected`, sparisce da Pending e compare nello storico.
-6. Doppio tap / doppia richiesta: una sola transizione; la seconda deve ricevere conflitto 409.
-7. Refresh pagina: sessione persistente e stato coerente.
-8. Deep-link `?room=<uuid>`: la richiesta viene evidenziata e portata in viewport se ancora pending.
-9. Logout: sessione rimossa e pannello non accessibile.
+## Stanze
+1. Creare una stanza dalla LIVEASTA principale: deve nascere con `approved=false`.
+2. Entro il successivo polling deve comparire nelle richieste pendenti.
+3. Badge: numero uguale alle stanze pending.
+4. Approva: usa `liveasta_set_room_approval`, la stanza passa `approved=true` e sparisce dalle pendenti.
+5. Doppio tap su Approva: il client deve bloccare la seconda azione mentre la prima è in corso.
+6. Aggiorna manuale: stato coerente con Supabase.
+7. Riapertura/ritorno in foreground: refresh immediato.
+8. Deep-link `?room=<uuid>`: evidenzia e porta in viewport la stanza se ancora pending.
 
-## PWA / Android
-1. Installazione da Chrome Android quando servita in HTTPS.
-2. Avvio standalone apre solo `/admin/`.
-3. La service worker Admin non controlla la PWA LIVEASTA principale.
-4. Offline: shell caricabile; le azioni amministrative devono mostrare errore di rete, mai simulare successo.
-5. Background/chiusura app: da validare nella fase Push, non nel MVP.
+## Notifiche
+1. Attivazione notifiche: Chrome richiede il permesso.
+2. Permesso concesso: UI mostra notifiche attive.
+3. Creare una nuova stanza dopo il primo snapshot: deve comparire una notifica `Nuova stanza da approvare`.
+4. La notifica deve mostrare `Nome stanza: X`.
+5. Tap sulla notifica: apre/focalizza LIVEASTA Admin con `?room=<uuid>`.
+6. Più stanze create: badge e lista devono riportare il numero corretto.
+7. Disattivazione notifiche dall'Admin: niente nuove notifiche, ma dashboard continua ad aggiornarsi.
+8. PWA in background: verificare polling/notifica su Android Chrome; i timer possono essere rallentati dal sistema.
+9. PWA completamente chiusa: nessuna garanzia di notifica in questa versione, perché non è ancora Web Push server-side.
 
-## Regressione LIVEASTA
-1. Creazione stanza esistente invariata.
-2. Accesso a stanza pending ancora bloccato.
-3. Superuser storico continua ad approvare.
-4. Asta, chat, PWA principale e plancia banditore non devono cambiare.
+## PWA / regressione
+1. Manifest Admin installabile separatamente dalla PWA principale.
+2. Service worker limitato allo scope `/admin/`.
+3. La PWA principale LIVEASTA non deve cambiare.
+4. Creazione stanza e accesso giocatori/banditore devono continuare a funzionare come prima.
+5. `main` deve restare identico al commit produzione fino a esplicita autorizzazione al merge.
