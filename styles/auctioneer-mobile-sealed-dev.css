@@ -1,86 +1,40 @@
-/* DEV MOBILE v1.04.12 — buste chiuse smartphone.
-   Obiettivo: nessun contenuto tagliato, destra utile in raccolta/apertura,
-   classifica leggibile all'esito. Solo presentazione mobile. */
+/* DEV MOBILE v1.04.13 — buste chiuse smartphone.
+   Presentazione isolata: usa il bid-box già stabile come shell mobile.
+   Nessuna modifica alla logica d'asta/realtime. */
 
 @media (max-width:760px){
   /* ================================================================
      RACCOLTA / APERTURA BUSTE
-     La destra mostra sempre CONSEGNATE + x/y + nomi ricevuti.
+     Destra = CONSEGNATE + x/y + elenco compatto.
      ================================================================ */
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
   #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info{
     position:relative!important;
-    display:block!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    gap:8px!important;
     min-width:0!important;
     min-height:0!important;
-    padding:16px 12px 12px!important;
+    padding:18px 10px 14px!important;
     box-sizing:border-box!important;
     overflow:hidden!important;
     background:var(--theme-card,#151D27)!important;
     border-color:var(--theme-border,#334155)!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
   #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
   .col-info #mobile-right-label{
-    display:none!important;
-    visibility:hidden!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  .col-info #mobile-offer-block{
-    position:static!important;
-    inset:auto!important;
-    transform:none!important;
-    display:block!important;
-    visibility:visible!important;
-    width:100%!important;
-    height:100%!important;
-    min-width:0!important;
-    min-height:0!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-  }
-
-  /* Override esplicito delle vecchie regole che nascondevano tutti i figli
-     di mobile-offer-block eccetto bid-box. */
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  .col-info .mobile-offer-block > #sealed-delivery-panel{
-    position:static!important;
-    inset:auto!important;
-    transform:none!important;
-    display:grid!important;
-    visibility:visible!important;
-    opacity:1!important;
-    width:100%!important;
-    height:100%!important;
-    min-width:0!important;
-    min-height:0!important;
-    margin:0!important;
-    padding:0!important;
-    box-sizing:border-box!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    grid-template-rows:auto auto minmax(0,1fr)!important;
-    align-items:start!important;
-    justify-items:stretch!important;
-    gap:8px!important;
-    overflow:hidden!important;
-    background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-panel h3{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
+    grid-column:1!important;
     grid-row:1!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    visibility:visible!important;
     width:100%!important;
+    max-width:100%!important;
     margin:0!important;
     padding:0!important;
     font-size:clamp(18px,5.1vw,25px)!important;
@@ -90,35 +44,94 @@
     text-align:center!important;
     white-space:nowrap!important;
     overflow:hidden!important;
-    text-overflow:clip!important;
     color:var(--theme-text,#F3F4F6)!important;
     -webkit-text-fill-color:var(--theme-text,#F3F4F6)!important;
+    text-shadow:none!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
   #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-panel h3::before,
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-panel h3::after{
-    content:none!important;
-    display:none!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-count{
+  .col-info #mobile-offer-block{
+    grid-column:1!important;
+    grid-row:2!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
     display:block!important;
     visibility:visible!important;
-    opacity:1!important;
-    grid-row:2!important;
     width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
     margin:0!important;
     padding:0!important;
-    font-size:clamp(42px,13vw,62px)!important;
+    overflow:hidden!important;
+  }
+
+  /* Il pannello originale resta sorgente dati ma non partecipa più al layout mobile. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
+  .col-info .mobile-offer-block > :not(.bid-box){
+    display:none!important;
+    visibility:hidden!important;
+    width:0!important;
+    height:0!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
+  .col-info .bid-box{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    gap:8px!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
+  .col-info .bid-box > :is(.bid-label,.credit-label,#current-value-display,#mobile-winner-display,#mobile-sealed-winner-copy,#mobile-sealed-ranking-copy){
+    display:none!important;
+    visibility:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
+  #mobile-sealed-count-copy{
+    grid-column:1!important;
+    grid-row:1!important;
+    display:block!important;
+    visibility:visible!important;
+    align-self:center!important;
+    justify-self:stretch!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0 2px!important;
+    box-sizing:border-box!important;
+    font-size:clamp(44px,13vw,64px)!important;
     line-height:.95!important;
     font-weight:950!important;
-    letter-spacing:-.045em!important;
+    letter-spacing:-.04em!important;
     text-align:center!important;
     white-space:nowrap!important;
     overflow:hidden!important;
@@ -127,19 +140,19 @@
     text-shadow:none!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
   #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-names{
+  #mobile-sealed-names-copy{
+    grid-column:1!important;
+    grid-row:2!important;
     display:flex!important;
     visibility:visible!important;
-    opacity:1!important;
-    grid-row:3!important;
     flex-direction:column!important;
     align-items:stretch!important;
     gap:5px!important;
     width:100%!important;
+    min-width:0!important;
     min-height:0!important;
-    max-height:100%!important;
     margin:0!important;
     padding:0 2px 2px!important;
     box-sizing:border-box!important;
@@ -148,23 +161,9 @@
     overscroll-behavior:contain!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-names > p{
-    margin:auto 0!important;
-    padding:8px 2px!important;
-    font-size:clamp(13px,3.7vw,17px)!important;
-    line-height:1.2!important;
-    font-weight:700!important;
-    text-align:center!important;
-    color:var(--theme-muted,#B8B1A3)!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-names .sealed-delivery-row{
+  .mobile-sealed-name-row{
     display:grid!important;
-    grid-template-columns:10px minmax(0,1fr) 18px!important;
+    grid-template-columns:9px minmax(0,1fr) 18px!important;
     align-items:center!important;
     gap:6px!important;
     width:100%!important;
@@ -172,54 +171,223 @@
     min-height:30px!important;
     padding:4px 6px!important;
     box-sizing:border-box!important;
-    border:1px solid color-mix(in srgb,var(--theme-border,#334155) 75%,transparent)!important;
+    border:1px solid var(--theme-border,#334155)!important;
     border-radius:8px!important;
-    background:color-mix(in srgb,var(--theme-panel,#111821) 78%,transparent)!important;
+    background:var(--theme-panel,#111821)!important;
     color:var(--theme-text,#F3F4F6)!important;
     font-size:clamp(12px,3.4vw,16px)!important;
     line-height:1.05!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-names .sealed-delivery-row strong{
+  .mobile-sealed-name-row strong{
     min-width:0!important;
     white-space:nowrap!important;
     overflow:hidden!important;
     text-overflow:ellipsis!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  #sealed-delivery-panel > small{
-    display:none!important;
+  .mobile-sealed-name-dot{
+    width:8px!important;
+    height:8px!important;
+    border-radius:50%!important;
+    background:var(--theme-success,var(--accent-green,#2DA66F))!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening)
-  .col-info .mobile-offer-block > :not(#sealed-delivery-panel){
+  .mobile-sealed-empty{
+    margin:auto 0!important;
+    padding:8px 2px!important;
+    color:var(--theme-muted,#B8B1A3)!important;
+    font-size:clamp(14px,3.8vw,18px)!important;
+    line-height:1.1!important;
+    font-weight:800!important;
+    text-align:center!important;
+  }
+
+  /* ================================================================
+     ESITO BUSTA CON VINCITORE
+     Sinistra = OFFERTA + prezzo. Destra = AGGIUDICATO A + squadra + ranking.
+     ================================================================ */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info{
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    gap:8px!important;
+    padding:18px 8px 12px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    background:var(--theme-card,#151D27)!important;
+    border-color:var(--theme-border,#334155)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info #mobile-right-label{
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    visibility:visible!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:clamp(15px,4.2vw,20px)!important;
+    line-height:1.05!important;
+    font-weight:950!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    color:var(--theme-text,#F3F4F6)!important;
+    -webkit-text-fill-color:var(--theme-text,#F3F4F6)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info #mobile-offer-block{
+    grid-column:1!important;
+    grid-row:2!important;
+    display:block!important;
+    visibility:visible!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info .mobile-offer-block > :not(.bid-box){
+    display:none!important;
+    visibility:hidden!important;
+    width:0!important;
+    height:0!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info .bid-box{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    gap:8px!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info .bid-box > :is(.bid-label,.credit-label,#current-value-display,#mobile-winner-display,#mobile-sealed-count-copy,#mobile-sealed-names-copy){
     display:none!important;
     visibility:hidden!important;
   }
 
-  /* ================================================================
-     ESITO BUSTA CON OFFERTE
-     Sinistra = offerta vincente. Destra = classifica completa.
-     ================================================================ */
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-timer{
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result #mobile-sealed-winner-copy{
+    grid-column:1!important;
+    grid-row:1!important;
+    display:block!important;
+    visibility:visible!important;
+    align-self:center!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:2px 4px!important;
+    box-sizing:border-box!important;
+    font-size:clamp(24px,6.8vw,34px)!important;
+    line-height:1.02!important;
+    font-weight:950!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow-wrap:break-word!important;
+    word-break:normal!important;
+    overflow:hidden!important;
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    text-shadow:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result #mobile-sealed-ranking-copy{
+    grid-column:1!important;
+    grid-row:2!important;
+    display:flex!important;
+    visibility:visible!important;
+    flex-direction:column!important;
+    gap:4px!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0 1px 1px!important;
+    box-sizing:border-box!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+
+  .mobile-sealed-ranking-row{
     display:grid!important;
+    grid-template-columns:22px minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:5px!important;
+    min-height:31px!important;
+    padding:4px 5px!important;
+    box-sizing:border-box!important;
+    border:1px solid var(--theme-border,#334155)!important;
+    border-radius:8px!important;
+    color:var(--theme-text,#F3F4F6)!important;
+    background:var(--theme-panel,#111821)!important;
+    font-size:clamp(11px,3.1vw,14px)!important;
+    line-height:1.05!important;
+  }
+
+  .mobile-sealed-ranking-row strong{
+    min-width:0!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .mobile-sealed-ranking-row.winner{
+    border-color:var(--theme-primary,var(--accent-yellow,#D5B45A))!important;
+  }
+
+  /* ================================================================
+     BUSTA INVENDUTA
+     Sinistra già gestita come OFFERTA 0. Destra = ESITO / INVENDUTO.
+     ================================================================ */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info{
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
     grid-template-rows:auto minmax(0,1fr)!important;
-    padding:18px 10px 14px!important;
     gap:8px!important;
+    padding:18px 10px 14px!important;
+    box-sizing:border-box!important;
     overflow:hidden!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-timer #mobile-left-label{
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info #mobile-right-label{
+    grid-column:1!important;
+    grid-row:1!important;
     display:block!important;
     visibility:visible!important;
-    grid-row:1!important;
     position:static!important;
     width:100%!important;
     margin:0!important;
@@ -229,222 +397,69 @@
     font-weight:950!important;
     text-align:center!important;
     color:var(--theme-text,#F3F4F6)!important;
+    -webkit-text-fill-color:var(--theme-text,#F3F4F6)!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-timer .timer-caption{
-    display:none!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-timer .timer-ring{
-    display:flex!important;
-    visibility:visible!important;
-    grid-row:2!important;
-    position:static!important;
-    inset:auto!important;
-    width:100%!important;
-    height:100%!important;
-    margin:0!important;
-    padding:0!important;
-    align-items:center!important;
-    justify-content:center!important;
-    overflow:hidden!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result #countdown-display{
-    display:block!important;
-    visibility:visible!important;
-    position:static!important;
-    transform:none!important;
-    width:100%!important;
-    max-width:100%!important;
-    margin:0!important;
-    padding:0 3px!important;
-    box-sizing:border-box!important;
-    font-size:clamp(62px,18vw,94px)!important;
-    line-height:.9!important;
-    font-weight:950!important;
-    text-align:center!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
-    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
-    text-shadow:none!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info{
-    position:relative!important;
-    display:block!important;
-    padding:12px 8px!important;
-    box-sizing:border-box!important;
-    overflow:hidden!important;
-    background:var(--theme-card,#151D27)!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info #mobile-right-label{
-    display:none!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info #mobile-offer-block{
-    display:block!important;
-    visibility:visible!important;
-    width:100%!important;
-    height:100%!important;
-    min-width:0!important;
-    min-height:0!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result
-  .col-info .mobile-offer-block > #sealed-ranking-auctioneer{
-    position:static!important;
-    inset:auto!important;
-    transform:none!important;
-    display:flex!important;
-    visibility:visible!important;
-    opacity:1!important;
-    flex-direction:column!important;
-    width:100%!important;
-    height:100%!important;
-    min-width:0!important;
-    min-height:0!important;
-    margin:0!important;
-    padding:0!important;
-    box-sizing:border-box!important;
-    overflow:hidden!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result
-  .col-info .mobile-offer-block > :not(#sealed-ranking-auctioneer){
-    display:none!important;
-    visibility:hidden!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .sealed-ranking-title{
-    flex:0 0 auto!important;
-    width:100%!important;
-    margin:0 0 7px!important;
-    padding:0!important;
-    font-size:clamp(14px,4vw,19px)!important;
-    line-height:1.05!important;
-    font-weight:950!important;
-    text-align:center!important;
-    white-space:normal!important;
-    color:var(--theme-text,#F3F4F6)!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .sealed-ranking-list{
-    flex:1 1 auto!important;
-    min-height:0!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .sealed-ranking-row{
-    display:grid!important;
-    grid-template-columns:24px minmax(0,1fr) auto!important;
-    align-items:center!important;
-    gap:6px!important;
-    min-height:34px!important;
-    padding:5px 6px!important;
-    box-sizing:border-box!important;
-    font-size:clamp(11px,3.2vw,15px)!important;
-    line-height:1.05!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .sealed-ranking-team{
-    min-width:0!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-
-  /* ================================================================
-     BUSTA SENZA OFFERTE
-     Sinistra = OFFERTA 0. Destra = ESITO / INVENDUTO.
-     ================================================================ */
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info{
-    display:grid!important;
-    grid-template-rows:auto minmax(0,1fr)!important;
-    padding:18px 10px 14px!important;
-    gap:8px!important;
-    overflow:hidden!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info #mobile-right-label{
-    display:block!important;
-    visibility:visible!important;
-    grid-row:1!important;
-    position:static!important;
-    width:100%!important;
-    margin:0!important;
-    padding:0!important;
-    font-size:clamp(18px,5.1vw,25px)!important;
-    line-height:1.05!important;
-    font-weight:950!important;
-    text-align:center!important;
-    color:var(--theme-text,#F3F4F6)!important;
-  }
-
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
   #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info #mobile-offer-block{
+    grid-column:1!important;
     grid-row:2!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
+    display:block!important;
+    visibility:visible!important;
     width:100%!important;
     height:100%!important;
-    min-width:0!important;
-    min-height:0!important;
     margin:0!important;
     padding:0!important;
     overflow:hidden!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting
-  .col-info .mobile-offer-block > :not(#mobile-winner-display){
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info .mobile-offer-block > :not(.bid-box){
     display:none!important;
     visibility:hidden!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting #mobile-winner-display{
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info .bid-box{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    height:100%!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-info .bid-box > :not(#mobile-sealed-winner-copy){
+    display:none!important;
+    visibility:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile
+  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting #mobile-sealed-winner-copy{
     display:block!important;
     visibility:visible!important;
-    position:static!important;
     width:100%!important;
-    max-width:100%!important;
     margin:0!important;
-    padding:0 2px!important;
+    padding:0 4px!important;
     box-sizing:border-box!important;
-    font-size:clamp(22px,6vw,30px)!important;
+    color:var(--theme-text,#F3F4F6)!important;
+    -webkit-text-fill-color:var(--theme-text,#F3F4F6)!important;
+    font-size:clamp(22px,6vw,31px)!important;
     line-height:1.05!important;
     font-weight:950!important;
     text-align:center!important;
     white-space:normal!important;
     overflow-wrap:break-word!important;
-    color:var(--theme-text,#F3F4F6)!important;
   }
 
-  html body #screen-auctioneer-board#screen-auctioneer-board.auctioneer-ui-mobile
-  #auction-dashboard.mode-mobile #view-auction.mobile-unsold.sealed-collecting .col-timer #mobile-left-label{
-    display:block!important;
-    visibility:visible!important;
+  /* CTA installazione mai sopra la plancia. */
+  html body:has(#screen-auctioneer-board.active) #liveasta-install-btn{
+    display:none!important;
   }
 }
