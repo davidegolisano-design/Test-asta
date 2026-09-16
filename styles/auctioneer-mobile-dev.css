@@ -335,3 +335,314 @@
     }
   }
 }
+
+/* ========================================================================
+   DEV MOBILE v1.04.11 — quadranti inferiori rifiniti per stato.
+   Questo blocco è volutamente in fondo: sostituisce le geometrie legacy
+   di refinements.css senza toccare la logica d'asta.
+   ======================================================================== */
+@media (max-width:760px){
+  /* Etichette sinistre più leggibili, mantenendo PREPARAZIONE interamente dentro. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-timer :is(.mobile-quad-label,.timer-caption){
+    font-size:clamp(16px,4.8vw,23px)!important;
+    letter-spacing:.018em!important;
+  }
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .col-timer .timer-caption{
+    font-size:clamp(18px,5vw,24px)!important;
+  }
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .auctioneer-turn-title{
+    font-size:clamp(16px,4.5vw,21px)!important;
+  }
+
+  /* READY / PREPARAZIONE / ASTA: il quadrante destro usa la stessa architettura
+     del sinistro: header separato + corpo flessibile. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-ready,.mobile-preparing,.mobile-normal) .col-info{
+    position:relative!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:18px 10px 14px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    align-items:stretch!important;
+    justify-items:stretch!important;
+    gap:8px!important;
+    background:var(--theme-card,#151D27)!important;
+    border-color:var(--theme-border,#334155)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-ready,.mobile-preparing,.mobile-normal) .col-info #mobile-right-label{
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    visibility:visible!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0 2px!important;
+    box-sizing:border-box!important;
+    font-size:clamp(18px,5.1vw,25px)!important;
+    line-height:1.05!important;
+    font-weight:950!important;
+    letter-spacing:.02em!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    color:var(--theme-text,#F3F4F6)!important;
+    -webkit-text-fill-color:var(--theme-text,#F3F4F6)!important;
+    text-shadow:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-info #mobile-right-label:empty{
+    display:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-ready,.mobile-preparing,.mobile-normal) .col-info #mobile-offer-block{
+    grid-column:1!important;
+    grid-row:2!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+  }
+
+  /* Gli elementi desktop restano sorgente dati, ma non occupano spazio mobile. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-ready,.mobile-preparing,.mobile-normal) .col-info :is(#auction-title-display,#winner-display,#sealed-delivery-panel,#sealed-ranking-auctioneer,#auctioneer-turn-ranking-empty,.bid-label,.credit-label){
+    display:none!important;
+    visibility:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-ready,.mobile-preparing,.mobile-normal) .col-info .bid-box{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr) auto!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+  }
+
+  /* Numero offerta: dimensionato rispetto a mezzo schermo, non all'intera viewport. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-preparing,.mobile-normal) .col-info #current-value-display{
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    align-self:center!important;
+    justify-self:center!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0 2px!important;
+    box-sizing:border-box!important;
+    font-size:clamp(70px,21vw,100px)!important;
+    line-height:.9!important;
+    font-weight:950!important;
+    letter-spacing:-.045em!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    font-variant-numeric:tabular-nums!important;
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    text-shadow:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-preparing,.mobile-normal) .col-info #current-value-display:is(.digits-3,.quad-digits-3){
+    font-size:clamp(56px,17vw,78px)!important;
+    letter-spacing:-.055em!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-preparing,.mobile-normal) .col-info #current-value-display:is(.digits-4,.quad-digits-4){
+    font-size:clamp(42px,13vw,62px)!important;
+    letter-spacing:-.065em!important;
+  }
+
+  /* Miglior offerente: può andare su due righe, mai fuori dal riquadro. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-normal .col-info #mobile-winner-display{
+    grid-column:1!important;
+    grid-row:2!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    visibility:visible!important;
+    align-self:end!important;
+    justify-self:stretch!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:6px 2px 0!important;
+    box-sizing:border-box!important;
+    font-size:clamp(16px,4.7vw,23px)!important;
+    line-height:1.05!important;
+    font-weight:900!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow-wrap:break-word!important;
+    word-break:normal!important;
+    overflow:hidden!important;
+    color:var(--theme-text,#F3F4F6)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-normal .col-info #mobile-winner-display:empty,
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-preparing .col-info #mobile-winner-display{
+    display:none!important;
+  }
+
+  /* READY: x/y è un contatore, non un'offerta. Dimensione dedicata che contiene anche 10/18. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .col-info .bid-box{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .col-info #current-value-display{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0 2px!important;
+    box-sizing:border-box!important;
+    font-size:clamp(42px,13vw,62px)!important;
+    line-height:.95!important;
+    font-weight:950!important;
+    letter-spacing:-.045em!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    font-variant-numeric:tabular-nums!important;
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    text-shadow:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .col-info #mobile-winner-display{
+    display:none!important;
+  }
+
+  /* Banditura a turni: il quadrante destro resta volutamente neutro finché
+     la logica non ha una classifica da mostrare. Niente OFFERTA/0 fantasma. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .col-info #mobile-right-label{
+    display:none!important;
+  }
+
+  /* BUSTE: la destra appartiene alla lista consegne, non al vecchio blocco OFFERTA. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info{
+    position:relative!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:14px 10px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    display:block!important;
+    background:var(--theme-card,#151D27)!important;
+    border-color:var(--theme-border,#334155)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info > #mobile-right-label{
+    display:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info #mobile-offer-block{
+    position:static!important;
+    width:100%!important;
+    height:100%!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info #sealed-delivery-panel{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:flex!important;
+    visibility:visible!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:7px!important;
+    overflow:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info #sealed-delivery-panel h3{
+    margin:0!important;
+    font-size:clamp(15px,4.4vw,21px)!important;
+    line-height:1.05!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    color:var(--theme-text,#F3F4F6)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info #sealed-delivery-count{
+    display:block!important;
+    margin:0!important;
+    font-size:clamp(34px,10vw,48px)!important;
+    line-height:1!important;
+    text-align:center!important;
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info #sealed-delivery-names{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info #sealed-delivery-panel > small{
+    margin:0!important;
+    font-size:10px!important;
+    line-height:1.15!important;
+    text-align:center!important;
+    color:var(--theme-muted,#B8B1A3)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) .col-info :is(#auction-title-display,#winner-display,.bid-box,#sealed-ranking-auctioneer,#auctioneer-turn-ranking-empty){
+    display:none!important;
+  }
+}
