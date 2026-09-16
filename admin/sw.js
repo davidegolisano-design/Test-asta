@@ -1,4 +1,4 @@
-const CACHE_NAME = 'liveasta-admin-dev-0.2.0';
+const CACHE_NAME = 'liveasta-admin-dev-0.2.1';
 const APP_SHELL = ['./','./index.html','./styles.css','./config.js','./app.js','./manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
