@@ -1,45 +1,36 @@
-# LIVEASTA Admin MVP - architettura
+# LIVEASTA Admin DEV - architettura semplice
+
+## Obiettivo
+Aggiungere una PWA amministrativa separata per approvare le nuove stanze senza modificare `main` e senza creare branch/progetti Supabase a pagamento.
 
 ## Confini
-La Admin PWA è separata dalla PWA LIVEASTA principale:
-- percorso frontend: `/admin/`
-- manifest separato con `id` e `scope` `/admin/`
-- service worker separato e limitato allo scope `/admin/`
-- autenticazione Supabase Auth dedicata
-- nessuna password Superuser legacy nel frontend
+- frontend separato in `/admin/`
+- manifest e service worker separati
+- branch GitHub: `admin-push-dev`
+- backend: quello LIVEASTA esistente
+- nessuna migrazione database
+- nessuna nuova Edge Function
+- nessun nuovo utente Supabase Auth
 
-## Flusso MVP
-1. LIVEASTA crea la stanza come oggi con `approved=false`.
-2. La migrazione assegna `approval_status=pending` e impedisce al normale client di cambiare i campi di moderazione.
-3. L’admin accede con Supabase Auth.
-4. La PWA invoca `liveasta-admin-api` con il JWT utente.
-5. L’Edge Function valida l’utente e richiede `app_metadata.role=liveasta_admin`.
-6. Solo l’Edge Function usa credenziali server-side per leggere/aggiornare la moderazione.
-7. La PWA usa Realtime solo come segnale di refresh e rilegge i dati tramite l’Edge Function.
+## Flusso
+1. LIVEASTA crea la stanza con `approved=false`, come già avviene oggi.
+2. LIVEASTA Admin interroga periodicamente `fanta_rooms` e mostra solo le stanze non approvate.
+3. L'Admin accede con la password Superuser già esistente.
+4. La password viene verificata tramite RPC `liveasta_verify_superuser`.
+5. La password rimane soltanto nella RAM della pagina corrente; non viene salvata in localStorage/sessionStorage.
+6. Il pulsante `Approva` usa l'RPC esistente `liveasta_set_room_approval` con `p_approved=true`.
+7. Dopo l'approvazione la stanza sparisce dalle pendenti e diventa utilizzabile dall'app principale.
 
-## Stato approvazione
-`approved` resta per compatibilità con LIVEASTA esistente.
-Il nuovo `approval_status` distingue:
-- `pending`
-- `approved`
-- `rejected`
+## Notifiche
+La PWA controlla automaticamente le nuove stanze ogni 10 secondi.
+Se le notifiche sono abilitate e compare un nuovo `room.id` pending:
+- mostra una notifica browser/PWA;
+- aggiorna il badge con il numero delle richieste;
+- il tap apre `/admin/?room=<uuid>` e porta alla relativa richiesta.
 
-Campi audit:
-- `approval_reviewed_at`
-- `approval_reviewed_by`
-
-La funzione legacy `liveasta_set_room_approval` viene mantenuta compatibile. La revoca legacy porta la stanza a `pending`; il vero rifiuto è una decisione della nuova Admin PWA.
+Questa modalità non è vero Web Push: funziona mentre LIVEASTA Admin è in esecuzione. Con la PWA completamente chiusa non esiste codice JavaScript attivo che possa interrogare Supabase. Per ottenere notifiche affidabili ad app chiusa servirebbe in futuro un mittente server-side Web Push.
 
 ## Sicurezza
-Il frontend contiene solo URL Supabase e publishable key, entrambi pubblici per natura.
-Le chiavi server/secret e, nella fase push, la VAPID private key restano esclusivamente lato Supabase.
+Il frontend contiene soltanto la publishable key Supabase, che è pubblica per natura. La password Superuser non viene hardcoded né memorizzata.
 
-Problema preesistente da non confondere con l’MVP: le policy attuali delle tabelle operative sono molto permissive (`anon ALL`). La migrazione MVP protegge specificamente i campi di approvazione tramite trigger, senza tentare un refactor RLS globale che rischierebbe regressioni nell’asta. Il rifacimento RLS va trattato come lavoro separato e testato integralmente.
-
-## Push - fase 2
-Dopo la validazione MVP:
-- subscription Web Push salvata server-side e associata all’admin autenticato;
-- VAPID public key al client, VAPID private key in secret Supabase;
-- evento nuova stanza `pending` -> webhook/trigger -> Edge Function push;
-- payload con `roomId` e URL `/admin/?room=<uuid>`;
-- `notificationclick` del service worker apre/focalizza la richiesta.
+La sicurezza delle policy esistenti di `fanta_rooms` non viene modificata in questa DEV per evitare regressioni nell'app principale. L'eventuale hardening RLS va trattato separatamente.
