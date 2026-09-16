@@ -206,7 +206,7 @@
     if (!state.session) return;
     state.realtimeChannel = client
       .channel('liveasta-admin-room-refresh')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'fanta_rooms' }, scheduleRealtimeRefresh)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'liveasta_admin_room_events' }, scheduleRealtimeRefresh)
       .subscribe();
   }
 
