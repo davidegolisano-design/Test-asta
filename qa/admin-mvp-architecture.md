@@ -22,7 +22,7 @@ Aggiungere una PWA amministrativa separata per approvare le nuove stanze senza m
 7. Dopo l'approvazione la stanza sparisce dalle pendenti e diventa utilizzabile dall'app principale.
 
 ## Notifiche
-La PWA controlla automaticamente le nuove stanze ogni 10 secondi.
+La PWA controlla automaticamente le nuove stanze ogni 5 secondi.
 Se le notifiche sono abilitate e compare un nuovo `room.id` pending:
 - mostra una notifica browser/PWA;
 - aggiorna il badge con il numero delle richieste;
