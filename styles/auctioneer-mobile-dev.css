@@ -1,39 +1,337 @@
-/* DEV MOBILE v1.04.05 — plancia Banditore smartphone. */
+/* DEV MOBILE v1.04.10 — plancia Banditore smartphone.
+   Regola: ogni contenuto deve restare interamente dentro il proprio quadrante. */
+
 @media (max-width:760px){
-  #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-player{
-    grid-template-rows:clamp(30px,5.2dvh,38px) minmax(0,1fr) 36px!important;
+  /* ================================================================
+     QUADRANTE GIOCATORE — già approvato
+     ================================================================ */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-player{
+    grid-template-rows:clamp(30px,5.2dvh,38px) minmax(0,1fr) 38px!important;
     padding:6px 8px 8px!important;
     gap:2px!important;
   }
-  #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-name-top{
-    height:auto!important;min-height:0!important;max-width:100%!important;
-    font-size:clamp(25px,7vw,38px)!important;line-height:1!important;
-    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-name-top{
+    height:auto!important;
+    min-height:0!important;
+    max-width:100%!important;
+    font-size:clamp(25px,7vw,38px)!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
   }
-  #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-meta{
-    width:100%!important;height:36px!important;min-height:36px!important;min-width:0!important;
-    margin:0!important;padding:2px 8px!important;box-sizing:border-box!important;
-    display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
-    align-items:center!important;justify-content:center!important;gap:7px!important;overflow:hidden!important;
+
+  /* ================================================================
+     QUADRANTE INFERIORE SINISTRO
+     Struttura stabile: etichetta sopra, valore in area separata sotto.
+     Nessuna sovrapposizione fra TIMER/PREPARAZIONE/FVM e numero.
+     ================================================================ */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-timer{
+    position:relative!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:18px 10px 14px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    align-items:stretch!important;
+    justify-items:stretch!important;
+    gap:10px!important;
+    background:var(--theme-card,#151D27)!important;
+    border-color:var(--theme-border,#334155)!important;
   }
-  /* #auction-player-role è il contenitore dei ruoli Mantra: non va forzato a 28px. */
-  #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-role{
-    flex:0 0 auto!important;width:auto!important;min-width:0!important;height:30px!important;min-height:30px!important;
-    margin:0!important;padding:0!important;display:inline-flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
-    align-items:center!important;justify-content:center!important;gap:5px!important;overflow:visible!important;
-    border-radius:0!important;background:transparent!important;
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-timer :is(.mobile-quad-label,.timer-caption){
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0 2px!important;
+    box-sizing:border-box!important;
+    align-self:center!important;
+    justify-self:center!important;
+    font-size:clamp(13px,4.1vw,20px)!important;
+    line-height:1.08!important;
+    font-weight:900!important;
+    letter-spacing:.025em!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    color:var(--theme-text,#F3F4F6)!important;
+    -webkit-text-fill-color:var(--theme-text,#F3F4F6)!important;
+    text-shadow:none!important;
   }
-  #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-role > *{
-    flex:0 0 28px!important;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
-    margin:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
-    border-radius:50%!important;font-size:12px!important;line-height:1!important;
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-timer .timer-ring{
+    grid-column:1!important;
+    grid-row:2!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    align-self:stretch!important;
+    justify-self:stretch!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    overflow:hidden!important;
   }
-  #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-meta .meta-dot{display:none!important;}
-  #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-club{
-    position:static!important;inset:auto!important;transform:none!important;
-    flex:0 1 auto!important;width:auto!important;min-width:0!important;max-width:48%!important;
-    height:auto!important;margin:0!important;padding:0!important;
-    font-size:clamp(14px,3.8vw,18px)!important;line-height:1!important;text-align:left!important;
-    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-timer .timer-ring small{
+    display:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #countdown-display{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0 4px!important;
+    box-sizing:border-box!important;
+    font-size:clamp(64px,19vw,98px)!important;
+    line-height:.88!important;
+    letter-spacing:-.035em!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+  }
+
+  /* READY: FVM sopra, valore listone sotto. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .col-timer .mobile-quad-label{
+    display:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .col-timer .timer-caption{
+    display:block!important;
+    visibility:visible!important;
+    font-size:clamp(15px,4.4vw,21px)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready .col-timer .timer-ring{
+    display:flex!important;
+    visibility:visible!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-ready #countdown-display{
+    font-size:clamp(62px,18vw,94px)!important;
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    text-shadow:none!important;
+  }
+
+  /* TURNO: solo messaggio del turno. Qualunque timer residuo è escluso dal layout. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .col-timer{
+    grid-template-rows:minmax(0,1fr)!important;
+    padding:16px 12px!important;
+    gap:0!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .col-timer > :not(#auctioneer-turn-center){
+    display:none!important;
+    visibility:hidden!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn #auctioneer-turn-center{
+    grid-column:1!important;
+    grid-row:1!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    display:flex!important;
+    visibility:visible!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    max-height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:8px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:10px!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn #auctioneer-turn-center :is(.auctioneer-turn-kicker,.auctioneer-turn-role){
+    display:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .auctioneer-turn-title{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:clamp(14px,4vw,19px)!important;
+    line-height:1.08!important;
+    font-weight:900!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    color:var(--theme-text,#F3F4F6)!important;
+    -webkit-text-fill-color:var(--theme-text,#F3F4F6)!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .auctioneer-turn-team{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0 2px!important;
+    box-sizing:border-box!important;
+    font-size:clamp(20px,6vw,31px)!important;
+    line-height:1.06!important;
+    font-weight:950!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow-wrap:break-word!important;
+    word-break:normal!important;
+    overflow:hidden!important;
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+  }
+
+  /* PREPARAZIONE / ASTA ATTIVA / BUSTE: una sola label visibile. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-preparing,.mobile-normal,.mobile-sealed-collecting,.mobile-sealed-opening) .col-timer .timer-caption{
+    display:none!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-preparing,.mobile-normal,.mobile-sealed-collecting,.mobile-sealed-opening) .col-timer .mobile-quad-label{
+    display:block!important;
+    visibility:visible!important;
+  }
+
+  /* Preparazione: colore numero del tema. Non eredita il rosso degli ultimi 3 secondi dell'asta. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-preparing #countdown-display,
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-preparing #countdown-display.liveasta-last3,
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-preparing #countdown-display.danger{
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    text-shadow:none!important;
+  }
+
+  /* Asta attiva: verde, poi rosso soltanto negli ultimi 3 secondi. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-normal #countdown-display{
+    color:var(--theme-success,var(--accent-green,#2DA66F))!important;
+    -webkit-text-fill-color:var(--theme-success,var(--accent-green,#2DA66F))!important;
+  }
+
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-normal #countdown-display.liveasta-last3,
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-normal #countdown-display.danger{
+    color:var(--theme-danger,var(--accent-red,#D84A55))!important;
+    -webkit-text-fill-color:var(--theme-danger,var(--accent-red,#D84A55))!important;
+  }
+
+  /* Busta / apertura: numero coerente col colore numerico del tema. */
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction:is(.mobile-sealed-collecting,.mobile-sealed-opening) #countdown-display{
+    color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    -webkit-text-fill-color:var(--theme-number,var(--accent-yellow,#D5B45A))!important;
+    text-shadow:none!important;
+  }
+
+  /* Il CTA PWA non deve coprire la plancia durante l'asta. */
+  html body:has(#screen-auctioneer-board.active) #liveasta-install-btn{
+    display:none!important;
+  }
+}
+
+/* roles.css usa questo layer con !important: le correzioni Mantra devono stare nello stesso layer. */
+@layer mantra-role-layout {
+  @media (max-width:760px){
+    .liveasta-mantra #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-meta:has(#auction-player-role.role-badge-mantra){
+      position:static!important;
+      inset:auto!important;
+      transform:none!important;
+      width:100%!important;
+      min-width:0!important;
+      height:38px!important;
+      min-height:38px!important;
+      max-height:38px!important;
+      margin:0!important;
+      padding:3px 8px!important;
+      box-sizing:border-box!important;
+      display:flex!important;
+      flex-direction:row!important;
+      flex-wrap:nowrap!important;
+      align-items:center!important;
+      justify-content:center!important;
+      align-content:center!important;
+      gap:8px!important;
+      white-space:nowrap!important;
+      overflow:hidden!important;
+    }
+
+    .liveasta-mantra #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-meta:has(#auction-player-role.role-badge-mantra) .meta-dot{
+      display:none!important;
+    }
+
+    .liveasta-mantra #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-role.role-badge-mantra{
+      position:static!important;
+      inset:auto!important;
+      transform:none!important;
+      flex:0 1 auto!important;
+      width:fit-content!important;
+      min-width:0!important;
+      max-width:70%!important;
+      height:auto!important;
+      min-height:28px!important;
+      max-height:30px!important;
+      margin:0!important;
+      padding:0!important;
+      display:inline-flex!important;
+      flex-flow:row nowrap!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:3px!important;
+      overflow:hidden!important;
+      --role-size:28px;
+      --role-font:11px;
+    }
+
+    .liveasta-mantra #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-club{
+      position:static!important;
+      inset:auto!important;
+      transform:none!important;
+      flex:0 1 auto!important;
+      width:auto!important;
+      min-width:0!important;
+      max-width:45%!important;
+      height:auto!important;
+      margin:0!important;
+      padding:0!important;
+      font-size:clamp(15px,4vw,18px)!important;
+      line-height:28px!important;
+      text-align:left!important;
+      white-space:nowrap!important;
+      overflow:hidden!important;
+      overflow-wrap:normal!important;
+      text-overflow:ellipsis!important;
+    }
   }
 }
