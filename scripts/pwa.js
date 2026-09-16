@@ -30,78 +30,24 @@
   loadCss('./styles/room-chat.css?v=10418');
 
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations()
-      .then(regs=>regs.forEach(reg=>reg.unregister()))
-      .catch(()=>{});
-    if(window.caches){
-      caches.keys()
-        .then(keys=>Promise.all(keys.map(key=>caches.delete(key))))
-        .catch(()=>{});
-    }
+    navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
+    if(window.caches)caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))).catch(()=>{});
   }else if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
-    },{once:true});
+    window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(()=>{});},{once:true});
   }
 
-  /* Installazione PWA: solo homepage e mai quando l'app è già installata. */
   const button=document.createElement('button');
-  button.id='liveasta-install-btn';
-  button.type='button';
-  button.textContent='Installa LIVEASTA';
-  document.body.appendChild(button);
-
-  let deferredPrompt=null;
-  let installed=false;
-
-  function isStandalone(){
-    return window.matchMedia('(display-mode: standalone)').matches ||
-      window.matchMedia('(display-mode: fullscreen)').matches ||
-      window.navigator.standalone===true;
-  }
-
-  function isHomeActive(){
-    return document.getElementById('screen-role')?.classList.contains('active')===true;
-  }
-
-  function syncInstallButton(){
-    installed=installed||isStandalone();
-    const shouldShow=!!deferredPrompt && !installed && isHomeActive();
-    button.classList.toggle('show',shouldShow);
-    button.hidden=!shouldShow;
-  }
-
+  button.id='liveasta-install-btn';button.type='button';button.textContent='Installa LIVEASTA';document.body.appendChild(button);
+  let deferredPrompt=null;let installed=false;
+  function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches||window.navigator.standalone===true;}
+  function isHomeActive(){return document.getElementById('screen-role')?.classList.contains('active')===true;}
+  function syncInstallButton(){installed=installed||isStandalone();const shouldShow=!!deferredPrompt&&!installed&&isHomeActive();button.classList.toggle('show',shouldShow);button.hidden=!shouldShow;}
   button.hidden=true;
-
-  window.addEventListener('beforeinstallprompt',event=>{
-    event.preventDefault();
-    deferredPrompt=event;
-    syncInstallButton();
-  });
-
-  button.addEventListener('click',async()=>{
-    if(!deferredPrompt||installed||!isHomeActive())return;
-    deferredPrompt.prompt();
-    try{await deferredPrompt.userChoice;}catch(_){}
-    deferredPrompt=null;
-    syncInstallButton();
-  });
-
-  window.addEventListener('appinstalled',()=>{
-    installed=true;
-    deferredPrompt=null;
-    button.classList.remove('show');
-    button.hidden=true;
-  });
-
-  const homeScreen=document.getElementById('screen-role');
-  if(homeScreen){
-    new MutationObserver(syncInstallButton).observe(homeScreen,{attributes:true,attributeFilter:['class']});
-  }
-  window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);
-  window.addEventListener('pageshow',syncInstallButton);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncInstallButton();});
-  syncInstallButton();
+  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPrompt=event;syncInstallButton();});
+  button.addEventListener('click',async()=>{if(!deferredPrompt||installed||!isHomeActive())return;deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(_){}deferredPrompt=null;syncInstallButton();});
+  window.addEventListener('appinstalled',()=>{installed=true;deferredPrompt=null;button.classList.remove('show');button.hidden=true;});
+  const homeScreen=document.getElementById('screen-role');if(homeScreen)new MutationObserver(syncInstallButton).observe(homeScreen,{attributes:true,attributeFilter:['class']});
+  window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);window.addEventListener('pageshow',syncInstallButton);document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncInstallButton();});syncInstallButton();
 
   const featureScripts=[
     './scripts/theme-glow-dev.js?v=10418',
@@ -112,13 +58,8 @@
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
     './scripts/session-resume.js?v=103',
+    './scripts/room-creation-success-guard.js?v=10418b',
     './scripts/room-creation-contact.js?v=10418'
   ];
-
-  featureScripts.forEach(src=>{
-    const script=document.createElement('script');
-    script.src=src;
-    script.async=false;
-    document.head.appendChild(script);
-  });
+  featureScripts.forEach(src=>{const script=document.createElement('script');script.src=src;script.async=false;document.head.appendChild(script);});
 })();
