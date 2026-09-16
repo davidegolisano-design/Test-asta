@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const DEV_VERSION='v1.04.06';
+  const DEV_VERSION='v1.04.07';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -11,13 +11,14 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyLiveAstaVersion,{once:true});else applyLiveAstaVersion();
 
-  /* DEV: regole inline ad alta specificità. Se compare v1.04.06, sono state eseguite. */
+  /* DEV MOBILE: il markup reale contiene #auction-player-role come singolo badge.
+     Il contenitore #auction-player-meta deve essere la sola riga inferiore. */
   const mobileDevStyle=document.createElement('style');
   mobileDevStyle.id='liveasta-mobile-dev-inline';
   mobileDevStyle.textContent=`
 @media (max-width:760px){
   html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-player{
-    grid-template-rows:clamp(30px,5.2dvh,38px) minmax(0,1fr) 36px!important;
+    grid-template-rows:clamp(30px,5.2dvh,38px) minmax(0,1fr) 38px!important;
     padding:6px 8px 8px!important;gap:2px!important;
   }
   html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-name-top{
@@ -26,31 +27,30 @@
     white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
   }
   html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-meta{
-    width:100%!important;height:36px!important;min-height:36px!important;min-width:0!important;
-    margin:0!important;padding:2px 8px!important;box-sizing:border-box!important;
+    position:relative!important;inset:auto!important;transform:none!important;
+    width:100%!important;height:38px!important;min-height:38px!important;min-width:0!important;
+    margin:0!important;padding:3px 8px!important;box-sizing:border-box!important;
     display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
-    align-items:center!important;justify-content:center!important;gap:7px!important;overflow:hidden!important;
+    align-items:center!important;justify-content:center!important;align-content:center!important;
+    gap:8px!important;overflow:hidden!important;
   }
   html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-meta .meta-dot{display:none!important;}
   html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-role{
-    position:static!important;inset:auto!important;transform:none!important;
-    flex:0 0 auto!important;width:auto!important;min-width:0!important;height:30px!important;min-height:30px!important;
-    margin:0!important;padding:0!important;display:inline-flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
-    align-items:center!important;justify-content:center!important;gap:5px!important;overflow:visible!important;
-    border-radius:0!important;background:transparent!important;
-  }
-  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-role > *{
-    flex:0 0 28px!important;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
-    margin:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
-    border-radius:50%!important;font-size:12px!important;line-height:1!important;
+    position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;
+    transform:none!important;float:none!important;clear:none!important;
+    flex:0 0 30px!important;display:inline-flex!important;width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    border-radius:50%!important;font-size:13px!important;line-height:1!important;
   }
   html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction #auction-player-club{
-    position:static!important;inset:auto!important;transform:none!important;
-    flex:0 1 auto!important;width:auto!important;min-width:0!important;max-width:48%!important;height:auto!important;
-    margin:0!important;padding:0!important;font-size:clamp(14px,3.8vw,18px)!important;line-height:1!important;
+    position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;
+    transform:none!important;float:none!important;clear:none!important;
+    flex:0 1 auto!important;display:block!important;width:auto!important;min-width:0!important;max-width:55%!important;height:auto!important;
+    margin:0!important;padding:0!important;font-size:clamp(15px,4vw,18px)!important;line-height:30px!important;
     text-align:left!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
   }
-}`;
+}
+`;
   document.head.appendChild(mobileDevStyle);
 
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
