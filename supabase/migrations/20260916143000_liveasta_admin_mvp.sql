@@ -65,8 +65,68 @@ create trigger trg_liveasta_guard_room_approval_fields
 before insert or update on public.fanta_rooms
 for each row execute function private.liveasta_guard_room_approval_fields();
 
--- Compatibilità con il Superuser storico.
--- APPROVA resta APPROVED; una revoca legacy torna a PENDING.
+-- Realtime Admin separato: la PWA non si sottoscrive direttamente a fanta_rooms,
+-- così non riceve password o altri campi stanza non necessari.
+create table if not exists public.liveasta_admin_room_events (
+  id bigint generated always as identity primary key,
+  room_id uuid not null references public.fanta_rooms(id) on delete cascade,
+  event_type text not null check (event_type in ('created', 'status_changed')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.liveasta_admin_room_events enable row level security;
+
+revoke all on table public.liveasta_admin_room_events from anon, authenticated;
+grant select on table public.liveasta_admin_room_events to authenticated;
+
+drop policy if exists liveasta_admin_room_events_select on public.liveasta_admin_room_events;
+create policy liveasta_admin_room_events_select
+on public.liveasta_admin_room_events
+for select
+to authenticated
+using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'liveasta_admin');
+
+create or replace function private.liveasta_emit_admin_room_event()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+begin
+  if tg_op = 'INSERT' then
+    insert into public.liveasta_admin_room_events(room_id, event_type)
+    values (new.id, 'created');
+  elsif tg_op = 'UPDATE' and new.approval_status is distinct from old.approval_status then
+    insert into public.liveasta_admin_room_events(room_id, event_type)
+    values (new.id, 'status_changed');
+  end if;
+  return new;
+end;
+$$;
+
+revoke execute on function private.liveasta_emit_admin_room_event() from public, anon, authenticated;
+
+drop trigger if exists trg_liveasta_emit_admin_room_event on public.fanta_rooms;
+create trigger trg_liveasta_emit_admin_room_event
+after insert or update of approval_status on public.fanta_rooms
+for each row execute function private.liveasta_emit_admin_room_event();
+
+do $$
+begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime')
+     and not exists (
+       select 1
+       from pg_publication_tables
+       where pubname = 'supabase_realtime'
+         and schemaname = 'public'
+         and tablename = 'liveasta_admin_room_events'
+     ) then
+    alter publication supabase_realtime add table public.liveasta_admin_room_events;
+  end if;
+end $$;
+
+-- Mantiene compatibile il Superuser storico: APPROVA continua a funzionare;
+-- una eventuale revoca legacy torna a PENDING, non a REJECTED.
 create or replace function public.liveasta_set_room_approval(
   p_room_id uuid,
   p_approved boolean,
