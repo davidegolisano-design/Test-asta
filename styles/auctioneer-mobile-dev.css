@@ -2,7 +2,7 @@
    Non contiene selettori desktop e non modifica la logica d'asta. */
 @media (max-width: 760px){
   #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction .col-player{
-    grid-template-rows:clamp(30px,5.2dvh,38px) minmax(0,1fr) clamp(42px,6.2dvh,50px)!important;
+    grid-template-rows:clamp(30px,5.2dvh,38px) minmax(0,1fr) clamp(34px,5dvh,40px)!important;
     padding:6px 8px 8px!important;
     gap:2px!important;
   }
@@ -18,42 +18,48 @@
     text-overflow:ellipsis!important;
   }
 
+  /* Meta definitiva smartphone: [ruolo/i] + squadra sulla stessa riga. */
   #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile .auction-player-meta{
-    min-height:42px!important;
-    height:auto!important;
-    padding:2px 4px 1px!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:34px!important;
+    height:100%!important;
+    padding:2px 8px!important;
     margin:0!important;
     display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
     align-items:center!important;
     justify-content:center!important;
-    flex-wrap:wrap!important;
     align-content:center!important;
-    column-gap:5px!important;
-    row-gap:1px!important;
+    gap:6px!important;
     overflow:hidden!important;
     box-sizing:border-box!important;
   }
 
   #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-role,
   #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile .auction-player-role-badge{
-    width:26px!important;
-    height:26px!important;
-    min-width:26px!important;
-    min-height:26px!important;
+    flex:0 0 28px!important;
+    width:28px!important;
+    height:28px!important;
+    min-width:28px!important;
+    min-height:28px!important;
+    margin:0!important;
     font-size:12px!important;
-    line-height:26px!important;
+    line-height:28px!important;
   }
 
   #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #auction-player-club{
-    flex:0 0 100%!important;
-    width:100%!important;
-    max-width:100%!important;
-    margin:0!important;
-    padding:0 4px 1px!important;
+    flex:0 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:55%!important;
+    margin:0 0 0 2px!important;
+    padding:0!important;
     box-sizing:border-box!important;
-    font-size:clamp(13px,3.7vw,17px)!important;
-    line-height:1.05!important;
-    text-align:center!important;
+    font-size:clamp(14px,3.8vw,18px)!important;
+    line-height:1!important;
+    text-align:left!important;
     white-space:nowrap!important;
     overflow:hidden!important;
     text-overflow:ellipsis!important;
