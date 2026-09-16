@@ -8,6 +8,12 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyLiveAstaVersion,{once:true});else applyLiveAstaVersion();
 
+  /* Foglio DEV isolato: tutti i selettori sono limitati alla plancia Banditore smartphone. */
+  const mobileDevCss=document.createElement('link');
+  mobileDevCss.rel='stylesheet';
+  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10402';
+  document.head.appendChild(mobileDevCss);
+
   if('serviceWorker' in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(()=>{});},{once:true});
 
   const button=document.createElement('button');
