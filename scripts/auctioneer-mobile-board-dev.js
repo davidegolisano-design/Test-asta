@@ -23,13 +23,17 @@
 
   function meaningfulWinner(value){
     const t=cleanText(value);
-    return /^(|--|-|nessuno|nessuna offerta|nessuno offerente)$/i.test(t)?'':t;
+    return /^(|--|-|nessuno|nessuna offerta|nessuno offerente|invenduto)$/i.test(t)?'':t;
+  }
+
+  function compactFraction(value,fallback='0/0'){
+    const raw=cleanText(value||fallback);
+    const match=raw.match(/(\d+)\s*\/\s*(\d+)/);
+    return match?`${match[1]}/${match[2]}`:raw;
   }
 
   function readyCount(){
-    const raw=sourceText('current-value-display','0 / 0');
-    const match=raw.match(/(\d+)\s*\/\s*(\d+)/);
-    return match?`${match[1]} / ${match[2]}`:raw;
+    return compactFraction(sourceText('current-value-display','0/0'),'0/0');
   }
 
   function deliveredNames(){
@@ -131,14 +135,15 @@
   }
 
   function currentPhase(view){
-    if(view.classList.contains('mobile-ready'))return 'ready';
-    if(view.classList.contains('mobile-preparing'))return 'preparing';
-    if(view.classList.contains('mobile-normal'))return 'normal';
-    if(view.classList.contains('mobile-turn'))return 'turn';
+    /* Specific terminal/sealed states first: legacy classes can coexist briefly. */
+    if(view.classList.contains('mobile-unsold'))return 'unsold';
+    if(view.classList.contains('mobile-sealed-result'))return 'sealed-result';
     if(view.classList.contains('mobile-sealed-opening'))return 'sealed-opening';
     if(view.classList.contains('mobile-sealed-collecting'))return 'sealed-collecting';
-    if(view.classList.contains('mobile-sealed-result'))return 'sealed-result';
-    if(view.classList.contains('mobile-unsold'))return 'unsold';
+    if(view.classList.contains('mobile-ready'))return 'ready';
+    if(view.classList.contains('mobile-preparing'))return 'preparing';
+    if(view.classList.contains('mobile-turn'))return 'turn';
+    if(view.classList.contains('mobile-normal'))return 'normal';
     return '';
   }
 
@@ -183,22 +188,25 @@
         setSurface(right,{head:'OFFERTA',main:value,kind:'number',tone:'number'});
         break;
 
-      case 'normal':
+      case 'normal':{
+        const numeric=parseInt(value.replace(/\D/g,''),10)||0;
+        const visibleWinner=numeric>0?winner:'';
         setSurface(left,{head:'TIMER',main:timer,kind:'number',tone:countdownTone(phase)});
-        setSurface(right,{head:'OFFERTA',main:value,sub:winner,kind:'number',tone:'number'});
+        setSurface(right,{head:'OFFERTA',main:value,sub:visibleWinner,kind:'number',tone:'number'});
         break;
+      }
 
       case 'turn':{
         const team=sourceText('auctioneer-turn-team','--');
         setSurface(left,{head:'È IL TURNO DI',main:team,kind:'text',tone:'primary'});
-        setSurface(right,{head:'',main:'',kind:'text',tone:'primary'});
+        setSurface(right,{active:false});
         break;
       }
 
       case 'sealed-collecting':
       case 'sealed-opening':{
         const names=deliveredNames();
-        const count=sourceText('sealed-delivery-count','0 / 0').replace(/\s*\/\s*/,' / ');
+        const count=compactFraction(sourceText('sealed-delivery-count','0/0'),'0/0');
         setSurface(left,{
           head:phase==='sealed-opening'?'APERTURA':'TIMER BUSTE',
           main:timer,
@@ -218,8 +226,10 @@
       case 'sealed-result':{
         const rows=rankingRows();
         const resultWinner=winner || rows[0]?.team || '--';
-        const resultValue=value || rows[0]?.value || '0';
-        const extraRows=rows.length>1?rows.slice(1,5):[];
+        const rawValue=parseInt(value.replace(/\D/g,''),10)||0;
+        const rankedValue=cleanText(rows[0]?.value);
+        const resultValue=(rawValue>0?String(rawValue):rankedValue)||'0';
+        const extraRows=rows.filter(row=>cleanText(row.team)!==cleanText(resultWinner)).slice(0,4);
         setSurface(left,{head:'OFFERTA',main:resultValue,kind:'number',tone:'number'});
         setSurface(right,{
           head:'AGGIUDICATO A',
