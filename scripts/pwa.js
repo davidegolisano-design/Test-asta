@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.04.19';
+  const APP_VERSION='v1.04.20';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -59,6 +59,7 @@
     './scripts/stability-core.js?v=1035',
     './scripts/session-resume.js?v=103',
     './scripts/exact-bid-cooldown-exemption.js?v=10419',
+    './scripts/player-room-status-leds.js?v=10420',
     './scripts/room-creation-success-guard.js?v=10418b',
     './scripts/room-creation-contact.js?v=10418'
   ];
