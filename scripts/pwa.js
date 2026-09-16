@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const DEV_VERSION='v1.04.13';
+  const DEV_VERSION='v1.04.14';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -18,78 +18,18 @@
     applyLiveAstaVersion();
   }
 
-  /*
-    DEV MOBILE presentation layers.
-    Loaded after refinements.css. No auction/realtime logic is changed here.
-  */
-  const mobileDevCss=document.createElement('link');
-  mobileDevCss.rel='stylesheet';
-  mobileDevCss.href='./styles/auctioneer-mobile-dev.css?v=10413';
-  document.head.appendChild(mobileDevCss);
-
-  const mobileSealedDevCss=document.createElement('link');
-  mobileSealedDevCss.rel='stylesheet';
-  mobileSealedDevCss.href='./styles/auctioneer-mobile-sealed-dev.css?v=10413';
-  document.head.appendChild(mobileSealedDevCss);
-
-  const mobileSealedDevScript=document.createElement('script');
-  mobileSealedDevScript.src='./scripts/auctioneer-mobile-sealed-dev.js?v=10413';
-  mobileSealedDevScript.async=false;
-  document.head.appendChild(mobileSealedDevScript);
-
-  /* Keep both semantic mobile labels synchronized with the existing phase class. */
-  function syncMobilePhaseLabels(){
-    const board=document.getElementById('screen-auctioneer-board');
-    const view=document.getElementById('view-auction');
-    if(!board?.classList.contains('auctioneer-ui-mobile')||!view)return;
-
-    const left=document.getElementById('mobile-left-label');
-    const right=document.getElementById('mobile-right-label');
-    if(!left||!right)return;
-
-    if(view.classList.contains('mobile-ready')){
-      left.textContent='FVM';
-      right.textContent='READY';
-    }else if(view.classList.contains('mobile-preparing')){
-      left.textContent='PREPARAZIONE';
-      right.textContent='OFFERTA';
-    }else if(view.classList.contains('mobile-normal')){
-      left.textContent='TIMER';
-      right.textContent='OFFERTA';
-    }else if(view.classList.contains('mobile-sealed-opening')){
-      left.textContent='APERTURA';
-      right.textContent='CONSEGNATE';
-    }else if(view.classList.contains('mobile-sealed-collecting')){
-      left.textContent='TIMER BUSTE';
-      right.textContent='CONSEGNATE';
-    }else if(view.classList.contains('mobile-sealed-result')){
-      left.textContent='OFFERTA';
-      right.textContent='AGGIUDICATO A';
-      const resultValue=document.getElementById('current-value-display')?.textContent?.trim();
-      const leftValue=document.getElementById('countdown-display');
-      if(leftValue && resultValue) leftValue.textContent=resultValue;
-    }else if(view.classList.contains('mobile-unsold') && view.classList.contains('sealed-collecting')){
-      left.textContent='OFFERTA';
-      right.textContent='ESITO';
-    }else if(view.classList.contains('mobile-turn')){
-      left.textContent='';
-      right.textContent='';
-    }
+  function loadCss(href){
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href=href;
+    document.head.appendChild(link);
   }
 
-  function installMobilePhaseObserver(){
-    const view=document.getElementById('view-auction');
-    if(!view)return;
-    syncMobilePhaseLabels();
-    new MutationObserver(syncMobilePhaseLabels)
-      .observe(view,{attributes:true,attributeFilter:['class']});
-  }
-
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',installMobilePhaseObserver,{once:true});
-  }else{
-    installMobilePhaseObserver();
-  }
+  /* DEV layers loaded after refinements.css.
+     v1.04.14 deliberately stops loading the old accumulated mobile/sealed DEV layers. */
+  loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10414');
+  loadCss('./styles/game-glow-dev.css?v=10414');
+  loadCss('./styles/room-chat.css?v=10414');
 
   /* Branch preview must not be polluted by an old installed service worker/cache. */
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
@@ -134,7 +74,10 @@
   });
 
   const featureScripts=[
+    './scripts/theme-glow-dev.js?v=10414',
+    './scripts/auctioneer-mobile-board-dev.js?v=10414',
     './scripts/opponent-credits.js?v=103',
+    './scripts/room-chat.js?v=10414',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
     './scripts/session-resume.js?v=103'
