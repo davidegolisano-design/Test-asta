@@ -3,8 +3,8 @@
   window.__liveastaPwaInstallLoaded=true;
 
   function applyLiveAstaVersion(){
-    document.title='LIVEASTA · v1.04';
-    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{el.textContent='v1.04';});
+    document.title='LIVEASTA · DEV MOBILE';
+    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{el.textContent='DEV MOBILE · v1.04';});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyLiveAstaVersion,{once:true});else applyLiveAstaVersion();
 
