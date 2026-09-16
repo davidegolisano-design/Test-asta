@@ -2,13 +2,13 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const DEV_VERSION='v1.04.16';
+  const APP_VERSION='v1.04.16';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
-    document.title='LIVEASTA · DEV MOBILE '+DEV_VERSION;
+    document.title='LIVEASTA · '+APP_VERSION;
     document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{
-      el.textContent='DEV MOBILE · '+DEV_VERSION;
+      el.textContent=APP_VERSION;
     });
   }
 
@@ -25,12 +25,10 @@
     document.head.appendChild(link);
   }
 
-  /* DEV layers loaded after refinements.css. */
   loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10416');
   loadCss('./styles/game-glow-dev.css?v=10416');
   loadCss('./styles/room-chat.css?v=10416');
 
-  /* Branch preview must not be polluted by an old installed service worker/cache. */
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations()
       .then(regs=>regs.forEach(reg=>reg.unregister()))
@@ -74,7 +72,6 @@
     button.hidden=!shouldShow;
   }
 
-  /* Nascondilo da subito: beforeinstallprompt deciderà se il dispositivo è installabile. */
   button.hidden=true;
 
   window.addEventListener('beforeinstallprompt',event=>{
