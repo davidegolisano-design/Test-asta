@@ -1,0 +1,73 @@
+/* LIVEASTA DEV - flusso ingresso/creazione stanza */
+#screen-role .liveasta-home-entry-primary,
+#screen-role .liveasta-home-entry-secondary{
+  min-height:76px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:4px;
+  text-align:left;
+  padding:15px 18px;
+}
+#screen-role .liveasta-home-entry-primary strong,
+#screen-role .liveasta-home-entry-secondary strong{
+  font-size:16px;
+  letter-spacing:.035em;
+}
+#screen-role .liveasta-home-entry-primary small,
+#screen-role .liveasta-home-entry-secondary small{
+  font-size:12px;
+  font-weight:700;
+  opacity:.72;
+}
+
+.liveasta-entry-card{max-width:520px;}
+.liveasta-entry-eyebrow{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 10px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--theme-accent,var(--accent-blue)) 46%,transparent);
+  background:color-mix(in srgb,var(--theme-accent,var(--accent-blue)) 12%,transparent);
+  color:var(--theme-accent,var(--accent-blue));
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.liveasta-entry-choice-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin:18px 0 14px;
+}
+.liveasta-entry-choice{
+  width:100%;
+  min-height:86px;
+  display:grid;
+  grid-template-columns:44px 1fr 18px;
+  gap:12px;
+  align-items:center;
+  border:1px solid color-mix(in srgb,var(--theme-border,var(--border)) 88%,transparent);
+  border-radius:16px;
+  padding:14px;
+  color:var(--theme-text,var(--text-main));
+  background:color-mix(in srgb,var(--theme-surface,var(--panel)) 94%,transparent);
+  text-align:left;
+  cursor:pointer;
+}
+.liveasta-entry-choice:active{transform:scale(.99);}
+.liveasta-entry-icon{
+  width:44px;height:44px;border-radius:13px;
+  display:grid;place-items:center;
+  background:color-mix(in srgb,var(--theme-accent,var(--accent-blue)) 16%,transparent);
+  font-size:22px;
+}
+.liveasta-entry-copy{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.liveasta-entry-copy strong{font-size:16px;letter-spacing:.03em;}
+.liveasta-entry-copy small{font-size:12px;line-height:1.35;color:var(--theme-muted,var(--text-muted));}
+.liveasta-entry-arrow{font-size:28px;line-height:1;color:var(--theme-muted,var(--text-muted));}
+#screen-auctioneer-setup #auction-mode-choice{display:none!important;}
+#screen-auctioneer-setup .auction-mode-selected{display:none!important;}
