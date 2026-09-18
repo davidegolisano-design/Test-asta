@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.04.20';
+  const APP_VERSION='v1.04.21 DEV';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -28,6 +28,7 @@
   loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10418');
   loadCss('./styles/game-glow-dev.css?v=10418');
   loadCss('./styles/room-chat.css?v=10418');
+  loadCss('./styles/entry-flow-dev.css?v=10421dev1');
 
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
@@ -58,6 +59,7 @@
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
     './scripts/session-resume.js?v=103',
+    './scripts/entry-flow-dev.js?v=10421dev1',
     './scripts/exact-bid-cooldown-exemption.js?v=10419',
     './scripts/player-room-status-leds.js?v=10420',
     './scripts/room-creation-success-guard.js?v=10418b',
