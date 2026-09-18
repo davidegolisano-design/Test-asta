@@ -59,7 +59,7 @@
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
     './scripts/session-resume.js?v=103',
-    './scripts/entry-flow-dev.js?v=10421dev2',
+    './scripts/entry-flow-dev.js?v=10421dev3',
     './scripts/exact-bid-cooldown-exemption.js?v=10419',
     './scripts/player-room-status-leds.js?v=10420',
     './scripts/room-creation-success-guard.js?v=10418b',
