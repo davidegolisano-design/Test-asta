@@ -49,20 +49,20 @@
     screen.querySelector('[data-entry-role="player"]')?.addEventListener('click',()=>{
       actor='player';
       intent='join';
-      window.openPlayerLobby?.();
+      openPlayerLobby();
     });
 
     screen.querySelector('[data-entry-role="auctioneer"]')?.addEventListener('click',()=>{
       actor='auctioneer';
       intent='join';
       prepareDeviceChoice();
-      window.showScreen?.('screen-device-choice');
+      showScreen('screen-device-choice');
     });
 
     screen.querySelector('.liveasta-entry-back')?.addEventListener('click',()=>{
       actor=null;
       intent=null;
-      window.showScreen?.('screen-role');
+      showScreen('screen-role');
     });
   }
 
@@ -82,7 +82,7 @@
         intent='join';
         actor=null;
         ensureRoleScreen();
-        window.showScreen?.('screen-entry-role');
+        showScreen('screen-entry-role');
       });
     }
 
@@ -95,7 +95,7 @@
         intent='create';
         actor='auctioneer';
         prepareDeviceChoice();
-        window.showScreen?.('screen-device-choice');
+        showScreen('screen-device-choice');
       });
     }
   }
@@ -119,14 +119,14 @@
       if(!back.dataset.entryFlowDev){
         back.dataset.entryFlowDev='1';
         back.addEventListener('click',()=>{
-          window.resetAuctioneerRoomMode?.();
+          resetAuctioneerRoomMode();
           if(intent==='join'){
             ensureRoleScreen();
-            window.showScreen?.('screen-entry-role');
+            showScreen('screen-entry-role');
           }else{
             actor=null;
             intent=null;
-            window.showScreen?.('screen-role');
+            showScreen('screen-role');
           }
         });
       }
@@ -153,19 +153,20 @@
   }
 
   function wrapSetDeviceMode(){
-    if(typeof window.setDeviceMode!=='function')return false;
+    if(typeof setDeviceMode!=='function')return false;
     if(window.setDeviceMode.__entryFlowDevWrapped)return true;
 
-    originalSetDeviceMode=window.setDeviceMode;
+    originalSetDeviceMode=setDeviceMode;
     const wrapped=async function(mode){
       await originalSetDeviceMode.call(this,mode);
       if(intent==='create' || (intent==='join' && actor==='auctioneer')){
-        window.setAuctioneerRoomMode?.(intent);
+        setAuctioneerRoomMode(intent);
         forceAuctioneerMode();
       }
     };
     wrapped.__entryFlowDevWrapped=true;
     window.setDeviceMode=wrapped;
+    setDeviceMode=wrapped;
     return true;
   }
 
@@ -180,7 +181,7 @@
       event.preventDefault();
       event.stopImmediatePropagation();
       ensureRoleScreen();
-      window.showScreen?.('screen-entry-role');
+      showScreen('screen-entry-role');
     },true);
   }
 
