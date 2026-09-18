@@ -193,10 +193,12 @@
   }
 
   function boot(){
+    // Le schermate principali esistono già quando questo modulo viene caricato.
+    // Evitiamo un MutationObserver globale: osservare gli style mentre li modifichiamo
+    // può generare un loop e bloccare i tap proprio nel flusso di ingresso.
     sync();
     interceptBackNavigation();
-    const observer=new MutationObserver(sync);
-    observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+    window.addEventListener('pageshow',sync);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
