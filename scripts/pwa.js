@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.05 DEV · Fluo';
+  const APP_VERSION='v1.06 DEV · Fluo';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -26,7 +26,6 @@
   }
 
   loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10418');
-  loadCss('./styles/game-glow-dev.css?v=105-fluo1');
   loadCss('./styles/room-chat.css?v=10418');
 
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
@@ -52,15 +51,15 @@
   const featureScripts=[
     './scripts/auctioneer-mobile-board-dev.js?v=10418',
     './scripts/opponent-credits.js?v=103',
-    './scripts/room-chat.js?v=10418',
+    './scripts/room-chat.js?v=106-fluo1',
     './scripts/room-chat-entry-sync.js?v=10418',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
-    './scripts/session-resume.js?v=103',
+    './scripts/session-resume.js?v=106-fluo1',
     './scripts/exact-bid-cooldown-exemption.js?v=10419',
     './scripts/player-room-status-leds.js?v=10420',
     './scripts/room-creation-success-guard.js?v=10418b',
-    './scripts/room-creation-contact.js?v=10421-entry1'
+    './scripts/room-creation-contact.js?v=106-fluo1'
   ];
   featureScripts.forEach(src=>{const script=document.createElement('script');script.src=src;script.async=false;document.head.appendChild(script);});
 })();

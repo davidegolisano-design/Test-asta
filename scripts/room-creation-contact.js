@@ -107,7 +107,8 @@
 
     const err=document.getElementById('auction-room-error');
     if(err)err.textContent='';
-    setTimeout(()=>currentStepInput()?.focus(),0);
+    const focused=document.activeElement;
+    if(focused?.matches('input,textarea') && focused.closest('#auction-create-box'))focused.blur();
   }
 
   function setCreateError(message){
@@ -237,7 +238,7 @@
 
     document.addEventListener('keydown',event=>{
       if(!isCreateVisible()||event.key!=='Enter')return;
-      const active=document.activeElement;
+      const active=event.target;
       if(active && document.getElementById('auction-create-box')?.contains(active)){
         event.preventDefault();
         createWizardNext();

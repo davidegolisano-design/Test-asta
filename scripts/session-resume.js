@@ -204,7 +204,7 @@
     const room=await validateStoredRoom(session);
     try{await fetchListone();}catch(_){}
 
-    applyAuctioneerUiMode(session.device_mode==='mobile'?'mobile':'desktop',true);
+    applyAuctioneerUiMode();
     auctioneerRoomMode='join';
     await prepareCommonRoomFields(room,session.room_password,'auctioneer');
 

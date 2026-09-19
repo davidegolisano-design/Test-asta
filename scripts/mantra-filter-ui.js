@@ -223,6 +223,7 @@
 
         const panel=root.querySelector('.mantra-subfilter-panel');
         if(panel?.dataset.group&&GROUPS[panel.dataset.group])openSubfilterPanel(view,panel.dataset.group,root);
+        syncListFilterIndicator(view);
     }
 
     const baseRenderListFilters=renderListFilters;

@@ -567,7 +567,6 @@
         if(!teamId){if(err)err.textContent='Seleziona la tua squadra.';return;}
         await handlePlayerTeamSelection();
         playerWizardStep=3;renderPlayerWizard();
-        setTimeout(()=>document.getElementById('player-pin')?.focus({preventScroll:true}),80);
         return;
       }
       await joinAsPlayer();
@@ -842,12 +841,13 @@
   };
 
   function visible(el){return !!el && getComputedStyle(el).display!=='none' && !el.disabled;}
-  function focusNext(id){const el=document.getElementById(id);if(el){el.focus({preventScroll:true});return true;}return false;}
+  // Enter may submit/advance a step; choosing another input stays with the user.
+  function finishField(el){el?.blur();}
 
   function updateEnterHints(){
     const hints={
-      'player-room-name-input':'next','player-room-password':'next','player-pin':'next','player-pin-confirm':'go',
-      'auction-new-room-name':'next','auction-new-room-password':'next','auction-room-name-input':'next','auction-room-password':'go',
+      'player-room-name-input':'done','player-room-password':'next','player-pin':'next','player-pin-confirm':'go',
+      'auction-new-room-name':'next','auction-new-room-password':'next','auction-room-name-input':'done','auction-room-password':'go',
       'auction-mantra-max-roster':'go','admin-pin':'go','sealed-bid-input':'go'
     };
     Object.entries(hints).forEach(([id,h])=>document.getElementById(id)?.setAttribute('enterkeyhint',h));
@@ -863,22 +863,24 @@
 
     if(screenActive('screen-player-setup')){
       if(playerRetryTimer){e.preventDefault();return;}
-      if(id==='player-room-name-input'){e.preventDefault();focusNext('player-room-password');return;}
+      if(id==='player-room-name-input'){e.preventDefault();finishField(t);return;}
       if(id==='player-room-password'){e.preventDefault();window.playerAccessWizardNext?.();return;}
       if(id==='player-pin'){
         e.preventDefault();
         const c=document.getElementById('player-pin-confirm');
-        if(visible(c))focusNext('player-pin-confirm');else window.playerAccessWizardNext?.();
+        if(visible(c))finishField(t);else window.playerAccessWizardNext?.();
         return;
       }
       if(id==='player-pin-confirm'){e.preventDefault();window.playerAccessWizardNext?.();return;}
     }
 
     if(screenActive('screen-auctioneer-setup')){
+      // The creation wizard owns Enter; it advances without focusing the next field.
+      if(typeof auctioneerRoomMode!=='undefined' && auctioneerRoomMode==='create')return;
       if(auctionRetryTimer){e.preventDefault();return;}
-      if(id==='auction-new-room-name'){e.preventDefault();focusNext('auction-new-room-password');return;}
+      if(id==='auction-new-room-name'){e.preventDefault();finishField(t);return;}
       if(id==='auction-new-room-password'){e.preventDefault();window.auctionAccessWizardNext?.();return;}
-      if(id==='auction-room-name-input'){e.preventDefault();focusNext('auction-room-password');return;}
+      if(id==='auction-room-name-input'){e.preventDefault();finishField(t);return;}
       if(id==='auction-room-password'||id==='auction-mantra-max-roster'){e.preventDefault();window.auctionAccessWizardNext?.();return;}
     }
 

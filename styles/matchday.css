@@ -1,0 +1,251 @@
+/* LIVEASTA Matchday: canonical presentation layer.
+   Legacy files retain auction layout/visibility. This layer owns the visual system.
+   Layered !important declarations outrank legacy unlayered rules without ID escalation.
+   Never set display/visibility on game states or override disabled behavior here. */
+@layer matchday {
+  :root {
+    --match-display:'Barlow Condensed','Arial Narrow',Impact,sans-serif;
+    --match-radius:5px 5px 20px 5px;
+    --match-control-radius:4px 4px 12px 4px;
+    --match-success-ink:#76EDA9;--match-danger-ink:#FF8198;
+    --match-success-fill:#6CF5A5;--match-danger-fill:#FF697C;--match-warning-fill:#FFB452;
+    --match-shadow:4px 5px 0 color-mix(in srgb,var(--theme-marker) 13%,var(--theme-bg));
+  }
+  html:is([data-theme-choice^="light-"],[data-theme-choice$="-daily"]) {
+    --match-success-ink:#096443;--match-danger-ink:#A6213A;
+  }
+  body {background-image:none!important}
+  .screen:not(.entry-screen) {background-color:var(--theme-bg)!important;color:var(--theme-text)!important}
+
+  /* Typography: editorial headings, tabular scoreboards, Inter for reading. */
+  :where(h1,h2,h3,.session-title,.theme-submenu-title b,.modal-title,.liveasta-alert-title,.liveasta-confirm-title,.room-chat-title):not(.entry-screen *) {
+    font-family:var(--match-display)!important;font-weight:800!important;letter-spacing:.01em!important;text-transform:uppercase!important;text-shadow:none!important;
+  }
+  :where(.screen:not(.entry-screen) h1) {font-size:clamp(32px,3.6vw,46px)!important;line-height:1.05!important}
+  :where(h2):not(.entry-screen *) {font-size:28px!important;line-height:1.1!important}
+  :where(h3):not(.entry-screen *) {font-size:22px!important;line-height:1.15!important}
+  .session-title {font-size:22px!important;letter-spacing:.02em!important}
+  :where(.player-name-top,.phone-player-name,.ard-player-name,.ready-player-name,.nomination-stage-title,.nomination-stage-team,.auctioneer-turn-team,.roster-team-name,.room-roster-player-preview-name,.liveasta-mobile-surface-head,.liveasta-mobile-surface-main,.liveasta-mobile-surface-sub) {
+    font-family:var(--match-display)!important;font-weight:800!important;text-shadow:none!important;
+  }
+  :where(#countdown-display,#current-value-display,#player-countdown,#player-current-value,#auctioneer-ready-fvm-value,#auctioneer-ready-count,.mini-stat strong,.sealed-ranking-value,.player-ready-fvm strong,.budget-role-card output,.mg-team-metric strong) {
+    font-family:var(--match-display)!important;font-weight:800!important;font-variant-numeric:tabular-nums!important;text-shadow:none!important;
+  }
+  :where(.timer-caption,.auction-title,.bid-label,.credit-label,.ard-fvm-label,.ard-fvm-sub,.ard-wait-title,.nomination-kicker,.ready-kicker,.player-room-overview-kicker,.csv-import-kicker) {
+    letter-spacing:.12em!important;text-shadow:none!important;
+  }
+
+  /* Buttons: primary ticket, quiet secondary, explicit destructive action. */
+  :where(.btn,.settings-refresh-btn,.theme-submenu-back,.liveasta-confirm-btn,.liveasta-alert-ok,.room-chat-send,.ready-confirm-btn,.player-clear-priorities-btn,.ready-close-btn,.room-roster-player-preview-close):not(.entry-screen *) {
+    border-radius:var(--match-control-radius)!important;box-shadow:none!important;text-shadow:none!important;
+    font-family:var(--match-display)!important;font-size:19px!important;font-weight:700!important;letter-spacing:.025em!important;line-height:1.1!important;
+  }
+  :where(.btn:not(.btn-secondary):not(.btn-danger),.settings-refresh-btn,.liveasta-confirm-ok:not(.danger),.liveasta-alert-ok,.room-chat-send,.ready-confirm-btn):not(.entry-screen *):not(:disabled) {
+    background:var(--theme-marker)!important;color:var(--theme-on-marker)!important;-webkit-text-fill-color:currentColor!important;border:1px solid var(--theme-marker)!important;
+  }
+  :where(.btn-secondary,.theme-submenu-back,.liveasta-confirm-cancel,.player-clear-priorities-btn,.ready-close-btn,.room-roster-player-preview-close):not(.entry-screen *) {
+    background:var(--theme-panel)!important;color:var(--theme-text)!important;-webkit-text-fill-color:currentColor!important;border:1px solid var(--theme-border)!important;
+  }
+  :where(.btn-danger,.liveasta-confirm-ok.danger):not(.entry-screen *) {
+    background:color-mix(in srgb,var(--match-danger-fill) 9%,var(--theme-card))!important;color:var(--match-danger-ink)!important;-webkit-text-fill-color:currentColor!important;border:1px solid var(--match-danger-ink)!important;
+  }
+  :where(.btn,.settings-refresh-btn,.room-chat-send,.ready-confirm-btn):disabled:not(.entry-screen *) {
+    background:var(--theme-hover)!important;color:var(--theme-muted)!important;border-color:var(--theme-border)!important;box-shadow:none!important;filter:none!important;opacity:.5!important;
+  }
+  :where(button,a,summary,input,select,textarea):focus-visible {outline:2px solid var(--theme-primary)!important;outline-offset:3px!important}
+  :where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]),select,textarea):not(.entry-screen *) {
+    border-radius:4px!important;background:var(--theme-input)!important;color:var(--theme-text)!important;border-color:var(--theme-border)!important;box-shadow:none!important;
+  }
+  :where(input,select,textarea)::placeholder {color:var(--theme-soft)!important;opacity:1!important}
+  :where(input[type=checkbox],input[type=radio],input[type=range]) {accent-color:var(--theme-primary)}
+
+  /* Consistent solid panels; no decorative transforms on live controls. */
+  :where(.setup-card,.mg-card,.roster-team-card,.player-budget-card,.roster-card,.player-listone-card,.player-room-overview-card,.player-room-team-roster-card,.nomination-card,.manual-assign-card,.audio-mixer-card,.csv-roster-import-card,.ready-card,.modal-card,.liveasta-alert-card,.liveasta-confirm-card,.admin-team-pin-card,.room-roster-player-preview-card,.room-chat-panel,.mg-team-detail-sheet,.manual-price-card,.v093-player-pin-card):not(.entry-screen *) {
+    background:var(--theme-card)!important;color:var(--theme-text)!important;border:1px solid var(--theme-border)!important;border-radius:var(--match-radius)!important;box-shadow:var(--match-shadow)!important;
+  }
+  :where(.setup-card,.player-budget-card,.roster-card,.player-listone-card,.player-room-overview-card,.player-room-team-roster-card,.nomination-card,.manual-assign-card,.audio-mixer-card,.csv-roster-import-card,.ready-card,.modal-card,.liveasta-alert-card,.liveasta-confirm-card,.admin-team-pin-card,.room-chat-panel,.mg-team-detail-sheet):not(.entry-screen *) {border-top:5px solid var(--theme-marker)!important}
+  :where(.ready-overlay,.nomination-overlay,.manual-assign-overlay,.audio-mixer-overlay,.modal-overlay,.player-budget-overlay,.roster-overlay,.player-listone-overlay,.player-room-overview-overlay,.player-room-team-roster-overlay,.room-roster-player-preview-overlay,.csv-roster-import-overlay,.liveasta-alert-overlay,.liveasta-confirm-overlay,.admin-team-pin-overlay,.room-chat-overlay,.mg-team-detail-overlay) {
+    background:rgba(3,9,5,.78)!important;backdrop-filter:blur(4px)!important;
+  }
+  :where(.control-title,.player-listone-head,.player-budget-head,.player-room-overview-head,.nomination-head,.csv-roster-import-head,.room-chat-header,.mg-team-detail-head) {border-bottom-color:var(--theme-border)!important}
+  :where(.theme-settings-card,.settings-refresh-card,.admin-global-setting,.admin-listone-box,.mg-subcard,.mg-inline-setting,.mg-role-order-card,.nomination-order-box,.audio-channel,.audio-routing-section,.room-chat-control-card,.budget-role-card,.player-budget-toggle-row,.player-budget-footer,.mg-team-metric,.mg-team-detail-pin,.csv-import-rules,.csv-import-format) {
+    background:var(--theme-panel)!important;border-color:var(--theme-border)!important;border-radius:5px!important;box-shadow:none!important;
+  }
+  :where(.player-session-nav,.roster-session-nav,.mg-header,.theme-submenu-toolbar) {background:var(--theme-bg)!important;border-color:var(--theme-border)!important;box-shadow:none!important;backdrop-filter:none!important}
+  :where(.room-pill,.identity-pill,.auction-online-pill,.admin-version-badge) {border-radius:4px!important;box-shadow:none!important;background:var(--theme-panel)!important}
+  :where(.room-pill b,.identity-pill b) {color:var(--theme-text)!important}
+  :where(.hybrid-view-switch,.room-system-badge) {background:var(--theme-accent-marker)!important;border-color:var(--theme-accent-marker)!important;color:var(--theme-on-marker)!important}
+
+  /* Auction board: the same three panels, now styled as a match scoreboard. */
+  :where(.auction-col,.ard-col) {
+    background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;border-top:4px solid var(--theme-marker)!important;border-radius:var(--match-radius)!important;box-shadow:none!important;
+  }
+  :where(.col-player,.ard-player,.player-card-side) {background-color:var(--theme-card)!important;box-shadow:none!important}
+  :where(.col-timer,.ard-fvm) {border-top-color:var(--theme-accent-marker)!important}
+  #view-auction .timer-ring {background:var(--theme-panel)!important;box-shadow:none!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
+  #view-auction .bid-box {background:var(--theme-marker)!important;border-color:var(--theme-marker)!important;border-radius:4px 4px 16px 4px!important;box-shadow:none!important}
+  #view-auction .bid-box :is(.bid-label,#current-value-display,.credit-label,.mobile-winner-display) {color:var(--theme-on-marker)!important;-webkit-text-fill-color:currentColor!important;text-shadow:none!important}
+  :where(.arrow-btn,#player-nominate-btn,#player-ready-reopen-btn) {background:var(--theme-marker)!important;color:var(--theme-on-marker)!important;border-color:var(--theme-marker)!important;border-radius:var(--match-control-radius)!important;box-shadow:none!important;text-shadow:none!important}
+  :where(#player-nominate-btn,#player-ready-reopen-btn) * {color:var(--theme-on-marker)!important;-webkit-text-fill-color:currentColor!important;text-shadow:none!important}
+  .arrow-btn svg {stroke:var(--theme-on-marker)!important}
+  :where(.ard-team-row,.player-ready-team-row,.sealed-delivery-row,.liveasta-mobile-list-row) {border-radius:3px!important;box-shadow:none!important}
+  :where(.ard-team-row.ready,.player-ready-team-row.ready) {background:color-mix(in srgb,var(--match-success-fill) 13%,var(--theme-card))!important;border-color:var(--match-success-ink)!important}
+  :where(.ard-team-row.ready .ard-team-name,.player-ready-team-row.ready strong) {color:var(--match-success-ink)!important;-webkit-text-fill-color:currentColor!important}
+  .sealed-ranking-row {border-radius:3px!important;box-shadow:none!important}
+  .sealed-ranking-row.winner {background:var(--match-success-fill)!important;border-color:var(--match-success-fill)!important}
+  .sealed-ranking-row.winner :is(span,strong) {color:var(--theme-on-marker)!important;-webkit-text-fill-color:currentColor!important;text-shadow:none!important}
+  .liveasta-mobile-surface {background:var(--theme-card)!important}
+  .liveasta-mobile-surface-main {text-shadow:none!important}
+
+  /* Player controls preserve their meaning, limits, and touch geometry. */
+  .phone-top-area {border-radius:var(--match-radius)!important;border-color:var(--theme-border)!important;background:var(--theme-card)!important;box-shadow:none!important}
+  .phone-top-area .player-live-side {background:var(--theme-panel)!important;border-color:var(--theme-border)!important;box-shadow:none!important}
+  .phone-top-area .player-live-side::before {background:none!important;box-shadow:none!important}
+  .phone-top-area.player-winning {border-color:var(--match-success-ink)!important;box-shadow:inset 0 4px var(--match-success-fill)!important}
+  .phone-top-area.player-winning .player-live-side {background:color-mix(in srgb,var(--match-success-fill) 12%,var(--theme-card))!important;border-color:var(--match-success-ink)!important}
+  .phone-top-area.player-losing {border-color:var(--match-danger-ink)!important;box-shadow:inset 0 4px var(--match-danger-fill)!important}
+  .phone-top-area.player-losing .player-live-side {background:color-mix(in srgb,var(--match-danger-fill) 12%,var(--theme-card))!important;border-color:var(--match-danger-ink)!important}
+  :where(.player-timer-box,.mini-stat) {background:var(--theme-panel)!important;border-color:var(--theme-border)!important;border-radius:5px!important;box-shadow:none!important}
+  .mini-stat:first-child {border-left:4px solid var(--theme-marker)!important}
+  .buzzer-btn {font-family:var(--match-display)!important;font-weight:800!important;letter-spacing:.01em!important;box-shadow:none!important;text-shadow:none!important;border-radius:6px!important}
+  .buzzer-btn:not(:disabled) {background:var(--match-bid)!important;color:#10140C!important;-webkit-text-fill-color:#10140C!important;border:1px solid var(--match-bid)!important;filter:none!important}
+  .btn-plus-1 {--match-bid:#43DCFF}
+  .btn-plus-2,.btn-plus-20 {--match-bid:var(--match-danger-fill)}
+  .btn-plus-5 {--match-bid:var(--match-success-fill)}
+  .btn-plus-10 {--match-bid:var(--match-warning-fill)}
+  #normal-bid-controls[data-budget-tone="orange"] :is(.buzzer-btn,#sealed-bid-submit):not(:disabled) {background:var(--match-warning-fill)!important;border-color:var(--match-warning-fill)!important;color:#10140C!important}
+  #normal-bid-controls[data-budget-tone="red"] :is(.buzzer-btn,#sealed-bid-submit):not(:disabled) {background:var(--match-danger-fill)!important;border-color:var(--match-danger-fill)!important;color:#10140C!important}
+  .buzzer-btn:disabled {background:var(--theme-hover)!important;color:var(--theme-muted)!important;-webkit-text-fill-color:currentColor!important;border:1px solid var(--theme-border)!important;filter:none!important;opacity:.5!important}
+  #exact-bid-knob {background:#FFDC65!important;border:2px solid #1C2315!important;box-shadow:none!important}
+  .player-ready-choice-btn {font-family:var(--match-display)!important;font-weight:800!important;border-radius:5px!important;box-shadow:none!important;text-shadow:none!important}
+  .player-ready-choice-btn.ready {background:var(--match-success-fill)!important;color:#10140C!important;border-color:var(--match-success-fill)!important}
+  .player-ready-choice-btn.skip {background:var(--theme-panel)!important;color:var(--theme-text)!important;border-color:var(--theme-border)!important}
+  .player-ready-choice-btn:disabled {background:var(--theme-hover)!important;color:var(--theme-muted)!important;border-color:var(--theme-border)!important;opacity:.5!important;box-shadow:none!important}
+  :where(.sealed-bid-controls,.sealed-listone-banner) {background:var(--theme-card)!important;border-color:var(--theme-marker)!important;border-radius:5px!important;box-shadow:none!important}
+  .sealed-bid-label {font-family:var(--match-display)!important;font-size:20px!important;letter-spacing:.06em!important}
+
+  /* Lists/rosters: clear rows; role and priority badge colors stay owned by roles.css. */
+  :where(table,.control-table,.admin-table) {background:var(--theme-card)!important}
+  th {background:var(--theme-panel)!important;border-color:var(--theme-border)!important;color:var(--theme-muted)!important;font-size:11px!important;letter-spacing:.06em!important;text-transform:uppercase!important}
+  td {border-color:var(--theme-border)!important}
+  :where(.list-section-title,.roster-team-head,.rosters-summary) {border-color:var(--theme-border)!important;background:var(--theme-bg)!important;box-shadow:none!important}
+  .list-section-title {font-family:var(--match-display)!important;font-size:22px!important;text-transform:uppercase!important}
+  :where(.player-listone-row,.roster-row,.roster-player-line,.player-room-roster-line,.player-room-team-row,.nomination-player-row,.manual-player-option,.auctioned-row,.mg-team-row) {border-radius:3px!important;box-shadow:none!important}
+  :where(.player-room-team-row,.nomination-player-row,.manual-player-option,.mg-team-row) {background:var(--theme-panel)!important;border-color:var(--theme-border)!important;color:var(--theme-text)!important}
+  :where(.player-listone-main b,.roster-player-main b,.player-room-roster-main b,.manual-player-copy strong,.mg-team-row-main strong) {font-weight:800!important}
+  .roster-team-head {border-bottom:1px dashed var(--theme-border)!important}
+  .roster-team-card {border-top:4px solid var(--theme-marker)!important}
+  .roster-team-name {font-size:27px!important;line-height:1.05!important}
+  .roster-team-credit {background:var(--theme-marker)!important;color:var(--theme-on-marker)!important;border-radius:3px!important;padding:5px 8px!important}
+  :where(.player-room-team-row.mine,.manual-player-option.selected,.mg-team-current) {border-color:var(--theme-primary)!important;box-shadow:inset 3px 0 var(--theme-marker)!important}
+
+  /* Search and filter disclosure: mounted once, never replace the input. */
+  .unified-list-filters {display:flex!important;flex-direction:column!important;gap:0!important;min-width:0!important;width:100%!important;margin:0!important;padding:0!important;position:relative!important;box-sizing:border-box!important}
+  .unified-searchbar {display:grid!important;grid-template-columns:minmax(0,1fr) 42px!important;align-items:center!important;gap:7px!important;width:100%!important;min-width:0!important}
+  .unified-searchbar .unified-search {display:block!important;width:100%!important;min-width:0!important;height:42px!important;min-height:42px!important;max-height:42px!important;margin:0!important;padding:8px 11px!important;box-sizing:border-box!important;font-size:16px!important;text-align:left!important;grid-area:auto!important}
+  .unified-filter-toggle {position:relative;display:grid;place-items:center;width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;padding:10px!important;margin:0!important;border:1px solid var(--theme-border)!important;border-radius:4px!important;background:var(--theme-panel)!important;color:var(--theme-text)!important;box-shadow:none!important;cursor:pointer}
+  .unified-filter-toggle svg {display:block;width:22px;height:22px}
+  .unified-filter-toggle[aria-expanded="true"] {background:var(--theme-marker)!important;color:var(--theme-on-marker)!important;border-color:var(--theme-marker)!important}
+  .unified-filter-toggle.has-filters {border-color:var(--theme-primary)!important}
+  .filter-active-dot {display:none;position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--theme-accent)}
+  .has-filters .filter-active-dot {display:block}
+  .unified-filter-controls {display:flex!important;flex-direction:column!important;gap:10px!important;margin:8px 0 0!important;padding:12px!important;min-width:0!important;box-sizing:border-box!important;background:var(--theme-panel)!important;border:1px solid var(--theme-border)!important;border-left:3px solid var(--theme-marker)!important;border-radius:4px!important}
+  .unified-filter-controls[hidden] {display:none!important}
+  .unified-filter-controls .unified-role-row {display:flex!important;flex-wrap:wrap!important;gap:6px!important;grid-area:auto!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+  .unified-filter-controls .unified-role-row>button {flex:1 0 38px!important;min-width:38px!important;max-width:none!important;width:auto!important;height:40px!important;min-height:40px!important;margin:0!important;border-radius:3px!important;box-shadow:none!important}
+  .unified-filter-controls .mantra-category-row>button {flex-basis:48px!important;height:46px!important;min-height:46px!important}
+  .unified-filter-controls .unified-sort-row {display:grid!important;grid-template-columns:auto minmax(0,1fr) 40px!important;gap:8px!important;align-items:center!important;grid-area:auto!important;width:100%!important;min-width:0!important;margin:0!important}
+  .unified-filter-controls .unified-sort-row label {font-size:11px!important;white-space:nowrap!important;color:var(--theme-muted)!important}
+  .unified-filter-controls .unified-sort-row select {min-width:0!important;width:100%!important;height:40px!important;margin:0!important;font-size:14px!important}
+  .unified-direction {width:40px!important;min-width:40px!important;height:40px!important;border-radius:3px!important;background:var(--theme-card)!important;color:var(--theme-text)!important;border:1px solid var(--theme-border)!important;margin:0!important}
+  :where(.player-listone-tools,.nomination-tools,.control-purchases-search-row) {display:block!important;min-width:0!important;box-shadow:none!important}
+  .mantra-subfilter-panel {background:var(--theme-card)!important;border-radius:4px!important;box-shadow:none!important}
+  /* Replace the old five-column toolbar with a flexible compact list header. */
+  #view-list .dashboard-left {display:flex!important;flex-direction:column!important;min-width:0!important;min-height:0!important;gap:8px!important}
+  .auction-list-toolbar {display:grid!important;grid-template-columns:minmax(0,1fr) 42px 110px!important;gap:8px!important;align-items:start!important;padding:0!important;margin:0!important;min-width:0!important;width:100%!important;flex:0 0 auto!important}
+  .auction-list-toolbar .toolbar-roster-btn {display:none!important}
+  .auction-list-toolbar>button {grid-area:auto!important;width:100%!important;min-width:0!important;height:42px!important;min-height:42px!important;max-height:42px!important;padding:4px 7px!important;margin:0!important;font-size:18px!important}
+  #view-list .table-container {flex:1 1 auto!important;min-height:0!important;width:100%!important}
+  #view-list :is(.list-section-title,.auctioned-container) {flex:0 0 auto!important;width:100%!important}
+
+  /* Management: three purposeful tabs, persistent forms, compact desktop/mobile grids. */
+  #screen-room-control {scroll-padding-top:150px!important}
+  #screen-room-control .mg-page {display:flex!important;flex-direction:column!important;gap:0!important;height:auto!important;min-height:100%!important;overflow:visible!important}
+  .mg-masthead {position:sticky;top:0;z-index:35;width:100%;background:var(--theme-bg);border-bottom:1px solid var(--theme-border)}
+  #screen-room-control .mg-header {position:static!important;padding:14px max(20px,calc((100vw - 1240px)/2))!important;border-bottom:0!important;gap:18px!important}
+  #screen-room-control .mg-heading h1 {font-size:29px!important;line-height:1!important;white-space:normal!important}
+  #screen-room-control .mg-header-actions {display:flex!important;flex:0 0 auto!important;width:auto!important;gap:8px!important}
+  #screen-room-control .mg-header-actions .btn {min-width:74px!important;width:auto!important;font-size:17px!important;min-height:38px!important;padding:8px 12px!important}
+  .mg-tabs {display:flex;gap:6px;padding:0 20px;box-sizing:border-box;width:min(1280px,100%);margin:0 auto}
+  .mg-tabs>button {flex:0 1 180px;display:flex;align-items:center;gap:9px;justify-content:center;padding:13px 10px!important;min-height:46px;background:transparent!important;border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;color:var(--theme-muted)!important;font:700 20px/1 var(--match-display)!important;box-shadow:none!important;cursor:pointer}
+  .mg-tabs>button>span {font:800 10px/1 Inter,sans-serif;opacity:.6}
+  .mg-tabs>button[aria-selected="true"] {color:var(--theme-text)!important;border-bottom-color:var(--theme-marker)!important;background:color-mix(in srgb,var(--theme-marker) 7%,var(--theme-bg))!important}
+  .mg-section[hidden] {display:none!important}
+  #screen-room-control .mg-content {width:min(1240px,calc(100% - 40px))!important;margin:0 auto!important;padding:24px 0 48px!important;gap:22px!important}
+  #screen-room-control .mg-section-head h2 {font-size:32px!important;line-height:1.05!important}
+  #screen-room-control .mg-kicker {font-size:9px!important;letter-spacing:.16em!important;color:var(--theme-primary)!important}
+  #screen-room-control .mg-card {border-top:3px solid var(--theme-marker)!important;box-shadow:none!important;padding:18px!important}
+  #screen-room-control .mg-subcard {background:transparent!important;border:0!important;padding:10px!important;border-radius:0!important}
+  #screen-room-control .mg-subcard-head {border-bottom:1px dashed var(--theme-border)!important;padding-bottom:12px!important}
+  #screen-room-control :is(.mg-card-head,.mg-setting-head,.mg-subcard-head) h3 {font-size:24px!important;line-height:1.15!important}
+  #screen-room-control .mg-grid-2 {grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+  #screen-room-control .mg-switch-label>input:checked+.mg-switch-ui {background:var(--theme-marker)!important;border-color:var(--theme-marker)!important}
+  #screen-room-control .mg-switch-label>input:checked+.mg-switch-ui::after {background:var(--theme-on-marker)!important}
+  #screen-room-control .mg-switch-label>input:focus-visible+.mg-switch-ui {outline:2px solid var(--theme-primary)!important;outline-offset:3px!important}
+  .budget-switch input:checked+span {background:var(--theme-marker)!important}
+  .mg-help {box-shadow:none!important;border-radius:50%!important;background:var(--theme-panel)!important;color:var(--theme-primary)!important;border-color:var(--theme-border)!important}
+  #management-help {background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;border-top:5px solid var(--theme-marker)!important;border-radius:var(--match-radius)!important;color:var(--theme-text)!important}
+  #management-help::backdrop {background:rgba(3,9,5,.78)!important}
+
+  /* Theme picker, admin, chat, and small utility dialogs share the same vocabulary. */
+  .theme-menu-launch {background:var(--theme-panel)!important;border-radius:4px!important;box-shadow:none!important}
+  .theme-menu-launch-copy b {font-family:var(--match-display)!important;font-size:26px!important;text-transform:uppercase!important}
+  .theme-option {background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;border-radius:var(--match-control-radius)!important;box-shadow:none!important}
+  .theme-option.active {border-color:var(--theme-primary)!important;box-shadow:inset 4px 0 var(--theme-marker)!important}
+  .theme-option strong {font-family:var(--match-display)!important;font-size:20px!important;font-weight:700!important;letter-spacing:.015em!important}
+  .theme-swatches i {border:1px solid #8885!important;border-radius:2px!important}
+  .room-chat-fab {background:var(--theme-marker)!important;color:var(--theme-on-marker)!important;border-color:var(--theme-marker)!important;box-shadow:none!important;border-radius:var(--match-control-radius)!important}
+  .room-chat-message {background:var(--theme-panel)!important;border-color:var(--theme-border)!important;border-radius:4px 14px 14px 4px!important;box-shadow:none!important}
+  .room-chat-message.self {background:color-mix(in srgb,var(--theme-marker) 12%,var(--theme-card))!important;border-left:3px solid var(--theme-marker)!important}
+  :where(.manual-price-dialog,.v093-player-pin-dialog) {background:var(--theme-card)!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
+  :where(.manual-price-dialog,.v093-player-pin-dialog)::backdrop {background:rgba(3,9,5,.78)!important}
+
+  @media(max-width:900px) {
+    #screen-room-control .mg-grid-2 {grid-template-columns:minmax(0,1fr)!important}
+    #screen-room-control .mg-room-layout {grid-template-columns:minmax(0,1fr)!important}
+  }
+  @media(max-width:760px) {
+    :where(h2):not(.entry-screen *) {font-size:25px!important}
+    :where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]),select,textarea):not(.entry-screen *) {font-size:16px!important}
+    .session-title {font-size:18px!important}
+    .session-nav .btn {font-size:16px!important}
+    .auction-list-toolbar {grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+    #list-filters-board {grid-column:1/-1!important}
+    .auction-list-toolbar .toolbar-icon-btn {font-size:18px!important}
+    #screen-room-control .mg-header {flex-direction:column!important;align-items:stretch!important;gap:10px!important;padding:12px 14px 8px!important}
+    #screen-room-control .mg-heading h1 {font-size:26px!important}
+    #screen-room-control .mg-header-actions {display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;gap:6px!important}
+    #screen-room-control .mg-header-actions .btn {min-width:0!important;width:100%!important;padding:8px 4px!important;min-height:38px!important;font-size:16px!important;white-space:normal!important}
+    .mg-tabs {padding:0 14px;gap:3px}
+    .mg-tabs>button {flex:1;padding:11px 4px!important;font-size:19px!important;gap:5px}
+    .mg-tabs>button>span {font-size:8px}
+    #screen-room-control .mg-content {width:calc(100% - 28px)!important;padding:18px 0 32px!important}
+    #screen-room-control .mg-section-head {align-items:flex-start!important;flex-direction:column!important;gap:6px!important}
+    #screen-room-control .mg-section-head h2 {font-size:29px!important}
+    #screen-room-control .mg-section-head p {text-align:left!important;font-size:12px!important}
+    #screen-room-control .mg-card {padding:12px!important}
+    #screen-room-control .mg-subcard {padding:4px!important}
+    #screen-room-control .mg-fields-timers {grid-template-columns:repeat(2,minmax(0,1fr))!important}
+    #screen-room-control .mg-role-limits {grid-template-columns:repeat(2,minmax(0,1fr))!important}
+    #screen-room-control .mg-card-actions .btn {min-height:44px!important}
+    :where(.mg-team-detail-sheet,.room-chat-panel) {border-radius:12px 12px 0 0!important}
+    .theme-option strong {font-size:18px!important;white-space:normal!important;line-height:1.1!important}
+  }
+  @media(hover:hover) {
+    :where(.btn,.settings-refresh-btn,.unified-filter-toggle):not(:disabled):hover:not(.entry-screen *) {filter:brightness(.95)!important}
+    :where(.player-listone-row:not(.selected),.manual-player-option,.player-room-team-row,tbody tr):hover {background:color-mix(in srgb,var(--theme-marker) 8%,var(--theme-card))!important}
+  }
+  @media(prefers-reduced-motion:reduce) {
+    :where(.btn,.mg-switch-ui,.theme-option,.unified-filter-toggle) {transition:none!important}
+  }
+}

@@ -92,7 +92,7 @@
     const resolve=activeResolve;
     activeResolve=null;
 
-    if(previousFocus && typeof previousFocus.focus==='function'){
+    if(previousFocus && !previousFocus.matches('input,textarea,[contenteditable=true]') && typeof previousFocus.focus==='function'){
       try{ previousFocus.focus({preventScroll:true}); }catch(_){}
     }
     previousFocus=null;
@@ -198,7 +198,7 @@
       document.body.classList.remove('liveasta-alert-open');
       alertOpen=false;
 
-      if(alertPrevFocus && typeof alertPrevFocus.focus==='function'){
+      if(alertPrevFocus && !alertPrevFocus.matches('input,textarea,[contenteditable=true]') && typeof alertPrevFocus.focus==='function'){
         try{alertPrevFocus.focus({preventScroll:true});}catch(_){}
       }
       alertPrevFocus=null;

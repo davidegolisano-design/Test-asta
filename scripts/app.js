@@ -380,7 +380,6 @@ function updateCreateRoomModeUI(){
                     const pin=String(input.value||'').replace(/\D/g,'').slice(0,6);
                     if(!/^\d{6}$/.test(pin)){
                         error.textContent='Inserisci il PIN giocatore di 6 cifre.';
-                        input.focus();
                         return;
                     }
                     try{
@@ -404,7 +403,6 @@ function updateCreateRoomModeUI(){
                         if(check.error)throw check.error;
                         if(check.data!==true){
                             error.textContent='PIN giocatore non corretto.';
-                            input.select();
                             return;
                         }
                         finish(true);
@@ -419,7 +417,6 @@ function updateCreateRoomModeUI(){
                 cancelBtn.addEventListener('click',onClose);
                 dlg.addEventListener('cancel',onCancel);
                 dlg.showModal();
-                setTimeout(()=>input.focus({preventScroll:true}),40);
             });
         }
 
@@ -4913,7 +4910,7 @@ function updateCreateRoomModeUI(){
         }
 
         function leaveAuctioneerSetup() {
-            const destination=auctioneerRoomMode==='create'?'screen-role':'screen-device-choice';
+            const destination=auctioneerRoomMode==='create'?'screen-role':'screen-entry-role';
             resetAuctioneerRoomMode();
             showScreen(destination);
         }
@@ -5786,6 +5783,9 @@ function updateCreateRoomModeUI(){
             if(managementActive && screenId!=='screen-room-control' && !roomControlNavigationAuthorized){
                 return false;
             }
+            const focused=document.activeElement;
+            if(focused?.matches('input,textarea,[contenteditable=true]'))focused.blur();
+            window.closeAllListFilters?.();
             syncHybridViewButtons();
             if(isAuctioneerPlayerIdentity() && hybridPreferredView && ['screen-player-buzzer','screen-auctioneer-board'].includes(screenId)){
                 screenId=hybridPreferredView==='player'?'screen-player-buzzer':'screen-auctioneer-board';
@@ -6092,8 +6092,8 @@ function updateCreateRoomModeUI(){
             }
         }
 
-        function applyAuctioneerUiMode(mode, persist=true) {
-            const normalized = mode === 'mobile' ? 'mobile' : 'desktop';
+        function applyAuctioneerUiMode() {
+            const normalized = window.matchMedia('(max-width:760px)').matches ? 'mobile' : 'desktop';
             const legacyMode = normalized === 'desktop' ? 'pc' : 'mobile';
             const dashboard = document.getElementById('auction-dashboard');
             const board = document.getElementById('screen-auctioneer-board');
@@ -6112,15 +6112,14 @@ function updateCreateRoomModeUI(){
             document.body.classList.add('auctioneer-' + normalized);
             document.documentElement.dataset.auctioneerUi = normalized;
 
-            if (persist) {
-                try { localStorage.setItem('liveasta_auctioneer_ui', normalized); } catch(e) {}
-            }
+            // Recorded for session metadata only; never used as a layout preference.
+            try { localStorage.setItem('liveasta_auctioneer_ui', normalized); } catch(e) {}
             return normalized;
         }
 
-        async function setDeviceMode(mode) {
+        async function openAuctioneerAccess() {
             unlockAudio();
-            applyAuctioneerUiMode(mode === 'pc' ? 'desktop' : mode, true);
+            applyAuctioneerUiMode();
             resetAuctioneerRoomMode();
             showScreen('screen-auctioneer-setup');
 
@@ -6289,12 +6288,9 @@ function updateCreateRoomModeUI(){
             if(count)count.innerText=rows.length;
         }
 
-        function changeTimer() {
-            let newTime = prompt("Imposta i secondi del timer dell'Asta:", auctionTimeLimit);
-            if(newTime && !isNaN(newTime)) {
-                auctionTimeLimit = parseInt(newTime);
-                alert("Timer aggiornato a " + auctionTimeLimit + " secondi.");
-            }
+        async function changeTimer() {
+            await openRoomControl(true);
+            document.getElementById('mg-tab-room')?.click();
         }
 
         function blockHybridBanditoreOutOfTurnAction(showMessage=true){
@@ -9635,7 +9631,6 @@ function updateCreateRoomModeUI(){
             const name=(input?.value||'').trim();
             if(!name){
                 alert('Inserisci il nome della squadra.');
-                input?.focus();
                 return;
             }
 
@@ -9684,9 +9679,6 @@ function updateCreateRoomModeUI(){
 
             sealedListonePickMode=!sealedListonePickMode;
             updateSealedModeButton();
-
-            const search=document.getElementById('player-search');
-            if(search && sealedListonePickMode)search.focus();
 
             refreshPlayerLists();
         }
@@ -9849,7 +9841,6 @@ function updateCreateRoomModeUI(){
             renderManualPlayerOptions();
             updateManualAssignPreview();
             overlay?.classList.add('open');
-            setTimeout(()=>search?.focus(),50);
         }
 
         function closeManualAssign(){
@@ -9946,10 +9937,9 @@ function updateCreateRoomModeUI(){
                 const finish=value=>{if(settled)return;settled=true;form.removeEventListener('submit',submit);close.removeEventListener('click',abort);cancel.removeEventListener('click',abort);dlg.removeEventListener('cancel',onCancel);if(dlg.open)dlg.close();resolve(value);};
                 const abort=()=>finish(null);
                 const onCancel=e=>{e.preventDefault();finish(null);};
-                const submit=e=>{e.preventDefault();const value=parseInt(input.value);if(!Number.isFinite(value)||value<1){error.textContent='Inserisci un prezzo valido.';input.focus();return;}if(value>max){error.textContent=`Il prezzo massimo per questa squadra è ${max} crediti.`;input.focus();return;}finish(value);};
+                const submit=e=>{e.preventDefault();const value=parseInt(input.value);if(!Number.isFinite(value)||value<1){error.textContent='Inserisci un prezzo valido.';return;}if(value>max){error.textContent=`Il prezzo massimo per questa squadra è ${max} crediti.`;return;}finish(value);};
                 form.addEventListener('submit',submit);close.addEventListener('click',abort);cancel.addEventListener('click',abort);dlg.addEventListener('cancel',onCancel);
                 if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
-                setTimeout(()=>{input.focus();input.select();},40);
             });
         }
 

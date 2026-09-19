@@ -272,7 +272,7 @@
     renderMessages();
     updateFab();
     document.body.classList.add('room-chat-open');
-    requestAnimationFrame(()=>overlay.querySelector('#room-chat-input')?.focus({preventScroll:true}));
+    // The chat opens without summoning the on-screen keyboard.
   }
 
   function closeRoomChat(){

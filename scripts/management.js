@@ -182,10 +182,36 @@
     if(!still)window.closeManagementTeamDetail();
   };
 
+  function installManagementTabs(){
+    const tabs=[...document.querySelectorAll('[data-management-tab]')];
+    function selectTab(tab,focus=false){
+      if(!tab)return;
+      tabs.forEach(button=>{
+        const selected=button===tab;
+        button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;
+        const panel=document.getElementById(button.getAttribute('aria-controls'));
+        if(panel)panel.hidden=!selected;
+      });
+      if(focus)tab.focus({preventScroll:true});
+      document.getElementById('screen-room-control').scrollTop=0;
+    }
+    tabs.forEach((tab,index)=>{
+      tab.addEventListener('click',()=>selectTab(tab));
+      tab.addEventListener('keydown',event=>{
+        const move=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:0;
+        if(!move&&event.key!=='Home'&&event.key!=='End')return;
+        event.preventDefault();
+        selectTab(event.key==='Home'?tabs[0]:event.key==='End'?tabs.at(-1):tabs[(index+move+tabs.length)%tabs.length],true);
+      });
+    });
+    selectTab(tabs[0]);
+  }
+
   function init(){
     syncDevVersionBadge();
     ensureDesktopManagementScroll();
     cleanupOldManagement();
+    installManagementTabs();
     const presenceTarget=document.getElementById('online-player-list');
     if(presenceTarget){
       new MutationObserver(()=>window.renderManagementTeamList()).observe(presenceTarget,{childList:true,subtree:true,characterData:true});
