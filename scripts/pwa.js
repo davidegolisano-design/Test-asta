@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.04.20';
+  const APP_VERSION='v1.04.21 DEV · Accesso';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -61,7 +61,7 @@
     './scripts/exact-bid-cooldown-exemption.js?v=10419',
     './scripts/player-room-status-leds.js?v=10420',
     './scripts/room-creation-success-guard.js?v=10418b',
-    './scripts/room-creation-contact.js?v=10418'
+    './scripts/room-creation-contact.js?v=10421-entry1'
   ];
   featureScripts.forEach(src=>{const script=document.createElement('script');script.src=src;script.async=false;document.head.appendChild(script);});
 })();

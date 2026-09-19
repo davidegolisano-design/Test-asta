@@ -67,8 +67,19 @@
                 </a>
             </div>
 
-            <button class="btn" onclick="openPlayerLobby()">Giocatore</button>
-            <button class="btn btn-secondary" onclick="showScreen('screen-device-choice')">Banditore</button>
+            <button class="btn" type="button" onclick="showScreen('screen-entry-role')">Entra in una stanza</button>
+            <button class="btn btn-secondary" type="button" onclick="openRoomCreation()">Crea stanza</button>
+        </div>
+    </div>
+
+    <div id="screen-entry-role" class="screen">
+        <div class="setup-card">
+            <h1>Entra in una stanza</h1>
+            <p class="subtitle">Come vuoi partecipare all’asta?</p>
+            <button class="btn" type="button" onclick="openPlayerLobby()">Giocatore</button>
+            <button class="btn btn-secondary" type="button" onclick="showScreen('screen-device-choice')">Banditore</button>
+            <p class="setup-note">Come banditore puoi anche partecipare con una squadra, attivando l’opzione dalla Gestione.</p>
+            <button class="btn btn-secondary" type="button" onclick="showScreen('screen-role')">Indietro</button>
         </div>
     </div>
 
@@ -78,13 +89,13 @@
             <p class="subtitle">Ottimizza la plancia dell'Asta</p>
             <button class="btn btn-green" onclick="setDeviceMode('pc')">💻 COMPUTER</button>
             <button class="btn" onclick="setDeviceMode('mobile')">📱 SMARTPHONE</button>
-            <button class="btn btn-secondary" onclick="showScreen('screen-role')">Indietro</button>
+            <button class="btn btn-secondary" onclick="showScreen('screen-entry-role')">Indietro</button>
         </div>
     </div>
 
     <div id="screen-player-setup" class="screen">
         <div class="setup-card access-wizard-card">
-            <h1>Entra nell'asta</h1>
+            <h1>Entra come giocatore</h1>
 
             <div class="access-wizard-head">
                 <div class="access-wizard-progress"><i></i><i></i><i></i></div>
@@ -280,28 +291,10 @@
 
     <div id="screen-auctioneer-setup" class="screen">
         <div class="setup-card">
-            <h1>Setup Asta</h1>
-            <p class="subtitle" id="auction-mode-question">Cosa vuoi fare?</p>
-
-            <div id="auction-mode-choice" class="auction-mode-choice">
-                <button class="auction-mode-big" onclick="setAuctioneerRoomMode('create')">
-                    <span class="auction-mode-icon">＋</span>
-                    <strong>CREA NUOVA STANZA</strong>
-                    <small>Prepara una nuova asta</small>
-                </button>
-                <button class="auction-mode-big" onclick="setAuctioneerRoomMode('join')">
-                    <span class="auction-mode-icon">→</span>
-                    <strong>ENTRA IN UNA STANZA</strong>
-                    <small>Apri una stanza già esistente</small>
-                </button>
-            </div>
+            <h1 id="auction-setup-title">Entra come banditore</h1>
+            <p id="auction-create-notice" class="setup-note" style="display:none;">Dopo la creazione, attendi l’email di conferma prima di entrare nella stanza.</p>
 
             <div id="auction-mode-fields" style="display:none;">
-                <div class="auction-mode-selected">
-                    <button class="btn btn-secondary btn-small" type="button" onclick="resetAuctioneerRoomMode()">← Cambia scelta</button>
-                    <span id="auction-mode-selected-label"></span>
-                </div>
-
                 <div id="auction-access-wizard-head" class="access-wizard-head" style="display:none;">
                     <div class="access-wizard-progress auction"><i></i><i></i></div>
                     <div id="auction-wizard-step-label" class="access-wizard-step-label">1 / 1 · ACCESSO</div>
@@ -376,7 +369,6 @@
                 <button class="btn" id="btn-apri-plancia" onclick="joinAsAuctioneer()" disabled style="display:none;">Avvia Sessione</button>
             </div>
 
-            <button class="btn btn-secondary auction-setup-root-back" onclick="resetAuctioneerRoomMode();showScreen('screen-device-choice')">Indietro</button>
         </div>
     </div>
 
@@ -1282,7 +1274,7 @@
     <script src="./scripts/screen-wake-lock.js?v=100"></script>
     <script src="./scripts/list-filters.js?v=119"></script>
     <script src="./scripts/room-debug.js?v=101"></script>
-    <script src="./scripts/app.js?v=120"></script>
+    <script src="./scripts/app.js?v=10421-entry1"></script>
     <script src="./scripts/mantra-auction.js?v=116"></script>
     <script src="./scripts/mantra-filter-ui.js?v=119"></script>
 
@@ -1323,14 +1315,14 @@
         </div>
     </div>
 
-<script src="./scripts/bootstrap.js?v=101"></script>
+<script src="./scripts/bootstrap.js?v=10421-entry1"></script>
 <script src="./scripts/theme.js?v=100"></script>
 
 <link rel="stylesheet" href="./styles/refinements.css?v=100">
 
 <script src="./scripts/runtime.js?v=100"></script>
 
-<script src="./scripts/pwa.js?v=100"></script>
+<script src="./scripts/pwa.js?v=10421-entry1"></script>
 <script src="./scripts/sealed-auction.js?v=100"></script>
 <script src="./scripts/management.js?v=100"></script>
 </body>

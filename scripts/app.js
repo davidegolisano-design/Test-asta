@@ -4859,18 +4859,18 @@ function updateCreateRoomModeUI(){
             window.prepareAuctionAccessWizard?.();
             auctioneerRoomMode = mode;
 
-            const choice=document.getElementById('auction-mode-choice');
             const fields=document.getElementById('auction-mode-fields');
             const createBox=document.getElementById('auction-create-box');
             const joinBox=document.getElementById('auction-join-box');
-            const label=document.getElementById('auction-mode-selected-label');
+            const title=document.getElementById('auction-setup-title');
+            const notice=document.getElementById('auction-create-notice');
             const err=document.getElementById('auction-room-error');
 
-            if(choice) choice.style.display='none';
             if(fields) fields.style.display='block';
             if(createBox) createBox.style.display=mode==='create'?'block':'none';
             if(joinBox) joinBox.style.display=mode==='join'?'block':'none';
-            if(label) label.textContent=mode==='create'?'CREA NUOVA STANZA':'ENTRA IN UNA STANZA';
+            if(title) title.textContent=mode==='create'?'Crea stanza':'Entra come banditore';
+            if(notice) notice.style.display=mode==='create'?'block':'none';
             if(err) err.innerText='';
 
             if(mode==='join'){
@@ -4886,13 +4886,11 @@ function updateCreateRoomModeUI(){
             window.prepareAuctionAccessWizard?.();
             auctioneerRoomMode=null;
 
-            const choice=document.getElementById('auction-mode-choice');
             const fields=document.getElementById('auction-mode-fields');
             const createBox=document.getElementById('auction-create-box');
             const joinBox=document.getElementById('auction-join-box');
             const err=document.getElementById('auction-room-error');
 
-            if(choice) choice.style.display='grid';
             if(fields) fields.style.display='none';
             if(createBox) createBox.style.display='none';
             if(joinBox) joinBox.style.display='none';
@@ -4904,6 +4902,20 @@ function updateCreateRoomModeUI(){
 
             if(err) err.innerText='';
             window.renderAuctionAccessWizard?.();
+        }
+
+        // Room creation does not require choosing a participant role or device.
+        function openRoomCreation() {
+            resetAuctioneerRoomMode();
+            showScreen('screen-auctioneer-setup');
+            setAuctioneerRoomMode('create');
+            fetchListone();
+        }
+
+        function leaveAuctioneerSetup() {
+            const destination=auctioneerRoomMode==='create'?'screen-role':'screen-device-choice';
+            resetAuctioneerRoomMode();
+            showScreen(destination);
         }
 
         async function createRoom(name, password, config = {}) {
@@ -6112,9 +6124,7 @@ function updateCreateRoomModeUI(){
             resetAuctioneerRoomMode();
             showScreen('screen-auctioneer-setup');
 
-            await loadShowRoomsSetting();
-            applyAuctioneerRoomVisibilityUI();
-            if(showRoomsToUsers) await loadRooms();
+            await setAuctioneerRoomMode('join');
 
             // Il listone viene sempre verificato automaticamente sul database centrale.
             fetchListone();

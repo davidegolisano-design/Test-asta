@@ -533,7 +533,7 @@
     markProgress('#screen-player-setup .access-wizard-progress',playerWizardStep,3);
     const back=document.getElementById('player-wizard-back');
     const next=document.getElementById('player-wizard-next');
-    if(back)back.textContent=playerWizardStep===1?'ESCI':'INDIETRO';
+    if(back)back.textContent='INDIETRO';
     if(next)next.textContent=playerWizardStep===3?'ENTRA':'AVANTI';
     const err=document.getElementById('player-room-error');
     if(err && playerWizardStep!==3)err.textContent='';
@@ -578,7 +578,7 @@
     window.stopPlayerOccupiedRetryCountdown?.();
     if(playerWizardStep<=1){
       if(typeof closePlayerSetupChannel==='function')closePlayerSetupChannel();
-      showScreen('screen-role');return;
+      showScreen('screen-entry-role');return;
     }
     playerWizardStep--;
     if(playerWizardStep<3)resetPlayerPinPanel();
@@ -598,6 +598,8 @@
     screen?.classList.toggle('wizard-mode-active',active);
     if(head)head.style.display=active?'flex':'none';
     const total=auctioneerRoomMode==='create'?2:1;
+    const progress=head?.querySelector('.access-wizard-progress.auction');
+    if(progress && progress.children.length!==total)progress.innerHTML='<i></i>'.repeat(total);
     if(auctionWizardStep>total)auctionWizardStep=total;
     document.getElementById('auction-create-step-1')?.classList.toggle('active',auctioneerRoomMode==='create'&&auctionWizardStep===1);
     document.getElementById('auction-create-step-2')?.classList.toggle('active',auctioneerRoomMode==='create'&&auctionWizardStep===2);
@@ -614,7 +616,7 @@
   window.auctionAccessWizardBack=function(){
     window.stopAuctioneerOccupiedRetryCountdown?.();
     if(auctioneerRoomMode==='create'&&auctionWizardStep===2){auctionWizardStep=1;renderAuctionWizard();return;}
-    resetAuctioneerRoomMode();
+    leaveAuctioneerSetup();
   };
 
   window.auctionAccessWizardNext=async function(){

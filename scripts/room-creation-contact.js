@@ -9,6 +9,7 @@
   let lastCreateVisible=false;
 
   function isCreateVisible(){
+    if(!document.getElementById('screen-auctioneer-setup')?.classList.contains('active'))return false;
     const box=document.getElementById('auction-create-box');
     if(!box)return false;
     const cs=getComputedStyle(box);
@@ -144,9 +145,7 @@
 
   function createWizardBack(){
     if(createStep>0){createStep--;renderCreateStep();return;}
-    const change=document.querySelector('.auction-mode-selected button');
-    if(change){change.click();return;}
-    window.resetAuctioneerRoomMode?.();
+    window.leaveAuctioneerSetup();
   }
 
   async function persistContact(name,password,email){
