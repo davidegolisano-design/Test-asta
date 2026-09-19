@@ -12,6 +12,7 @@ const playersList=[
 const teamsCache=[{id:'demo-1',name:'Atletico Spritz'},{id:'demo-2',name:'Real Fantacalcio'},{id:'demo-3',name:'FC Ultimo Rilancio'}];
 const onlinePlayers=new Map([['demo-1',{}],['demo-2',{}]]),absentTeamIds=new Set();
 const isMantraRoom=()=>fixtureMantra, auctionRoleOptions=()=>fixtureMantra?['P','D','C','T','A']:['P','D','C','A'];
+const syncRoleModeClass=()=>document.body.classList.toggle('liveasta-mantra',fixtureMantra);
 const roleUiFamily=r=>r, normalizeMantraRole=r=>r, mantraRoleTokens=r=>String(r).split(';'),playerRole=p=>fixtureMantra?p.RM:p.R;
 const playerUiPrefsKey=()=>null, banditoreUiPrefsKey=()=>null,safeReadLocalJson=()=>null,safeWriteLocalJson=()=>{};
 const shortlistPriority=()=>null,playerListoneNumericValue=p=>p.FVM,escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -30,6 +31,7 @@ function fixtureScene(scene){
  document.getElementById('player-listone-overlay').classList.remove('active');
  const ids={management:'screen-room-control',board:'screen-auctioneer-board',auction:'screen-auctioneer-board',player:'screen-player-buzzer',listone:'screen-player-buzzer'};
  document.getElementById(ids[scene]||ids.management).classList.add('active');
+ requestAnimationFrame(()=>window.fitAuctionNames?.());
  document.getElementById('view-list').style.display=scene==='board'?'flex':'none';
  document.getElementById('view-auction').style.display=scene==='auction'?'flex':'none';
  document.getElementById('view-auction').classList.toggle('auction-view-hidden',scene!=='auction');
@@ -49,6 +51,7 @@ function fixtureInit(){
  document.querySelectorAll('[data-management-tab]').forEach(el=>el.addEventListener('click',()=>renderListFilters('purchases')));
  $('player-search').addEventListener('input',renderFixtureList);$('player-listone-search').addEventListener('input',renderFixtureList);
  $('fixture-theme').innerHTML=Object.keys(window.LiveAstaThemes).map(name=>`<option value="${name}">${window.LiveAstaThemeLabels[name]}</option>`).join('');
+ $('fixture-theme').value=document.documentElement.dataset.themeChoice;
  $('fixture-theme').addEventListener('change',event=>window.setLiveAstaTheme(event.target.value));
  $('fixture-scene').addEventListener('change',event=>fixtureScene(event.target.value));
  $('fixture-mode').addEventListener('change',event=>{fixtureMantra=event.target.value==='mantra';renderFixtureList()});
