@@ -13,14 +13,15 @@
     <meta name="description" content="LIVEASTA - asta fantasy calcio realtime a stanze">
     <link rel="apple-touch-icon" href="./icon-192.png">
     <link rel="manifest" href="./manifest.webmanifest">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <link rel="stylesheet" href="./styles/core.css?v=100">
 
-    <script src="./scripts/theme-preload.js?v=100"></script>
+    <script src="./scripts/theme-palettes.js?v=105-fluo1"></script>
+    <script src="./scripts/theme-preload.js?v=105-fluo1"></script>
 
     <meta name="msapplication-navbutton-color" content="#0D1117">
 
@@ -32,69 +33,105 @@
 </head>
 <body>
 
-    <div id="screen-role" class="screen active">
-        <div class="home-version-badge home-version-settings"
-             role="button" tabindex="0"
-             title="Apri Impostazioni"
-             aria-label="Apri Impostazioni LIVEASTA"
-             onclick="openAdminLogin()"
-             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminLogin();}">
-            v1.02
-        </div>
-        <div class="setup-card">
-<h1 class="logo-text"><span class="rosa">LIVE</span><span class="rush">ASTA</span></h1>
-            <p class="subtitle">Asta fantasy calcio realtime</p>
+    <svg class="entry-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="entry-ball" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"/><path d="m50 28 21 15-8 25H37l-8-25zM50 5v23M7 37l22 6m8 25L23 89m40-21 14 21m-6-46 22-6" fill="none" stroke="currentColor" stroke-width="4"/></symbol>
+        <symbol id="entry-jersey" viewBox="0 0 140 140"><path d="M46 17 15 34 3 62l26 12 12-18v69h58V56l12 18 26-12-12-28-31-17c-3 21-45 21-48 0Z" fill="currentColor"/><path d="M53 18c3 10 31 10 34 0" fill="none" stroke="var(--theme-on-marker)" stroke-width="5"/><path d="M68 60v37m17-37H75v37h10V60Z" fill="none" stroke="var(--theme-on-marker)" stroke-width="7"/></symbol>
+        <symbol id="entry-whistle" viewBox="0 0 140 140"><path d="m89 42 37-17 9 23-47 30c-5 26-22 38-45 33C17 105 10 77 22 58c12-19 35-22 52-12Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="48" cy="75" r="15" fill="none" stroke="currentColor" stroke-width="7"/><path d="m109 60-14-26M44 17l-5-13m-13 22L12 17m52 3 6-14" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
+        <symbol id="entry-arrow" viewBox="0 0 40 40"><path d="M7 31 32 7M10 7h22v22" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square"/></symbol>
+        <symbol id="entry-monitor" viewBox="0 0 120 100"><rect x="7" y="9" width="106" height="68" rx="5" fill="none" stroke="currentColor" stroke-width="5"/><path d="M42 94h36m-18-17v17M9 64h102" fill="none" stroke="currentColor" stroke-width="5"/><path d="m48 28-12 12 12 12m24-24 12 12-12 12" fill="none" stroke="currentColor" stroke-width="4"/></symbol>
+        <symbol id="entry-phone" viewBox="0 0 80 112"><rect x="14" y="5" width="52" height="102" rx="9" fill="none" stroke="currentColor" stroke-width="5"/><path d="M30 15h20M30 96h20m-10-58v29m-14-14h28" fill="none" stroke="currentColor" stroke-width="5"/></symbol>
+      </defs>
+    </svg>
 
+    <div id="screen-role" class="screen active entry-screen entry-home">
+      <div class="entry-home-shell">
+        <header class="entry-topbar">
+          <div class="entry-brand"><svg aria-hidden="true"><use href="#entry-ball"/></svg><span>LIVE<b>ASTA</b></span></div>
+          <div class="entry-top-actions">
+            <button class="entry-color-button" type="button" onclick="openAdminLogin();openLiveAstaThemeMenu()"><i aria-hidden="true"></i> Colori</button>
+            <button class="home-version-badge home-version-settings" type="button" title="Apri Impostazioni" aria-label="Apri Impostazioni LIVEASTA" onclick="openAdminLogin()">v1.05 DEV · Fluo</button>
+          </div>
+        </header>
+        <main class="entry-hero">
+          <div class="entry-hero-copy">
+            <div class="entry-kicker"><span aria-hidden="true"></span> FANTACALCIO. DAL VIVO.</div>
+            <h1 class="entry-headline">LA TUA ASTA.<br><em>IL TUO COLPO.</em></h1>
+            <p class="entry-intro">Gli amici al tavolo.<br>La squadra dei sogni, nelle tue mani.</p>
+            <div class="entry-home-actions">
+              <button class="entry-ticket entry-ticket-join" type="button" onclick="showScreen('screen-entry-role')" aria-label="Entra in una stanza">
+                <span class="entry-ticket-copy"><small>LA LEGA TI ASPETTA</small><strong>Entra in una stanza</strong></span>
+                <span class="entry-ticket-stub" aria-hidden="true"><svg><use href="#entry-arrow"/></svg></span>
+              </button>
+              <button class="entry-create-action" type="button" onclick="openRoomCreation()" aria-label="Crea stanza">
+                <span class="entry-create-plus" aria-hidden="true">+</span><span><strong>Crea stanza</strong><small>Organizzi tu? Si parte da qui.</small></span><span class="entry-create-arrow" aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </div>
+          <div class="entry-art" aria-hidden="true">
+            <div class="entry-pitch"><span></span></div>
+            <div class="entry-art-caption">IL PROSSIMO<br>FUORICLASSE?</div>
+            <div class="entry-player-card"><span class="entry-player-card-tag">IL TUO PROSSIMO COLPO</span><svg class="entry-art-jersey"><use href="#entry-jersey"/></svg><b>FUORICLASSE</b><div class="entry-player-card-bottom"><span>PASSIONE</span><strong>∞</strong></div></div>
+            <div class="entry-sold-sticker">È TUO!</div>
+            <svg class="entry-art-ball"><use href="#entry-ball"/></svg>
+            <div class="entry-art-ribbon">CLASSIC <span>✦</span> MANTRA <span>✦</span> LIVE</div>
+          </div>
+        </main>
+        <footer class="entry-home-footer">
+          <details class="entry-qr-details">
+            <summary><span aria-hidden="true">▦</span> Invita la tua lega <span aria-hidden="true">+</span></summary>
             <div class="home-qr-block" aria-label="QR code per aprire LIVEASTA">
-                <div class="home-qr-label">SCANSIONA PER ENTRARE</div>
-                <div class="home-qr-frame">
-                    <div id="home-site-qr"></div>
-                </div>
-                <div id="home-site-url" class="home-qr-url"></div>
+              <div class="home-qr-label">SCANSIONA E SCENDI IN CAMPO</div>
+              <div class="home-qr-frame"><div id="home-site-qr"></div></div>
+              <div id="home-site-url" class="home-qr-url"></div>
             </div>
-
-            <div class="home-donation-card">
-                <div class="home-donation-copy">
-                    <strong>💙 Sostieni LIVEASTA</strong>
-                    <small>Se il progetto ti piace puoi lasciare una donazione libera.</small>
-                </div>
-                <a class="home-donation-btn"
-                   href="https://www.paypal.me/Asteda0"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   aria-label="Lascia una donazione libera con PayPal">
-                    PayPal
-                </a>
-            </div>
-
-            <button class="btn home-entry-action" type="button" onclick="showScreen('screen-entry-role')">Entra in una stanza</button>
-            <button class="btn btn-secondary home-entry-action" type="button" onclick="openRoomCreation()">Crea stanza</button>
-        </div>
+          </details>
+          <a class="entry-support" href="https://www.paypal.me/Asteda0" target="_blank" rel="noopener noreferrer">♡ Sostieni LIVEASTA</a>
+          <span class="entry-footer-note">LA SERATA PIÙ ATTESA DELL’ANNO.</span>
+        </footer>
+      </div>
     </div>
 
-    <div id="screen-entry-role" class="screen">
-        <div class="setup-card">
-            <h1>Entra in una stanza</h1>
-            <p class="subtitle">Come vuoi partecipare all’asta?</p>
-            <button class="btn" type="button" onclick="openPlayerLobby()">Giocatore</button>
-            <button class="btn btn-secondary" type="button" onclick="showScreen('screen-device-choice')">Banditore</button>
-            <p class="setup-note">Come banditore puoi anche partecipare con una squadra, attivando l’opzione dalla Gestione.</p>
-            <button class="btn btn-secondary" type="button" onclick="showScreen('screen-role')">Indietro</button>
+    <div id="screen-entry-role" class="screen entry-screen">
+      <div class="entry-choice-shell">
+        <button class="entry-back" type="button" onclick="showScreen('screen-role')">← Indietro</button>
+        <div class="entry-kicker">ENTRA IN UNA STANZA</div>
+        <h1 class="entry-choice-title">SCEGLI IL TUO<br><em>POSTO IN CAMPO.</em></h1>
+        <div class="entry-role-choices">
+          <button class="entry-role-card entry-role-player" type="button" onclick="openPlayerLobby()" aria-label="Giocatore">
+            <svg class="entry-role-icon" aria-hidden="true"><use href="#entry-jersey"/></svg>
+            <span class="entry-role-copy"><small>COSTRUISCI LA TUA ROSA</small><strong>Giocatore</strong><span>Rilancia. Sorprendi. Aggiudicatelo.</span></span>
+            <svg class="entry-role-arrow" aria-hidden="true"><use href="#entry-arrow"/></svg>
+          </button>
+          <button class="entry-role-card entry-role-host" type="button" onclick="showScreen('screen-device-choice')" aria-label="Banditore">
+            <svg class="entry-role-icon" aria-hidden="true"><use href="#entry-whistle"/></svg>
+            <span class="entry-role-copy"><small>IL RITMO LO DETTI TU</small><strong>Banditore</strong><span>Chiama i nomi. Conduci l’asta.</span></span>
+            <svg class="entry-role-arrow" aria-hidden="true"><use href="#entry-arrow"/></svg>
+          </button>
         </div>
+        <p class="entry-role-note">Vuoi anche giocare? Come banditore puoi attivare la tua squadra dalla Gestione.</p>
+      </div>
     </div>
 
-    <div id="screen-device-choice" class="screen">
-        <div class="setup-card">
-            <h1>Dispositivo</h1>
-            <p class="subtitle">Ottimizza la plancia dell'Asta</p>
-            <button class="btn btn-green" onclick="setDeviceMode('pc')">💻 COMPUTER</button>
-            <button class="btn" onclick="setDeviceMode('mobile')">📱 SMARTPHONE</button>
-            <button class="btn btn-secondary" onclick="showScreen('screen-entry-role')">Indietro</button>
+    <div id="screen-device-choice" class="screen entry-screen">
+      <div class="entry-choice-shell entry-device-shell">
+        <button class="entry-back" type="button" onclick="showScreen('screen-entry-role')">← Indietro</button>
+        <div class="entry-kicker">POSTAZIONE BANDITORE</div>
+        <h1 class="entry-choice-title">DA DOVE<br><em>GUIDI L’ASTA?</em></h1>
+        <div class="entry-device-choices">
+          <button class="entry-device-card entry-device-pc" type="button" onclick="setDeviceMode('pc')" aria-label="Computer">
+            <svg aria-hidden="true"><use href="#entry-monitor"/></svg><strong>Computer</strong><span>Tutta la plancia davanti a te.</span><b aria-hidden="true">↗</b>
+          </button>
+          <button class="entry-device-card entry-device-mobile" type="button" onclick="setDeviceMode('mobile')" aria-label="Smartphone">
+            <svg aria-hidden="true"><use href="#entry-phone"/></svg><strong>Smartphone</strong><span>L’asta nel palmo della mano.</span><b aria-hidden="true">↗</b>
+          </button>
         </div>
+      </div>
     </div>
 
-    <div id="screen-player-setup" class="screen">
-        <div class="setup-card access-wizard-card">
+    <div id="screen-player-setup" class="screen entry-screen entry-form-screen">
+        <div class="setup-card access-wizard-card entry-pass">
+            <div class="entry-pass-kicker">PASS GIOCATORE <span aria-hidden="true">↗</span></div>
             <h1>Entra come giocatore</h1>
 
             <div class="access-wizard-head">
@@ -289,8 +326,9 @@
         <div id="exact-bid-value-bubble"><strong id="exact-bid-value">0</strong></div>
     </div>
 
-    <div id="screen-auctioneer-setup" class="screen">
-        <div class="setup-card">
+    <div id="screen-auctioneer-setup" class="screen entry-screen entry-form-screen">
+        <div class="setup-card entry-pass">
+            <div class="entry-pass-kicker">IL TUO ACCESSO ALL’ASTA <span aria-hidden="true">↗</span></div>
             <h1 id="auction-setup-title">Entra come banditore</h1>
             <p id="auction-create-notice" class="setup-note" style="display:none;">Dopo la creazione, attendi l’email di conferma prima di entrare nella stanza.</p>
 
@@ -399,7 +437,7 @@
                             <span id="theme-save-status">Salvato su questo dispositivo</span>
                         </div>
                     </div>
-                    <div class="theme-submenu-intro">Scegli l’aspetto di LIVEASTA. Possiamo aggiungere nuovi temi qui senza allungare il menu principale.</div>
+                    <div class="theme-submenu-intro">Scegli i tuoi colori. Sei palette fluo, in versione chiara o scura.</div>
                     <div class="theme-picker theme-picker-12">
                         <div class="theme-column-title">DAILY</div>
                         <div class="theme-column-title">DARK</div>
@@ -1315,15 +1353,16 @@
         </div>
     </div>
 
-<script src="./scripts/bootstrap.js?v=10421-entry1"></script>
-<script src="./scripts/theme.js?v=100"></script>
+<script src="./scripts/bootstrap.js?v=105-fluo1"></script>
+<script src="./scripts/theme.js?v=105-fluo1"></script>
 
 <link rel="stylesheet" href="./styles/refinements.css?v=100">
 
 <script src="./scripts/runtime.js?v=100"></script>
 
-<script src="./scripts/pwa.js?v=10421-entry2"></script>
+<script src="./scripts/pwa.js?v=105-fluo1"></script>
 <script src="./scripts/sealed-auction.js?v=100"></script>
 <script src="./scripts/management.js?v=100"></script>
+<link rel="stylesheet" href="./styles/entry-matchday.css?v=105-fluo1">
 </body>
 </html>

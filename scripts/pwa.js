@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.04.21 DEV2 · Accesso';
+  const APP_VERSION='v1.05 DEV · Fluo';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
@@ -26,7 +26,7 @@
   }
 
   loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10418');
-  loadCss('./styles/game-glow-dev.css?v=10418');
+  loadCss('./styles/game-glow-dev.css?v=105-fluo1');
   loadCss('./styles/room-chat.css?v=10418');
 
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
@@ -50,7 +50,6 @@
   window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);window.addEventListener('pageshow',syncInstallButton);document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncInstallButton();});syncInstallButton();
 
   const featureScripts=[
-    './scripts/theme-glow-dev.js?v=10418',
     './scripts/auctioneer-mobile-board-dev.js?v=10418',
     './scripts/opponent-credits.js?v=103',
     './scripts/room-chat.js?v=10418',
