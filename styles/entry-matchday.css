@@ -8,7 +8,8 @@ html[data-live-theme] .entry-screen:is(#screen-role,#screen-entry-role,#screen-d
 }
 html[data-live-theme] .entry-screen :is(button,a,summary){-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 html[data-live-theme] .entry-screen :is(button,a,summary):focus-visible{outline:3px solid var(--theme-accent)!important;outline-offset:5px!important}
-html[data-live-theme] .entry-screen svg{display:block;width:100%;height:100%}
+html[data-live-theme] .entry-screen svg{display:block}
+html[data-live-theme] .entry-screen :is(.entry-ticket,.entry-role-player,.entry-device-pc){--theme-muted:var(--entry-ink)}
 html[data-live-theme] .entry-screen :is(h1,button strong,.entry-brand,.entry-player-card b,.entry-sold-sticker,.entry-art-caption){font-family:var(--entry-display)!important}
 html[data-live-theme] .entry-screen button{cursor:pointer}
 .entry-home-shell{width:min(1120px,100%);margin:auto;position:relative}
