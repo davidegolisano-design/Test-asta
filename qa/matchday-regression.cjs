@@ -31,7 +31,7 @@ const managed={document,window:null,MutationObserver:window.MutationObserver,con
 const timer=document.getElementById('control-room-timer');timer.value='47';document.getElementById('mg-tab-participants').click();
 ok(document.getElementById('mg-panel-room').hidden&&!document.getElementById('mg-panel-participants').hidden,'management switches panels');document.getElementById('mg-tab-room').click();ok(timer.value==='47','management preserves unsaved values');
 // Exercise the actual viewport adapter and state dispatch, with auction renderers stubbed.
-const app=fs.readFileSync('scripts/app.js','utf8');loadActual=app.slice(app.indexOf('        function applyAuctioneerUiMode()'),app.indexOf('        async function openAuctioneerAccess()'));
+const app=fs.readFileSync('scripts/app.js','utf8');const loadActual=app.slice(app.indexOf('        function applyAuctioneerUiMode()'),app.indexOf('        async function openAuctioneerAccess()'));
 let compact=false,resize;context.matchMedia=()=>({get matches(){return compact},addEventListener:(type,fn)=>resize=fn});
 Object.assign(context,{auctioneerLockToken:null,readyGateWaiting:false,nominationReady:false,isAuctionActive:false,auctionPrepInterval:null,sealedAuctionModeActive:false,setMobileBoardPhase:phase=>{document.getElementById('view-auction').className='mobile-'+phase}});
 run(loadActual);load('scripts/responsive-ui.js');
