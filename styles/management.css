@@ -238,10 +238,6 @@
 }
 
 /* === MGMT-04: fixed compact header, reliable switches, participant/order unification === */
-#screen-room-control .mg-header-actions .control-action-audio{grid-column:1;grid-row:1;}
-#screen-room-control .mg-header-actions .control-action-reset{grid-column:2;grid-row:1;}
-#screen-room-control .mg-header-actions .control-action-import-csv{grid-column:1;grid-row:2;}
-#screen-room-control .mg-header-actions .control-action-csv{grid-column:2;grid-row:2;}
 
 /* ui.css has older global button rules, so canonical management switches use stronger ownership. */
 html[data-live-theme] #screen-room-control#screen-room-control button.mg-switch{

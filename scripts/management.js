@@ -9,30 +9,6 @@
     if(document.title.startsWith('LIVEASTA DEV'))document.title='LIVEASTA DEV · v1.03 MGMT-09';
   }
 
-  function ensureDesktopManagementScroll(){
-    if(document.getElementById('mgmt09-desktop-scroll-style'))return;
-    const style=document.createElement('style');
-    style.id='mgmt09-desktop-scroll-style';
-    style.textContent=`
-      body.auctioneer-desktop #screen-room-control{
-        height:100dvh!important;
-        min-height:100dvh!important;
-        max-height:100dvh!important;
-        overflow-x:hidden!important;
-        overflow-y:auto!important;
-        overscroll-behavior-y:contain!important;
-        scrollbar-gutter:stable!important;
-      }
-      body.auctioneer-desktop #screen-room-control .mg-page.control-grid{
-        height:auto!important;
-        min-height:100%!important;
-        max-height:none!important;
-        overflow:visible!important;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
   function cleanupOldManagement(){
     const root=document.getElementById('screen-room-control');
     if(!root)return;
@@ -209,7 +185,6 @@
 
   function init(){
     syncDevVersionBadge();
-    ensureDesktopManagementScroll();
     cleanupOldManagement();
     installManagementTabs();
     const presenceTarget=document.getElementById('online-player-list');

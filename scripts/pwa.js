@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.06 DEV · Fluo';
+  const APP_VERSION='v1.06.1 DEV · Fluo';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){

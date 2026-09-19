@@ -170,9 +170,10 @@
   #view-list :is(.list-section-title,.auctioned-container) {flex:0 0 auto!important;width:100%!important}
 
   /* Management: three purposeful tabs, persistent forms, compact desktop/mobile grids. */
-  #screen-room-control {scroll-padding-top:150px!important}
-  #screen-room-control .mg-page {display:flex!important;flex-direction:column!important;gap:0!important;height:auto!important;min-height:100%!important;overflow:visible!important}
-  .mg-masthead {position:sticky;top:0;z-index:35;width:100%;background:var(--theme-bg);border-bottom:1px solid var(--theme-border)}
+  /* One bounded scroll owner on every device. The page must grow with its content. */
+  #screen-room-control {height:100dvh!important;min-height:0!important;max-height:100dvh!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:contain;scroll-padding-top:150px!important}
+  #screen-room-control .mg-page {display:flex!important;flex:0 0 auto!important;flex-direction:column!important;gap:0!important;height:auto!important;min-height:100%!important;max-height:none!important;overflow:visible!important}
+  .mg-masthead {position:sticky;top:0;z-index:35;flex:0 0 auto;width:100%;background:var(--theme-bg);border-bottom:1px solid var(--theme-border)}
   #screen-room-control .mg-header {position:static!important;padding:14px max(20px,calc((100vw - 1240px)/2))!important;border-bottom:0!important;gap:18px!important}
   #screen-room-control .mg-heading h1 {font-size:29px!important;line-height:1!important;white-space:normal!important}
   #screen-room-control .mg-header-actions {display:flex!important;flex:0 0 auto!important;width:auto!important;gap:8px!important}
@@ -182,7 +183,7 @@
   .mg-tabs>button>span {font:800 10px/1 Inter,sans-serif;opacity:.6}
   .mg-tabs>button[aria-selected="true"] {color:var(--theme-text)!important;border-bottom-color:var(--theme-marker)!important;background:color-mix(in srgb,var(--theme-marker) 7%,var(--theme-bg))!important}
   .mg-section[hidden] {display:none!important}
-  #screen-room-control .mg-content {width:min(1240px,calc(100% - 40px))!important;margin:0 auto!important;padding:24px 0 48px!important;gap:22px!important}
+  #screen-room-control .mg-content {flex:0 0 auto!important;width:min(1240px,calc(100% - 40px))!important;margin:0 auto!important;padding:24px 0 calc(48px + env(safe-area-inset-bottom))!important;gap:22px!important}
   #screen-room-control .mg-section-head h2 {font-size:32px!important;line-height:1.05!important}
   #screen-room-control .mg-kicker {font-size:9px!important;letter-spacing:.16em!important;color:var(--theme-primary)!important}
   #screen-room-control .mg-card {border-top:3px solid var(--theme-marker)!important;box-shadow:none!important;padding:18px!important}
@@ -226,11 +227,11 @@
     #screen-room-control .mg-header {flex-direction:column!important;align-items:stretch!important;gap:10px!important;padding:12px 14px 8px!important}
     #screen-room-control .mg-heading h1 {font-size:26px!important}
     #screen-room-control .mg-header-actions {display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;gap:6px!important}
-    #screen-room-control .mg-header-actions .btn {min-width:0!important;width:100%!important;padding:8px 4px!important;min-height:38px!important;font-size:16px!important;white-space:normal!important}
+    #screen-room-control .mg-header-actions .btn {grid-area:auto!important;min-width:0!important;width:100%!important;padding:8px 4px!important;min-height:44px!important;font-size:16px!important;white-space:normal!important}
     .mg-tabs {padding:0 14px;gap:3px}
-    .mg-tabs>button {flex:1;padding:11px 4px!important;font-size:19px!important;gap:5px}
+    .mg-tabs>button {flex:1;min-width:0;padding:11px 4px!important;font-size:19px!important;white-space:normal;gap:5px}
     .mg-tabs>button>span {font-size:8px}
-    #screen-room-control .mg-content {width:calc(100% - 28px)!important;padding:18px 0 32px!important}
+    #screen-room-control .mg-content {width:calc(100% - 28px)!important;padding:18px 0 calc(32px + env(safe-area-inset-bottom))!important}
     #screen-room-control .mg-section-head {align-items:flex-start!important;flex-direction:column!important;gap:6px!important}
     #screen-room-control .mg-section-head h2 {font-size:29px!important}
     #screen-room-control .mg-section-head p {text-align:left!important;font-size:12px!important}
