@@ -1,10 +1,10 @@
-const CACHE = 'liveasta-v1.04-126';
+const CACHE = 'liveasta-v1.04-127-icon-exact';
 const CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icon-192.png',
-  './icon-512.svg'
+  './icon-192.png?v=exact2',
+  './icon-512.png?v=exact2'
 ];
 
 self.addEventListener('install', event => {
