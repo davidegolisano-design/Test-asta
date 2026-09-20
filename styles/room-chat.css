@@ -240,14 +240,6 @@
   font-weight:950;
 }
 
-.room-chat-control-card .room-chat-control-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.room-chat-control-card #room-chat-toggle-btn{min-width:190px;}
-
 @media (min-width:761px){
   .room-chat-panel{
     width:min(760px,92vw);
