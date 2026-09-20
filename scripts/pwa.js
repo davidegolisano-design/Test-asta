@@ -50,8 +50,8 @@
 
   const featureScripts=[
     './scripts/auctioneer-mobile-board-dev.js?v=10418',
-    './scripts/opponent-credits.js?v=103',
-    './scripts/room-chat.js?v=106-fluo1',
+    './scripts/opponent-credits.js?v=107-toggle',
+    './scripts/room-chat.js?v=107-toggle',
     './scripts/room-chat-entry-sync.js?v=10418',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
