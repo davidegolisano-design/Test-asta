@@ -932,6 +932,31 @@
   else init();
 })();
 
+// === liveasta-hidden-settings-entry ===
+(function(){
+  const brand=document.getElementById('home-liveasta-brand');
+  if(!brand)return;
+
+  let tapCount=0;
+  let lastTapAt=0;
+  const TAP_WINDOW_MS=1800;
+
+  brand.addEventListener('click',()=>{
+    const home=document.getElementById('screen-role');
+    if(!home?.classList.contains('active'))return;
+
+    const now=Date.now();
+    tapCount=(now-lastTapAt<=TAP_WINDOW_MS)?tapCount+1:1;
+    lastTapAt=now;
+
+    if(tapCount>=5){
+      tapCount=0;
+      lastTapAt=0;
+      if(typeof openAdminLogin==='function')openAdminLogin();
+    }
+  });
+})();
+
 // === management-design-init ===
 // Management presentation only: existing controls retain their handlers and IDs.
 (function initManagementDesign(){
