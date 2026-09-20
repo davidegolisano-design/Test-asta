@@ -106,9 +106,17 @@
   window.openLiveAstaThemeMenu=function(){
     const menu=document.getElementById('liveasta-theme-submenu');
     if(!menu)return;
+
+    // Il selettore temi è un overlay globale: non deve dipendere dalla schermata
+    // Impostazioni. Spostandolo sotto <body> resta graficamente identico ma
+    // si apre sopra la schermata corrente (Home o Impostazioni).
+    if(menu.parentElement!==document.body){
+      document.body.appendChild(menu);
+    }
+
     menu.classList.add('open');
     menu.setAttribute('aria-hidden','false');
-    document.body&&document.body.classList.add('theme-submenu-open');
+    document.body.classList.add('theme-submenu-open');
     menu.scrollTop=0;
   };
 
