@@ -60,7 +60,13 @@ html[data-live-theme] .entry-screen h1.entry-headline{font-size:clamp(64px,7.9vw
 }
 .entry-support-copy{display:flex;flex:1 1 auto;min-width:0;flex-direction:column;gap:2px}
 .entry-support-copy strong{font-size:22px;line-height:1.05;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#fff}
-.entry-support-copy small{font-size:10px;line-height:1.45;font-weight:600;color:rgba(255,255,255,.82)}
+html[data-live-theme] #screen-role .entry-support-copy small{
+  font-size:10px!important;
+  line-height:1.45!important;
+  font-weight:600!important;
+  color:rgba(255,255,255,.92)!important;
+  -webkit-text-fill-color:rgba(255,255,255,.92)!important;
+}
 .entry-support-arrow{flex:0 0 auto;margin-left:auto;font-size:23px;line-height:1;color:#fff}
 .entry-art{height:455px;position:relative;isolation:isolate;color:var(--theme-primary);transform:rotate(2deg)}
 .entry-pitch{position:absolute;inset:20px 0 26px 0;border:1px solid color-mix(in srgb,var(--theme-primary) 25%,transparent);transform:rotate(-10deg)}
@@ -162,7 +168,7 @@ body:has(#screen-role.entry-screen.active) #liveasta-install-btn{bottom:12px!imp
   .entry-support-cta{min-height:68px;margin-top:9px;padding:13px 14px!important;gap:11px}
   .entry-support-heart{flex-basis:34px;width:34px;height:34px;font-size:22px}
   .entry-support-copy strong{font-size:20px}
-  .entry-support-copy small{font-size:9px;line-height:1.35}
+  html[data-live-theme] #screen-role .entry-support-copy small{font-size:9px!important;line-height:1.35!important}
   .entry-support-arrow{font-size:20px}
   .entry-home-footer{gap:12px;flex-wrap:wrap;padding-top:9px}.entry-qr-details{margin-right:auto}.entry-footer-note{display:none}.entry-qr-details summary{font-size:10px;gap:7px}
   .entry-choice-shell{width:min(470px,100%);padding:0}.entry-back{margin-bottom:18px!important;font-size:11px!important}
