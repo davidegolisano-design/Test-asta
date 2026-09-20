@@ -44,6 +44,24 @@ html[data-live-theme] .entry-screen h1.entry-headline{font-size:clamp(64px,7.9vw
 .entry-create-action strong{display:block;font-size:27px;line-height:1.1;text-transform:uppercase;letter-spacing:.03em}
 .entry-create-action small{display:block;font-size:10px;color:var(--theme-muted);line-height:1.6;margin-top:3px}
 .entry-create-arrow{font-size:24px;font-weight:400;margin-left:auto;color:var(--theme-primary)}
+.entry-support-cta{
+  display:flex;align-items:center;gap:14px;width:100%;min-height:72px;margin-top:8px;padding:14px 18px!important;
+  box-sizing:border-box;text-decoration:none!important;text-align:left;color:#fff!important;
+  background:linear-gradient(135deg,#0070BA 0%,#003087 100%)!important;
+  border:1px solid #1B78C5!important;border-radius:4px 4px 18px 4px!important;
+  box-shadow:5px 6px 0 rgba(0,48,135,.18)!important;
+  transition:transform .12s ease,filter .12s ease!important;
+}
+.entry-support-cta:hover{filter:brightness(1.06)!important}
+.entry-support-cta:active{transform:translateY(1px) scale(.99)}
+.entry-support-heart{
+  display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border:1px solid rgba(255,255,255,.78);
+  border-radius:50%;font-size:25px;line-height:1;color:#fff;
+}
+.entry-support-copy{display:flex;flex:1 1 auto;min-width:0;flex-direction:column;gap:2px}
+.entry-support-copy strong{font-size:22px;line-height:1.05;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#fff}
+.entry-support-copy small{font-size:10px;line-height:1.45;font-weight:600;color:rgba(255,255,255,.82)}
+.entry-support-arrow{flex:0 0 auto;margin-left:auto;font-size:23px;line-height:1;color:#fff}
 .entry-art{height:455px;position:relative;isolation:isolate;color:var(--theme-primary);transform:rotate(2deg)}
 .entry-pitch{position:absolute;inset:20px 0 26px 0;border:1px solid color-mix(in srgb,var(--theme-primary) 25%,transparent);transform:rotate(-10deg)}
 .entry-pitch:before{content:'';position:absolute;left:0;right:0;top:50%;border-top:1px solid color-mix(in srgb,var(--theme-primary) 25%,transparent)}
@@ -71,7 +89,6 @@ html[data-live-theme] .entry-screen h1.entry-headline{font-size:clamp(64px,7.9vw
 html[data-live-theme] #screen-role .home-qr-block{position:absolute;bottom:100%;left:0;width:min(280px,calc(100vw - 32px))!important;box-sizing:border-box;padding:18px!important;margin:0 0 12px!important;background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;box-shadow:0 15px 40px #0004;z-index:5;border-radius:4px!important;text-align:center}
 html[data-live-theme] #screen-role .home-qr-url{font-size:8px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
 html[data-live-theme] #screen-role .home-qr-label{font-size:8px!important}
-.entry-support{font-size:11px;text-decoration:none;color:var(--theme-muted);padding:12px 0;white-space:nowrap}
 .entry-footer-note{font-size:8px;letter-spacing:.16em;font-weight:800;line-height:1.6;margin-left:auto;padding:13px 0}
 /* Roles are a shirt card and a referee card; the back action remains a text link. */
 .entry-choice-shell{width:min(840px,100%);margin:auto;padding:10px 0}
@@ -142,7 +159,12 @@ body:has(#screen-role.entry-screen.active) #liveasta-install-btn{bottom:12px!imp
   .entry-ticket{min-height:94px}.entry-ticket-copy{padding:19px 17px}.entry-ticket-copy small{font-size:8px;letter-spacing:.08em}.entry-ticket-copy strong{font-size:clamp(27px,7.4vw,39px)}
   .entry-ticket-stub{width:48px}.entry-ticket-stub svg{width:25px!important;height:25px!important}
   .entry-create-action{padding:20px 8px 11px 14px!important;gap:11px}.entry-create-action strong{font-size:27px}.entry-create-action small{font-size:10px}
-  .entry-home-footer{gap:12px;flex-wrap:wrap;padding-top:9px}.entry-qr-details{margin-right:auto}.entry-footer-note{display:none}.entry-support{font-size:10px}.entry-qr-details summary{font-size:10px;gap:7px}
+  .entry-support-cta{min-height:68px;margin-top:9px;padding:13px 14px!important;gap:11px}
+  .entry-support-heart{flex-basis:34px;width:34px;height:34px;font-size:22px}
+  .entry-support-copy strong{font-size:20px}
+  .entry-support-copy small{font-size:9px;line-height:1.35}
+  .entry-support-arrow{font-size:20px}
+  .entry-home-footer{gap:12px;flex-wrap:wrap;padding-top:9px}.entry-qr-details{margin-right:auto}.entry-footer-note{display:none}.entry-qr-details summary{font-size:10px;gap:7px}
   .entry-choice-shell{width:min(470px,100%);padding:0}.entry-back{margin-bottom:18px!important;font-size:11px!important}
   html[data-live-theme] .entry-screen h1.entry-choice-title{font-size:clamp(41px,11.2vw,59px)!important;margin:14px 0 24px!important}
   .entry-role-choices{grid-template-columns:1fr;gap:20px;padding:5px}
