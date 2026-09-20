@@ -26,7 +26,7 @@
   }
 
   loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10418');
-  loadCss('./styles/room-chat.css?v=10418');
+  loadCss('./styles/room-chat.css?v=107-toggle');
 
   if(IS_RAWGITHACK && 'serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
