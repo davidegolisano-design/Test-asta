@@ -83,7 +83,7 @@
   :where(.ard-player) {background:var(--theme-card)!important;box-shadow:none!important}
   :where(.col-player,.player-card-side) {background:var(--team-card-bg,var(--theme-card))!important;box-shadow:none!important}
   /* Text over club colours must stay readable on both very light and very dark kits. */
-  :where(#screen-auctioneer-board .col-player #auction-player-name-top,#screen-auctioneer-board .col-player #auction-player-club,#screen-player-buzzer .player-card-side .phone-player-name,#screen-player-buzzer .player-card-side #phone-player-name-text,#screen-player-buzzer .player-card-side #phone-player-club) {
+  :where(#screen-auctioneer-board .col-player #auction-player-name-top,#screen-auctioneer-board .col-player #auction-player-club,#screen-player-buzzer .player-card-side .phone-player-name,#screen-player-buzzer .player-card-side #phone-player-name-text,#screen-player-buzzer .player-card-side #phone-player-club,.room-roster-player-preview-card #room-roster-player-preview-name,.room-roster-player-preview-card #room-roster-player-preview-club) {
     color:#fff!important;
     -webkit-text-fill-color:#fff!important;
     -webkit-text-stroke:1px #000!important;
@@ -93,7 +93,7 @@
   :where(#auctioneer-ready-player-name,#auctioneer-ready-player-club) {color:var(--theme-text)!important;-webkit-text-fill-color:currentColor!important;-webkit-text-stroke:0!important;text-shadow:none!important}
 
   /* Classic role circles keep their semantic colour, with a neutral outline for contrast. */
-  :where(#phone-player-role,#auction-player-role,#auctioneer-ready-player-role):not(.role-badge-mantra) {
+  :where(#phone-player-role,#auction-player-role,#auctioneer-ready-player-role,#room-roster-player-preview-role):not(.role-badge-mantra) {
     border:2px solid #000!important;
     box-sizing:border-box!important;
   }
