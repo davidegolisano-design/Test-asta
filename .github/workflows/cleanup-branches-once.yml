@@ -1,0 +1,47 @@
+name: Remove obsolete LIVEASTA branches
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cleanup-branches-once.yml']
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove all obsolete branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            admin-push-dev
+            banditore-mobile-v104
+            dev
+            dev-accesso-stanze-20260919
+            dev-fluo-app-20260919
+            dev-fluo-matchday-20260919
+            dev-parallela-20260920
+            dev-work-from-v1061-20260921
+            dev-work-qr-team-20260921
+            entry-flow-dev
+            feat/room-debug-log
+            feat/session-resume-opponent-credits-v103
+            fix/mantra-role-layout
+            fix/room-access-visibility-v103
+            icon-exact-source-20260921
+            qa/ten-player-stress-v103
+            release/v1.04-stability
+            room-email-confirm-dev
+            stable-v0.84
+          )
+          for branch in "${branches[@]}"; do
+            git push origin --delete "$branch"
+          done
+      - name: Remove this one-time workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/cleanup-branches-once.yml
+          git commit -m 'Remove completed branch cleanup workflow'
+          git push origin HEAD:main
