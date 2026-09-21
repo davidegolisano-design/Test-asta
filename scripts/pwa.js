@@ -32,7 +32,14 @@
     navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
     if(window.caches)caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))).catch(()=>{});
   }else if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(()=>{});},{once:true});
+    window.addEventListener('load',async()=>{
+      try{
+        const reg=await navigator.serviceWorker.register('/service-worker.js?v=133',{scope:'/',updateViaCache:'none'});
+        await reg.update().catch(()=>{});
+      }catch(err){
+        console.error('[LIVEASTA PWA] Service worker registration failed',err);
+      }
+    },{once:true});
   }
 
   const button=document.createElement('button');
