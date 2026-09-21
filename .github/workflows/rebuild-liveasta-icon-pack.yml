@@ -57,7 +57,8 @@ jobs:
 
           # Rebuild a metadata-free canonical PNG from the uploaded artwork source.
           canonical = Image.frombytes("RGBA", src.size, src.tobytes())
-          canonical.save(icons_dir / "liveasta-source-512.png", "PNG", optimize=False, compress_level=6)\n          canonical.save(Path("assets/liveasta-icon-source.png"), "PNG", optimize=False, compress_level=6)
+          canonical.save(icons_dir / "liveasta-source-512.png", "PNG", optimize=False, compress_level=6)
+          canonical.save(Path("assets/liveasta-icon-source.png"), "PNG", optimize=False, compress_level=6)
 
           def exact(size, path):
               im = canonical.resize((size, size), Image.Resampling.LANCZOS)
