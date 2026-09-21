@@ -76,6 +76,44 @@ jobs:
             console.log('=== INSTALLABILITY ERRORS ===');
             console.log(JSON.stringify(installErrors, null, 2));
 
+            try {
+              const manifestIcons = await Page.getManifestIcons();
+              console.log('=== PAGE.GETMANIFESTICONS ===');
+              console.log(JSON.stringify({
+                primaryIconBytes: manifestIcons.primaryIcon ? manifestIcons.primaryIcon.length : 0
+              }, null, 2));
+            } catch (e) {
+              console.log('=== PAGE.GETMANIFESTICONS ERROR ===');
+              console.log(String(e));
+            }
+
+            const decode = await Runtime.evaluate({
+              expression: `Promise.all(['/icon-192.png','/icon-512.png'].map(src=>new Promise(async resolve=>{
+                const result={src};
+                try{
+                  const r=await fetch(src+'?decode='+Date.now(),{cache:'no-store'});
+                  result.status=r.status;
+                  result.contentType=r.headers.get('content-type');
+                  const blob=await r.blob();
+                  result.blobType=blob.type;
+                  result.blobSize=blob.size;
+                  try{
+                    const bmp=await createImageBitmap(blob);
+                    result.bitmap={width:bmp.width,height:bmp.height};
+                    bmp.close();
+                  }catch(e){ result.bitmapError=String(e); }
+                  const img=new Image();
+                  img.onload=()=>{result.img={width:img.naturalWidth,height:img.naturalHeight};resolve(result)};
+                  img.onerror=e=>{result.imgError='image onerror';resolve(result)};
+                  img.src=URL.createObjectURL(blob);
+                }catch(e){result.fetchError=String(e);resolve(result)}
+              })))`,
+              awaitPromise:true,
+              returnByValue:true
+            });
+            console.log('=== CHROME IMAGE DECODE ===');
+            console.log(JSON.stringify(decode.result.value, null, 2));
+
             const state = await Runtime.evaluate({
               expression: `(async()=>({
                 href: location.href,
