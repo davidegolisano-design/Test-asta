@@ -1,4 +1,4 @@
-const CACHE = 'liveasta-v1.04-131-exact-png-icons';
+const CACHE = 'liveasta-v1.04-132-pwa-recovery';
 const CORE = [
   './',
   './index.html',
@@ -25,6 +25,7 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
   event.respondWith(
     fetch(event.request, { cache: 'no-store' })
       .then(response => {
