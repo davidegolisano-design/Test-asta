@@ -261,17 +261,7 @@
 // === liveasta-home-qr ===
 (function(){
   function publicLiveAstaUrl(){
-    const u=new URL(window.location.href);
-    u.hash='';
-    u.search='';
-
-    // Se la pagina è aperta direttamente come /index.html,
-    // il QR punta alla cartella pubblica più pulita.
-    if(/\/index\.html$/i.test(u.pathname) && !/raw\.githack\.com$/i.test(u.hostname)){
-      u.pathname=u.pathname.replace(/index\.html$/i,'');
-    }
-
-    return u.href;
+    return 'https://www.liveasta.it/';
   }
 
   function renderHomeQR(){

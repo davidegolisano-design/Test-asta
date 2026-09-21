@@ -1,4 +1,4 @@
-name: Build LIVEASTA APK
+name: Build LiveAsta APK
 on:
   push:
     branches: [main]
@@ -41,17 +41,18 @@ jobs:
           unzip -l "$APK" | grep -q 'mipmap-anydpi-v26/ic_launcher.xml'
       - uses: actions/upload-artifact@v4
         with:
-          name: LIVEASTA-APK
+          name: LiveAsta
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
       - name: Publish APK
         if: github.ref == 'refs/heads/main'
         run: |
           mkdir -p android/download
-          cp android/app/build/outputs/apk/debug/app-debug.apk android/download/LIVEASTA.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk android/download/LiveAsta.apk
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add android/download/LIVEASTA.apk
-          git commit -m 'Build LIVEASTA Android APK'
+          git add android/download/LiveAsta.apk
+          git rm -f android/download/LIVEASTA.apk
+          git commit -m 'Build LiveAsta Android APK'
           git pull --rebase origin main
           git push origin HEAD:main
