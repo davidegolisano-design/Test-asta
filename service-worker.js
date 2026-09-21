@@ -1,4 +1,4 @@
-const CACHE = 'liveasta-v1.04-132-pwa-recovery';
+const CACHE = 'liveasta-v1.04-132-real-png-icons';
 const CORE = [
   './',
   './index.html',
