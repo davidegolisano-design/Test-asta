@@ -1,4 +1,4 @@
-const CACHE = 'liveasta-v1.04-137-safearea';
+const CACHE = 'liveasta-v1.04-141-canonical-icon-pack';
 const CORE = ['/', '/index.html'];
 
 self.addEventListener('install', event => {
