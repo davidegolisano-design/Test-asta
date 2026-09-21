@@ -1,10 +1,10 @@
-const CACHE = 'liveasta-v1.04-129-pwa-icon-repair';
+const CACHE = 'liveasta-v1.04-126';
 const CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.svg'
 ];
 
 self.addEventListener('install', event => {
