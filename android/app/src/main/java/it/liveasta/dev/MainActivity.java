@@ -2,12 +2,16 @@ package it.liveasta.dev;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.ContentValues;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.webkit.JavascriptInterface;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
@@ -17,10 +21,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import java.io.OutputStream;
 
 public class MainActivity extends Activity {
     private static final String HOME = "https://raw.githack.com/davidegolisano-design/Test-asta/dev-work-from-v1061-20260921/index.html";
     private WebView webView;
+    private volatile String currentPage = "";
     private ValueCallback<Uri[]> selectedFiles;
     private static final int PICK_FILE = 10;
 
@@ -37,6 +43,26 @@ public class MainActivity extends Activity {
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setSupportMultipleWindows(true);
         CookieManager.getInstance().setAcceptCookie(true);
+        webView.addJavascriptInterface(new Object() {
+            @JavascriptInterface public void saveCsv(String name, String data) {
+                if (data.length() > 16_000_000 || !currentPage.startsWith(HOME.substring(0, HOME.lastIndexOf('/') + 1))) return;
+                String safe = name.replaceAll("[^a-zA-Z0-9._-]", "_");
+                if (safe.isEmpty()) safe = "liveasta.csv";
+                try {
+                    byte[] bytes = Base64.decode(data, Base64.DEFAULT);
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Downloads.DISPLAY_NAME, safe);
+                    values.put(MediaStore.Downloads.MIME_TYPE, "text/csv");
+                    values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                    Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+                    if (uri == null) throw new IllegalStateException("Download non disponibile");
+                    try (OutputStream output = getContentResolver().openOutputStream(uri)) { output.write(bytes); }
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "File salvato in Download", Toast.LENGTH_SHORT).show());
+                } catch (Exception e) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Impossibile salvare il file", Toast.LENGTH_SHORT).show());
+                }
+            }
+        }, "LiveAstaAndroid");
         webView.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
@@ -44,6 +70,11 @@ public class MainActivity extends Activity {
                     uri.getPath() != null && uri.getPath().startsWith("/davidegolisano-design/Test-asta/")) return false;
                 if (request.isForMainFrame()) { openExternal(uri); return true; }
                 return false;
+            }
+            @Override public void onPageFinished(WebView view, String url) {
+                currentPage = url;
+                if (!url.startsWith(HOME.substring(0, HOME.lastIndexOf('/') + 1))) return;
+                view.evaluateJavascript("document.addEventListener('click',function(e){var a=e.target.closest('a[download]');if(!a||!a.href.startsWith('blob:'))return;e.preventDefault();fetch(a.href).then(function(r){return r.blob()}).then(function(b){var fr=new FileReader();fr.onload=function(){LiveAstaAndroid.saveCsv(a.download||'liveasta.csv',String(fr.result).split(',')[1])};fr.readAsDataURL(b)}).catch(function(){alert('Download non riuscito')})},true)", null);
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {

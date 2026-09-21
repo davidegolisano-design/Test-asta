@@ -3,7 +3,9 @@ on:
   push:
     branches: [dev-work-from-v1061-20260921]
     paths:
-      - 'android/**'
+      - 'android/app/**'
+      - 'android/*.gradle'
+      - 'android/gradle.properties'
       - '.github/workflows/build-android-dev.yml'
   workflow_dispatch:
 permissions:
