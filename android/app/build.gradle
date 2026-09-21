@@ -1,0 +1,23 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'it.liveasta.dev'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'it.liveasta.dev'
+        minSdk 26
+        targetSdk 35
+        versionCode 10605
+        versionName '1.06.5-dev'
+    }
+
+    buildTypes {
+        debug { applicationIdSuffix '' }
+        release { minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

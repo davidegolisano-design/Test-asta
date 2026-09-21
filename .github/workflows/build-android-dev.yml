@@ -1,0 +1,46 @@
+name: LIVEASTA Android DEV
+on:
+  push:
+    branches: [dev-work-from-v1061-20260921]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-android-dev.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build installable DEV APK
+        run: gradle -p android assembleDebug --no-daemon
+      - name: Verify APK
+        run: |
+          test -s android/app/build/outputs/apk/debug/app-debug.apk
+          apksigner verify --verbose android/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: liveasta-dev-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+      - name: Publish DEV APK on branch
+        if: github.ref == 'refs/heads/dev-work-from-v1061-20260921'
+        run: |
+          mkdir -p android/download
+          cp android/app/build/outputs/apk/debug/app-debug.apk android/download/LIVEASTA-DEV-1.06.5.apk
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add android/download/LIVEASTA-DEV-1.06.5.apk
+          git commit -m 'Build installable LIVEASTA DEV APK'
+          git pull --rebase origin dev-work-from-v1061-20260921
+          git push origin HEAD:dev-work-from-v1061-20260921
