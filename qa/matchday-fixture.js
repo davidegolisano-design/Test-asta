@@ -29,7 +29,7 @@ function fixtureScene(scene){
  document.activeElement?.blur();closeAllListFilters();
  document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
  document.getElementById('player-listone-overlay').classList.remove('active');
- const ids={management:'screen-room-control',board:'screen-auctioneer-board',auction:'screen-auctioneer-board',ready:'screen-auctioneer-board','first-turn':'screen-auctioneer-board',player:'screen-player-buzzer',listone:'screen-player-buzzer'};
+ const ids={management:'screen-room-control',board:'screen-auctioneer-board',auction:'screen-auctioneer-board',ready:'screen-auctioneer-board','first-turn':'screen-auctioneer-board',player:'screen-player-buzzer',listone:'screen-player-buzzer',preview:'screen-auctioneer-board','preview-long':'screen-auctioneer-board'};
  document.getElementById(ids[scene]||ids.management).classList.add('active');
  requestAnimationFrame(()=>window.fitAuctionNames?.());
  document.getElementById('view-list').style.display=scene==='board'?'flex':'none';
@@ -42,6 +42,9 @@ function fixtureScene(scene){
  document.getElementById('card-image').style.visibility=scene==='first-turn'?'hidden':'visible';
  document.getElementById('auction-player-meta').style.visibility=scene==='first-turn'?'hidden':'visible';
  document.getElementById('player-listone-overlay').classList.toggle('active',scene==='listone');
+ const preview=scene==='preview'||scene==='preview-long';
+ document.getElementById('room-roster-player-preview-overlay').classList.toggle('open',preview);
+ if(preview)document.getElementById('room-roster-player-preview-name').textContent=scene==='preview-long'?'MILINKOVIC-SAVIC':'BIJLOW';
 }
 function fixtureInit(){
  const $=id=>document.getElementById(id);
@@ -52,6 +55,10 @@ function fixtureInit(){
  const clubBackground='linear-gradient(90deg,#F2C400 0%,#F2C400 50%,#204E8A 50%,#204E8A 100%)';
  for(const selector of ['#screen-player-buzzer .player-card-side','#view-auction .col-player','#auctioneer-ready-desktop .ard-player'])document.querySelector(selector)?.style.setProperty('--team-card-bg',clubBackground);
  for(const id of ['phone-player-role','auction-player-role','auctioneer-ready-player-role'])$(id)?.classList.add('role-P');
+ $('room-roster-player-preview-card').style.setProperty('--roster-preview-team-bg','linear-gradient(90deg,#C8102E 0%,#C8102E 50%,#17365D 50%,#17365D 100%)');
+ $('room-roster-player-preview-name').textContent='BIJLOW';
+ $('room-roster-player-preview-role').textContent='P';$('room-roster-player-preview-role').classList.add('role-P');
+ $('room-roster-player-preview-club').textContent='GENOA';
  $('phone-card-container').style.visibility='visible';
  document.querySelectorAll('.buzzer-btn').forEach(el=>el.disabled=false);
  document.body.classList.add('auctioneer-desktop');document.documentElement.dataset.auctioneerUi='desktop';

@@ -83,6 +83,7 @@
   :where(.col-player,.player-card-side,.ard-player) {background:var(--team-card-bg,var(--theme-card))!important;background-image:var(--team-card-bg,var(--theme-card))!important;box-shadow:none!important}
   .col-player.nomination-empty-previous {background:var(--theme-card)!important;background-image:none!important}
   :where(#auction-player-name-top,#auctioneer-ready-player-name,#phone-player-name-text,#auction-player-club,#auctioneer-ready-player-club,#phone-player-club) {color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:1px #111!important;paint-order:stroke fill!important;text-shadow:0 2px 4px rgba(0,0,0,.95),0 0 7px rgba(0,0,0,.8)!important}
+  #room-roster-player-preview-name {font-size:clamp(52px,6vw,80px)!important;line-height:.94!important;font-weight:900!important;color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:1.5px #111!important;paint-order:stroke fill!important;text-shadow:0 2px 5px rgba(0,0,0,.95),0 0 9px rgba(0,0,0,.7)!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;text-wrap:balance}
   :where(#phone-player-role,#auction-player-role,#auctioneer-ready-player-role,#room-roster-player-preview-role):not(.role-badge-mantra) {border:2px solid #111!important;box-sizing:border-box!important}
   :where(.col-timer,.ard-fvm) {border-top-color:var(--theme-accent-marker)!important}
   #view-auction .timer-ring {background:var(--theme-panel)!important;box-shadow:none!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
@@ -221,6 +222,7 @@
     #screen-room-control .mg-room-layout {grid-template-columns:minmax(0,1fr)!important}
   }
   @media(max-width:760px) {
+    #room-roster-player-preview-name {font-size:clamp(48px,15vw,70px)!important}
     :where(h2):not(.entry-screen *) {font-size:25px!important}
     :where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]),select,textarea):not(.entry-screen *) {font-size:16px!important}
     .session-title {font-size:18px!important}
