@@ -1,10 +1,10 @@
-const CACHE = 'liveasta-v1.04-126';
+const CACHE = 'liveasta-v1.04-131-exact-png-icons';
 const CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-192.png',
-  './icon-512.svg'
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -25,7 +25,6 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-
   event.respondWith(
     fetch(event.request, { cache: 'no-store' })
       .then(response => {

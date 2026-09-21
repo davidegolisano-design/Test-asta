@@ -47,7 +47,9 @@ jobs:
       - name: Verify packaged launcher icon
         run: |
           AAPT2="/usr/local/lib/android/sdk/build-tools/36.0.0/aapt2"
-          "$AAPT2" dump badging android-app/app/build/outputs/apk/debug/app-debug.apk | grep -E "application:|application-icon" || exit 1
+          ICON_INFO=$("$AAPT2" dump badging android-app/app/build/outputs/apk/debug/app-debug.apk | grep -E "application:|application-icon")
+          echo "$ICON_INFO"
+          echo "$ICON_INFO" | grep "res/mipmap-nodpi/ic_launcher_liveasta.png" || exit 1
 
       - name: Rename APK
         run: cp android-app/app/build/outputs/apk/debug/app-debug.apk Liveasta.apk
