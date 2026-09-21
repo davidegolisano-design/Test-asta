@@ -29,20 +29,29 @@ function fixtureScene(scene){
  document.activeElement?.blur();closeAllListFilters();
  document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
  document.getElementById('player-listone-overlay').classList.remove('active');
- const ids={management:'screen-room-control',board:'screen-auctioneer-board',auction:'screen-auctioneer-board',player:'screen-player-buzzer',listone:'screen-player-buzzer'};
+ const ids={management:'screen-room-control',board:'screen-auctioneer-board',auction:'screen-auctioneer-board',ready:'screen-auctioneer-board','first-turn':'screen-auctioneer-board',player:'screen-player-buzzer',listone:'screen-player-buzzer'};
  document.getElementById(ids[scene]||ids.management).classList.add('active');
  requestAnimationFrame(()=>window.fitAuctionNames?.());
  document.getElementById('view-list').style.display=scene==='board'?'flex':'none';
- document.getElementById('view-auction').style.display=scene==='auction'?'flex':'none';
- document.getElementById('view-auction').classList.toggle('auction-view-hidden',scene!=='auction');
+ document.getElementById('view-auction').style.display=['auction','first-turn'].includes(scene)?'flex':'none';
+ document.getElementById('view-auction').classList.toggle('auction-view-hidden',!['auction','first-turn'].includes(scene));
+ document.getElementById('auctioneer-ready-desktop').classList.toggle('open',scene==='ready');
+ document.getElementById('view-auction').classList.toggle('nomination-turn-desktop',scene==='first-turn');
+ document.querySelector('#view-auction .col-player').classList.toggle('nomination-empty-previous',scene==='first-turn');
+ document.getElementById('auction-player-name-top').textContent=scene==='first-turn'?'NESSUNA ASTA PRECEDENTE':'PORTIERE DEMO';
+ document.getElementById('card-image').style.visibility=scene==='first-turn'?'hidden':'visible';
+ document.getElementById('auction-player-meta').style.visibility=scene==='first-turn'?'hidden':'visible';
  document.getElementById('player-listone-overlay').classList.toggle('active',scene==='listone');
 }
 function fixtureInit(){
  const $=id=>document.getElementById(id);
  const values={'control-room-name':'Lega degli amici','control-room-timer':15,'control-room-prep':5,'control-limit-P':3,'control-limit-D':8,'control-limit-C':8,'control-limit-A':6};
  Object.entries(values).forEach(([id,value])=>$(id).value=value);
- const labels={'auction-player-name-top':'Alessandro De Luca','auction-player-role':'A','auction-player-club':'NAPOLI','countdown-display':'12','current-value-display':'85','winner-display':'ATLETICO SPRITZ','phone-player-name-text':'Alessandro De Luca','phone-player-role':'A','phone-player-club':'NAPOLI','player-countdown':'12','player-current-value':'85','player-current-winner':'ATLETICO SPRITZ','display-team-name':'REAL FANTACALCIO','player-credits':'240','player-slots':'8 / 25','control-team-count':'3 squadre','auction-online-count':'2 / 3'};
+ const labels={'auction-player-name-top':'PORTIERE DEMO','auction-player-role':'P','auction-player-club':'PARMA','auctioneer-ready-player-name':'PORTIERE DEMO','auctioneer-ready-player-role':'P','auctioneer-ready-player-club':'PARMA','auctioneer-ready-fvm-value':'23','auctioneer-ready-count':'2 / 3','countdown-display':'12','current-value-display':'85','winner-display':'ATLETICO SPRITZ','phone-player-name-text':'PORTIERE DEMO','phone-player-role':'P','phone-player-club':'PARMA','player-countdown':'12','player-current-value':'85','player-current-winner':'ATLETICO SPRITZ','display-team-name':'REAL FANTACALCIO','player-credits':'240','player-slots':'8 / 25','control-team-count':'3 squadre','auction-online-count':'2 / 3'};
  Object.entries(labels).forEach(([id,value])=>{if($(id))$(id).textContent=value});
+ const clubBackground='linear-gradient(90deg,#F2C400 0%,#F2C400 50%,#204E8A 50%,#204E8A 100%)';
+ for(const selector of ['#screen-player-buzzer .player-card-side','#view-auction .col-player','#auctioneer-ready-desktop .ard-player'])document.querySelector(selector)?.style.setProperty('--team-card-bg',clubBackground);
+ for(const id of ['phone-player-role','auction-player-role','auctioneer-ready-player-role'])$(id)?.classList.add('role-P');
  $('phone-card-container').style.visibility='visible';
  document.querySelectorAll('.buzzer-btn').forEach(el=>el.disabled=false);
  document.body.classList.add('auctioneer-desktop');document.documentElement.dataset.auctioneerUi='desktop';

@@ -74,7 +74,9 @@ html[data-live-theme] #screen-role #home-site-qr{width:min(190px,100%)!important
 html[data-live-theme] #screen-role #home-site-qr :is(img,canvas){display:block!important;width:100%!important;max-width:100%!important;height:auto!important;aspect-ratio:1}
 html[data-live-theme] #screen-role .home-qr-url{display:block;box-sizing:border-box!important;width:100%;font-size:9px!important;line-height:1.35!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
 html[data-live-theme] #screen-role .home-qr-label{display:block;width:100%;font-size:9px!important;line-height:1.35!important;letter-spacing:.1em!important;overflow-wrap:anywhere;white-space:normal!important}
-.entry-support{font-size:11px;text-decoration:none;color:var(--theme-muted);padding:12px 0;white-space:nowrap}
+.entry-support{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;box-sizing:border-box;padding:10px 16px!important;border:1px solid #0070ba;border-radius:4px 4px 14px 4px;background:#0070ba!important;color:#fff!important;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap;box-shadow:3px 4px 0 rgba(0,48,135,.22)}
+.entry-support:hover{background:#005a94!important;color:#fff!important}
+.entry-support span{font-size:19px;line-height:1}.entry-support small{font-size:11px;font-weight:800;letter-spacing:.04em;opacity:.9}
 .entry-footer-note{font-size:8px;letter-spacing:.16em;font-weight:800;line-height:1.6;margin-left:auto;padding:13px 0}
 /* Roles are a shirt card and a referee card; the back action remains a text link. */
 .entry-choice-shell{width:min(840px,100%);margin:auto;padding:10px 0}
@@ -145,7 +147,7 @@ body:has(#screen-role.entry-screen.active) #liveasta-install-btn{bottom:12px!imp
   .entry-ticket{min-height:94px}.entry-ticket-copy{padding:19px 17px}.entry-ticket-copy small{font-size:8px;letter-spacing:.08em}.entry-ticket-copy strong{font-size:clamp(27px,7.4vw,39px)}
   .entry-ticket-stub{width:48px}.entry-ticket-stub svg{width:25px!important;height:25px!important}
   .entry-create-action{padding:20px 8px 11px 14px!important;gap:11px}.entry-create-action strong{font-size:27px}.entry-create-action small{font-size:10px}
-  .entry-home-footer{gap:12px;flex-wrap:wrap;padding-top:9px}.entry-qr-details{margin-right:auto}.entry-footer-note{display:none}.entry-support{font-size:10px}.entry-qr-details summary{font-size:10px;gap:7px}
+  .entry-home-footer{gap:12px;flex-wrap:wrap;padding-top:9px}.entry-qr-details{margin-right:auto}.entry-footer-note{display:none}.entry-support{flex:1 1 100%;font-size:13px}.entry-qr-details summary{font-size:10px;gap:7px}
   .entry-choice-shell{width:min(470px,100%);padding:0}.entry-back{margin-bottom:18px!important;font-size:11px!important}
   html[data-live-theme] .entry-screen h1.entry-choice-title{font-size:clamp(41px,11.2vw,59px)!important;margin:14px 0 24px!important}
   .entry-role-choices{grid-template-columns:1fr;gap:20px;padding:5px}

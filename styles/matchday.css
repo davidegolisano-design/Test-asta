@@ -80,9 +80,10 @@
   :where(.auction-col,.ard-col) {
     background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;border-top:4px solid var(--theme-marker)!important;border-radius:var(--match-radius)!important;box-shadow:none!important;
   }
-  :where(.col-player,.player-card-side) {background:var(--team-card-bg,var(--theme-card))!important;background-image:var(--team-card-bg,var(--theme-card))!important;box-shadow:none!important}
-  .ard-player {background:var(--theme-card)!important;box-shadow:none!important}
-  :where(#auction-player-name-top,#auctioneer-ready-player-name,.phone-player-name,#phone-player-name-text,#auction-player-club,#auctioneer-ready-player-club,#phone-player-club) {color:var(--theme-text)!important;-webkit-text-fill-color:currentColor!important;-webkit-text-stroke:0!important;text-shadow:none!important}
+  :where(.col-player,.player-card-side,.ard-player) {background:var(--team-card-bg,var(--theme-card))!important;background-image:var(--team-card-bg,var(--theme-card))!important;box-shadow:none!important}
+  .col-player.nomination-empty-previous {background:var(--theme-card)!important;background-image:none!important}
+  :where(#auction-player-name-top,#auctioneer-ready-player-name,#phone-player-name-text,#auction-player-club,#auctioneer-ready-player-club,#phone-player-club) {color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:1px #111!important;paint-order:stroke fill!important;text-shadow:0 2px 4px rgba(0,0,0,.95),0 0 7px rgba(0,0,0,.8)!important}
+  :where(#phone-player-role,#auction-player-role,#auctioneer-ready-player-role,#room-roster-player-preview-role):not(.role-badge-mantra) {border:2px solid #111!important;box-sizing:border-box!important}
   :where(.col-timer,.ard-fvm) {border-top-color:var(--theme-accent-marker)!important}
   #view-auction .timer-ring {background:var(--theme-panel)!important;box-shadow:none!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
   #view-auction .bid-box {background:var(--theme-marker)!important;border-color:var(--theme-marker)!important;border-radius:4px 4px 16px 4px!important;box-shadow:none!important}
