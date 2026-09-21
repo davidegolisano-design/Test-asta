@@ -1,0 +1,189 @@
+name: Repair Liveasta PWA Icons
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/repair-liveasta-icons.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install image tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y imagemagick
+          convert -version
+
+      - name: Re-encode exact artwork as clean RGB PNG
+        shell: bash
+        run: |
+          set -euxo pipefail
+          convert icon-192.png -strip -colorspace sRGB -alpha off -type TrueColor PNG24:liveasta-icon-192-v2.png
+          convert icon-512.png -strip -colorspace sRGB -alpha off -type TrueColor PNG24:liveasta-icon-512-v2.png
+          file liveasta-icon-192-v2.png liveasta-icon-512-v2.png
+          identify -verbose liveasta-icon-192-v2.png | grep -E "Geometry|Colorspace|Type|Depth"
+          identify -verbose liveasta-icon-512-v2.png | grep -E "Geometry|Colorspace|Type|Depth"
+
+          # Same exact artwork for Android launcher + splash.
+          cp liveasta-icon-512-v2.png android-app/app/src/main/res/mipmap-nodpi/ic_launcher_liveasta.png
+          cp liveasta-icon-512-v2.png android-app/app/src/main/res/drawable-nodpi/ic_launcher_liveasta.png
+
+      - name: Update PWA references
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          manifest = {
+            "id": "/",
+            "name": "LIVEASTA",
+            "short_name": "LIVEASTA",
+            "description": "LIVEASTA - gestione aste fantacalcio in tempo reale",
+            "start_url": "/",
+            "scope": "/",
+            "display": "standalone",
+            "orientation": "portrait-primary",
+            "background_color": "#11151B",
+            "theme_color": "#11151B",
+            "prefer_related_applications": False,
+            "icons": [
+              {
+                "src": "/liveasta-icon-192-v2.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any"
+              },
+              {
+                "src": "/liveasta-icon-512-v2.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+              }
+            ]
+          }
+          Path("manifest.webmanifest").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          import re
+          s = re.sub(r'<link rel="icon" type="image/png" sizes="192x192" href="[^"]+">',
+                     '<link rel="icon" type="image/png" sizes="192x192" href="/liveasta-icon-192-v2.png?v=134">', s)
+          s = re.sub(r'<link rel="apple-touch-icon" href="[^"]+">',
+                     '<link rel="apple-touch-icon" href="/liveasta-icon-192-v2.png?v=134">', s)
+          s = re.sub(r'<link rel="manifest" href="[^"]+">',
+                     '<link rel="manifest" href="/manifest.webmanifest?v=134">', s)
+          s = re.sub(r'<script src="\./scripts/pwa\.js\?v=[^"]+"></script>',
+                     '<script src="./scripts/pwa.js?v=134-cleanicons"></script>', s)
+          p.write_text(s, encoding="utf-8")
+
+          p = Path("scripts/pwa.js")
+          s = p.read_text(encoding="utf-8")
+          s = re.sub(r"navigator\.serviceWorker\.register\('/service-worker\.js\?v=\d+'",
+                     "navigator.serviceWorker.register('/service-worker.js?v=134'", s)
+          p.write_text(s, encoding="utf-8")
+
+          p = Path("service-worker.js")
+          s = p.read_text(encoding="utf-8")
+          s = re.sub(r"const CACHE = '[^']+';", "const CACHE = 'liveasta-v1.04-134-clean-pwa-icons';", s)
+          p.write_text(s, encoding="utf-8")
+
+      - name: Validate generated assets
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 - <<'PY'
+          from PIL import Image
+          for path, size in [
+              ("liveasta-icon-192-v2.png", (192,192)),
+              ("liveasta-icon-512-v2.png", (512,512)),
+          ]:
+              im = Image.open(path)
+              assert im.size == size, (path, im.size)
+              assert im.mode == "RGB", (path, im.mode)
+              assert not im.info, (path, im.info)
+              im.verify()
+              print(path, "OK")
+          PY
+
+      - name: Commit repaired icons
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "Liveasta Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add             liveasta-icon-192-v2.png             liveasta-icon-512-v2.png             android-app/app/src/main/res/mipmap-nodpi/ic_launcher_liveasta.png             android-app/app/src/main/res/drawable-nodpi/ic_launcher_liveasta.png             manifest.webmanifest             index.html             scripts/pwa.js             service-worker.js
+          git commit -m "Fix PWA icons with clean RGB PNG assets"
+          git push origin HEAD:main
+
+      - name: Wait for GitHub Pages deployment
+        shell: bash
+        run: |
+          set -euxo pipefail
+          for i in $(seq 1 60); do
+            body="$(curl -fsSL -H 'Cache-Control: no-cache' "https://liveasta.it/manifest.webmanifest?v=134&check=$i" || true)"
+            if echo "$body" | grep -q "liveasta-icon-512-v2.png"; then
+              echo "New manifest is live."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Timed out waiting for new manifest."
+          exit 1
+
+      - name: Chrome installability verification
+        shell: bash
+        run: |
+          set -euxo pipefail
+          npm install chrome-remote-interface@0.33.3
+          CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable)"
+          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --remote-debugging-port=9222 about:blank >/tmp/chrome.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -s http://127.0.0.1:9222/json/version >/dev/null && break
+            sleep 1
+          done
+          node <<'NODE'
+          const CDP = require('chrome-remote-interface');
+          const sleep = ms => new Promise(r=>setTimeout(r,ms));
+          (async()=>{
+            const client = await CDP();
+            const {Page, Runtime} = client;
+            await Promise.all([Page.enable(), Runtime.enable()]);
+            await Page.navigate({url:'https://liveasta.it/?pwa-check=134'});
+            await Page.loadEventFired();
+            await sleep(8000);
+
+            const manifest = await Page.getAppManifest();
+            console.log('MANIFEST URL:', manifest.url);
+            console.log('MANIFEST ERRORS:', JSON.stringify(manifest.errors, null, 2));
+
+            const errors = await Page.getInstallabilityErrors();
+            console.log('INSTALLABILITY:', JSON.stringify(errors, null, 2));
+
+            const decode = await Runtime.evaluate({
+              expression: `Promise.all(['/liveasta-icon-192-v2.png','/liveasta-icon-512-v2.png'].map(src=>fetch(src+'?d='+Date.now(),{cache:'no-store'}).then(r=>r.blob()).then(async b=>{const bm=await createImageBitmap(b); const o={src,w:bm.width,h:bm.height,type:b.type,size:b.size}; bm.close(); return o;})))`,
+              awaitPromise:true,
+              returnByValue:true
+            });
+            console.log('DECODE:', JSON.stringify(decode.result.value, null, 2));
+
+            const bad = (errors.installabilityErrors || []).filter(e => e.errorId === 'no-acceptable-icon');
+            if (bad.length) {
+              throw new Error('Chrome still rejects the PWA icon');
+            }
+            if (manifest.errors && manifest.errors.length) {
+              throw new Error('Manifest has parse errors');
+            }
+            await client.close();
+          })().catch(e=>{ console.error(e); process.exit(1); });
+          NODE
