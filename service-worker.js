@@ -1,10 +1,10 @@
-const CACHE = 'liveasta-v1.04-128-icon-fix';
+const CACHE = 'liveasta-v1.04-129-pwa-icon-repair';
 const CORE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/icon-192.png',
-  '/icon-512.png'
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -39,7 +39,7 @@ self.addEventListener('fetch', event => {
         const cached = await caches.match(event.request);
         if (cached) return cached;
         if (event.request.mode === 'navigate') {
-          return (await caches.match('/index.html')) || Response.error();
+          return (await caches.match('./index.html')) || Response.error();
         }
         return Response.error();
       })
