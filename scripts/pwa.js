@@ -34,7 +34,7 @@
   }else if('serviceWorker' in navigator){
     window.addEventListener('load',async()=>{
       try{
-        const reg=await navigator.serviceWorker.register('/service-worker.js?v=141',{scope:'/',updateViaCache:'none'});
+        const reg=await navigator.serviceWorker.register('/service-worker.js?v=142',{scope:'/',updateViaCache:'none'});
         await reg.update().catch(()=>{});
       }catch(err){
         console.error('[LIVEASTA PWA] Service worker registration failed',err);
