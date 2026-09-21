@@ -8,8 +8,8 @@ android {
         applicationId 'it.liveasta.dev'
         minSdk 29
         targetSdk 35
-        versionCode 10605
-        versionName '1.06.5-dev'
+        versionCode 10606
+        versionName '1.06.6-dev'
     }
 
     buildTypes {
