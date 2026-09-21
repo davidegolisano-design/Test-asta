@@ -40,4 +40,27 @@ context.auctioneerLockToken='fixture';context.isAuctionActive=true;compact=false
 context.isAuctionActive=false;context.auctionPrepInterval=1;compact=false;resize();compact=true;resize();ok(document.getElementById('view-auction').classList.contains('mobile-preparing'),'preparation state survives resize');
 compact=false;resize();ok(!document.getElementById('view-auction').className.includes('mobile-'),'wide mode clears compact-only state');
 ok(!document.getElementById('screen-device-choice'),'device chooser removed');
-require('css-tree').parse(fs.readFileSync('styles/matchday.css','utf8'));console.log(`${checks} regression checks passed; Matchday CSS parsed.`);
+// Home navigation and controls are tested against their actual event handlers.
+load('scripts/theme-palettes.js');document.readyState='complete';load('scripts/theme.js');
+let settingsOpens=0;context.openAdminLogin=()=>settingsOpens++;
+const home=document.getElementById('screen-role'),themeMenu=document.getElementById('liveasta-theme-submenu');
+run('openLiveAstaThemeMenu()');
+ok(home.classList.contains('active')&&themeMenu.parentElement===document.body&&themeMenu.classList.contains('open'),'Colors opens above Home without navigating');
+run('closeLiveAstaThemeMenu()');ok(home.classList.contains('active')&&!themeMenu.classList.contains('open'),'Colors back returns to Home');
+const brand=document.querySelector('[data-settings-tap]');for(let i=0;i<4;i++)brand.click();
+ok(settingsOpens===0,'four brand taps do not open Settings');brand.click();ok(settingsOpens===1,'fifth brand tap opens Settings');
+ok(!document.querySelector('.home-version-badge')&&document.querySelector('.settings-version-badge'),'version shown only in Settings');
+const controls={document,console,addEventListener:()=>{},requestAnimationFrame:f=>f(),currentRoomId:null,channel:null,connectToRoom:async()=>{},renderPlayerRoomOverview:()=>{},openPlayerRoomOverview:async()=>{},openPlayerRoomTeamRoster:()=>{},closePlayerRoomTeamRoster:()=>{},renderRoomControl:()=>{},openRoomControl:async()=>{}};
+controls.window=controls;document.readyState='loading';vm.createContext(controls);
+for(const file of ['scripts/opponent-credits.js','scripts/room-chat.js'])vm.runInContext(fs.readFileSync(file,'utf8'),controls);
+vm.runInContext('renderRoomControl()',controls);
+const creditToggle=document.getElementById('opponent-credits-toggle-btn'),chatToggle=document.getElementById('room-chat-toggle-btn');
+ok(creditToggle?.type==='checkbox'&&creditToggle.closest('.mg-switch-label')&&!creditToggle.checked,'hide credits follows management switch and defaults off');
+ok(chatToggle?.type==='checkbox'&&chatToggle.closest('.mg-switch-label')&&!chatToggle.checked,'room chat follows management switch and defaults off');
+const teamRuntime={document,MutationObserver:window.MutationObserver,requestAnimationFrame:f=>f(),addEventListener:()=>{}};
+teamRuntime.window=teamRuntime;vm.createContext(teamRuntime);
+vm.runInContext(fs.readFileSync('scripts/bootstrap.js','utf8').split('// === liveasta-home-qr ===')[0],teamRuntime);
+ok(!teamRuntime.liveastaTeamBackgroundForClub('').includes('#1E71B8'),'empty club does not inherit Atalanta colors');
+ok(teamRuntime.liveastaTeamBackgroundForClub('PARMA').includes('#F2C400'),'Parma club receives its yellow background');
+for(const file of ['styles/matchday.css','styles/entry-matchday.css'])require('css-tree').parse(fs.readFileSync(file,'utf8'));
+console.log(`${checks} regression checks passed; Matchday styles parsed.`);

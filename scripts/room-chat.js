@@ -314,8 +314,7 @@
     const btn=document.getElementById('room-chat-toggle-btn');
     const status=document.getElementById('room-chat-status');
     if(btn){
-      btn.checked=!!enabled;
-      btn.setAttribute('aria-checked',enabled?'true':'false');
+      btn.checked=enabled;
     }
     if(status){
       status.textContent=enabled
@@ -340,8 +339,8 @@
           <h3>Chat stanza</h3>
           <p>Attiva una chat live per i partecipanti. L'icona resta mobile sullo schermo e segnala in rosso i nuovi messaggi.</p>
         </div>
-        <label class="mg-switch-label" title="Attiva chat stanza">
-          <input id="room-chat-toggle-btn" type="checkbox" role="switch" aria-label="Attiva chat stanza" aria-checked="false">
+        <label class="mg-switch-label" title="Chat stanza">
+          <input id="room-chat-toggle-btn" type="checkbox" aria-label="Chat stanza">
           <span class="mg-switch-ui" aria-hidden="true"></span>
         </label>
       </div>

@@ -11,10 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <meta name="description" content="LIVEASTA - asta fantasy calcio realtime a stanze">
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/liveasta-any-192-v144.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/liveasta-any-512-v144.png">
-    <link rel="apple-touch-icon" href="/assets/icons/liveasta-any-512-v144.png">
-    <link rel="manifest" href="/manifest.webmanifest?v=144">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=1067">
+    <link rel="apple-touch-icon" href="./icon-192.png?v=1067">
+    <link rel="manifest" href="./manifest.webmanifest?v=1067">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -30,11 +29,8 @@
     <link rel="stylesheet" href="./styles/ui.css?v=10421-entry2">
     <link rel="stylesheet" href="./styles/management.css?v=1061">
     <link rel="stylesheet" href="./styles/pwa.css?v=100">
-    <link rel="stylesheet" href="./styles/roles.css?v=108-contrast">
+    <link rel="stylesheet" href="./styles/roles.css?v=107">
     <link rel="stylesheet" href="./styles/mantra-filter-ui.css?v=109">
-    <link rel="stylesheet" href="./styles/refinements.css?v=101-preload">
-    <link rel="stylesheet" href="./styles/matchday.css?v=108-rostercontrast">
-    <link rel="stylesheet" href="./styles/entry-matchday.css?v=109-supporttext">
 </head>
 <body>
 
@@ -52,7 +48,7 @@
     <div id="screen-role" class="screen active entry-screen entry-home">
       <div class="entry-home-shell">
         <header class="entry-topbar">
-          <div id="home-liveasta-brand" class="entry-brand"><svg aria-hidden="true"><use href="#entry-ball"/></svg><span>LIVE<b>ASTA</b></span></div>
+          <button class="entry-brand" type="button" aria-label="LIVEASTA" data-settings-tap><svg aria-hidden="true"><use href="#entry-ball"/></svg><span>LIVE<b>ASTA</b></span></button>
           <div class="entry-top-actions">
             <button class="entry-color-button" type="button" onclick="openLiveAstaThemeMenu()"><i aria-hidden="true"></i> Colori</button>
           </div>
@@ -70,11 +66,6 @@
               <button class="entry-create-action" type="button" onclick="openRoomCreation()" aria-label="Crea stanza">
                 <span class="entry-create-plus" aria-hidden="true">+</span><span><strong>Crea stanza</strong><small>Organizzi tu? Si parte da qui.</small></span><span class="entry-create-arrow" aria-hidden="true">↗</span>
               </button>
-              <a class="entry-support-cta" href="https://www.paypal.me/Asteda0" target="_blank" rel="noopener noreferrer" aria-label="Sostieni LIVEASTA">
-                <span class="entry-support-heart" aria-hidden="true">♡</span>
-                <span class="entry-support-copy"><strong>Sostieni LIVEASTA</strong><small>Ti piace il progetto? Aiutami a continuare a svilupparlo.</small></span>
-                <span class="entry-support-arrow" aria-hidden="true">↗</span>
-              </a>
             </div>
           </div>
           <div class="entry-art" aria-hidden="true">
@@ -95,6 +86,7 @@
               <div id="home-site-url" class="home-qr-url"></div>
             </div>
           </details>
+          <a class="entry-support" href="https://www.paypal.me/Asteda0" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">♡</span> Sostieni LIVEASTA <small>PayPal</small></a>
           <span class="entry-footer-note">LA SERATA PIÙ ATTESA DELL’ANNO.</span>
         </footer>
       </div>
@@ -406,7 +398,7 @@
         <div class="setup-card">
             <h1>Impostazioni</h1>
             <p class="subtitle">Preferenze e sistema</p>
-            <div class="admin-version-badge settings-version-badge">v1.06.1 DEV · Fluo</div>
+            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.06.7 · Fluo</strong></div>
 
             <div class="theme-settings-card theme-menu-launch-card">
                 <button type="button" class="theme-menu-launch" onclick="openLiveAstaThemeMenu()" aria-haspopup="dialog" aria-controls="liveasta-theme-submenu">
@@ -1312,7 +1304,7 @@
     <script src="./scripts/screen-wake-lock.js?v=100"></script>
     <script src="./scripts/list-filters.js?v=106-fluo1"></script>
     <script src="./scripts/room-debug.js?v=101"></script>
-    <script src="./scripts/app.js?v=106-fluo1"></script>
+    <script src="./scripts/app.js?v=1063"></script>
     <script src="./scripts/mantra-auction.js?v=116"></script>
     <script src="./scripts/mantra-filter-ui.js?v=106-fluo1"></script>
 
@@ -1353,15 +1345,18 @@
         </div>
     </div>
 
-<script src="./scripts/bootstrap.js?v=106-parallel3"></script>
-<script src="./scripts/theme.js?v=106-parallel2"></script>
+<script src="./scripts/bootstrap.js?v=1063"></script>
+<script src="./scripts/theme.js?v=1062"></script>
 
+<link rel="stylesheet" href="./styles/refinements.css?v=100">
 
 <script src="./scripts/runtime.js?v=106-fluo1"></script>
 
-<script src="./scripts/pwa.js?v=143-directsource"></script>
+<script src="./scripts/pwa.js?v=1067"></script>
 <script src="./scripts/sealed-auction.js?v=100"></script>
 <script src="./scripts/management.js?v=1061"></script>
+<link rel="stylesheet" href="./styles/matchday.css?v=1065">
+<link rel="stylesheet" href="./styles/entry-matchday.css?v=1063">
 <script src="./scripts/responsive-ui.js?v=106-fluo1"></script>
 </body>
 </html>

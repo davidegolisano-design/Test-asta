@@ -2,12 +2,11 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.06.1 DEV · Fluo';
-  const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
+  const APP_VERSION='v1.06.7 · Fluo';
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA · '+APP_VERSION;
-    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{
+    document.querySelectorAll('.settings-version-badge,.admin-version-badge').forEach(el=>{
       el.textContent=APP_VERSION;
     });
   }
@@ -25,20 +24,15 @@
     document.head.appendChild(link);
   }
 
-  loadCss('./styles/auctioneer-mobile-clean-dev.css?v=10418');
-  loadCss('./styles/room-chat.css?v=107-toggle');
+  loadCss('./styles/auctioneer-mobile-clean.css?v=1067');
+  loadCss('./styles/room-chat.css?v=10418');
 
-  if(IS_RAWGITHACK && 'serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
-    if(window.caches)caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))).catch(()=>{});
-  }else if('serviceWorker' in navigator){
+  if('serviceWorker' in navigator){
     window.addEventListener('load',async()=>{
       try{
-        const reg=await navigator.serviceWorker.register('/service-worker.js?v=144',{scope:'/',updateViaCache:'none'});
+        const reg=await navigator.serviceWorker.register('/service-worker.js?v=1067',{scope:'/',updateViaCache:'none'});
         await reg.update().catch(()=>{});
-      }catch(err){
-        console.error('[LIVEASTA PWA] Service worker registration failed',err);
-      }
+      }catch(error){console.error('[LIVEASTA PWA] Service worker',error);}
     },{once:true});
   }
 
@@ -56,9 +50,9 @@
   window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);window.addEventListener('pageshow',syncInstallButton);document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncInstallButton();});syncInstallButton();
 
   const featureScripts=[
-    './scripts/auctioneer-mobile-board-dev.js?v=10418',
-    './scripts/opponent-credits.js?v=107-toggle',
-    './scripts/room-chat.js?v=107-toggle',
+    './scripts/auctioneer-mobile-board.js?v=1067',
+    './scripts/opponent-credits.js?v=1062',
+    './scripts/room-chat.js?v=1062',
     './scripts/room-chat-entry-sync.js?v=10418',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',

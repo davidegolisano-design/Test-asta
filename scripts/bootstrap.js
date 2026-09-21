@@ -36,6 +36,7 @@
 
   function colorsFor(v){
     const n=norm(v);
+    if(!n||n==='-')return null;
     if(TEAM_COLORS[n]) return TEAM_COLORS[n];
     for(const k in TEAM_COLORS){
       if(n.includes(k)||k.includes(n)) return TEAM_COLORS[k];
@@ -930,31 +931,6 @@
   function init(){ ids.forEach(attach); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
-})();
-
-// === liveasta-hidden-settings-entry ===
-(function(){
-  const brand=document.getElementById('home-liveasta-brand');
-  if(!brand)return;
-
-  let tapCount=0;
-  let lastTapAt=0;
-  const TAP_WINDOW_MS=1800;
-
-  brand.addEventListener('click',()=>{
-    const home=document.getElementById('screen-role');
-    if(!home?.classList.contains('active'))return;
-
-    const now=Date.now();
-    tapCount=(now-lastTapAt<=TAP_WINDOW_MS)?tapCount+1:1;
-    lastTapAt=now;
-
-    if(tapCount>=5){
-      tapCount=0;
-      lastTapAt=0;
-      if(typeof openAdminLogin==='function')openAdminLogin();
-    }
-  });
 })();
 
 // === management-design-init ===

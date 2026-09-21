@@ -80,23 +80,11 @@
   :where(.auction-col,.ard-col) {
     background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;border-top:4px solid var(--theme-marker)!important;border-radius:var(--match-radius)!important;box-shadow:none!important;
   }
-  :where(.ard-player) {background:var(--theme-card)!important;box-shadow:none!important}
-  :where(.col-player,.player-card-side) {background:var(--team-card-bg,var(--theme-card))!important;box-shadow:none!important}
-  /* Text over club colours must stay readable on both very light and very dark kits. */
-  :where(#screen-auctioneer-board .col-player #auction-player-name-top,#screen-auctioneer-board .col-player #auction-player-club,#screen-player-buzzer .player-card-side .phone-player-name,#screen-player-buzzer .player-card-side #phone-player-name-text,#screen-player-buzzer .player-card-side #phone-player-club,.room-roster-player-preview-card #room-roster-player-preview-name,.room-roster-player-preview-card #room-roster-player-preview-club) {
-    color:#fff!important;
-    -webkit-text-fill-color:#fff!important;
-    -webkit-text-stroke:1px #000!important;
-    paint-order:stroke fill!important;
-    text-shadow:0 2px 3px rgba(0,0,0,.95),0 0 4px rgba(0,0,0,.85)!important;
-  }
-  :where(#auctioneer-ready-player-name,#auctioneer-ready-player-club) {color:var(--theme-text)!important;-webkit-text-fill-color:currentColor!important;-webkit-text-stroke:0!important;text-shadow:none!important}
-
-  /* Classic role circles keep their semantic colour, with a neutral outline for contrast. */
-  :where(#phone-player-role,#auction-player-role,#auctioneer-ready-player-role,#room-roster-player-preview-role):not(.role-badge-mantra) {
-    border:2px solid #000!important;
-    box-sizing:border-box!important;
-  }
+  :where(.col-player,.player-card-side,.ard-player) {background:var(--team-card-bg,var(--theme-card))!important;background-image:var(--team-card-bg,var(--theme-card))!important;box-shadow:none!important}
+  .col-player.nomination-empty-previous {background:var(--theme-card)!important;background-image:none!important}
+  :where(#auction-player-name-top,#auctioneer-ready-player-name,#phone-player-name-text,#auction-player-club,#auctioneer-ready-player-club,#phone-player-club) {color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:1px #111!important;paint-order:stroke fill!important;text-shadow:0 2px 4px rgba(0,0,0,.95),0 0 7px rgba(0,0,0,.8)!important}
+  #room-roster-player-preview-name {font-size:clamp(52px,6vw,80px)!important;line-height:.94!important;font-weight:900!important;color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:1.5px #111!important;paint-order:stroke fill!important;text-shadow:0 2px 5px rgba(0,0,0,.95),0 0 9px rgba(0,0,0,.7)!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;text-wrap:balance}
+  :where(#phone-player-role,#auction-player-role,#auctioneer-ready-player-role,#room-roster-player-preview-role):not(.role-badge-mantra) {border:2px solid #111!important;box-sizing:border-box!important}
   :where(.col-timer,.ard-fvm) {border-top-color:var(--theme-accent-marker)!important}
   #view-auction .timer-ring {background:var(--theme-panel)!important;box-shadow:none!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
   #view-auction .bid-box {background:var(--theme-marker)!important;border-color:var(--theme-marker)!important;border-radius:4px 4px 16px 4px!important;box-shadow:none!important}
@@ -226,12 +214,15 @@
   .room-chat-message.self {background:color-mix(in srgb,var(--theme-marker) 12%,var(--theme-card))!important;border-left:3px solid var(--theme-marker)!important}
   :where(.manual-price-dialog,.v093-player-pin-dialog) {background:var(--theme-card)!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
   :where(.manual-price-dialog,.v093-player-pin-dialog)::backdrop {background:rgba(3,9,5,.78)!important}
+  .settings-version-row {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:10px 12px;background:var(--theme-panel);border:1px solid var(--theme-border);border-radius:var(--match-control-radius);color:var(--theme-muted);font-size:12px}
+  .settings-version-badge {font-family:var(--match-display);font-size:17px;color:var(--theme-text);letter-spacing:.02em}
 
   @media(max-width:900px) {
     #screen-room-control .mg-grid-2 {grid-template-columns:minmax(0,1fr)!important}
     #screen-room-control .mg-room-layout {grid-template-columns:minmax(0,1fr)!important}
   }
   @media(max-width:760px) {
+    #room-roster-player-preview-name {font-size:clamp(48px,15vw,70px)!important}
     :where(h2):not(.entry-screen *) {font-size:25px!important}
     :where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]),select,textarea):not(.entry-screen *) {font-size:16px!important}
     .session-title {font-size:18px!important}

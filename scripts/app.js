@@ -2811,6 +2811,7 @@ function updateCreateRoomModeUI(){
 
                 if(!currentAuctionPlayer){
                     clearSealedBidRanking();
+                    document.querySelector('#view-auction .col-player')?.classList.add('nomination-empty-previous');
                     const name=document.getElementById('auction-player-name-top');
                     const img=document.getElementById('card-image');
                     const roleNode=document.getElementById('auction-player-role');

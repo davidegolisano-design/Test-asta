@@ -234,7 +234,7 @@
     flex:0 0 var(--role-size)!important;
     box-sizing:border-box!important;
     aspect-ratio:1!important;
-    border:2px solid #000!important;
+    border:2px solid #111!important;
     border-radius:50%!important;
     padding:0!important;
     margin:0!important;

@@ -15,8 +15,7 @@
     const button=document.getElementById('opponent-credits-toggle-btn');
     const status=document.getElementById('opponent-credits-status');
     if(button){
-      button.checked=!!opponentCreditsVisible;
-      button.setAttribute('aria-checked',opponentCreditsVisible?'true':'false');
+      button.checked=!opponentCreditsVisible;
     }
     if(status){
       status.textContent=opponentCreditsVisible
@@ -41,11 +40,11 @@
     card.innerHTML=`
       <div class="mg-setting-head">
         <div>
-          <h3>Crediti avversari</h3>
-          <p>Controlla se i giocatori possono vedere i crediti residui delle altre squadre nel menu Stanza.</p>
+          <h3>Nascondi crediti avversari</h3>
+          <p>Se attivo, ogni giocatore vede solo i crediti della propria squadra.</p>
         </div>
-        <label class="mg-switch-label" title="Mostra crediti avversari">
-          <input id="opponent-credits-toggle-btn" type="checkbox" role="switch" aria-label="Mostra crediti avversari" aria-checked="true" onchange="toggleOpponentCreditsVisibility()">
+        <label class="mg-switch-label" title="Nascondi crediti avversari">
+          <input id="opponent-credits-toggle-btn" type="checkbox" aria-label="Nascondi crediti avversari">
           <span class="mg-switch-ui" aria-hidden="true"></span>
         </label>
       </div>
@@ -53,6 +52,7 @@
 
     if(anchor.nextSibling)host.insertBefore(card,anchor.nextSibling);
     else host.appendChild(card);
+    card.querySelector('#opponent-credits-toggle-btn')?.addEventListener('change',()=>window.toggleOpponentCreditsVisibility());
     updateControlUI();
   }
 

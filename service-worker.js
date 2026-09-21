@@ -1,10 +1,18 @@
-const CACHE = 'liveasta-v1.04-144-exact-icon';
-const CORE = ['/', '/index.html'];
+const CACHE = 'liveasta-v1.06.7-public';
+const CORE = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE)
-      .then(cache => Promise.allSettled(CORE.map(url => cache.add(url))))
+      .then(cache => cache.addAll(CORE))
       .then(() => self.skipWaiting())
   );
 });
@@ -33,7 +41,7 @@ self.addEventListener('fetch', event => {
         const cached = await caches.match(event.request);
         if (cached) return cached;
         if (event.request.mode === 'navigate') {
-          return (await caches.match('/index.html')) || Response.error();
+          return (await caches.match('./index.html')) || Response.error();
         }
         return Response.error();
       })

@@ -106,17 +106,11 @@
   window.openLiveAstaThemeMenu=function(){
     const menu=document.getElementById('liveasta-theme-submenu');
     if(!menu)return;
-
-    // Il selettore temi è un overlay globale: non deve dipendere dalla schermata
-    // Impostazioni. Spostandolo sotto <body> resta graficamente identico ma
-    // si apre sopra la schermata corrente (Home o Impostazioni).
-    if(menu.parentElement!==document.body){
-      document.body.appendChild(menu);
-    }
-
+    // The theme picker is a global overlay: opening it must not navigate to Settings.
+    if(menu.parentElement!==document.body)document.body.appendChild(menu);
     menu.classList.add('open');
     menu.setAttribute('aria-hidden','false');
-    document.body.classList.add('theme-submenu-open');
+    document.body&&document.body.classList.add('theme-submenu-open');
     menu.scrollTop=0;
   };
 
@@ -134,6 +128,27 @@
     try{saved=localStorage.getItem(KEY)||'broadcast';}catch(_){}
     window.applyLiveAstaTheme(saved,false);
   }
+
+  function installPrivateSettingsGesture(){
+    const brand=document.querySelector('[data-settings-tap]');
+    if(!brand||brand.dataset.settingsTapReady==='1')return;
+    brand.dataset.settingsTapReady='1';
+    let taps=0;
+    let resetTimer=0;
+    brand.addEventListener('click',()=>{
+      taps+=1;
+      clearTimeout(resetTimer);
+      resetTimer=setTimeout(()=>{taps=0;},2600);
+      if(taps<5)return;
+      clearTimeout(resetTimer);
+      taps=0;
+      window.closeLiveAstaThemeMenu?.();
+      window.openAdminLogin?.();
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installPrivateSettingsGesture,{once:true});
+  else installPrivateSettingsGesture();
 
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden)reapplyCurrentTheme();
