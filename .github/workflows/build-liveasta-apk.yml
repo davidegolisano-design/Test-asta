@@ -58,7 +58,7 @@ jobs:
 
           # Require both the adaptive icon XML (Android 8+) and PNG fallback.
           unzip -l "$APK" | grep -E "res/mipmap-anydpi-v26/ic_launcher_liveasta\.xml|res/mipmap-anydpi-v26/.+ic_launcher_liveasta" || exit 1
-          unzip -l "$APK" | grep -E "res/mipmap-nodpi/ic_launcher_liveasta\.png|res/mipmap-nodpi/.+ic_launcher_liveasta" || exit 1
+          unzip -l "$APK" | grep -E "res/mipmap-nodpi(-v4)?/ic_launcher_liveasta\.png|res/mipmap-nodpi(-v4)?/.+ic_launcher_liveasta" || exit 1
 
       - name: Rename APK
         run: cp android-app/app/build/outputs/apk/debug/app-debug.apk Liveasta.apk
@@ -71,4 +71,4 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-# icon-safearea-build-137
+# icon-safearea-build-138
