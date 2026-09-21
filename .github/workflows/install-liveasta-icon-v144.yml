@@ -1,0 +1,176 @@
+name: Install Liveasta Exact Icon v144
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/install-liveasta-icon-v144.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild canonical artwork from uploaded-image transfer chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat assets/icon-source.part0{1,2,3,4,5,6}.b64 | base64 -d > /tmp/liveasta-source.webp
+          echo "4fac95d671103fb56ac530ef8609662856a75a6f472f7bb0c8ee58d1f8e44a69  /tmp/liveasta-source.webp" | sha256sum -c -
+          python3 -m pip install --quiet --upgrade pillow
+
+      - name: Generate every PWA and Android icon from the same artwork
+        shell: python
+        run: |
+          from PIL import Image
+          from pathlib import Path
+          import json,re,shutil
+
+          src=Image.open("/tmp/liveasta-source.webp").convert("RGBA")
+          src.load()
+          assert src.size==(512,512), src.size
+
+          def save_full(path,size):
+              path=Path(path); path.parent.mkdir(parents=True,exist_ok=True)
+              im=src if size==512 else src.resize((size,size),Image.Resampling.LANCZOS)
+              im.convert("RGB").save(path,"PNG",optimize=True,compress_level=9)
+
+          def save_padded(path,size,scale,bg=(0,0,0,255),transparent=False):
+              path=Path(path); path.parent.mkdir(parents=True,exist_ok=True)
+              canvas=Image.new("RGBA",(size,size),(0,0,0,0) if transparent else bg)
+              inner=max(1,round(size*scale))
+              art=src.resize((inner,inner),Image.Resampling.LANCZOS)
+              pos=((size-inner)//2,(size-inner)//2)
+              canvas.alpha_composite(art,pos)
+              if transparent:
+                  canvas.save(path,"PNG",optimize=True,compress_level=9)
+              else:
+                  canvas.convert("RGB").save(path,"PNG",optimize=True,compress_level=9)
+
+          icons=Path("assets/icons")
+          icons.mkdir(parents=True,exist_ok=True)
+
+          # Canonical source and normal icons: no crop and no extra zoom.
+          save_full(icons/"liveasta-source-512-v144.png",512)
+          save_full(icons/"liveasta-any-512-v144.png",512)
+          save_full(icons/"liveasta-any-192-v144.png",192)
+
+          # Maskable icons: the complete original rounded-square artwork remains
+          # inside the mask safe zone, so Android launchers cannot cut it.
+          save_padded(icons/"liveasta-maskable-512-v144.png",512,0.56)
+          save_padded(icons/"liveasta-maskable-192-v144.png",192,0.56)
+
+          # Keep all historical/browser sizes visually aligned to the same source.
+          for size in [32,48,72,96,120,144,152,167,180,192,256,384,512]:
+              save_full(icons/f"liveasta-{size}.png",size)
+
+          # Root compatibility icons.
+          save_full("icon-192.png",192)
+          save_full("icon-256.png",256)
+          save_full("icon-512.png",512)
+          save_padded("icon-maskable-192.png",192,0.56)
+          save_padded("icon-maskable-512.png",512,0.56)
+          save_full("liveasta-icon-source.png",512)
+          save_full("assets/liveasta-icon-source.png",512)
+
+          # Android adaptive foreground: transparent safe area around complete artwork.
+          save_padded(
+              "android-app/app/src/main/res/drawable-nodpi/liveasta_icon_source.png",
+              432,0.56,transparent=True
+          )
+
+          # Pre-Android-8/OEM fallback icons from exactly the same artwork.
+          for density,size in {"mdpi":48,"hdpi":72,"xhdpi":96,"xxhdpi":144,"xxxhdpi":192}.items():
+              save_padded(
+                  f"android-app/app/src/main/res/mipmap-{density}/ic_launcher_liveasta.png",
+                  size,0.76
+              )
+          save_padded(
+              "android-app/app/src/main/res/mipmap-nodpi/ic_launcher_liveasta.png",
+              512,0.76
+          )
+
+          Path("android-app/app/src/main/res/drawable/ic_launcher_liveasta_foreground.xml").write_text(
+          '''<?xml version="1.0" encoding="utf-8"?>
+          <inset xmlns:android="http://schemas.android.com/apk/res/android"
+              android:drawable="@drawable/liveasta_icon_source"
+              android:insetLeft="0dp"
+              android:insetTop="0dp"
+              android:insetRight="0dp"
+              android:insetBottom="0dp" />
+          ''',encoding="utf-8")
+
+          manifest={
+            "id":"/",
+            "name":"LIVEASTA",
+            "short_name":"LIVEASTA",
+            "description":"LIVEASTA - gestione aste fantacalcio in tempo reale",
+            "start_url":"/",
+            "scope":"/",
+            "display":"standalone",
+            "orientation":"portrait-primary",
+            "background_color":"#11151B",
+            "theme_color":"#11151B",
+            "prefer_related_applications":False,
+            "icons":[
+              {"src":"/assets/icons/liveasta-any-192-v144.png","sizes":"192x192","type":"image/png","purpose":"any"},
+              {"src":"/assets/icons/liveasta-any-512-v144.png","sizes":"512x512","type":"image/png","purpose":"any"},
+              {"src":"/assets/icons/liveasta-maskable-192-v144.png","sizes":"192x192","type":"image/png","purpose":"maskable"},
+              {"src":"/assets/icons/liveasta-maskable-512-v144.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+            ]
+          }
+          Path("manifest.webmanifest").write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+
+          p=Path("index.html"); s=p.read_text(encoding="utf-8")
+          s=re.sub(r'<link rel="icon" type="image/png" sizes="192x192" href="[^"]+">',
+                   '<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/liveasta-any-192-v144.png">',s,count=1)
+          s=re.sub(r'<link rel="icon" type="image/png" sizes="512x512" href="[^"]+">',
+                   '<link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/liveasta-any-512-v144.png">',s,count=1)
+          s=re.sub(r'<link rel="apple-touch-icon"[^>]*>',
+                   '<link rel="apple-touch-icon" href="/assets/icons/liveasta-any-512-v144.png">',s,count=1)
+          s=re.sub(r'<link rel="manifest"[^>]*>',
+                   '<link rel="manifest" href="/manifest.webmanifest?v=144">',s,count=1)
+          p.write_text(s,encoding="utf-8")
+
+          p=Path("scripts/pwa.js"); s=p.read_text(encoding="utf-8")
+          s=re.sub(r"service-worker\.js\?v=[^']+","service-worker.js?v=144",s)
+          p.write_text(s,encoding="utf-8")
+
+          p=Path("service-worker.js"); s=p.read_text(encoding="utf-8")
+          s=re.sub(r"const CACHE = '[^']+';","const CACHE = 'liveasta-v1.04-144-exact-icon';",s)
+          p.write_text(s,encoding="utf-8")
+
+          # Validation.
+          checks={
+            icons/"liveasta-any-192-v144.png":(192,192),
+            icons/"liveasta-any-512-v144.png":(512,512),
+            icons/"liveasta-maskable-192-v144.png":(192,192),
+            icons/"liveasta-maskable-512-v144.png":(512,512),
+            Path("android-app/app/src/main/res/drawable-nodpi/liveasta_icon_source.png"):(432,432),
+          }
+          for path,expected in checks.items():
+              im=Image.open(path); im.load()
+              assert im.size==expected,(path,im.size)
+              print(path,im.mode,im.size)
+
+      - name: Remove transfer chunks and this one-shot installer
+        shell: bash
+        run: |
+          rm -f assets/icon-source.part0{1,2,3,4,5,6}.b64
+          rm -f .github/workflows/install-liveasta-icon-v144.yml
+
+      - name: Commit generated icon pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Liveasta Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Install exact Liveasta icon source across PWA and Android"
+          git push origin HEAD:main
