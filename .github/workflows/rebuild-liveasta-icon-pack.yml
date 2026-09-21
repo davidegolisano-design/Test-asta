@@ -19,6 +19,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Rebuild and verify canonical icon source
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat \
+            assets/icon-source.part01.b64 \
+            assets/icon-source.part02.b64 \
+            assets/icon-source.part03.b64 \
+            assets/icon-source.part04.b64 \
+            assets/icon-source.part05.b64 \
+            assets/icon-source.part06.b64 \
+            | tr -d '\n\r ' \
+            | base64 -d > assets/liveasta-icon-source-clean.webp
+
+          test "$(wc -c < assets/liveasta-icon-source-clean.webp)" -eq 34660
+          echo "4fac95d671103fb56ac530ef8609662856a75a6f472f7bb0c8ee58d1f8e44a69  assets/liveasta-icon-source-clean.webp" | sha256sum -c -
+          file assets/liveasta-icon-source-clean.webp
+
       - name: Install Pillow
         run: python3 -m pip install --upgrade pillow
 
@@ -29,7 +47,7 @@ jobs:
           from pathlib import Path
           import shutil
 
-          src_path = Path("assets/liveasta-icon-source.webp")
+          src_path = Path("assets/liveasta-icon-source-clean.webp")
           src = Image.open(src_path).convert("RGBA")
           src.load()
           assert src.size == (512, 512), src.size
@@ -39,7 +57,7 @@ jobs:
 
           # Rebuild a metadata-free canonical PNG from the uploaded artwork source.
           canonical = Image.frombytes("RGBA", src.size, src.tobytes())
-          canonical.save(icons_dir / "liveasta-source-512.png", "PNG", optimize=False, compress_level=6)
+          canonical.save(icons_dir / "liveasta-source-512.png", "PNG", optimize=False, compress_level=6)\n          canonical.save(Path("assets/liveasta-icon-source.png"), "PNG", optimize=False, compress_level=6)
 
           def exact(size, path):
               im = canonical.resize((size, size), Image.Resampling.LANCZOS)
@@ -97,6 +115,14 @@ jobs:
               "liveasta-icon-maskable-512.png",
               "liveasta-icon-192-v2.png",
               "liveasta-icon-512-v2.png",
+              "assets/liveasta-icon-source.webp",
+              "assets/liveasta-icon-source-clean.webp",
+              "assets/icon-source.part01.b64",
+              "assets/icon-source.part02.b64",
+              "assets/icon-source.part03.b64",
+              "assets/icon-source.part04.b64",
+              "assets/icon-source.part05.b64",
+              "assets/icon-source.part06.b64",
           ]:
               Path(old).unlink(missing_ok=True)
 
@@ -159,29 +185,29 @@ jobs:
           s = p.read_text(encoding="utf-8")
           s = re.sub(
               r'<link rel="icon" type="image/png" sizes="192x192" href="[^"]+">',
-              '<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=140">',
+              '<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=141">',
               s
           )
           # Add small favicon if not already present.
           if 'sizes="32x32"' not in s:
               s = s.replace(
-                  '<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=140">',
-                  '<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/liveasta-32.png?v=140">\n'
-                  '    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=140">'
+                  '<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=141">',
+                  '<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/liveasta-32.png?v=141">\n'
+                  '    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=141">'
               )
           s = re.sub(
               r'<link rel="apple-touch-icon" href="[^"]+">',
-              '<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/liveasta-180.png?v=140">',
+              '<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/liveasta-180.png?v=141">',
               s
           )
           s = re.sub(
               r'<link rel="manifest" href="[^"]+">',
-              '<link rel="manifest" href="/manifest.webmanifest?v=140">',
+              '<link rel="manifest" href="/manifest.webmanifest?v=141">',
               s
           )
           s = re.sub(
               r'<script src="\./scripts/pwa\.js\?v=[^"]+"></script>',
-              '<script src="./scripts/pwa.js?v=140-iconpack"></script>',
+              '<script src="./scripts/pwa.js?v=141-iconpack"></script>',
               s
           )
           p.write_text(s, encoding="utf-8")
@@ -190,7 +216,7 @@ jobs:
           s = p.read_text(encoding="utf-8")
           s = re.sub(
               r"navigator\.serviceWorker\.register\('/service-worker\.js\?v=\d+'",
-              "navigator.serviceWorker.register('/service-worker.js?v=140'",
+              "navigator.serviceWorker.register('/service-worker.js?v=141'",
               s
           )
           p.write_text(s, encoding="utf-8")
@@ -199,7 +225,7 @@ jobs:
           s = p.read_text(encoding="utf-8")
           s = re.sub(
               r"const CACHE = '[^']+';",
-              "const CACHE = 'liveasta-v1.04-140-canonical-icon-pack';",
+              "const CACHE = 'liveasta-v1.04-141-canonical-icon-pack';",
               s
           )
           p.write_text(s, encoding="utf-8")
@@ -229,7 +255,7 @@ jobs:
               "icon-maskable-512.png": (512,512),
               "assets/icons/liveasta-32.png": (32,32),
               "assets/icons/liveasta-180.png": (180,180),
-              "assets/icons/liveasta-source-512.png": (512,512),
+              "assets/icons/liveasta-source-512.png": (512,512),\n              "assets/liveasta-icon-source.png": (512,512),
               "android-app/app/src/main/res/drawable-nodpi/ic_launcher_liveasta_foreground.png": (432,432),
               "android-app/app/src/main/res/mipmap-mdpi/ic_launcher_liveasta.png": (48,48),
               "android-app/app/src/main/res/mipmap-hdpi/ic_launcher_liveasta.png": (72,72),
@@ -258,7 +284,7 @@ jobs:
         run: |
           set -euxo pipefail
           for i in $(seq 1 60); do
-            body="$(curl -fsSL -H 'Cache-Control: no-cache' "https://liveasta.it/manifest.webmanifest?v=140&check=$i" || true)"
+            body="$(curl -fsSL -H 'Cache-Control: no-cache' "https://liveasta.it/manifest.webmanifest?v=141&check=$i" || true)"
             if echo "$body" | grep -q '"src": "/icon-maskable-512.png"'; then
               echo "Canonical icon pack is live."
               exit 0
@@ -286,7 +312,7 @@ jobs:
             const client = await CDP();
             const {Page, Runtime} = client;
             await Promise.all([Page.enable(), Runtime.enable()]);
-            await Page.navigate({url:'https://liveasta.it/?canonical-icons=140'});
+            await Page.navigate({url:'https://liveasta.it/?canonical-icons=141'});
             await Page.loadEventFired();
             await sleep(8000);
 
