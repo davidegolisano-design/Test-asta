@@ -1,0 +1,118 @@
+name: Diagnose Liveasta PWA
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/diagnose-liveasta-pwa.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: HTTP diagnostics
+        shell: bash
+        run: |
+          set -euxo pipefail
+          for url in             "https://liveasta.it/"             "https://liveasta.it/manifest.webmanifest?v=133"             "https://liveasta.it/service-worker.js?v=133"             "https://liveasta.it/icon-192.png"             "https://liveasta.it/icon-512.png"; do
+            echo
+            echo "===== $url ====="
+            curl -L --max-time 30 -sS -D - -o /tmp/body "$url" | sed -n '1,40p'
+            echo "--- body bytes/type ---"
+            wc -c /tmp/body
+            file /tmp/body || true
+          done
+
+      - name: Validate manifest and icon dimensions
+        shell: bash
+        run: |
+          set -euxo pipefail
+          curl -L -sS "https://liveasta.it/manifest.webmanifest?v=133" -o manifest.webmanifest
+          echo "--- manifest ---"
+          cat manifest.webmanifest
+          jq . manifest.webmanifest
+          curl -L -sS "https://liveasta.it/icon-192.png" -o icon-192.png
+          curl -L -sS "https://liveasta.it/icon-512.png" -o icon-512.png
+          file icon-192.png icon-512.png
+
+      - name: Install CDP client
+        run: npm install chrome-remote-interface@0.33.3
+
+      - name: Chrome installability diagnostics
+        shell: bash
+        run: |
+          set -euxo pipefail
+          google-chrome --version || google-chrome-stable --version || true
+          CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable)"
+          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --remote-debugging-port=9222 about:blank >/tmp/chrome.log 2>&1 &
+          for i in {1..30}; do
+            curl -s http://127.0.0.1:9222/json/version >/dev/null && break
+            sleep 1
+          done
+          node <<'NODE'
+          const CDP = require('chrome-remote-interface');
+          const sleep = ms => new Promise(r=>setTimeout(r,ms));
+          (async()=>{
+            const client = await CDP();
+            const {Page, Runtime, Network, ServiceWorker} = client;
+            await Promise.all([Page.enable(), Runtime.enable(), Network.enable(), ServiceWorker.enable()]);
+            await Page.navigate({url:'https://liveasta.it/'});
+            await Page.loadEventFired();
+            await sleep(8000);
+
+            const manifest = await Page.getAppManifest();
+            console.log('=== APP MANIFEST URL ===');
+            console.log(manifest.url);
+            console.log('=== APP MANIFEST PARSE ERRORS ===');
+            console.log(JSON.stringify(manifest.errors, null, 2));
+            console.log('=== APP MANIFEST DATA ===');
+            console.log(manifest.data);
+
+            const installErrors = await Page.getInstallabilityErrors();
+            console.log('=== INSTALLABILITY ERRORS ===');
+            console.log(JSON.stringify(installErrors, null, 2));
+
+            const state = await Runtime.evaluate({
+              expression: `(async()=>({
+                href: location.href,
+                secureContext: isSecureContext,
+                manifestHref: document.querySelector('link[rel="manifest"]')?.href || null,
+                controller: navigator.serviceWorker?.controller?.scriptURL || null,
+                registrations: navigator.serviceWorker ? (await navigator.serviceWorker.getRegistrations()).map(r=>({
+                  scope:r.scope,
+                  active:r.active?.scriptURL||null,
+                  waiting:r.waiting?.scriptURL||null,
+                  installing:r.installing?.scriptURL||null
+                })) : [],
+                displayMode: matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser'
+              }))()`,
+              awaitPromise:true,
+              returnByValue:true
+            });
+            console.log('=== PAGE/SW STATE ===');
+            console.log(JSON.stringify(state.result.value, null, 2));
+
+            const icon192 = await Runtime.evaluate({
+              expression: `fetch('/icon-192.png',{cache:'no-store'}).then(async r=>({status:r.status,type:r.headers.get('content-type'),len:(await r.arrayBuffer()).byteLength}))`,
+              awaitPromise:true, returnByValue:true
+            });
+            const icon512 = await Runtime.evaluate({
+              expression: `fetch('/icon-512.png',{cache:'no-store'}).then(async r=>({status:r.status,type:r.headers.get('content-type'),len:(await r.arrayBuffer()).byteLength}))`,
+              awaitPromise:true, returnByValue:true
+            });
+            const mf = await Runtime.evaluate({
+              expression: `fetch('/manifest.webmanifest?v=133',{cache:'no-store'}).then(async r=>({status:r.status,type:r.headers.get('content-type'),text:(await r.text()).slice(0,2000)}))`,
+              awaitPromise:true, returnByValue:true
+            });
+            console.log('=== FETCH CHECKS ===');
+            console.log('manifest', JSON.stringify(mf.result.value,null,2));
+            console.log('icon192', JSON.stringify(icon192.result.value,null,2));
+            console.log('icon512', JSON.stringify(icon512.result.value,null,2));
+
+            await client.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
