@@ -1,4 +1,4 @@
-const CACHE = 'liveasta-v1.04-143-direct-source';
+const CACHE = 'liveasta-v1.04-144-exact-icon';
 const CORE = ['/', '/index.html'];
 
 self.addEventListener('install', event => {
