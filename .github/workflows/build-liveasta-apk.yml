@@ -71,4 +71,4 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-# icon-safearea-build-138
+# canonical-icon-pack-build-141
