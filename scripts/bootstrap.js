@@ -36,6 +36,7 @@
 
   function colorsFor(v){
     const n=norm(v);
+    if(!n||n==='-')return null;
     if(TEAM_COLORS[n]) return TEAM_COLORS[n];
     for(const k in TEAM_COLORS){
       if(n.includes(k)||k.includes(n)) return TEAM_COLORS[k];
