@@ -1,0 +1,224 @@
+name: Apply Liveasta Icon Safe Area
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/apply-liveasta-icon-safearea.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install Pillow
+        run: python3 -m pip install --upgrade pillow
+
+      - name: Generate padded PWA and Android adaptive assets
+        shell: python
+        run: |
+          from PIL import Image
+          from pathlib import Path
+
+          src = Image.open("liveasta-icon-512-v2.png").convert("RGBA")
+
+          def padded(out_path, size, scale, bg=None):
+              canvas = Image.new("RGBA", (size,size), bg if bg else (0,0,0,0))
+              inner = round(size * scale)
+              art = src.resize((inner,inner), Image.Resampling.LANCZOS)
+              x = (size-inner)//2
+              y = (size-inner)//2
+              canvas.alpha_composite(art,(x,y))
+              if bg is not None:
+                  canvas = canvas.convert("RGB")
+              canvas.save(out_path, format="PNG", optimize=False, compress_level=6)
+              print(out_path, canvas.mode, canvas.size, inner)
+
+          # Regular icons: modest padding, transparent outside.
+          padded("liveasta-icon-padded-192.png", 192, 0.82)
+          padded("liveasta-icon-padded-512.png", 512, 0.82)
+
+          # Maskable: much larger safe area. Solid black background preserves original look.
+          padded("liveasta-icon-maskable-192.png", 192, 0.68, (0,0,0,255))
+          padded("liveasta-icon-maskable-512.png", 512, 0.68, (0,0,0,255))
+
+          # Android adaptive foreground: generous safe area, transparent.
+          padded("android-app/app/src/main/res/drawable-nodpi/ic_launcher_liveasta_foreground.png", 432, 0.60)
+
+          # Android legacy fallback uses padded 82% artwork.
+          padded("android-app/app/src/main/res/mipmap-nodpi/ic_launcher_liveasta.png", 512, 0.82)
+
+      - name: Write Android adaptive icon resources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p android-app/app/src/main/res/mipmap-anydpi-v26
+          mkdir -p android-app/app/src/main/res/drawable
+          mkdir -p android-app/app/src/main/res/values
+
+          cat > android-app/app/src/main/res/drawable/ic_launcher_liveasta_background.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+              <solid android:color="#000000"/>
+          </shape>
+          EOF
+
+          cat > android-app/app/src/main/res/mipmap-anydpi-v26/ic_launcher_liveasta.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@drawable/ic_launcher_liveasta_background"/>
+              <foreground android:drawable="@drawable/ic_launcher_liveasta_foreground"/>
+          </adaptive-icon>
+          EOF
+
+      - name: Update PWA manifest and cache references
+        shell: python
+        run: |
+          import json, re
+          from pathlib import Path
+
+          manifest = {
+            "id": "/",
+            "name": "LIVEASTA",
+            "short_name": "LIVEASTA",
+            "description": "LIVEASTA - gestione aste fantacalcio in tempo reale",
+            "start_url": "/",
+            "scope": "/",
+            "display": "standalone",
+            "orientation": "portrait-primary",
+            "background_color": "#11151B",
+            "theme_color": "#11151B",
+            "prefer_related_applications": False,
+            "icons": [
+              {"src":"/liveasta-icon-padded-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+              {"src":"/liveasta-icon-padded-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+              {"src":"/liveasta-icon-maskable-192.png","sizes":"192x192","type":"image/png","purpose":"maskable"},
+              {"src":"/liveasta-icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+            ]
+          }
+          Path("manifest.webmanifest").write_text(json.dumps(manifest, indent=2, ensure_ascii=False)+"\n",encoding="utf-8")
+
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          s=re.sub(r'<link rel="icon" type="image/png" sizes="192x192" href="[^"]+">',
+                   '<link rel="icon" type="image/png" sizes="192x192" href="/liveasta-icon-padded-192.png?v=137">',s)
+          s=re.sub(r'<link rel="apple-touch-icon" href="[^"]+">',
+                   '<link rel="apple-touch-icon" href="/liveasta-icon-padded-192.png?v=137">',s)
+          s=re.sub(r'<link rel="manifest" href="[^"]+">',
+                   '<link rel="manifest" href="/manifest.webmanifest?v=137">',s)
+          s=re.sub(r'<script src="\./scripts/pwa\.js\?v=[^"]+"></script>',
+                   '<script src="./scripts/pwa.js?v=137-safearea"></script>',s)
+          p.write_text(s,encoding="utf-8")
+
+          p=Path("scripts/pwa.js")
+          s=p.read_text(encoding="utf-8")
+          s=re.sub(r"navigator\.serviceWorker\.register\('/service-worker\.js\?v=\d+'",
+                   "navigator.serviceWorker.register('/service-worker.js?v=137'",s)
+          p.write_text(s,encoding="utf-8")
+
+          p=Path("service-worker.js")
+          s=p.read_text(encoding="utf-8")
+          s=re.sub(r"const CACHE = '[^']+';","const CACHE = 'liveasta-v1.04-137-safearea';",s)
+          p.write_text(s,encoding="utf-8")
+
+      - name: Keep splash artwork consistent
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path("android-app/app/src/main/res/values-v31/styles.xml")
+          s=p.read_text(encoding="utf-8")
+          s=s.replace(
+            '<item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_liveasta</item>',
+            '<item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_liveasta_foreground</item>'
+          )
+          p.write_text(s,encoding="utf-8")
+
+      - name: Validate generated images
+        shell: python
+        run: |
+          from PIL import Image
+          checks=[
+            ("liveasta-icon-padded-192.png",(192,192)),
+            ("liveasta-icon-padded-512.png",(512,512)),
+            ("liveasta-icon-maskable-192.png",(192,192)),
+            ("liveasta-icon-maskable-512.png",(512,512)),
+            ("android-app/app/src/main/res/drawable-nodpi/ic_launcher_liveasta_foreground.png",(432,432)),
+            ("android-app/app/src/main/res/mipmap-nodpi/ic_launcher_liveasta.png",(512,512)),
+          ]
+          for path,sz in checks:
+            im=Image.open(path); im.load()
+            assert im.size==sz,(path,im.size)
+            print(path,im.mode,im.size)
+
+      - name: Commit icon safe-area fix
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "Liveasta Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add             liveasta-icon-padded-192.png             liveasta-icon-padded-512.png             liveasta-icon-maskable-192.png             liveasta-icon-maskable-512.png             manifest.webmanifest             index.html             scripts/pwa.js             service-worker.js             android-app/app/src/main/res/drawable-nodpi/ic_launcher_liveasta_foreground.png             android-app/app/src/main/res/drawable/ic_launcher_liveasta_background.xml             android-app/app/src/main/res/mipmap-anydpi-v26/ic_launcher_liveasta.xml             android-app/app/src/main/res/mipmap-nodpi/ic_launcher_liveasta.png             android-app/app/src/main/res/values-v31/styles.xml
+          git commit -m "Fix PWA and Android icon safe area"
+          git push origin HEAD:main
+
+      - name: Wait for Pages deployment
+        shell: bash
+        run: |
+          set -euxo pipefail
+          for i in $(seq 1 60); do
+            body="$(curl -fsSL -H 'Cache-Control: no-cache' "https://liveasta.it/manifest.webmanifest?v=137&check=$i" || true)"
+            if echo "$body" | grep -q "liveasta-icon-maskable-512.png"; then
+              echo "Updated manifest is live."
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
+
+      - name: Verify Chrome installability and decode
+        shell: bash
+        run: |
+          set -euxo pipefail
+          npm install chrome-remote-interface@0.33.3
+          CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable)"
+          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --remote-debugging-port=9222 about:blank >/tmp/chrome.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -s http://127.0.0.1:9222/json/version >/dev/null && break
+            sleep 1
+          done
+          node <<'NODE'
+          const CDP=require('chrome-remote-interface');
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          (async()=>{
+            const client=await CDP();
+            const {Page,Runtime}=client;
+            await Promise.all([Page.enable(),Runtime.enable()]);
+            await Page.navigate({url:'https://liveasta.it/?icon-safearea=137'});
+            await Page.loadEventFired();
+            await sleep(8000);
+
+            const manifest=await Page.getAppManifest();
+            const errors=await Page.getInstallabilityErrors();
+            console.log('MANIFEST ERRORS',JSON.stringify(manifest.errors,null,2));
+            console.log('INSTALLABILITY',JSON.stringify(errors,null,2));
+
+            const decode=await Runtime.evaluate({
+              expression:`Promise.all(['/liveasta-icon-padded-192.png','/liveasta-icon-padded-512.png','/liveasta-icon-maskable-192.png','/liveasta-icon-maskable-512.png'].map(src=>fetch(src+'?d='+Date.now(),{cache:'no-store'}).then(r=>r.blob()).then(async b=>{const bm=await createImageBitmap(b);const out={src,w:bm.width,h:bm.height,type:b.type,size:b.size};bm.close();return out;})))`,
+              awaitPromise:true,
+              returnByValue:true
+            });
+            console.log('DECODE',JSON.stringify(decode.result.value,null,2));
+
+            const bad=(errors.installabilityErrors||[]).filter(e=>e.errorId==='no-acceptable-icon');
+            if(bad.length) throw new Error('Chrome rejects icon');
+            if(manifest.errors?.length) throw new Error('Manifest parse errors');
+            await client.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
