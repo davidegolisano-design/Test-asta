@@ -47,10 +47,9 @@
     <div id="screen-role" class="screen active entry-screen entry-home">
       <div class="entry-home-shell">
         <header class="entry-topbar">
-          <div class="entry-brand"><svg aria-hidden="true"><use href="#entry-ball"/></svg><span>LIVE<b>ASTA</b></span></div>
+          <button class="entry-brand" type="button" aria-label="LIVEASTA" data-settings-tap><svg aria-hidden="true"><use href="#entry-ball"/></svg><span>LIVE<b>ASTA</b></span></button>
           <div class="entry-top-actions">
-            <button class="entry-color-button" type="button" onclick="openAdminLogin();openLiveAstaThemeMenu()"><i aria-hidden="true"></i> Colori</button>
-            <button class="home-version-badge home-version-settings" type="button" title="Apri Impostazioni" aria-label="Apri Impostazioni LIVEASTA" onclick="openAdminLogin()">v1.05 DEV · Fluo</button>
+            <button class="entry-color-button" type="button" onclick="openLiveAstaThemeMenu()"><i aria-hidden="true"></i> Colori</button>
           </div>
         </header>
         <main class="entry-hero">
@@ -398,6 +397,7 @@
         <div class="setup-card">
             <h1>Impostazioni</h1>
             <p class="subtitle">Preferenze e sistema</p>
+            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.06.2 DEV · Fluo</strong></div>
 
             <div class="theme-settings-card theme-menu-launch-card">
                 <button type="button" class="theme-menu-launch" onclick="openLiveAstaThemeMenu()" aria-haspopup="dialog" aria-controls="liveasta-theme-submenu">
@@ -1345,17 +1345,17 @@
     </div>
 
 <script src="./scripts/bootstrap.js?v=106-fluo1"></script>
-<script src="./scripts/theme.js?v=105-fluo1"></script>
+<script src="./scripts/theme.js?v=1062"></script>
 
 <link rel="stylesheet" href="./styles/refinements.css?v=100">
 
 <script src="./scripts/runtime.js?v=106-fluo1"></script>
 
-<script src="./scripts/pwa.js?v=1061"></script>
+<script src="./scripts/pwa.js?v=1062"></script>
 <script src="./scripts/sealed-auction.js?v=100"></script>
 <script src="./scripts/management.js?v=1061"></script>
-<link rel="stylesheet" href="./styles/matchday.css?v=1061">
-<link rel="stylesheet" href="./styles/entry-matchday.css?v=105-fluo1">
+<link rel="stylesheet" href="./styles/matchday.css?v=1062">
+<link rel="stylesheet" href="./styles/entry-matchday.css?v=1062">
 <script src="./scripts/responsive-ui.js?v=106-fluo1"></script>
 </body>
 </html>

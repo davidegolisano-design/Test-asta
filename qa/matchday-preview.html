@@ -47,10 +47,9 @@
     <div id="screen-role" class="screen active entry-screen entry-home">
       <div class="entry-home-shell">
         <header class="entry-topbar">
-          <div class="entry-brand"><svg aria-hidden="true"><use href="#entry-ball" /></svg><span>LIVE<b>ASTA</b></span></div>
+          <button class="entry-brand" type="button" aria-label="LIVEASTA" data-settings-tap=""><svg aria-hidden="true"><use href="#entry-ball" /></svg><span>LIVE<b>ASTA</b></span></button>
           <div class="entry-top-actions">
             <button class="entry-color-button" type="button"><i aria-hidden="true"></i> Colori</button>
-            <button class="home-version-badge home-version-settings" type="button" title="Apri Impostazioni" aria-label="Apri Impostazioni LIVEASTA">v1.05 DEV · Fluo</button>
           </div>
         </header>
         <main class="entry-hero">
@@ -354,6 +353,7 @@
         <div class="setup-card">
             <h1>Impostazioni</h1>
             <p class="subtitle">Preferenze e sistema</p>
+            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.06.2 DEV · Fluo</strong></div>
 
             <div class="theme-settings-card theme-menu-launch-card">
                 <button type="button" class="theme-menu-launch" aria-haspopup="dialog" aria-controls="liveasta-theme-submenu">
@@ -1272,8 +1272,8 @@
 
 
 
-<link rel="stylesheet" href="../styles/matchday.css?v=1061">
-<link rel="stylesheet" href="../styles/entry-matchday.css?v=105-fluo1">
+<link rel="stylesheet" href="../styles/matchday.css?v=1062">
+<link rel="stylesheet" href="../styles/entry-matchday.css?v=1062">
 
 <details id="fixture-tools"><summary>Galleria UI · dati fittizi</summary><label>Schermata <select id="fixture-scene"><option value="management">Gestione</option><option value="board">Listone banditore</option><option value="auction">Asta banditore</option><option value="player">Giocatore</option><option value="listone">Listone giocatore</option></select></label><label>Tema <select id="fixture-theme"></select></label><label>Ruoli <select id="fixture-mode"><option value="classic">Classic</option><option value="mantra">Mantra</option></select></label></details><script src="../scripts/theme-palettes.js"></script><script src="../scripts/theme-preload.js"></script><script src="../scripts/ui-fit.js"></script><script src="./matchday-fixture.js"></script><script src="../scripts/list-filters.js"></script><script src="../scripts/mantra-filter-ui.js"></script><script src="../scripts/theme.js"></script><script src="../scripts/management.js"></script></body>
 </html>

@@ -14,7 +14,7 @@ html[data-live-theme] .entry-screen :is(h1,button strong,.entry-brand,.entry-pla
 html[data-live-theme] .entry-screen button{cursor:pointer}
 .entry-home-shell{width:min(1120px,100%);margin:auto;position:relative}
 .entry-topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 24px;border-bottom:1px solid var(--theme-border)}
-.entry-brand{display:flex;align-items:center;gap:10px;font-size:28px;font-weight:800;font-style:italic;letter-spacing:-.02em;white-space:nowrap;color:var(--theme-text)}
+.entry-brand{appearance:none;display:flex;align-items:center;gap:10px;margin:0;padding:0;background:transparent;border:0;box-shadow:none;font-size:28px;font-weight:800;font-style:italic;letter-spacing:-.02em;white-space:nowrap;color:var(--theme-text)}
 .entry-brand b{color:var(--theme-primary)}
 .entry-topbar .entry-brand svg{width:27px;height:27px;color:var(--theme-primary);transform:rotate(-12deg)}
 .entry-top-actions{display:flex;align-items:center;gap:18px}
@@ -68,9 +68,12 @@ html[data-live-theme] .entry-screen h1.entry-headline{font-size:clamp(64px,7.9vw
 .entry-qr-details summary{font-size:11px;font-weight:600;list-style:none;display:flex;gap:12px;align-items:center;cursor:pointer;min-height:40px}
 .entry-qr-details summary::-webkit-details-marker{display:none}
 .entry-qr-details summary>span:first-child{font-size:22px;color:var(--theme-primary)}
-html[data-live-theme] #screen-role .home-qr-block{position:absolute;bottom:100%;left:0;width:238px;box-sizing:border-box;padding:18px!important;margin:0 0 12px!important;background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;box-shadow:0 15px 40px #0004;z-index:5;border-radius:4px!important;text-align:center}
-html[data-live-theme] #screen-role .home-qr-url{font-size:8px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
-html[data-live-theme] #screen-role .home-qr-label{font-size:8px!important}
+html[data-live-theme] #screen-role .home-qr-block{position:absolute;bottom:100%;left:0;width:min(286px,calc(100vw - 44px));box-sizing:border-box;padding:18px!important;margin:0 0 12px!important;background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;box-shadow:0 15px 40px #0004;z-index:5;border-radius:4px!important;text-align:center;overflow:hidden}
+html[data-live-theme] #screen-role .home-qr-frame{display:grid!important;place-items:center!important;width:100%!important;min-width:0!important;padding:10px!important;box-sizing:border-box!important;overflow:hidden!important}
+html[data-live-theme] #screen-role #home-site-qr{width:min(190px,100%)!important;height:auto!important;aspect-ratio:1}
+html[data-live-theme] #screen-role #home-site-qr :is(img,canvas){display:block!important;width:100%!important;max-width:100%!important;height:auto!important;aspect-ratio:1}
+html[data-live-theme] #screen-role .home-qr-url{display:block;width:100%;font-size:9px!important;line-height:1.35!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+html[data-live-theme] #screen-role .home-qr-label{display:block;width:100%;font-size:9px!important;line-height:1.35!important;letter-spacing:.1em!important;overflow-wrap:anywhere;white-space:normal!important}
 .entry-support{font-size:11px;text-decoration:none;color:var(--theme-muted);padding:12px 0;white-space:nowrap}
 .entry-footer-note{font-size:8px;letter-spacing:.16em;font-weight:800;line-height:1.6;margin-left:auto;padding:13px 0}
 /* Roles are a shirt card and a referee card; the back action remains a text link. */

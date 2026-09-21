@@ -314,9 +314,7 @@
     const btn=document.getElementById('room-chat-toggle-btn');
     const status=document.getElementById('room-chat-status');
     if(btn){
-      btn.textContent=enabled?'DISATTIVA CHAT':'ATTIVA CHAT';
-      btn.setAttribute('aria-pressed',enabled?'true':'false');
-      btn.classList.toggle('active',enabled);
+      btn.checked=enabled;
     }
     if(status){
       status.textContent=enabled
@@ -341,13 +339,14 @@
           <h3>Chat stanza</h3>
           <p>Attiva una chat live per i partecipanti. L'icona resta mobile sullo schermo e segnala in rosso i nuovi messaggi.</p>
         </div>
-      </div>
-      <div class="room-chat-control-row">
-        <button id="room-chat-toggle-btn" class="btn btn-secondary" type="button" aria-pressed="false">ATTIVA CHAT</button>
+        <label class="mg-switch-label" title="Chat stanza">
+          <input id="room-chat-toggle-btn" type="checkbox" aria-label="Chat stanza">
+          <span class="mg-switch-ui" aria-hidden="true"></span>
+        </label>
       </div>
       <div id="room-chat-status" class="mg-status-text"></div>`;
     if(anchor.nextSibling)host.insertBefore(card,anchor.nextSibling);else host.appendChild(card);
-    card.querySelector('#room-chat-toggle-btn')?.addEventListener('click',toggleRoomChat);
+    card.querySelector('#room-chat-toggle-btn')?.addEventListener('change',toggleRoomChat);
     updateControlUI();
   }
 

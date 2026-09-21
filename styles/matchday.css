@@ -80,7 +80,8 @@
   :where(.auction-col,.ard-col) {
     background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;border-top:4px solid var(--theme-marker)!important;border-radius:var(--match-radius)!important;box-shadow:none!important;
   }
-  :where(.col-player,.ard-player,.player-card-side) {background:var(--theme-card)!important;box-shadow:none!important}
+  :where(.col-player,.player-card-side) {background:var(--team-card-bg,var(--theme-card))!important;background-image:var(--team-card-bg,var(--theme-card))!important;box-shadow:none!important}
+  .ard-player {background:var(--theme-card)!important;box-shadow:none!important}
   :where(#auction-player-name-top,#auctioneer-ready-player-name,.phone-player-name,#phone-player-name-text,#auction-player-club,#auctioneer-ready-player-club,#phone-player-club) {color:var(--theme-text)!important;-webkit-text-fill-color:currentColor!important;-webkit-text-stroke:0!important;text-shadow:none!important}
   :where(.col-timer,.ard-fvm) {border-top-color:var(--theme-accent-marker)!important}
   #view-auction .timer-ring {background:var(--theme-panel)!important;box-shadow:none!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
@@ -211,6 +212,8 @@
   .room-chat-message.self {background:color-mix(in srgb,var(--theme-marker) 12%,var(--theme-card))!important;border-left:3px solid var(--theme-marker)!important}
   :where(.manual-price-dialog,.v093-player-pin-dialog) {background:var(--theme-card)!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
   :where(.manual-price-dialog,.v093-player-pin-dialog)::backdrop {background:rgba(3,9,5,.78)!important}
+  .settings-version-row {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:10px 12px;background:var(--theme-panel);border:1px solid var(--theme-border);border-radius:var(--match-control-radius);color:var(--theme-muted);font-size:12px}
+  .settings-version-badge {font-family:var(--match-display);font-size:17px;color:var(--theme-text);letter-spacing:.02em}
 
   @media(max-width:900px) {
     #screen-room-control .mg-grid-2 {grid-template-columns:minmax(0,1fr)!important}

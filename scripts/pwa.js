@@ -2,12 +2,12 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.06.1 DEV · Fluo';
+  const APP_VERSION='v1.06.2 DEV · Fluo';
   const IS_RAWGITHACK=/raw\.githack\.com$/i.test(location.hostname);
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA · '+APP_VERSION;
-    document.querySelectorAll('.home-version-badge,.admin-version-badge').forEach(el=>{
+    document.querySelectorAll('.settings-version-badge,.admin-version-badge').forEach(el=>{
       el.textContent=APP_VERSION;
     });
   }
@@ -50,8 +50,8 @@
 
   const featureScripts=[
     './scripts/auctioneer-mobile-board-dev.js?v=10418',
-    './scripts/opponent-credits.js?v=103',
-    './scripts/room-chat.js?v=106-fluo1',
+    './scripts/opponent-credits.js?v=1062',
+    './scripts/room-chat.js?v=1062',
     './scripts/room-chat-entry-sync.js?v=10418',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',
