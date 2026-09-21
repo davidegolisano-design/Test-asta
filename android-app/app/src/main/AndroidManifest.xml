@@ -4,9 +4,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher_liveasta"
+        android:icon="@mipmap/ic_launcher_liveasta"
         android:label="Liveasta"
-        android:roundIcon="@drawable/ic_launcher_liveasta"
+        android:roundIcon="@mipmap/ic_launcher_liveasta"
         android:supportsRtl="true"
         android:theme="@style/Theme.Liveasta"
         android:usesCleartextTraffic="false">
