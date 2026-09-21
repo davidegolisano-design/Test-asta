@@ -72,7 +72,7 @@ html[data-live-theme] #screen-role .home-qr-block{position:absolute;bottom:100%;
 html[data-live-theme] #screen-role .home-qr-frame{display:grid!important;place-items:center!important;width:100%!important;min-width:0!important;padding:10px!important;box-sizing:border-box!important;overflow:hidden!important}
 html[data-live-theme] #screen-role #home-site-qr{width:min(190px,100%)!important;height:auto!important;aspect-ratio:1}
 html[data-live-theme] #screen-role #home-site-qr :is(img,canvas){display:block!important;width:100%!important;max-width:100%!important;height:auto!important;aspect-ratio:1}
-html[data-live-theme] #screen-role .home-qr-url{display:block;width:100%;font-size:9px!important;line-height:1.35!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+html[data-live-theme] #screen-role .home-qr-url{display:block;box-sizing:border-box!important;width:100%;font-size:9px!important;line-height:1.35!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
 html[data-live-theme] #screen-role .home-qr-label{display:block;width:100%;font-size:9px!important;line-height:1.35!important;letter-spacing:.1em!important;overflow-wrap:anywhere;white-space:normal!important}
 .entry-support{font-size:11px;text-decoration:none;color:var(--theme-muted);padding:12px 0;white-space:nowrap}
 .entry-footer-note{font-size:8px;letter-spacing:.16em;font-weight:800;line-height:1.6;margin-left:auto;padding:13px 0}
