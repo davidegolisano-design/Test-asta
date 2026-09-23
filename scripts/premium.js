@@ -103,12 +103,12 @@
     const feature = FEATURES.find(f => f.id === id), el = dialog('premium-offer-dialog');
     const unavailable = !!roomId && !loaded;
     el.innerHTML = `<header class="premium-dialog-head"><span class="premium-label">✦ LIVEASTA PREMIUM</span>${closeButton()}</header>
-      <div class="premium-dialog-content"><h2 id="premium-offer-title">${unavailable ? 'Verifica abilitazioni' : feature ? escape(feature.name) : 'Porta l’asta al livello successivo.'}</h2>
-      <p>${unavailable ? (failure ? 'Non riusciamo a verificare il Premium della stanza. Riprova tra poco.' : 'Stiamo verificando le abilitazioni della stanza.') : feature ? escape(feature.description) + ' Sblocca questa funzione con Premium.' : 'Un unico pacchetto per tutta la stanza, a disposizione di banditore e giocatori.'}</p>
+      <div class="premium-dialog-content"><h2 id="premium-offer-title">${unavailable ? 'Verifica abilitazioni' : 'Acquista Premium'}</h2>
+      <p>${unavailable ? (failure ? 'Non riusciamo a verificare il Premium della stanza. Riprova tra poco.' : 'Stiamo verificando le abilitazioni della stanza.') : feature ? '<b>' + escape(feature.name) + '</b> · ' + escape(feature.description) + ' Sblocca questa funzione con Premium.' : 'Un unico pacchetto per tutta la stanza, a disposizione di banditore e giocatori.'}</p>
       <ul class="premium-feature-list">${FEATURES.map(f => `<li class="${f.id === id ? 'selected' : ''}"><span>${has(f.id) ? '✓' : '◇'}</span><div><b>${f.name}</b><small>${f.description}</small></div></li>`).join('')}</ul>
       <p class="premium-free-note">Classic e Mantra restano gratuiti. Puoi completare l’asta, gestire crediti e rose ed esportare i risultati.</p>
-      <div id="premium-activation-info" class="premium-notice" role="status" hidden>Gli acquisti non sono ancora disponibili. Per questa prova il superuser può attivare Premium o le singole funzioni per la tua stanza.</div></div>
-      <footer class="premium-dialog-foot"><button type="button" class="premium-primary" id="premium-activation">${unavailable ? 'Riprova verifica' : 'Sblocca Premium'}</button><p>DEV · Attivazione tramite amministratore</p></footer>`;
+      <div id="premium-activation-info" class="premium-notice" role="status" hidden>Gli acquisti online non sono ancora disponibili. Contatta l’amministratore di LIVEASTA per attivare Premium nella tua stanza.</div></div>
+      <footer class="premium-dialog-foot"><button type="button" class="premium-primary" id="premium-activation">${unavailable ? 'Riprova verifica' : 'Acquista Premium'}</button><p>Premium è valido per tutti i partecipanti della stanza.</p></footer>`;
     el.setAttribute('aria-labelledby','premium-offer-title'); wireClose(el);
     $('premium-activation').onclick = async () => {
       if (unavailable) { await refresh(); offer(id); }
@@ -123,7 +123,6 @@
       const id = el.dataset.premiumFeature, available = has(id);
       el.classList.add('premium-feature'); el.classList.toggle('premium-locked', !available);
       el.classList.toggle('premium-unlocked', available);
-      el.dataset.premiumLabel = available ? '✦ PREMIUM ✓' : '🔒 PREMIUM';
       if (el.matches('article')) {
         el.tabIndex = available ? -1 : 0;
         el.setAttribute('aria-label', (FEATURES.find(f => f.id === id)?.name || id) + (available ? ' · Premium abilitato' : ' · Funzione Premium, premi per sbloccare'));
@@ -151,7 +150,7 @@
       <label class="premium-toggle-row premium-package"><span><b>Pacchetto completo</b><small>Tutte le ${FEATURES.length} funzioni Premium</small></span><input type="checkbox" role="switch" data-admin-premium="all" ${all ? 'checked' : ''} ${locked ? 'disabled' : ''}><i aria-hidden="true"></i></label>
       <div class="premium-admin-features">${FEATURES.map(f => `<label class="premium-toggle-row"><span><b>${f.name}</b><small>${f.description}</small></span><input type="checkbox" role="switch" data-admin-premium="${f.id}" ${grants.has(f.id) ? 'checked' : ''} ${locked ? 'disabled' : ''}><i aria-hidden="true"></i></label>`).join('')}</div>
       <p class="premium-free-note">Classic e Mantra: sempre gratuiti.</p></div>
-      <footer class="premium-dialog-foot"><p id="premium-admin-status" role="status">${escape(error || (adminBusy ? 'Salvataggio…' : !adminRow ? 'Caricamento…' : `Abilitazioni salvate · ${grants.size} su ${FEATURES.length} funzioni`))}</p>${error ? '<button type="button" class="premium-primary" id="premium-admin-retry">Ricarica abilitazioni</button>' : ''}<small>Modifiche valide nella DEV Premium. La revoca non interrompe il turno già iniziato.</small></footer>`;
+      <footer class="premium-dialog-foot"><p id="premium-admin-status" role="status">${escape(error || (adminBusy ? 'Salvataggio…' : !adminRow ? 'Caricamento…' : `Abilitazioni salvate · ${grants.size} su ${FEATURES.length} funzioni`))}</p>${error ? '<button type="button" class="premium-primary" id="premium-admin-retry">Ricarica abilitazioni</button>' : ''}<small>La revoca non interrompe il turno già iniziato.</small></footer>`;
     el.setAttribute('aria-labelledby','premium-admin-title'); wireClose(el);
     const master = el.querySelector('[data-admin-premium=all]'); master.indeterminate = grants.size > 0 && !all;
     el.querySelectorAll('[data-admin-premium]').forEach(input => input.addEventListener('change', () => saveAdmin(input.dataset.adminPremium,input.checked)));

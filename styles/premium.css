@@ -1,24 +1,15 @@
 @layer premium {
-  .premium-feature { border-color:var(--premium-gold)!important; }
-  article.premium-feature { padding-top:42px!important; }
-  .budget-slot-trigger.premium-feature { padding-top:23px!important; }
+  .premium-locked,
+  label.premium-locked :is(input,select) { border-color:var(--premium-gold)!important; }
   .premium-gold-button { background:var(--premium-gold)!important; color:var(--premium-ink)!important; border-color:#b08400!important; }
 }
-/* Gold is reserved for Premium controls; labels carry meaning in every theme. */
+/* Locked controls keep their original dimensions. Only the border changes. */
 :root { --premium-gold:#ffcf32; --premium-ink:#2c2100; }
-.premium-feature { position:relative; border-color:var(--premium-gold)!important; }
-.premium-feature::after { content:attr(data-premium-label); display:inline-block; padding:3px 7px; border-radius:5px; background:var(--premium-gold); color:var(--premium-ink); font:800 10px/1.25 system-ui,sans-serif; letter-spacing:.04em; white-space:nowrap; text-shadow:none; -webkit-text-stroke:0; }
-button.premium-feature { gap:6px; flex-wrap:wrap; white-space:normal!important; }
-article.premium-feature { padding-top:42px!important; }
-article.premium-feature::after { position:absolute; top:12px; left:16px; }
-.budget-slot-trigger.premium-feature { padding-top:23px!important; }
-.budget-slot-trigger.premium-feature::after { position:absolute; top:4px; right:7px; font-size:8px; padding:2px 4px; }
 .premium-locked { cursor:pointer; }
 .premium-locked input:not([type=checkbox]),.premium-locked select { pointer-events:none; }
-.premium-feature:focus-visible,.premium-gold-button:focus-visible { outline:3px solid var(--premium-gold); outline-offset:3px; }
+.premium-locked:focus-visible,.premium-gold-button:focus-visible { outline:3px solid var(--premium-gold); outline-offset:3px; }
 .premium-gold-button { background:var(--premium-gold)!important; border:1px solid #b08400!important; color:var(--premium-ink)!important; font-weight:800; text-shadow:none!important; }
 .premium-home-link { display:flex; align-items:center; justify-content:center; gap:10px; margin:16px 0 0; padding:12px 18px; border-radius:8px; font:800 14px/1.4 system-ui,sans-serif; cursor:pointer; width:100%; }
-.premium-dev-note { font:600 11px/1.5 system-ui,sans-serif; color:var(--text-muted); margin:8px 0 0; }
 .premium-dialog { box-sizing:border-box; width:min(600px,calc(100vw - 24px)); max-width:calc(100vw - 24px); max-height:calc(100dvh - 32px); margin:auto; padding:0; border:2px solid var(--premium-gold); border-radius:20px; background:var(--theme-card,#152019); color:var(--theme-text,#f5f5ec); box-shadow:0 24px 80px #0009; overflow:hidden; }
 .premium-dialog[open] { display:flex; flex-direction:column; }
 .premium-dialog::backdrop { background:#000a; backdrop-filter:blur(4px); }

@@ -2,10 +2,10 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.07.0 DEV · Premium';
+  const APP_VERSION='v1.07.1';
 
   function applyLiveAstaVersion(){
-    document.title='LIVEASTA · '+APP_VERSION;
+    document.title='LIVEASTA';
     document.querySelectorAll('.settings-version-badge,.admin-version-badge').forEach(el=>{
       el.textContent=APP_VERSION;
     });

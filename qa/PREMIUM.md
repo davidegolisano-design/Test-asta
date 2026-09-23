@@ -1,4 +1,4 @@
-# DEV Premium · 1.07.0
+# DEV Premium · 1.07.1
 
 Classic e Mantra restano gratuiti. Le abilitazioni Premium sono per stanza:
 `sealed`, `random`, `turns`, `ready`, `budget`, `chat`.
@@ -13,9 +13,13 @@ un backend simulato in memoria. Nessun client Supabase reale viene creato;
 la CSP blocca le connessioni di rete. I dati sono fittizi e si azzerano
 ricaricando la pagina.
 
-La barra inferiore consente di aprire Gestione, Giocatore e Superuser e di
-passare fra Classic e Mantra. Nel Superuser si possono sbloccare tutte le
-funzioni o una sola, poi tornare in Gestione per usarla.
+La fixture si apre in Gestione e non aggiunge barre o comandi di prova.
+Il link destinato alle prove dell'utente è invece `index.html`, con accesso
+normale e database reale. La fixture rimane uno strumento interno di verifica.
+
+I controlli bloccati hanno solo il bordo oro e aprono il popup Acquista Premium.
+Non aggiungono etichette, icone o spazi e tornano al normale stile del tema
+quando la funzione è abilitata. Mantra rimane gratuito.
 
 Rigenerare la pagina dopo modifiche a `index.html`:
 
