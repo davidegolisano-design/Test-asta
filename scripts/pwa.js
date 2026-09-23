@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.06.8 · Fluo';
+  const APP_VERSION='v1.07.0 DEV · Premium';
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA · '+APP_VERSION;
@@ -27,7 +27,7 @@
   loadCss('./styles/auctioneer-mobile-clean.css?v=1067');
   loadCss('./styles/room-chat.css?v=10418');
 
-  if('serviceWorker' in navigator){
+  if('serviceWorker' in navigator && !window.liveastaPremium){
     window.addEventListener('load',async()=>{
       try{
         const reg=await navigator.serviceWorker.register('/service-worker.js?v=1067',{scope:'/',updateViaCache:'none'});
@@ -52,7 +52,7 @@
   const featureScripts=[
     './scripts/auctioneer-mobile-board.js?v=1067',
     './scripts/opponent-credits.js?v=1062',
-    './scripts/room-chat.js?v=1062',
+    './scripts/room-chat.js?v=107-premium1',
     './scripts/room-chat-entry-sync.js?v=10418',
     './scripts/debug-v103.js?v=1032',
     './scripts/stability-core.js?v=1035',

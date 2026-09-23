@@ -34,7 +34,7 @@
   }
 
   function canChat(){
-    return !!(currentRoomId && (auctioneerLockKey || myTeamId));
+    return !!(currentRoomId && (auctioneerLockKey || myTeamId) && premium.has('chat'));
   }
 
   function roomName(){
@@ -261,6 +261,7 @@
   }
 
   function openRoomChat(){
+    if(!premium.require('chat'))return;
     if(!enabled||!canChat())return;
     const {overlay}=ensureUI();
     open=true;
@@ -314,14 +315,15 @@
     const btn=document.getElementById('room-chat-toggle-btn');
     const status=document.getElementById('room-chat-status');
     if(btn){
-      btn.checked=enabled;
+      btn.checked=enabled && premium.has('chat');
     }
     if(status){
-      status.textContent=enabled
+      status.textContent=!premium.has('chat')?'Sblocca Premium per attivare la chat.':enabled
         ?'Chat live attiva per banditore e giocatori della stanza.'
         :'Chat live disattivata. I messaggi della sessione non vengono archiviati sul server.';
     }
     updateFab();
+    premium.decorate();
   }
 
   function injectManagementControl(){
@@ -333,6 +335,7 @@
     const card=document.createElement('article');
     card.id='room-chat-control-card';
     card.className='mg-card mg-setting-card room-chat-control-card';
+    card.dataset.premiumFeature='chat';
     card.innerHTML=`
       <div class="mg-setting-head">
         <div>
@@ -386,6 +389,7 @@
   }
 
   async function toggleRoomChat(){
+    if(!premium.require('chat')){updateControlUI();return;}
     if(!auctioneerLockKey||!currentRoomId)return;
     const previous=enabled;
     enabled=!enabled;
@@ -421,6 +425,11 @@
       appendMessage(packet?.payload||{}, {local:false});
     });
   }
+
+  window.addEventListener('liveasta:premium-change',()=>{
+    if(!premium.has('chat'))closeRoomChat();
+    updateControlUI();
+  });
 
   const originalConnectToRoom=connectToRoom;
   connectToRoom=async function(){

@@ -111,6 +111,7 @@
     // ---------- Single random ----------
     const baseStartRandomPlayer=startRandomPlayer;
     startRandomPlayer=function(){
+        if(!premium.require('random'))return;
         if(!isMantraRoom())return baseStartRandomPlayer.apply(this,arguments);
         if(blockHybridBanditoreOutOfTurnAction(true))return;
         const grid=document.getElementById('random-role-grid');
@@ -211,6 +212,7 @@
     };
 
     setAutoRandomEnabled=async function(enabled){
+        if(enabled && !premium.require('random')){renderAutoRandomControlUI();return;}
         if(!isMantraRoom())return baseSetAutoRandomEnabled.apply(this,arguments);
         const selected=autoRandomSelectedRolesFromControl();
         if(enabled&&!autoRandomIgnoreSequence&&!selected.length){
@@ -237,6 +239,7 @@
         setAutoRandomRole(r,!autoRandomRoles.has(r));
     };
     setAutoRandomRole=async function(role,checked){
+        if(!premium.require('random'))return;
         if(!isMantraRoom())return baseSetAutoRandomRole.apply(this,arguments);
         const r=String(role||'').toUpperCase();
         if(!activeGroups().includes(r))return;
@@ -417,10 +420,12 @@
         renderPlayerBudgetManager();updatePlayerBidBudgetVisuals();schedulePlayerBudgetSave();
     };
     setPlayerBudgetEnabled=function(enabled){
+        if(enabled && !premium.require('budget'))return;
         if(!isMantraRoom())return baseSetPlayerBudgetEnabled(enabled);
         playerBudgetPlan.enabled=!!enabled;renderPlayerBudgetManager();updatePlayerBudgetVisuals();schedulePlayerBudgetSave();
     };
     openPlayerBudgetManager=async function(){
+        if(!premium.require('budget'))return;
         if(!isMantraRoom()){ensureClassicBudgetRows();return baseOpenPlayerBudgetManager();}
         if(!currentRoomId||!myTeamId)return;
         try{document.activeElement?.blur?.();}catch(_){}

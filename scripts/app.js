@@ -227,6 +227,35 @@ function updateCreateRoomModeUI(){
         }
 
 
+        const premium = window.liveastaPremium;
+        premium.configure({
+            getClient:()=>supabaseClient,
+            getPassword:()=>adminSessionPassword,
+            getRooms:()=>roomsCache,
+            login:()=>openAdminLogin(),
+            onChange:()=>syncPremiumRuntime()
+        });
+
+        function premiumRoundInProgress(){
+            return !!(isAuctionActive || readyGateWaiting || auctionPrepInterval || sealedAuctionModeActive);
+        }
+
+        function syncPremiumRuntime(){
+            if(!premium.has('random')){autoRandomEnabled=false;cancelAutoRandomLaunch();}
+            if(!premiumRoundInProgress()){
+                if(!premium.has('ready'))readyModeEnabled=false;
+                if(!premium.has('turns')){nominationState.enabled=false;nominationReady=false;nominationAutoBidOneEnabled=false;}
+                if(!premium.has('sealed')){sealedListonePickMode=false;updateSealedModeButton();}
+            }
+            if(!premium.has('budget')){
+                playerBudgetPlan.enabled=false;
+                closePlayerBudgetManager();
+            }
+            budgetPlanReadyFor='';
+            updateReadyControlUI();renderAutoRandomControlUI();updateNominationUI();updatePlayerBudgetVisuals();
+        }
+
+
         function auctioneerPlayerStorageKey(){
             return currentRoomId?`liveasta_auctioneer_player_${currentRoomId}`:'liveasta_auctioneer_player';
         }
@@ -934,8 +963,8 @@ function updateCreateRoomModeUI(){
                 const ms=parseInt(cfg.normal_bid_cooldown_ms);
                 if(Number.isFinite(ms))normalBidCooldownMs=Math.max(100,Math.min(5000,ms));
                 selfRaiseEnabled=cfg.self_raise_enabled!==false;
-                nominationAutoBidOneEnabled=!!cfg.nomination_auto_bid_one;
-                autoRandomEnabled=!!cfg.auto_random_enabled;
+                nominationAutoBidOneEnabled=!!cfg.nomination_auto_bid_one && premium.has('turns');
+                autoRandomEnabled=!!cfg.auto_random_enabled && premium.has('random');
                 autoRandomIgnoreSequence=!!cfg.auto_random_ignore_sequence;
                 const storedRoles=Array.isArray(cfg.auto_random_roles)?cfg.auto_random_roles:[];
                 const validRoles=storedRoles.map(r=>String(r||'').toUpperCase()).filter(r=>['P','D','C','A'].includes(r));
@@ -1020,6 +1049,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function setNominationAutoBidOne(enabled){
+            if(enabled && !premium.require('turns'))return;
             nominationAutoBidOneEnabled=!!enabled;
             const input=document.getElementById('nomination-auto-bid-one');
             if(input)input.checked=nominationAutoBidOneEnabled;
@@ -1075,6 +1105,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function setAutoRandomIgnoreSequence(enabled){
+            if(!premium.require('random'))return;
             autoRandomIgnoreSequence=!!enabled;
             await saveRoomAuctionExtraSettings();
             renderAutoRandomControlUI();
@@ -1151,6 +1182,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function startAutoRandomAuctionNow(){
+            if(!premium.has('random')){autoRandomEnabled=false;cancelAutoRandomLaunch();return false;}
             if(!autoRandomEnabled || autoRandomStarting || !currentRoomId)return false;
             if(document.getElementById('screen-room-control')?.classList.contains('active')){
                 cancelAutoRandomLaunch();
@@ -1186,6 +1218,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function setAutoRandomEnabled(enabled){
+            if(enabled && !premium.require('random')){renderAutoRandomControlUI();return;}
             const selected=autoRandomSelectedRolesFromControl();
             if(enabled && !autoRandomIgnoreSequence && !selected.length){
                 alert('Seleziona almeno un ruolo tra P, D, C e A.');
@@ -1216,6 +1249,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function setAutoRandomRole(role,checked){
+            if(!premium.require('random'))return;
             const r=String(role||'').toUpperCase();
             if(!['P','D','C','A'].includes(r))return;
             if(checked){
@@ -1283,6 +1317,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function loadReadyMode(){
+            if(!premium.has('ready') && !readyGateWaiting){readyModeEnabled=false;updateReadyControlUI();return false;}
             if(!currentRoomId){updateReadyControlUI();return readyModeEnabled;}
 
             // Non azzerare mai il valore solo perché una lettura fallisce o torna vuota.
@@ -1339,6 +1374,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function toggleReadyMode(){
+            if(!readyModeEnabled && !premium.require('ready')){updateReadyControlUI();return;}
             const gate=await loadReadyGateState();
 
             if(readyModeEnabled && gate?.active){
@@ -2638,7 +2674,7 @@ function updateCreateRoomModeUI(){
         }
         async function loadNominationState(){
             if(!currentRoomId)return;
-            try{const {data}=await supabaseClient.from('fanta_app_data').select('data').eq('key',nominationStateKey()).maybeSingle();if(data?.data)nominationState={...nominationState,...data.data};ensureNominationOrder();normalizeNominationState();}catch(e){}
+            try{const {data}=await supabaseClient.from('fanta_app_data').select('data').eq('key',nominationStateKey()).maybeSingle();if(data?.data)nominationState={...nominationState,...data.data};if(!premium.has('turns') && !premiumRoundInProgress())nominationState.enabled=false;ensureNominationOrder();normalizeNominationState();}catch(e){}
             updateNominationUI();
         }
         async function saveNominationState(ready=nominationReady){
@@ -2649,6 +2685,7 @@ function updateCreateRoomModeUI(){
         function broadcastNominationState(ready=nominationReady){channel?.send({type:'broadcast',event:'nomination_state',payload:{state:nominationState,ready}}).catch(()=>{});}
         function currentNominationTeam(){return teamsCache.find(t=>String(t.id)===String(nominationState.turn_team_id));}
         async function toggleNominationMode(){
+            if(!nominationState.enabled && !premium.require('turns')){updateNominationUI();return;}
             await loadRoomState();
             await loadNominationState();
             if(!nominationState.enabled && autoRandomEnabled){
@@ -3109,6 +3146,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function submitNomination(id){
+            if(!premium.require('turns'))return;
             if(nominationRequestPending)return;
 
             const p=playersList.find(x=>String(x.Id)===String(id));
@@ -3898,6 +3936,7 @@ function updateCreateRoomModeUI(){
             if(playerBudgetStateKey()!==key)return;
             const chosen=local&&(!remote||String(local.updated_at||'')>String(remote.updated_at||''))?local:remote;
             playerBudgetPlan=normalizePlayerBudgetPlan(chosen||defaultPlayerBudgetPlan());
+            if(!premium.has('budget'))playerBudgetPlan.enabled=false;
             playerBudgetLoadedFor=key;budgetPlanReadyFor=key;
             renderPlayerBudgetManager();updatePlayerBudgetVisuals();
         }
@@ -3918,6 +3957,7 @@ function updateCreateRoomModeUI(){
         }
 
         function schedulePlayerBudgetSave(){
+            if(!premium.has('budget'))return;
             const key=playerBudgetStateKey();if(!key||budgetPlanReadyFor!==key)return;
             const data={...normalizePlayerBudgetPlan(playerBudgetPlan),total:playerBudgetTotalCredits(),updated_at:new Date().toISOString()};
             safeWriteLocalJson('liveasta_budget_cache_'+key,data);
@@ -4035,6 +4075,7 @@ function updateCreateRoomModeUI(){
         }
 
         function setPlayerBudgetEnabled(enabled){
+            if(enabled && !premium.require('budget')){playerBudgetPlan.enabled=false;renderPlayerBudgetManager();return;}
             if(isMantraRoom()){
                 playerBudgetPlan.enabled=false;
                 renderPlayerBudgetManager();
@@ -4049,6 +4090,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function openPlayerBudgetManager(){
+            if(!premium.require('budget'))return;
             if(!currentRoomId || !myTeamId)return;
 
             if(isMantraRoom()){
@@ -5414,6 +5456,7 @@ function updateCreateRoomModeUI(){
 
             currentRoom = room;
             currentRoomId = room.id;
+            await premium.connect(room.id);
             banditoreUiPrefsLoadedFor='';
             playerUiPrefsLoadedFor='';
             onlinePlayers.clear();
@@ -5650,6 +5693,7 @@ function updateCreateRoomModeUI(){
         }
 
         function adminLogout(){
+            document.getElementById('premium-admin-dialog')?.close();
             adminSessionPassword='';
             const pin=document.getElementById('admin-pin'); if(pin)pin.value='';
             showScreen('screen-role');
@@ -5673,7 +5717,7 @@ function updateCreateRoomModeUI(){
                             <span>${r.approved?'APPROVATA':'IN ATTESA'}</span>
                         </label>
                     </td>
-                    <td data-label="Azioni"><div class="room-actions"><button class="btn btn-small" onclick="adminManageRoom('${r.id}')">Gestisci asta</button><button class="btn btn-small" onclick="openAdminTeamPinManager('${r.id}')">PIN giocatori</button><button class="btn btn-small" onclick="adminDownloadRoomDebug('${r.id}',this)">Scarica log</button><button class="btn btn-small" onclick="adminSaveRoom('${r.id}')">Salva</button><button class="btn btn-danger btn-small" onclick="adminDeleteRoom('${r.id}')">Elimina</button></div></td>
+                    <td data-label="Azioni"><div class="room-actions"><button class="btn btn-small premium-gold-button" onclick="liveastaPremium.openAdmin('${r.id}')">✦ Premium</button><button class="btn btn-small" onclick="adminManageRoom('${r.id}')">Gestisci asta</button><button class="btn btn-small" onclick="openAdminTeamPinManager('${r.id}')">PIN giocatori</button><button class="btn btn-small" onclick="adminDownloadRoomDebug('${r.id}',this)">Scarica log</button><button class="btn btn-small" onclick="adminSaveRoom('${r.id}')">Salva</button><button class="btn btn-danger btn-small" onclick="adminDeleteRoom('${r.id}')">Elimina</button></div></td>
                 </tr>`).join('');
         }
 
@@ -5843,6 +5887,7 @@ function updateCreateRoomModeUI(){
             currentRoomCode='';
             currentRoomId='';
             currentRoom=null;
+            premium.disconnect();
             myTeamId=null;
             myTeamName='';
 
@@ -6312,6 +6357,7 @@ function updateCreateRoomModeUI(){
         }
 
         function startRandomPlayer() {
+            if(!premium.require('random'))return;
             if(blockHybridBanditoreOutOfTurnAction(true))return;
 
             const grid=document.getElementById('random-role-grid');
@@ -6340,6 +6386,7 @@ function updateCreateRoomModeUI(){
         }
 
         function pickRandomRole(role) {
+            if(!premium.require('random'))return;
             closeRandomRolePicker();
             let availablePlayers = getAvailablePlayers();
             if (role && role !== 'ALL') {
@@ -6363,6 +6410,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function selectAndStartPlayer(id, skipConfirm=false) {
+            syncPremiumRuntime();
             // Il listone resta consultabile al banditore+giocatore quando
             // è il turno di un'altra squadra, ma un click non può avviare l'asta.
             // skipConfirm=true è riservato alla nomina valida ricevuta dal giocatore di turno.
@@ -6965,7 +7013,7 @@ function updateCreateRoomModeUI(){
                 });
                 channel.on('broadcast',{event:'nomination_state'},async(payload)=>{
                     const p=payload.payload||{};
-                    if(p.state)nominationState={...nominationState,...p.state};
+                    if(p.state)nominationState={...nominationState,...p.state,enabled:!!p.state.enabled && premium.has('turns')};
                     nominationReady=!!p.ready;
                     nominationRequestPending=false;
                     await loadRoomState();
@@ -7858,6 +7906,7 @@ function updateCreateRoomModeUI(){
             currentRoomCode='';
             currentRoomId='';
             currentRoom=null;
+            premium.disconnect();
 
             showScreen('screen-role');
         }
@@ -7992,6 +8041,7 @@ function updateCreateRoomModeUI(){
 
 
         async function handleNominationSubmission(data){
+            if(!premium.has('turns'))return;
             const d=data||{};
 
             if(!nominationState.enabled || !nominationReady || isAuctionActive){
@@ -9675,6 +9725,7 @@ function updateCreateRoomModeUI(){
         }
 
         function toggleSealedListoneMode(){
+            if(!premium.require('sealed'))return;
             if(!currentRoomId)return;
             if(!sealedListonePickMode && blockHybridBanditoreOutOfTurnAction(true))return;
 
@@ -9685,6 +9736,7 @@ function updateCreateRoomModeUI(){
         }
 
         function openSealedPlayerPicker(){
+            if(!premium.require('sealed'))return;
             if(blockHybridBanditoreOutOfTurnAction(true))return;
 
             sealedListonePickMode=true;
@@ -9703,6 +9755,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function chooseSealedPlayerFromListone(id){
+            if(!premium.require('sealed'))return;
             if(blockHybridBanditoreOutOfTurnAction(true)){
                 sealedListonePickMode=false;
                 updateSealedModeButton();
@@ -9729,6 +9782,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function confirmStartSealedAuction(){
+            if(!premium.require('sealed'))return;
             if(blockHybridBanditoreOutOfTurnAction(true))return;
 
             const err=document.getElementById('sealed-picker-error');
@@ -9751,6 +9805,8 @@ function updateCreateRoomModeUI(){
         }
 
         async function startSealedAuctionForPlayer(player){
+            if(!premium.require('sealed'))return;
+            syncPremiumRuntime();
             if(!player || auctionedPlayerIds.has(String(player.Id)))return;
 
             currentAuctionPlayer={...player,R:playerRole(player)};

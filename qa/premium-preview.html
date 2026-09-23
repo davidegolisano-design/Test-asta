@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<base href="../">
+<meta http-equiv="Content-Security-Policy" content="connect-src 'none'; form-action 'none'; object-src 'none'">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>LIVEASTA · v1.07.0 DEV Premium</title>
@@ -13,9 +15,9 @@
     <meta name="description" content="LIVEASTA - asta fantasy calcio realtime a stanze">
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=1067">
     <link rel="apple-touch-icon" href="./icon-192.png?v=1067">
-    <link rel="manifest" href="./manifest.webmanifest?v=1067">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="./qa/premium-demo-backend.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -1363,5 +1365,6 @@
 <link rel="stylesheet" href="./styles/matchday.css?v=1065">
 <link rel="stylesheet" href="./styles/entry-matchday.css?v=1063">
 <script src="./scripts/responsive-ui.js?v=106-fluo1"></script>
+<script src="./qa/premium-demo-ui.js"></script>
 </body>
 </html>
