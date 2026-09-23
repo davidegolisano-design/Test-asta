@@ -1482,10 +1482,7 @@ function updateCreateRoomModeUI(){
                 Id:p.id,Nome:p.nome,R:p.role,Squadra:p.club,FVM:p.fvm
             };
 
-            if(p.url){
-                const img=document.getElementById('phone-card-image');
-                if(img)img.src=p.url;
-            }
+            setPlayerImage(document.getElementById('phone-card-image'),p.id,p.role);
             const card=document.getElementById('phone-card-container');
             if(card)card.style.visibility='visible';
             const name=document.getElementById('phone-player-name');
@@ -5919,7 +5916,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function miniatureAssetExists(playerId){
-            const relative=playerImageUrl(playerId);
+            const relative=playerMiniatureAssetUrl(playerId);
             const url=new URL(relative,window.location.href).href;
 
             try{

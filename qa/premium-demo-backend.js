@@ -6,8 +6,8 @@
   const ROOM='00000000-0000-4000-8000-000000000101';
   const TEAM='00000000-0000-4000-8000-000000000201';
   const players=[
-    {Id:'demo-1',Nome:'PORTIERE DEMO',Squadra:'Parma',R:'P',RM:'Por',FVM:28},
-    {Id:'demo-2',Nome:'DIFENSORE DEMO',Squadra:'Inter',R:'D',RM:'Dc',FVM:18},
+    {Id:'133',Nome:'Skorupski',Squadra:'Bologna',R:'P',RM:'Por',FVM:28},
+    {Id:'152',Nome:'Zielinski',Squadra:'Inter',R:'C',RM:'C',FVM:18},
     {Id:'demo-3',Nome:'TERZINO DEMO',Squadra:'Milan',R:'D',RM:'Dd;E',FVM:24},
     {Id:'demo-4',Nome:'REGISTA DEMO',Squadra:'Roma',R:'C',RM:'M;C',FVM:39},
     {Id:'demo-5',Nome:'FANTASISTA DEMO',Squadra:'Napoli',R:'C',RM:'T',FVM:65},
@@ -70,7 +70,7 @@
       if(name==='liveasta_set_premium_feature'){
         if(args.p_password!=='demo-premium')return {data:null,error:{code:'42501',message:'Password errata'}};
         if(failWrites)return {data:null,error:{message:'Errore simulato di salvataggio'}};
-        const all=['sealed','random','turns','ready','budget','chat'];
+        const all=['sealed','random','turns','ready','budget','chat','miniatures'];
         let features=tables.liveasta_premium_entitlements.find(r=>r.room_id===args.p_room_id)?.features||[];
         if(args.p_feature==='all')features=args.p_enabled?all:[];
         else features=args.p_enabled?[...new Set([...features,args.p_feature])]:features.filter(f=>f!==args.p_feature);
