@@ -72,7 +72,11 @@
     subscription = adapter.getClient().channel('premium:' + ENVIRONMENT + ':' + roomId)
       .on('postgres_changes', {event:'*', schema:'public', table:TABLE, filter:'room_id=eq.' + roomId}, () => refresh())
       .subscribe(status => { if (status === 'SUBSCRIBED') refresh(); });
-    polling = setInterval(() => { if (!document.hidden) refresh(); }, 10000);
+    startPolling();
+  }
+
+  function startPolling() {
+    if (roomId && !polling) polling = setInterval(() => { if (!document.hidden) refresh(); }, 10000);
   }
 
   function dialog(id) {
@@ -119,7 +123,7 @@
       const id = el.dataset.premiumFeature, available = has(id);
       el.classList.add('premium-feature'); el.classList.toggle('premium-locked', !available);
       el.classList.toggle('premium-unlocked', available);
-      el.dataset.premiumLabel = available ? '✦ PREMIUM ✓' : '◇ PREMIUM';
+      el.dataset.premiumLabel = available ? '✦ PREMIUM ✓' : '🔒 PREMIUM';
       if (el.matches('article')) {
         el.tabIndex = available ? -1 : 0;
         el.setAttribute('aria-label', (FEATURES.find(f => f.id === id)?.name || id) + (available ? ' · Premium abilitato' : ' · Funzione Premium, premi per sbloccare'));
@@ -198,7 +202,7 @@
   },true);
   document.addEventListener('keydown',event => { if (event.key === 'Enter' || event.key === ' ') intercept(event); },true);
   document.addEventListener('visibilitychange',() => { if (!document.hidden) refresh(); });
-  window.addEventListener('pageshow',() => refresh());
+  window.addEventListener('pageshow',() => { startPolling(); refresh(); });
   window.addEventListener('pagehide',() => { clearInterval(polling); polling = null; });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',decorate,{once:true}); else decorate();
   window.liveastaPremium = Object.freeze({features:FEATURES, environment:ENVIRONMENT,
