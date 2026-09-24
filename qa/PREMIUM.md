@@ -1,8 +1,9 @@
 # LIVEASTA v1.07.4 — candidata alla pubblicazione
 
-Branch: `dev-premium-20260923`. Il sito pubblico e il branch `main` non sono
-stati aggiornati. Nessuna migrazione Premium o nuova funzione email è stata
-applicata al database condiviso.
+Candidata approvata per la pubblicazione il 24 settembre 2026.
+La migrazione `liveasta_premium_release_v1074` e il worker
+`liveasta-notification` v1 sono attivi sul progetto Supabase condiviso.
+La versione pubblica usa `index.html` e l'ambiente `production`.
 
 ## Prova della candidata
 
@@ -20,9 +21,9 @@ Stanza di prova `PREMIUM DEMO`, password `demo`. Superuser `demo-premium`.
 Per accedere al superuser dalla home: cinque tocchi su LIVEASTA, poi il comando
 Superuser nelle impostazioni. Queste credenziali esistono solo nella fixture.
 
-`index.html` è la candidata con database reale. I nuovi flussi creazione stanza,
-richiesta e abilitazioni Premium richiedono l'attivazione server descritta sotto;
-non usare la pagina normale per dichiarare verificato un invio email reale.
+`index.html` utilizza il database reale. Creazione stanza, richiesta e
+abilitazioni Premium sono collegate ai nuovi endpoint server. Le pagine
+`qa/premium-preview*` rimangono simulate e non inviano email reali.
 
 ## Comportamento concordato
 
@@ -68,36 +69,35 @@ Supabase. A navigazione offline compare la pagina di connessione richiesta,
 non una plancia con dati obsoleti. La pulizia cancella solo cache LIVEASTA.
 QR e destinazione APK restano `https://www.liveasta.it/`; icone invariate.
 
-## Attivazione server: sospesa, autorizzazione necessaria
+## Attivazione server e stato del collaudo
 
-La revisione automatica ha respinto la migrazione perché modifica il database
-live condiviso, introduce RPC/RLS e email contenenti la password della stanza.
-L'autorizzazione ricevuta riguarda la dev, non questa modifica condivisa.
-Non ritentare né applicare queste operazioni con uno strumento alternativo
-senza autorizzazione esplicita. Preparazione e test locali non sono deployment.
+Il 24 settembre 2026 l'utente ha autorizzato la pubblicazione. Sono stati
+applicati in una transazione `supabase/premium-dev.sql` e
+`supabase/migrations/20260924071323_room_requests_dev.sql`, registrati come
+`liveasta_premium_release_v1074`. Il worker `liveasta-notification` v1 è attivo,
+con token privato per evento e RPC di claim riservata al servizio.
+I worker email precedenti rimangono invariati. Il loro trigger di creazione
+si applica solo a stanze non approvate: non duplica la nuova notifica.
 
-Dopo autorizzazione:
+Verificati sul database reale: presenza delle RPC, SELECT consentita ai client,
+UPDATE e claim negati ai client, claim consentito al servizio, pubblicazione
+Realtime della tabella e compatibilità dello schema stanze/contatti.
+Gli advisors non mostrano nuovi avvisi di sicurezza: le due tabelle private
+hanno intenzionalmente RLS senza policy client. Rimangono gli avvisi sulle
+funzioni privilegiate preesistenti; non sono stati corretti cambiando il
+modello di autenticazione durante questa pubblicazione.
 
-1. Ricontrollare schema corrente, funzioni esistenti e assenza di collisioni.
-   Applicare in una transazione `supabase/premium-dev.sql` e poi
-   `supabase/migrations/20260924071323_room_requests_dev.sql`.
-2. Pubblicare `supabase/functions/liveasta-notification/index.ts` e `mail.mjs`,
-   con `verify_jwt=false`: ogni evento ha un token privato verificato da RPC
-   accessibili solo al servizio. Nessuna chiave server entra nel frontend.
-   Verificare i secret esistenti `ARUBA_SMTP_USER`, `ARUBA_SMTP_PASSWORD`,
-   `ADMIN_NOTIFICATION_EMAIL=postmaster@liveasta.it`. Non modificare i worker
-   email già utilizzati dalla produzione.
-3. Eseguire gli advisors; creare una stanza temporanea dalla dev, verificare
-   email reale, deduplicazione, revoca approvazione e concessione/revoca Premium
-   su due client reali. L'anteprima simulata non sostituisce questo collaudo.
-4. Solo dopo decisione dell'utente, promuovere i file pubblici sul sito.
-   Non distribuire `qa/`, `supabase/` o altre risorse di sviluppo nel pacchetto
-   statico destinato a un nuovo hosting. Verificare PWA su dispositivo reale.
+Il controllo automatico ha bloccato il collaudo che avrebbe creato una stanza
+production temporanea e inviato due notifiche a postmaster: richiede consenso
+specifico per questi dati e messaggi di prova. Non sono state create stanze
+di collaudo né notifiche. Non ritentare attraverso un altro strumento.
+La consegna SMTP reale e la propagazione delle abilitazioni fra due client
+reali restano da verificare dopo quel consenso; le prove locali coprono
+permessi, revoche, deduplicazione e comportamento del worker.
 
-La tabella Premium consente sola lettura ai client; le scritture verificano
-la password superuser sul server. Il Realtime riguarda la nuova tabella.
-Il rollback del frontend consiste nel ripristinare il precedente commit
-pubblico; lasciare lo schema aggiuntivo in sede evita perdita di dati.
+Per ripristinare il frontend precedente usare il commit pubblico
+`3b259cc2f3295d4097ae8cea26dec239a893490a`. Lo schema aggiuntivo può restare
+in sede: rimuoverlo cancellerebbe le abilitazioni e le richieste registrate.
 
 ## Verifiche riproducibili
 
