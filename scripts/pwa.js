@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION='v1.07.3';
+  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.4';
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA';
@@ -27,10 +27,10 @@
   loadCss('./styles/auctioneer-mobile-clean.css?v=1067');
   loadCss('./styles/room-chat.css?v=10418');
 
-  if('serviceWorker' in navigator && !window.liveastaPremium){
+  if('serviceWorker' in navigator && window.LIVEASTA_CONFIG?.serviceWorker === true && !window.premiumDemoBackend){
     window.addEventListener('load',async()=>{
       try{
-        const reg=await navigator.serviceWorker.register('/service-worker.js?v=1067',{scope:'/',updateViaCache:'none'});
+        const reg=await navigator.serviceWorker.register('/service-worker.js?v='+encodeURIComponent(APP_VERSION),{scope:'/',updateViaCache:'none'});
         await reg.update().catch(()=>{});
       }catch(error){console.error('[LIVEASTA PWA] Service worker',error);}
     },{once:true});

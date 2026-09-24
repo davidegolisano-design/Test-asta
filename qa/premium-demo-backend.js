@@ -69,7 +69,7 @@
   const client={
     from:table=>new Query(table),
     async rpc(name,args={}){
-      if(name==='liveasta_create_room_dev'){
+      if(name==='liveasta_create_room'){
         const previous=creationKeys.get(args.p_request_id);
         if(previous)return {data:clone(previous),error:null};
         if(tables.fanta_rooms.some(r=>r.name===args.p_name))return {data:null,error:{code:'23505'}};
@@ -78,7 +78,7 @@
         notifications.push({room_id:created.id,kind:'room_created',state:'sent'});
         return {data:clone(created),error:null};
       }
-      if(name==='liveasta_request_premium_dev'){
+      if(name==='liveasta_request_premium'){
         if(failWrites)return {data:null,error:{message:'Errore simulato'}};
         const target=tables.fanta_rooms.find(r=>r.id===args.p_room_id&&r.password===args.p_room_password&&r.approved);
         if(!target)return {data:null,error:{code:'42501'}};

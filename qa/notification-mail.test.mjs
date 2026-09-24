@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {notificationMail,deliverNotification,failureState} from '../supabase/functions/liveasta-dev-notification/mail.mjs';
-const job={id:'job-1',room_id:'room-1',kind:'room_created',payload:{name:'<Test>\r\nBCC: wrong',password:'<&secret>',email:'creator@example.invalid',mode:'mantra',created_at:'2026-09-24'}};
+import {notificationMail,deliverNotification,failureState} from '../supabase/functions/liveasta-notification/mail.mjs';
+const job={id:'job-1',room_id:'room-1',kind:'room_created',environment:'dev-premium',payload:{name:'<Test>\r\nBCC: wrong',password:'<&secret>',email:'creator@example.invalid',mode:'mantra',created_at:'2026-09-24'}};
 test('creation email only to configured postmaster with escaped data and actual newlines',()=>{
  const mail=notificationMail(job,'postmaster@liveasta.it','postmaster@liveasta.it');
  assert.equal(mail.to,'postmaster@liveasta.it');assert.ok(!/[\r\n]/.test(mail.subject));
@@ -31,4 +31,11 @@ test('uncertain DATA outcome is held for review; explicit SMTP rejection can ret
  assert.equal(failureState({command:'DATA',code:'ETIMEDOUT'}),'uncertain');
  assert.equal(failureState({command:'DATA',responseCode:451}),'failed');
  assert.equal(failureState({command:'CONN'}),'failed');
+});
+
+test('public mail has no dev label and unknown environments are rejected',()=>{
+ const mail=notificationMail({...job,environment:'production'},'postmaster@liveasta.it','postmaster@liveasta.it');
+ assert.ok(mail.text.includes('Ambiente: LIVEASTA pubblico'));assert.ok(!mail.text.includes('dev Premium'));
+ assert.ok(mail.messageId.includes('production'));
+ assert.throws(()=>notificationMail({...job,environment:'invalid'},'postmaster@liveasta.it','postmaster@liveasta.it'));
 });

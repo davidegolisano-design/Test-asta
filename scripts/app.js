@@ -4981,9 +4981,9 @@ function updateCreateRoomModeUI(){
                 approved: true
             };
             if (payload.game_mode==='classic' && (payload.limit_p + payload.limit_d + payload.limit_c + payload.limit_a) < 1) throw new Error('La rosa Classic deve avere almeno uno slot.');
-            const { data, error } = await supabaseClient.rpc('liveasta_create_room_dev', {
+            const { data, error } = await supabaseClient.rpc('liveasta_create_room', {
                 p_name:cleanName,p_room_password:password,p_email:email,p_config:payload,
-                p_request_id:createRoom.lastAttempt.id
+                p_request_id:createRoom.lastAttempt.id,p_environment:premium.environment
             });
             if (error) {
                 if (error.code==='23505') throw new Error('Esiste già una stanza con questo nome.');

@@ -1,131 +1,128 @@
-# DEV Premium · 1.07.3
+# LIVEASTA v1.07.4 — candidata alla pubblicazione
 
-Classic e Mantra restano gratuiti. Le abilitazioni Premium sono per stanza:
-`sealed`, `random`, `turns`, `ready`, `budget`, `chat`, `miniatures`.
-Il superuser concede l'accesso; il banditore sceglie poi le modalità da attivare.
-Non ci sono acquisti o addebiti in questa versione.
+Branch: `dev-premium-20260923`. Il sito pubblico e il branch `main` non sono
+stati aggiornati. Nessuna migrazione Premium o nuova funzione email è stata
+applicata al database condiviso.
 
-## Prova isolata
+## Prova della candidata
 
-Aprire `qa/premium-preview.html` (oppure `qa/premium-preview-mobile.html` per
-un riquadro largo 390 px). La pagina utilizza i veri componenti dell'app con
-un backend simulato in memoria. Nessun client Supabase reale viene creato;
-la CSP blocca le connessioni di rete. I dati sono fittizi e si azzerano
-ricaricando la pagina.
+- `qa/premium-preview.html?entry=home`: normale home, creazione stanza e accesso.
+- `qa/premium-preview.html`: Gestione della stanza fittizia già aperta.
+- `qa/premium-preview-mobile.html`: stessa Gestione a larghezza 390 px.
+- `qa/premium-preview.html?request=open`: richiesta Premium.
 
-La fixture si apre in Gestione e non aggiunge barre o comandi di prova.
-Il link destinato alle prove dell'utente è invece `index.html`, con accesso
-normale e database reale. La fixture rimane uno strumento interno di verifica.
+Queste pagine caricano l'interfaccia reale e un database simulato in memoria.
+La CSP blocca le connessioni API. Non inviano email e i dati si azzerano al
+ricaricamento; non consentono un'asta condivisa tra dispositivi. Non hanno
+barre di prova o banner sovrapposti all'interfaccia.
 
-I controlli bloccati hanno solo il bordo oro e aprono il popup Acquista Premium.
-Non aggiungono etichette, icone o spazi e tornano al normale stile del tema
-quando la funzione è abilitata. Mantra rimane gratuito.
+Stanza di prova `PREMIUM DEMO`, password `demo`. Superuser `demo-premium`.
+Per accedere al superuser dalla home: cinque tocchi su LIVEASTA, poi il comando
+Superuser nelle impostazioni. Queste credenziali esistono solo nella fixture.
 
-Le miniature generiche (portiere e giocatore di movimento) sono gratuite.
-`miniatures` abilita tutto il catalogo personalizzato per la stanza. La scelta
-è centralizzata in `playerImageUrl`; `setPlayerImage` aggiorna anche le immagini
-già aperte quando cambia l'abilitazione o si lascia la stanza. Il ripristino Ready
-non usa l'URL salvato da un altro client. Un file mancante ricade sulla generica
-corretta senza cicli di caricamento. Il controllo miniature del superuser verifica
-sempre i file originali, indipendentemente dal Premium.
+`index.html` è la candidata con database reale. I nuovi flussi creazione stanza,
+richiesta e abilitazioni Premium richiedono l'attivazione server descritta sotto;
+non usare la pagina normale per dichiarare verificato un invio email reale.
 
-Per verificare le immagini nell'anteprima rose usare sulla sola fixture
-`?portrait=keeper` o `?portrait=outfield`; aggiungere `&miniatures=premium`
-per confrontare il catalogo completo. Questi parametri non sono letti dall'app
-normale e non concedono abilitazioni sul database reale.
+## Comportamento concordato
 
-Test della selezione immagini, aggiornamento su revoca e fallback:
-`node --test qa/player-assets.test.cjs`.
+Classic, Mantra, gestione ordinaria dell'asta, crediti, rose, esportazione e
+miniature generiche di portiere/giocatore sono gratuiti. Le sette funzioni
+Premium sono Busta chiusa, Random, Turni, Ready/Skip, Budget per reparto, Chat
+e catalogo completo delle miniature. Il bordo oro apre Acquista Premium;
+nessun lucchetto altera le dimensioni dei controlli. Nessun pagamento automatico.
 
-Rigenerare la pagina dopo modifiche a `index.html`:
+Le abilitazioni sono della stanza: il superuser concede singole funzioni o
+il pacchetto intero. Il banditore decide poi quali usare. Una richiesta per
+stanza/ciclo; si riapre solo quando l'ultima funzione attiva viene revocata.
+Revocare parzialmente o disabilitare una stanza già Free non riapre la richiesta.
+Le stanze precedenti senza contatto chiedono l'email al primo invio.
+
+La nuova RPC `liveasta_create_room` registra nella stessa transazione stanza
+approvata, contatto privato e notifica. Una chiave idempotente evita duplicati
+sui reinvii e non riapprova stanze successivamente revocate. Il superuser può
+sempre togliere l'approvazione. Non cambia il default usato dal vecchio sito.
+
+Il worker `liveasta-notification` invia solo a `postmaster@liveasta.it`:
+creazione con nome stanza, password ed email; richiesta Premium con stanza ed
+email. La coda privata consente un solo invio concorrente; il payload viene
+cancellato dopo l'invio. Errori certi sono ritentabili dal superuser; gli esiti
+SMTP incerti restano da verificare, per evitare duplicati. Nessun invio dipende
+dal mantenere aperto il browser. Un errore di stato email non blocca i toggle.
+
+## Configurazione unica e PWA
+
+`scripts/release-config.js` sceglie `production` soltanto su HTTPS nei domini
+esatti `liveasta.it` e `www.liveasta.it`; GitHack e gli altri indirizzi usano
+`dev-premium`. Nessun parametro URL o localStorage cambia questa scelta.
+Le abilitazioni, le richieste, i tentativi di creazione e le notifiche dei due
+ambienti sono separati. Le stanze restano nella tabella condivisa esistente.
+
+Lo stesso sorgente può essere promosso dopo l'approvazione. Le concessioni fatte
+nella dev non attivano il Premium pubblico: vanno confermate dal superuser
+nell'ambiente pubblico. Le email indicano correttamente l'ambiente.
+
+La PWA si registra soltanto sul dominio pubblico, anche con Premium presente.
+La cache conserva soltanto file statici della stessa origine, mai API o dati
+Supabase. A navigazione offline compare la pagina di connessione richiesta,
+non una plancia con dati obsoleti. La pulizia cancella solo cache LIVEASTA.
+QR e destinazione APK restano `https://www.liveasta.it/`; icone invariate.
+
+## Attivazione server: sospesa, autorizzazione necessaria
+
+La revisione automatica ha respinto la migrazione perché modifica il database
+live condiviso, introduce RPC/RLS e email contenenti la password della stanza.
+L'autorizzazione ricevuta riguarda la dev, non questa modifica condivisa.
+Non ritentare né applicare queste operazioni con uno strumento alternativo
+senza autorizzazione esplicita. Preparazione e test locali non sono deployment.
+
+Dopo autorizzazione:
+
+1. Ricontrollare schema corrente, funzioni esistenti e assenza di collisioni.
+   Applicare in una transazione `supabase/premium-dev.sql` e poi
+   `supabase/migrations/20260924071323_room_requests_dev.sql`.
+2. Pubblicare `supabase/functions/liveasta-notification/index.ts` e `mail.mjs`,
+   con `verify_jwt=false`: ogni evento ha un token privato verificato da RPC
+   accessibili solo al servizio. Nessuna chiave server entra nel frontend.
+   Verificare i secret esistenti `ARUBA_SMTP_USER`, `ARUBA_SMTP_PASSWORD`,
+   `ADMIN_NOTIFICATION_EMAIL=postmaster@liveasta.it`. Non modificare i worker
+   email già utilizzati dalla produzione.
+3. Eseguire gli advisors; creare una stanza temporanea dalla dev, verificare
+   email reale, deduplicazione, revoca approvazione e concessione/revoca Premium
+   su due client reali. L'anteprima simulata non sostituisce questo collaudo.
+4. Solo dopo decisione dell'utente, promuovere i file pubblici sul sito.
+   Non distribuire `qa/`, `supabase/` o altre risorse di sviluppo nel pacchetto
+   statico destinato a un nuovo hosting. Verificare PWA su dispositivo reale.
+
+La tabella Premium consente sola lettura ai client; le scritture verificano
+la password superuser sul server. Il Realtime riguarda la nuova tabella.
+Il rollback del frontend consiste nel ripristinare il precedente commit
+pubblico; lasciare lo schema aggiuntivo in sede evita perdita di dati.
+
+## Verifiche riproducibili
 
 ```sh
 node qa/build-premium-demo.cjs
-```
-
-## Stanze e richieste (1.07.3)
-
-La creazione passa da `liveasta_create_room_dev`: stanza approvata, contatto
-privato e notifica vengono registrati nella stessa transazione. Una chiave
-idempotente evita doppie creazioni se si ripete un invio. Non cambia il default
-delle stanze create dalla versione pubblica e non riapprova stanze revocate.
-
-`liveasta_request_premium_dev` verifica password e approvazione della stanza,
-blocca la riga delle abilitazioni e registra una richiesta per ciclo. Lo stato
-è per stanza, condiviso fra giocatori e banditore. Resta bloccato dopo concessioni
-parziali; si riapre solo passando da almeno una funzione attiva a nessuna.
-Spegnere una stanza già Free non azzera una richiesta ancora da gestire.
-Le stanze vecchie senza email richiedono un contatto al primo invio.
-
-Le notifiche sono registrate in una coda privata. Il worker
-`supabase/functions/liveasta-dev-notification` usa i secret Aruba esistenti e
-invia esclusivamente a `postmaster@liveasta.it`. La nuova stanza include nome,
-password ed email; il Premium include stanza ed email. Il token casuale della
-notifica viene controllato da una RPC riservata al server prima di inviare.
-Un solo worker può acquisire un evento. Dopo l’invio il payload viene cancellato.
-Gli invii falliti possono essere ritentati dal superuser; un esito SMTP incerto
-rimane da verificare per evitare un reinvio potenzialmente duplicato.
-La coda non richiede che il browser del creatore rimanga aperto.
-
-La fixture accetta `?entry=home` per provare la creazione e `?request=open` per
-aprire la richiesta Premium della stanza fittizia. Le email della fixture sono
-simulate, non partono messaggi reali. Tutti i dati si azzerano al ricaricamento.
-
-## Collegamento al database: in attesa di autorizzazione
-
-La pagina normale `index.html` utilizza il database condiviso con il sito
-pubblico. La migrazione `supabase/premium-dev.sql` è preparata e verificata
-localmente, ma **non è stata applicata**: la revisione automatica ha respinto
-la modifica del database condiviso perché l'autorizzazione riguarda la dev.
-Non ritentare senza autorizzazione esplicita per quel database.
-Anche il tentativo del 24 settembre per la creazione automatica/richieste è
-stato rifiutato dalla revisione automatica: database live condiviso, nuove
-RPC/RLS e notifiche contenenti la password della stanza. Nessuna migrazione o
-nuova Edge Function di questo aggiornamento è stata applicata/pubblicata.
-
-Dopo l’autorizzazione applicare in una transazione prima `premium-dev.sql`, poi
-`migrations/20260924071323_room_requests_dev.sql`. Pubblicare la nuova funzione
-`liveasta-dev-notification` con il suo modulo `mail.mjs`; `verify_jwt=false`
-perché l’autenticazione è il token privato di ogni evento (le RPC di claim e
-risultato sono accessibili solo con `service_role`). Non cambiare le funzioni
-email già usate dalla produzione. Verificare advisors e un invio reale a
-postmaster da una stanza temporanea, quindi concessione e revoca su due client.
-
-La migrazione aggiunge una tabella di abilitazioni, policy di sola lettura
-per i client, una funzione di modifica che verifica la password superuser,
-e la pubblicazione Realtime della sola nuova tabella. L'ambiente usato
-dalla dev è `dev-premium`; `production` rimane distinto.
-Non modifica stanze esistenti o le loro impostazioni.
-
-Una volta autorizzata e applicata la migrazione, controllare sulla dev
-il salvataggio e la sincronizzazione tra due client in una stanza di prova.
-Il branch pubblico non include questi cambiamenti.
-
-## Verifica
-
-La prova locale della migrazione usa PostgreSQL in PGlite e dati temporanei:
-
-```sh
 NODE_PATH=/path/to/dependencies/node_modules node qa/premium-sql.test.cjs
 NODE_PATH=/path/to/dependencies/node_modules node qa/room-requests-sql.test.cjs
-node --test qa/notification-mail.test.mjs qa/player-assets.test.cjs
+NODE_PATH=/path/to/dependencies/node_modules node --test qa/premium-admin.test.cjs
+node --test qa/notification-mail.test.mjs qa/player-assets.test.cjs qa/release.test.cjs
 ```
 
-Sono verificati: accesso Free iniziale, password superuser errata,
-scritture anonime dirette vietate, singola abilitazione, pacchetto completo,
-revoca, isolamento degli ambienti e cancellazione delle abilitazioni insieme
-alla stanza. Mantra non è un identificatore Premium valido.
+Dipendenze dei soli test locali: PGlite e LinkeDOM. Nessun test usa contatti,
+password o stanze reali. Le prove coprono permessi, password errata, ambiente,
+revoche, deduplicazione, idempotenza, contatti, coda/invio email, fallback
+miniature, configurazione PWA e guasto della lettura notifiche nel superuser.
 
-Sul browser sono verificati popup di sblocco, attivazione singola/completa,
-revoca, Mantra gratuito e finestre a larghezza smartphone.
+Per verificare visivamente le immagini nella fixture rose usare
+`?portrait=keeper` o `?portrait=outfield`; aggiungere `&miniatures=premium`.
+Questi parametri non sono caricati dall'app normale.
 
-## Limite prima della vendita
+## Prima dei pagamenti
 
-La tabella protegge la modifica delle abilitazioni. Come il resto dell'app
-attuale, le azioni dell'asta sono gestite dal client: i controlli dell'interfaccia
-non costituiscono una protezione commerciale contro un client modificato.
-Anche i file delle miniature restano pubblici nel repository: questa dev
-controlla quali mostrare nell'app, non protegge il download diretto dei file.
-Prima dei pagamenti, le operazioni Premium dovranno anche essere autorizzate
-dal server. Un futuro pagamento potrà concedere gli stessi identificatori
-tramite un backend fidato (`source = payment`), senza cambiare l'interfaccia.
+Le abilitazioni sono protette sul server; le operazioni dell'asta restano
+eseguite dal client secondo l'architettura attuale. I controlli nell'interfaccia
+non proteggono contro un client modificato. Le immagini restano pubbliche nel
+repository. Prima della vendita occorre autorizzare anche le operazioni Premium
+sul server. Un futuro pagamento potrà assegnare gli stessi identificatori da
+un backend fidato con `source=payment`, mantenendo questa interfaccia.

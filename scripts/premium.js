@@ -1,7 +1,7 @@
 /* LIVEASTA Premium: one catalog, server-owned room entitlements, no local grants. */
 (function () {
   'use strict';
-  const ENVIRONMENT = 'dev-premium';
+  const ENVIRONMENT = window.LIVEASTA_CONFIG?.environment || 'dev-premium';
   const TABLE = 'liveasta_premium_entitlements';
   const FEATURES = Object.freeze([
     {id:'sealed', name:'Busta chiusa', description:'Offerte segrete, apertura delle buste e spareggi.'},
@@ -152,8 +152,8 @@
     const ticket = generation, target = roomId;
     requesting = true; updateRequestButton(); info.hidden = true;
     try {
-      const {data,error} = await adapter.getClient().rpc('liveasta_request_premium_dev', {
-        p_room_id:target, p_room_password:room.password, p_email:$('premium-request-email')?.value.trim() || null
+      const {data,error} = await adapter.getClient().rpc('liveasta_request_premium', {
+        p_room_id:target, p_environment:ENVIRONMENT, p_room_password:room.password, p_email:$('premium-request-email')?.value.trim() || null
       });
       if (error) throw error;
       if (ticket !== generation) return;
@@ -221,7 +221,7 @@
   async function readAdminNotifications(id,retry=false) {
     const ticket = adminGeneration;
     const {data,error} = await adapter.getClient().rpc('liveasta_admin_premium_notifications', {
-      p_room_id:id,p_password:adapter.getPassword?.(),p_retry:retry
+      p_room_id:id,p_environment:ENVIRONMENT,p_password:adapter.getPassword?.(),p_retry:retry
     });
     if (error) throw error;
     if (ticket === adminGeneration) adminNotifications = Array.isArray(data) ? data : [];
@@ -232,7 +232,14 @@
     const room = adapter.getRooms?.().find(r => String(r.id) === String(id)); if (!room) return;
     const ticket = ++adminGeneration; adminRoom = room; adminRow = null; adminBusy = false; adminNotifications = [];
     renderAdmin(); show(dialog('premium-admin-dialog'));
-    try { const row = await read(id); await readAdminNotifications(id); if (ticket !== adminGeneration) return; adminRow = row; renderAdmin(); }
+    try {
+      const row = await read(id);
+      if (ticket !== adminGeneration) return;
+      adminRow = row; renderAdmin();
+      // Email availability must not prevent the administrator managing grants.
+      try { await readAdminNotifications(id); if (ticket === adminGeneration) renderAdmin(); }
+      catch (_) { if (ticket === adminGeneration) renderAdmin('Stato email non disponibile. Le abilitazioni Premium restano gestibili.'); }
+    }
     catch (_) { if (ticket === adminGeneration) renderAdmin('Lettura non riuscita. Nessuna abilitazione è stata modificata.'); }
   }
 
