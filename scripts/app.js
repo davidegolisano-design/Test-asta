@@ -232,6 +232,7 @@ function updateCreateRoomModeUI(){
             getClient:()=>supabaseClient,
             getPassword:()=>adminSessionPassword,
             getRooms:()=>roomsCache,
+            getCurrentRoom:()=>currentRoom,
             login:()=>openAdminLogin(),
             onChange:()=>syncPremiumRuntime()
         });
@@ -4958,6 +4959,9 @@ function updateCreateRoomModeUI(){
         async function createRoom(name, password, config = {}) {
             const cleanName = normalizeRoomCode(name);
             if (!cleanName || !password) throw new Error('Inserisci nome e password della stanza.');
+            const email=String(document.getElementById('auction-new-room-email')?.value||'').trim().toLowerCase();
+            const fingerprint=JSON.stringify([cleanName,password,email,config]);
+            if(createRoom.lastAttempt?.fingerprint!==fingerprint)createRoom.lastAttempt={fingerprint,id:crypto.randomUUID()};
             const payload = {
                 name: cleanName,
                 password,
@@ -4974,14 +4978,19 @@ function updateCreateRoomModeUI(){
                 mantra_min_roster:23,
                 mantra_max_roster:Math.max(23,Math.min(90,parseInt(config.mantra_max_roster??30)||30)),
                 mantra_min_goalkeepers:2,
-                approved: false
+                approved: true
             };
             if (payload.game_mode==='classic' && (payload.limit_p + payload.limit_d + payload.limit_c + payload.limit_a) < 1) throw new Error('La rosa Classic deve avere almeno uno slot.');
-            const { data, error } = await supabaseClient.from('fanta_rooms').insert(payload).select().single();
+            const { data, error } = await supabaseClient.rpc('liveasta_create_room_dev', {
+                p_name:cleanName,p_room_password:password,p_email:email,p_config:payload,
+                p_request_id:createRoom.lastAttempt.id
+            });
             if (error) {
-                if (String(error.message || '').toLowerCase().includes('duplicate')) throw new Error('Esiste già una stanza con questo nome.');
-                throw new Error('Impossibile creare la stanza. Esegui il nuovo setup SQL su Supabase.');
+                if (error.code==='23505') throw new Error('Esiste già una stanza con questo nome.');
+                if(error.code==='22023')throw new Error(error.message);
+                throw new Error('Creazione non disponibile. Riprova tra poco: i dati inseriti restano qui.');
             }
+            if(!data?.id||data.approved!==true)throw new Error('Creazione non confermata. Riprova tra poco.');
             await loadRooms();
             return data;
         }
@@ -7942,7 +7951,8 @@ function updateCreateRoomModeUI(){
                         mantra_min_goalkeepers:2,
                         timer_seconds: 5
                     });
-                    throw new Error('Stanza creata correttamente. Ora deve essere approvata dal superuser prima di poter essere utilizzata.');
+                    window.liveastaShowRoomCreated?.(room);
+                    return room;
                 } else {
                     const password = document.getElementById('auction-room-password').value;
 

@@ -21,6 +21,7 @@
     fanta_app_data:[{key:'official_listone',data:players,updated_at:new Date().toISOString(),file_name:'Listone dimostrativo'}],
     liveasta_premium_entitlements:[]
   };
+  const contacts=new Map([[ROOM,"responsabile@example.invalid"]]),creationKeys=new Map(),notifications=[];
   const clone=value=>structuredClone(value), channels=new Set();
   let failReads=false,failWrites=false;
   class Query {
@@ -61,12 +62,47 @@
   }
   function setFeatures(features,id=ROOM){
     let row=tables.liveasta_premium_entitlements.find(r=>r.room_id===id);
-    if(!row){row={room_id:id,environment:'dev-premium',features:[],revision:0};tables.liveasta_premium_entitlements.push(row);}
+    if(!row){row={room_id:id,environment:'dev-premium',features:[],revision:0,requested_at:null,request_cycle:0};tables.liveasta_premium_entitlements.push(row);}
+    if(row.features.length&&!features.length){row.requested_at=null;row.request_cycle++;}
     row.features=[...features];row.revision++;emitPremium(row);return clone(row);
   }
   const client={
     from:table=>new Query(table),
     async rpc(name,args={}){
+      if(name==='liveasta_create_room_dev'){
+        const previous=creationKeys.get(args.p_request_id);
+        if(previous)return {data:clone(previous),error:null};
+        if(tables.fanta_rooms.some(r=>r.name===args.p_name))return {data:null,error:{code:'23505'}};
+        const created={...room,...args.p_config,id:crypto.randomUUID(),name:args.p_name,password:args.p_room_password,approved:true};
+        tables.fanta_rooms.push(created);creationKeys.set(args.p_request_id,created);contacts.set(created.id,args.p_email);
+        notifications.push({room_id:created.id,kind:'room_created',state:'sent'});
+        return {data:clone(created),error:null};
+      }
+      if(name==='liveasta_request_premium_dev'){
+        if(failWrites)return {data:null,error:{message:'Errore simulato'}};
+        const target=tables.fanta_rooms.find(r=>r.id===args.p_room_id&&r.password===args.p_room_password&&r.approved);
+        if(!target)return {data:null,error:{code:'42501'}};
+        let ent=tables.liveasta_premium_entitlements.find(r=>r.room_id===target.id);
+        if(!ent){setFeatures([],target.id);ent=tables.liveasta_premium_entitlements.find(r=>r.room_id===target.id);}
+        let status=ent.requested_at?'already_requested':ent.features.length===7?'active':'requested';
+        if(status==='requested'){
+          if(!contacts.has(target.id)&&!args.p_email)return {data:{needs_email:true},error:null};
+          if(!contacts.has(target.id))contacts.set(target.id,args.p_email);
+          ent.requested_at=new Date().toISOString();ent.revision++;
+          notifications.push({room_id:target.id,kind:'premium_requested',state:'sent'});emitPremium(ent);
+        }
+        return {data:{status,entitlement:clone(ent)},error:null};
+      }
+      if(name==='liveasta_admin_premium_notifications'){
+        if(args.p_password!=='demo-premium')return {data:null,error:{code:'42501'}};
+        return {data:clone(notifications.filter(n=>n.room_id===args.p_room_id)),error:null};
+      }
+      if(name==='liveasta_set_room_approval'){
+        if(args.p_password!=='demo-premium')return {data:false,error:null};
+        const target=tables.fanta_rooms.find(r=>r.id===args.p_room_id);
+        if(target)target.approved=args.p_approved;
+        return {data:!!target,error:null};
+      }
       if(name==='liveasta_set_premium_feature'){
         if(args.p_password!=='demo-premium')return {data:null,error:{code:'42501',message:'Password errata'}};
         if(failWrites)return {data:null,error:{message:'Errore simulato di salvataggio'}};

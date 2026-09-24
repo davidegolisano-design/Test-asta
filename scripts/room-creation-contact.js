@@ -1,4 +1,4 @@
-// LIVEASTA DEV - creazione stanza guidata + contatto email
+// Creazione stanza: dati e contatto registrati insieme sul server.
 (function(){
   if(window.__liveastaRoomCreationContactLoaded)return;
   window.__liveastaRoomCreationContactLoaded=true;
@@ -7,6 +7,7 @@
   let createStep=0;
   let createUiReady=false;
   let lastCreateVisible=false;
+  let creating=false;
 
   function isCreateVisible(){
     if(!document.getElementById('screen-auctioneer-setup')?.classList.contains('active'))return false;
@@ -43,7 +44,7 @@
       <div class="liveasta-create-step" data-create-step="3" style="display:none;">
         <p class="subtitle">Email del responsabile</p>
         <input type="email" id="auction-new-room-email" class="minimal-input" placeholder="nome@email.it" maxlength="320" autocomplete="email" inputmode="email" spellcheck="false">
-        <div class="setup-note">Useremo questo indirizzo solo per avvisarti quando la stanza sarà attiva.</div>
+        <div class="setup-note">L’amministratore riceverà questo indirizzo insieme ai dati della stanza e alle eventuali richieste Premium.</div>
       </div>
 
       <div class="liveasta-create-step" data-create-step="4" style="display:none;">
@@ -136,94 +137,40 @@
   }
 
   async function createWizardNext(){
-    if(!validateCurrentStep())return;
+    if(creating||!validateCurrentStep())return;
     if(createStep<4){createStep++;renderCreateStep();return;}
+    creating=true;
     const next=document.getElementById('auction-wizard-next');
     if(next)next.disabled=true;
     try{await window.joinAsAuctioneer();}
-    finally{if(next)next.disabled=false;}
+    finally{creating=false;if(next)next.disabled=false;}
   }
 
   function createWizardBack(){
+    if(creating)return;
     if(createStep>0){createStep--;renderCreateStep();return;}
     window.leaveAuctioneerSetup();
   }
 
-  async function persistContact(name,password,email){
-    if(!window.supabaseClient)throw new Error('Database non disponibile');
-    const cutoff=new Date(Date.now()-5*60*1000).toISOString();
-    const {data,error}=await window.supabaseClient
-      .from('fanta_rooms')
-      .select('id,created_at')
-      .eq('name',name)
-      .eq('password',password)
-      .gte('created_at',cutoff)
-      .order('created_at',{ascending:false})
-      .limit(1)
-      .maybeSingle();
-    if(error||!data?.id)throw error||new Error('Stanza appena creata non trovata');
-
-    const {data:ok,error:rpcError}=await window.supabaseClient.rpc('liveasta_register_room_contact',{
-      p_room_id:data.id,
-      p_room_password:password,
-      p_email:email
-    });
-    if(rpcError)throw rpcError;
-    if(ok!==true)throw new Error('Registrazione email non riuscita');
-    return data.id;
-  }
-
-  function showSuccess(email){
+  window.liveastaShowRoomCreated=function(room){
     document.getElementById('liveasta-room-success')?.remove();
-    const overlay=document.createElement('div');
+    const overlay=document.createElement('dialog');
     overlay.id='liveasta-room-success';
-    overlay.style.cssText='position:fixed;inset:0;z-index:100001;background:rgba(4,8,18,.82);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:18px;color:#fff;';
-    overlay.innerHTML=`<div style="width:min(460px,100%);background:#101827;border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:26px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.45)">
-      <div style="font-size:25px;font-weight:900;margin-bottom:12px">Stanza creata correttamente</div>
-      <div style="line-height:1.55;font-size:16px">La stanza è in attesa di approvazione.<br><br>Riceverai una mail a <b>${escapeHtml(email)}</b> quando la stanza sarà attiva.</div>
-      <button id="liveasta-room-success-ok" type="button" class="btn" style="margin-top:22px">OK</button>
+    overlay.className='premium-dialog';
+    overlay.setAttribute('aria-labelledby','liveasta-room-created-title');
+    overlay.innerHTML=`<div class="premium-dialog-content">
+      <h2 id="liveasta-room-created-title">La tua stanza è pronta</h2>
+      <p><b>${escapeHtml(room.name)}</b> è già approvata e puoi usarla subito.</p>
+      <p>Invita la tua lega e scegli come entrare.</p>
+      <button id="liveasta-room-success-ok" type="button" class="premium-primary">Entra nella stanza</button>
     </div>`;
     document.body.appendChild(overlay);
-    overlay.querySelector('#liveasta-room-success-ok')?.addEventListener('click',()=>{
-      overlay.remove();
-      window.resetAuctioneerRoomMode?.();
-      window.showScreen?.('screen-role');
-    });
-  }
-
-  function installWrapper(){
-    if(typeof window.joinAsAuctioneer!=='function'||window.joinAsAuctioneer.__roomContactWrapped)return;
-    const original=window.joinAsAuctioneer;
-    async function wrappedJoinAsAuctioneer(...args){
-      if(!isCreateVisible())return original.apply(this,args);
-
-      const name=String(document.getElementById('auction-new-room-name')?.value||'').trim();
-      const password=String(document.getElementById('auction-new-room-password')?.value||'');
-      const confirm=String(document.getElementById('auction-new-room-password-confirm')?.value||'');
-      const email=String(document.getElementById('auction-new-room-email')?.value||'').trim().toLowerCase();
-
-      if(!name||!password||password!==confirm||!EMAIL_RE.test(email)){
-        setCreateError('Controlla i dati inseriti prima di creare la stanza.');
-        return;
-      }
-
-      const result=await original.apply(this,args);
-      try{
-        await persistContact(name,password,email);
-        const err=document.getElementById('auction-room-error');
-        if(err)err.textContent='';
-        showSuccess(email);
-      }catch(error){
-        console.error('Registrazione email stanza non riuscita',error);
-        const err=document.getElementById('auction-room-error');
-        if(err)err.textContent='';
-        await window.appAlert?.('La stanza è stata creata, ma non è stato possibile associare l’email. Contatta l’amministratore.');
-      }
-      return result;
-    }
-    wrappedJoinAsAuctioneer.__roomContactWrapped=true;
-    window.joinAsAuctioneer=wrappedJoinAsAuctioneer;
-  }
+    overlay.addEventListener('close',()=>{overlay.remove();window.resetAuctioneerRoomMode?.();window.showScreen?.('screen-entry-role');},{once:true});
+    overlay.querySelector('button').onclick=()=>overlay.close();
+    document.activeElement?.blur?.();
+    overlay.showModal();
+    overlay.querySelector('button').focus({preventScroll:true});
+  };
 
   function interceptWizardButtons(){
     document.addEventListener('click',event=>{
@@ -248,7 +195,6 @@
 
   function syncCreateVisibility(){
     buildCreateWizard();
-    installWrapper();
     const visible=isCreateVisible();
     if(visible&&!lastCreateVisible){createStep=0;renderCreateStep();}
     lastCreateVisible=visible;
@@ -256,7 +202,6 @@
 
   function boot(){
     buildCreateWizard();
-    installWrapper();
     interceptWizardButtons();
     syncCreateVisibility();
     const root=document.getElementById('screen-auctioneer-login')||document.body;

@@ -1,0 +1,79 @@
+// Disposable PostgreSQL only: no real room, credential or email is used.
+const {PGlite}=require('@electric-sql/pglite');
+const fs=require('node:fs'),assert=require('node:assert/strict');
+(async()=>{
+  const db=new PGlite();
+  await db.exec(`create role anon;create role authenticated;create role service_role;
+    create schema private; create schema net; create publication supabase_realtime;
+    create table public.fanta_rooms(id uuid primary key default gen_random_uuid(),name text unique,password text,approved boolean default false,
+      game_mode text default 'classic',mantra_max_roster int default 30,created_at timestamptz default now());
+    create table private.liveasta_room_contacts(room_id uuid primary key references public.fanta_rooms on delete cascade,email text);
+    create table net.test_queue(body jsonb);
+    create function net.http_post(url text,headers jsonb,body jsonb,timeout_milliseconds integer) returns bigint language plpgsql as $$
+    begin insert into net.test_queue values(body);return 1;end $$;
+    create function public.liveasta_verify_superuser(p_password text) returns boolean language sql as $$select p_password='test-admin'$$;`);
+  await db.exec(fs.readFileSync('supabase/premium-dev.sql','utf8'));
+  await db.exec(fs.readFileSync('supabase/migrations/20260924071323_room_requests_dev.sql','utf8'));
+  const key='00000000-0000-4000-8000-000000000111';
+  const create=(email='responsabile@example.invalid',name='LEGA TEST',id=key)=>db.query('select liveasta_create_room_dev($1,$2,$3,$4,$5) as r',[name,'room-pass',email,{game_mode:'mantra',mantra_max_roster:30},id]);
+  const feature=(id,value,roomId,password='test-admin')=>db.query("select liveasta_set_premium_feature($1,'dev-premium',$2,$3,$4) as r",[roomId,id,value,password]);
+  const request=(id,password='room-pass',email=null)=>db.query('select liveasta_request_premium_dev($1,$2,$3) as r',[id,password,email]);
+  await db.exec('set role anon');
+  await assert.rejects(create('invalid'),e=>e.code==='22023');
+  const r=(await create()).rows[0].r;
+  assert.equal(r.approved,true);assert.equal(r.game_mode,'mantra');
+  assert.equal((await create()).rows[0].r.id,r.id,'retry must reuse existing room');
+  await assert.rejects(create('different@example.invalid'),e=>e.code==='42501');
+  await assert.rejects(create('responsabile@example.invalid','LEGA TEST','00000000-0000-4000-8000-000000000112'),e=>e.code==='23505');
+  await assert.rejects(request(r.id,'wrong'),e=>e.code==='42501');
+  const replies=await Promise.all([request(r.id),request(r.id),request(r.id)]);
+  assert.deepEqual(replies.map(x=>x.rows[0].r.status),['requested','already_requested','already_requested']);
+  assert.ok(replies[0].rows[0].r.entitlement.requested_at);
+  await assert.rejects(db.query('select * from liveasta_premium_private.notifications'),e=>e.code==='42501');
+  await assert.rejects(db.query("update public.liveasta_premium_entitlements set requested_at=null"),e=>e.code==='42501');
+  await assert.rejects(db.query('select liveasta_claim_dev_notification($1,$1,$1)',[key]),e=>e.code==='42501');
+  await assert.rejects(db.query('select liveasta_admin_premium_notifications($1,$2,false)',[r.id,'wrong']),e=>e.code==='42501');
+  await feature('all',false,r.id);
+  assert.equal((await request(r.id)).rows[0].r.status,'already_requested','turning off Free cannot reopen');
+  await feature('all',true,r.id);await feature('chat',false,r.id);
+  assert.equal((await request(r.id)).rows[0].r.status,'already_requested','partial revocation cannot reopen');
+  await feature('all',false,r.id);
+  const renewed=(await request(r.id)).rows[0].r;
+  assert.equal(renewed.status,'requested');assert.equal(renewed.entitlement.request_cycle,1);
+  await db.exec('reset role');
+  let jobs=(await db.query('select * from liveasta_premium_private.notifications order by created_at')).rows;
+  assert.equal(jobs.length,3,'one creation and exactly one request per cycle');
+  assert.equal(jobs[0].payload.password,'room-pass');
+  assert.equal(jobs[0].payload.email,'responsabile@example.invalid');
+  assert.ok(!('password' in jobs[1].payload),'Premium mail does not duplicate credentials');
+  assert.equal((await db.query('select * from net.test_queue')).rows.length,3);
+  // Revocation stays revoked; retries never restore approval.
+  await db.query('update public.fanta_rooms set approved=false where id=$1',[r.id]);
+  await db.exec('set role anon');
+  await assert.rejects(request(r.id),e=>e.code==='42501');
+  assert.equal((await create()).rows[0].r.approved,false);
+  await db.exec('reset role');
+  // Legacy room without a contact: request an explicit email, without granting Premium.
+  const legacy=(await db.query("insert into public.fanta_rooms(name,password,approved) values ('LEGACY','room-pass',true) returning id")).rows[0].id;
+  await db.exec('set role anon');
+  assert.equal((await request(legacy)).rows[0].r.needs_email,true);
+  await assert.rejects(request(legacy,'room-pass','invalid'),e=>e.code==='22023');
+  assert.equal((await request(legacy,'room-pass','legacy@example.invalid')).rows[0].r.status,'requested');
+  // Claim, send outcome and retries: competing workers and old claims cannot resend.
+  await db.exec('set role service_role');
+  const claim='00000000-0000-4000-8000-000000000321',other='00000000-0000-4000-8000-000000000322';
+  assert.equal((await db.query('select liveasta_claim_dev_notification($1,$2,$3) as r',[jobs[0].id,key,claim])).rows[0].r,null);
+  let claimed=(await db.query('select liveasta_claim_dev_notification($1,$2,$3) as r',[jobs[0].id,jobs[0].delivery_token,claim])).rows[0].r;
+  assert.equal(claimed.payload.password,'room-pass');
+  assert.equal((await db.query('select liveasta_claim_dev_notification($1,$2,$3) as r',[jobs[0].id,jobs[0].delivery_token,other])).rows[0].r,null);
+  assert.equal((await db.query("select liveasta_finish_dev_notification($1,$2,'sent') as r",[jobs[0].id,other])).rows[0].r,false);
+  assert.equal((await db.query("select liveasta_finish_dev_notification($1,$2,'sent') as r",[jobs[0].id,claim])).rows[0].r,true);
+  assert.equal((await db.query('select liveasta_claim_dev_notification($1,$2,$3) as r',[jobs[0].id,jobs[0].delivery_token,other])).rows[0].r,null);
+  await db.exec('reset role');
+  assert.deepEqual((await db.query('select payload from liveasta_premium_private.notifications where id=$1',[jobs[0].id])).rows[0].payload,{});
+  await db.query('delete from public.fanta_rooms');
+  assert.equal((await db.query('select * from liveasta_premium_private.notifications')).rows.length,0);
+  assert.equal((await db.query('select * from public.liveasta_premium_entitlements')).rows.length,0);
+  await db.close();
+  console.log('PASS: automatic approval, atomic contact/outbox, creation retry, room-wide deduplication, complete revocation/re-request, denied access, legacy contacts, mail claim and cascade.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

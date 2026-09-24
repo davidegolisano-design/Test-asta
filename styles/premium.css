@@ -33,6 +33,11 @@
 .premium-dialog-foot p { font-size:12px; margin:6px 0 0; }
 .premium-dialog-foot small { display:block; margin-top:6px; font:400 11px/1.4 system-ui,sans-serif; }
 .premium-primary { width:100%; min-height:46px; border:1px solid #b08400; border-radius:10px; background:var(--premium-gold); color:var(--premium-ink); font:800 16px/1.35 system-ui,sans-serif; cursor:pointer; padding:12px; }
+.premium-primary:disabled { opacity:.7; cursor:default; }
+.premium-email-row { display:grid; gap:8px; margin:12px 0; font:600 14px/1.4 system-ui,sans-serif; }
+.premium-email-row[hidden] { display:none; }
+.premium-email-row input { width:100%; min-width:0; padding:12px; border:1px solid #a88a48; border-radius:8px; font:400 16px/1.4 system-ui,sans-serif; }
+.premium-dialog .premium-mail-status { font-size:13px; margin:8px 0; }
 .premium-toggle-row { display:flex; align-items:center; justify-content:space-between; gap:18px; position:relative; min-height:74px; padding:14px 0; border-bottom:1px solid #92804c44; cursor:pointer; }
 .premium-toggle-row>span { min-width:0; flex:1; }
 .premium-toggle-row input { position:absolute; width:50px; height:44px; right:0; opacity:0; cursor:pointer; margin:0; z-index:1; }
