@@ -24,7 +24,11 @@ window.addEventListener('load',async()=>{
       await premium.refresh();
     }
     if(preview.get('mantra')==='1'){demo.room.game_mode='mantra';currentRoom.game_mode='mantra';}
+    // Let the real heartbeat read its lock from the in-memory demo backend.
+    // This keeps long-running visual checks on the board without touching live data.
+    auctioneerLockKey=`liveasta_auctioneer_lock_${demo.room.id}`;
     auctioneerLockToken='demo-lock';
+    await insertAuctioneerLock(auctioneerLockKey,auctioneerLockToken,demo.room);
     applyAuctioneerUiMode();
     roomControlNavigationAuthorized=true;
     if(scene!=='management')showScreen('screen-auctioneer-board');
