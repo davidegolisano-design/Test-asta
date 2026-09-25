@@ -685,7 +685,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-timer #countdown-display{
     font-size:clamp(58px,18vw,120px)!important;
 }
-#screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info > :not(#sealed-ranking-auctioneer){
+#screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result .col-info > :not(#sealed-ranking-auctioneer):not(.liveasta-mobile-surface){
     display:none!important;
 }
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-sealed-result #sealed-ranking-auctioneer{
@@ -709,7 +709,7 @@ html[data-auctioneer-ui="desktop"] #screen-auctioneer-board{--auctioneer-explici
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .auctioneer-turn-title{margin:0 0 6px!important;
 }
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .timer-ring{display:none!important;}
-#screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .col-info > :not(#sealed-ranking-auctioneer):not(#auctioneer-turn-ranking-empty){display:none!important;}
+#screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .col-info > :not(#sealed-ranking-auctioneer):not(#auctioneer-turn-ranking-empty):not(.liveasta-mobile-surface){display:none!important;}
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn #sealed-ranking-auctioneer{margin:0!important;
 }
 #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.mobile-turn .sealed-ranking-title{font-size:11px!important;}
