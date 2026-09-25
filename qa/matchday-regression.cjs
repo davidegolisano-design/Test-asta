@@ -51,6 +51,7 @@ const brand=document.querySelector('[data-settings-tap]');for(let i=0;i<4;i++)br
 ok(settingsOpens===0,'four brand taps do not open Settings');brand.click();ok(settingsOpens===1,'fifth brand tap opens Settings');
 ok(!document.querySelector('.home-version-badge')&&document.querySelector('.settings-version-badge'),'version shown only in Settings');
 const controls={document,console,addEventListener:()=>{},requestAnimationFrame:f=>f(),currentRoomId:null,channel:null,connectToRoom:async()=>{},renderPlayerRoomOverview:()=>{},openPlayerRoomOverview:async()=>{},openPlayerRoomTeamRoster:()=>{},closePlayerRoomTeamRoster:()=>{},renderRoomControl:()=>{},openRoomControl:async()=>{}};
+controls.premium={has:()=>true,decorate:()=>{}}; // UI checks; entitlements have a separate suite.
 controls.window=controls;document.readyState='loading';vm.createContext(controls);
 for(const file of ['scripts/opponent-credits.js','scripts/room-chat.js'])vm.runInContext(fs.readFileSync(file,'utf8'),controls);
 vm.runInContext('renderRoomControl()',controls);

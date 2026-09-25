@@ -1,7 +1,7 @@
 name: Build LiveAsta APK
 on:
   push:
-    branches: [main]
+    branches: [main, fix-mobile-layout-v1075]
     paths:
       - 'android/app/**'
       - 'android/*.gradle'
@@ -52,7 +52,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add android/download/LiveAsta.apk
-          git rm -f android/download/LIVEASTA.apk
+          git rm -f --ignore-unmatch android/download/LIVEASTA.apk
           git commit -m 'Build LiveAsta Android APK'
           git pull --rebase origin main
           git push origin HEAD:main

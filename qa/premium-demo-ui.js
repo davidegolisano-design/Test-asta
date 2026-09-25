@@ -10,10 +10,43 @@ window.addEventListener('load',async()=>{
   await connectToRoom(demo.room);
   myTeamId=demo.teamId;myTeamName='FC DEMO';
   teamsCache=demo.tables.fanta_teams;
+  document.querySelector('#auction-room-pill b').textContent=demo.room.name;
+  document.getElementById('view-auction').classList.add('auction-view-hidden');
+  document.getElementById('view-list').style.display='flex';
   roomControlNavigationAuthorized=true;
   await openRoomControl(false);
   roomControlNavigationAuthorized=false;
   premium.decorate();
+  const scene=preview.get('scene');
+  if(scene){
+    if(preview.get('free')!=='1'){
+      demo.setFeatures(['sealed','random','turns','ready','budget','chat','miniatures']);
+      await premium.refresh();
+    }
+    if(preview.get('mantra')==='1'){demo.room.game_mode='mantra';currentRoom.game_mode='mantra';}
+    auctioneerLockToken='demo-lock';
+    applyAuctioneerUiMode();
+    roomControlNavigationAuthorized=true;
+    if(scene!=='management')showScreen('screen-auctioneer-board');
+    roomControlNavigationAuthorized=false;
+    if(scene==='hybrid-turn'){
+      auctioneerPlayerMode=true;auctioneerPlayerTeamId=demo.teamId;
+      hybridPreferredView='board';configureHybridPlayerIdentity();syncHybridViewButtons();
+    }
+    if(scene==='turn'||scene==='hybrid-turn'){
+      nominationState={...nominationState,enabled:true,role:'P',turn_team_id:demo.teamId,order_team_ids:teamsCache.map(t=>t.id)};
+      nominationReady=true;currentAuctionPlayer=null;showNominationTurnStage();
+    }
+    if(scene==='auction'||scene==='ready'){
+      currentAuctionPlayer={...demo.players[0],Nome:'PORTIERE DEMO',Squadra:'Parma'};
+      restoreAuctioneerVisualFromState({player:{id:currentAuctionPlayer.Id,name:currentAuctionPlayer.Nome,role:'P',club:'Parma'}});
+      if(scene==='ready'){readyGateWaiting=true;showAuctioneerReadyStage();}
+      else{setMobileBoardPhase('normal');document.getElementById('countdown-display').textContent='12';document.getElementById('current-value-display').textContent='85';document.getElementById('winner-display').textContent='FC DEMO';}
+    }
+    if(scene==='management'){document.getElementById('mg-tab-participants').click();}
+    if(scene==='list')refreshPlayerLists();
+    window.refreshLiveAstaMobileBoardDev?.();
+  }
   if(preview.get('request')==='open')premium.offer();
   if(['keeper','outfield'].includes(preview.get('portrait'))){
     const player=demo.players[preview.get('portrait')==='keeper'?0:1];

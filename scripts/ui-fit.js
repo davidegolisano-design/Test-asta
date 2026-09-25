@@ -1,7 +1,9 @@
 // LIVEASTA text fitting and responsive name utilities.
 
 function fitTextToBox(el, maxPx, minPx, forceSingleLine=false){
-            if(!el) return;
+            if(!el || !el.getClientRects().length) return;
+            // Empty-state copy wraps naturally; it is not a player name.
+            if(el.id==='auction-player-name-top' && el.closest('.nomination-empty-previous'))return;
 
             // Rimuove eventuali scale precedenti prima di misurare.
             el.style.removeProperty('transform');

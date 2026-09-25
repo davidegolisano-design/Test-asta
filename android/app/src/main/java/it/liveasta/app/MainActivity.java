@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -21,6 +22,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import android.widget.FrameLayout;
+import android.view.WindowInsets;
 import java.io.OutputStream;
 
 public class MainActivity extends Activity {
@@ -39,7 +42,23 @@ public class MainActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         webView = new WebView(this);
-        setContentView(webView);
+        FrameLayout safeContent = new FrameLayout(this);
+        safeContent.setBackgroundColor(0xFF11151B);
+        safeContent.addView(webView, new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        // Android 15 draws behind system bars for targetSdk 35. Keep the web
+        // viewport inside the usable area; consume insets to avoid CSS double padding.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+            safeContent.setOnApplyWindowInsetsListener((view, insets) -> {
+                android.graphics.Insets safe = insets.getInsets(WindowInsets.Type.systemBars()
+                    | WindowInsets.Type.displayCutout() | WindowInsets.Type.ime());
+                view.setPadding(safe.left, safe.top, safe.right, safe.bottom);
+                return WindowInsets.CONSUMED;
+            });
+        }
+        setContentView(safeContent);
+        safeContent.requestApplyInsets();
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);

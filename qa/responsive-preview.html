@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LIVEASTA · verifica responsive isolata</title>
+<style>
+html,body{margin:0;background:#253027;color:#fff;font:14px system-ui}header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:10px}label{display:flex;align-items:center;gap:5px}select{font:inherit;padding:4px}iframe{display:block;width:390px;height:780px;border:1px solid #687968;margin:0 auto;background:#0b100b;max-width:100%}
+</style></head><body>
+<header><b>Verifica UI · dati fittizi · nessun collegamento al database</b>
+<label>Schermata <select id="scene"><option value="list">Listone</option><option value="turn">Primo turno</option><option value="hybrid-turn">Banditore giocatore</option><option value="ready">Ready</option><option value="auction">Asta</option><option value="management">Gestione</option></select></label>
+<label>Larghezza <select id="width"><option>320</option><option>360</option><option selected>390</option><option>412</option><option>760</option><option>1024</option><option>1280</option></select></label>
+<label>Altezza <select id="height"><option>568</option><option>640</option><option selected>780</option><option>844</option></select></label>
+<label>Modalità <select id="mode"><option value="classic">Classic</option><option value="mantra">Mantra</option></select></label>
+<label>Pacchetto <select id="plan"><option value="premium">Premium</option><option value="free">Free</option></select></label>
+</header><iframe title="Anteprima dell'app con dati fittizi"></iframe>
+<script>
+const frame=document.querySelector('iframe');
+function size(){frame.style.width=document.getElementById('width').value+'px';frame.style.height=document.getElementById('height').value+'px';}
+function scene(){const q=new URLSearchParams({scene:document.getElementById('scene').value,mantra:document.getElementById('mode').value==='mantra'?'1':'0',free:document.getElementById('plan').value==='free'?'1':'0'});frame.src='./premium-preview.html?'+q;}
+for(const id of ['width','height'])document.getElementById(id).addEventListener('change',size);
+for(const id of ['scene','mode','plan'])document.getElementById(id).addEventListener('change',scene);
+size();scene();
+</script></body></html>
