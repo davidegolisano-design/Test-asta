@@ -198,8 +198,9 @@
 
       case 'turn':{
         const team=sourceText('auctioneer-turn-team','--');
+        const rows=rankingRows();
         setSurface(left,{head:'È IL TURNO DI',main:team,kind:'text',tone:'primary'});
-        setSurface(right,{active:false});
+        setSurface(right,{head:'ULTIMA ASTA',main:rows.length?'':'Nessuna offerta',kind:'text',tone:'muted',list:rows,ranking:true});
         break;
       }
 

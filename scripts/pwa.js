@@ -50,7 +50,7 @@
   window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);window.addEventListener('pageshow',syncInstallButton);document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncInstallButton();});syncInstallButton();
 
   const featureScripts=[
-    './scripts/auctioneer-mobile-board.js?v=1067',
+    './scripts/auctioneer-mobile-board.js?v=1075',
     './scripts/opponent-credits.js?v=1062',
     './scripts/room-chat.js?v=107-premium1',
     './scripts/room-chat-entry-sync.js?v=10418',

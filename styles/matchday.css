@@ -225,7 +225,7 @@
   #screen-room-control .mg-switch-label>input:checked+.mg-switch-ui::after {background:var(--theme-on-marker)!important}
   #screen-room-control .mg-switch-label>input:focus-visible+.mg-switch-ui {outline:2px solid var(--theme-primary)!important;outline-offset:3px!important}
   .budget-switch input:checked+span {background:var(--theme-marker)!important}
-  .mg-help {box-shadow:none!important;border-radius:50%!important;background:var(--theme-panel)!important;color:var(--theme-primary)!important;border-color:var(--theme-border)!important}
+  .mg-help {display:inline-flex!important;align-items:center!important;justify-content:center!important;vertical-align:middle!important;width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;margin:0 0 0 6px!important;padding:0!important;font:800 16px/1 Inter,sans-serif!important;box-shadow:none!important;border:1px solid var(--theme-border)!important;border-radius:50%!important;background:var(--theme-panel)!important;color:var(--theme-primary)!important}
   #management-help {background:var(--theme-card)!important;border:1px solid var(--theme-border)!important;border-top:5px solid var(--theme-marker)!important;border-radius:var(--match-radius)!important;color:var(--theme-text)!important}
   #management-help::backdrop {background:rgba(3,9,5,.78)!important}
 
@@ -265,7 +265,13 @@
     #screen-auctioneer-board :is(.auction-quick-btn,.auction-nav-room-pill) {height:auto!important;min-height:36px!important;padding:6px 5px!important;display:flex!important;align-items:center!important;justify-content:center!important}
     #screen-auctioneer-board .auction-nav-room-pill {gap:6px!important}
     #screen-auctioneer-board .auction-nav-room-pill b {min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
-    #view-auction.mobile-turn:has(.nomination-empty-previous) {grid-template-rows:minmax(90px,.6fr) minmax(0,1fr)!important}
+    #view-auction.mobile-turn:has(.nomination-empty-previous) {grid-template-rows:clamp(72px,14dvh,110px) minmax(0,1fr)!important}
+    #view-auction.mobile-turn .liveasta-mobile-surface {grid-template-rows:auto auto!important;align-content:center!important;gap:14px!important}
+    #view-auction.mobile-turn .liveasta-mobile-surface-head {white-space:normal!important;overflow-wrap:anywhere!important}
+    #view-auction.mobile-turn .liveasta-mobile-surface[data-tone="muted"] .liveasta-mobile-surface-main {font-size:clamp(18px,5vw,24px)!important;color:var(--theme-muted)!important}
+    #view-auction.mobile-turn #liveasta-mobile-info-surface:has(.liveasta-mobile-list-row) {grid-template-rows:auto minmax(0,1fr)!important;align-content:stretch!important}
+    #view-auction.mobile-turn #liveasta-mobile-info-surface .liveasta-mobile-surface-main:empty {display:none!important}
+    #view-auction.mobile-turn .liveasta-mobile-surface-list {grid-row:2!important;max-height:none!important;align-self:stretch!important}
     .auction-list-toolbar {grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
     #list-filters-board {grid-column:1/-1!important}
     .auction-list-toolbar .toolbar-icon-btn {font-size:18px!important}
