@@ -53,8 +53,8 @@
 .premium-package input { right:10px; }
 @media(max-width:480px) { .premium-dialog-content { padding:16px; } .premium-dialog-head,.premium-dialog-foot { padding:12px 16px; } .premium-toggle-row { gap:10px; } .premium-toggle-row b { font-size:15px; } }
 
-/* Matchday owns button colours through a CSS layer; set the pressed mode there. */
-@layer matchday {
+/* The earlier Premium layer retains the pressed colour through Matchday and hover. */
+@layer premium {
 html[data-live-theme] body #screen-auctioneer-board #toolbar-sealed-mode-btn[aria-pressed="true"]:not(.premium-locked),
 html[data-live-theme] body #screen-auctioneer-board #toolbar-sealed-mode-btn[aria-pressed="true"]:not(.premium-locked):hover:not(:disabled){
   position:relative!important;
