@@ -7951,8 +7951,7 @@ function updateCreateRoomModeUI(){
                         mantra_min_goalkeepers:2,
                         timer_seconds: LIVEASTA_TIMER_DEFAULTS.auction
                     });
-                    window.liveastaShowRoomCreated?.(room);
-                    return room;
+                    window.liveastaRoomOnboarding?.prepare(room);
                 } else {
                     const password = document.getElementById('auction-room-password').value;
 
@@ -8044,6 +8043,14 @@ function updateCreateRoomModeUI(){
                 showNominationWaitingBoard();
                 setTimeout(()=>broadcastNominationState(true),350);
             }
+            if(window.liveastaRoomOnboarding?.hasDraft(room.id)){
+                window.liveastaRoomOnboarding.open(room,{
+                    getClient:()=>supabaseClient,
+                    canEdit:()=>String(currentRoomId)===String(room.id) && !!auctioneerLockKey && !!auctioneerLockToken && document.getElementById('screen-auctioneer-board').classList.contains('active'),
+                    onSaved:async()=>{await loadRoomState();refreshPlayerLists();renderOnlinePlayers();broadcastStateChanged();}
+                });
+            }
+            return room;
         }
 
 

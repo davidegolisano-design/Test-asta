@@ -260,7 +260,7 @@
 
   const originalJoinAuctioneer=joinAsAuctioneer;
   joinAsAuctioneer=async function(){
-    const password=String(document.getElementById('auction-room-password')?.value||'');
+    const password=String(document.getElementById(auctioneerRoomMode==='create'?'auction-new-room-password':'auction-room-password')?.value||'');
     const result=await originalJoinAuctioneer.apply(this,arguments);
     if(currentRoomId && auctioneerLockKey && auctioneerLockToken){
       saveAuctioneerSession(password);

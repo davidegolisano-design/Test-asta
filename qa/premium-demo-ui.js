@@ -4,6 +4,7 @@ window.addEventListener('load',async()=>{
   const preview=new URLSearchParams(location.search);
   if(preview.get('entry')==='home'){document.body.dataset.premiumDemoReady='true';return;}
   if(preview.get('miniatures')==='premium')demo.setFeatures(['miniatures']);
+  if(preview.get('scene')==='onboarding')demo.tables.fanta_teams=[];
   adminSessionPassword='demo-premium';
   roomsCache=[demo.room]; playersList=demo.players;
   auctioneerLockKey='demo-lock';auctioneerRoomMode='desktop';
@@ -48,7 +49,14 @@ window.addEventListener('load',async()=>{
       else{setMobileBoardPhase('normal');document.getElementById('countdown-display').textContent='12';document.getElementById('current-value-display').textContent='85';document.getElementById('winner-display').textContent='FC DEMO';}
     }
     if(scene==='management'){document.getElementById('mg-tab-participants').click();}
-    if(scene==='list')refreshPlayerLists();
+    if(scene==='list'||scene==='onboarding')refreshPlayerLists();
+    if(scene==='onboarding'){
+      window.liveastaRoomOnboarding.prepare(demo.room);
+      window.liveastaRoomOnboarding.open(demo.room,{
+        getClient:()=>supabaseClient,canEdit:()=>!!auctioneerLockToken&&!!currentRoomId,
+        onSaved:async()=>{await loadRoomState();renderOnlinePlayers();refreshPlayerLists();}
+      });
+    }
     window.refreshLiveAstaMobileBoardDev?.();
   }
   if(preview.get('request')==='open')premium.offer();

@@ -152,26 +152,6 @@
     window.leaveAuctioneerSetup();
   }
 
-  window.liveastaShowRoomCreated=function(room){
-    document.getElementById('liveasta-room-success')?.remove();
-    const overlay=document.createElement('dialog');
-    overlay.id='liveasta-room-success';
-    overlay.className='premium-dialog';
-    overlay.setAttribute('aria-labelledby','liveasta-room-created-title');
-    overlay.innerHTML=`<div class="premium-dialog-content">
-      <h2 id="liveasta-room-created-title">La tua stanza è pronta</h2>
-      <p><b>${escapeHtml(room.name)}</b> è già approvata e puoi usarla subito.</p>
-      <p>Invita la tua lega e scegli come entrare.</p>
-      <button id="liveasta-room-success-ok" type="button" class="premium-primary">Entra nella stanza</button>
-    </div>`;
-    document.body.appendChild(overlay);
-    overlay.addEventListener('close',()=>{overlay.remove();window.resetAuctioneerRoomMode?.();window.showScreen?.('screen-entry-role');},{once:true});
-    overlay.querySelector('button').onclick=()=>overlay.close();
-    document.activeElement?.blur?.();
-    overlay.showModal();
-    overlay.querySelector('button').focus({preventScroll:true});
-  };
-
   function interceptWizardButtons(){
     document.addEventListener('click',event=>{
       if(!isCreateVisible())return;

@@ -1,0 +1,21 @@
+@layer matchday {
+  dialog.room-onboarding {inset:0;width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--theme-text);overflow:hidden}
+  .room-onboarding::backdrop {background:transparent}
+  .room-onboarding:not(.is-tour),.room-onboarding.no-spotlight {background:rgba(0,0,0,.68)}
+  .onboarding-spotlight {position:fixed;border:2px solid var(--theme-marker);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);pointer-events:none;box-sizing:border-box}
+  .onboarding-card {position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;width:min(520px,calc(100% - 24px));max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));margin:0;border:1px solid var(--theme-border);border-top:4px solid var(--theme-marker);border-radius:12px;background:var(--theme-card);box-sizing:border-box;overflow:hidden;text-align:left}
+  .is-tour .onboarding-card {top:auto;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);max-height:55dvh}
+  .onboarding-content {padding:20px;overflow-y:auto;min-height:0;overscroll-behavior:contain}
+  .onboarding-content h2 {font:800 clamp(25px,5vw,34px)/1.1 var(--match-display);margin:0 0 14px;overflow-wrap:anywhere}
+  .onboarding-content p {font:400 15px/1.5 Inter,sans-serif;margin:0 0 16px}
+  .onboarding-content .onboarding-step {font:800 11px/1.4 Inter,sans-serif;letter-spacing:.08em;color:var(--theme-primary)}
+  .onboarding-content .onboarding-note {font-size:12px;color:var(--theme-muted);margin-top:12px}
+  .onboarding-content label {display:block;font:600 14px/1.4 Inter,sans-serif;margin-bottom:6px}
+  .onboarding-content input {display:block;width:100%!important;min-width:0;box-sizing:border-box;padding:10px!important;margin:6px 0 0!important;height:44px!important;min-height:44px!important;font:400 16px/1.3 Inter,sans-serif!important;text-align:left!important;border:1px solid var(--theme-border)}
+  .onboarding-names {display:grid;gap:12px}
+  .onboarding-content .onboarding-error {color:var(--match-danger-ink);font-size:13px;margin:12px 0 0}
+  .onboarding-error:empty {display:none}
+  .onboarding-reminder {padding:14px;border-left:3px solid var(--theme-marker);background:var(--theme-panel)}
+  .onboarding-actions {display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--theme-border);flex-shrink:0}
+  .onboarding-actions .btn {flex:1;min-width:0!important;min-height:44px!important;margin:0!important;padding:10px 6px!important;white-space:normal!important;font-size:18px!important}
+}
