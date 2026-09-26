@@ -28,8 +28,8 @@ function updateCreateRoomModeUI(){
         const AUCTIONEER_LOCK_STALE_MS = 45000;
 
         let myTeamName = "";
-        let auctionTimeLimit = 5;
-        let auctionPrepSeconds = 5;
+        let auctionTimeLimit = LIVEASTA_TIMER_DEFAULTS.auction;
+        let auctionPrepSeconds = LIVEASTA_TIMER_DEFAULTS.prep;
         let currentTimer = 0;
         let timerInterval = null;
         let auctionPrepInterval = null;
@@ -158,8 +158,8 @@ function updateCreateRoomModeUI(){
         }
 
         // Busta chiusa
-        let sealedTimerSeconds=30;
-        let sealedRevealSeconds=5;
+        let sealedTimerSeconds=LIVEASTA_TIMER_DEFAULTS.sealed;
+        let sealedRevealSeconds=LIVEASTA_TIMER_DEFAULTS.reveal;
         let sealedRevealInterval=null;
         let sealedRevealDeadlineAt=0;
         let playerSealedRevealDeadlineAt=0;
@@ -1994,13 +1994,13 @@ function updateCreateRoomModeUI(){
             if(state.phase==='sealed'){
                 const remaining=Math.max(0,Math.ceil((Number(sealedDeadlineAt||state.sealed_deadline_at||state.deadline_at)-Date.now())/1000));
                 state.client_countdown_seconds=Math.min(
-                    Math.max(5,parseInt(state.sealed_seconds)||parseInt(sealedTimerSeconds)||30),
+                    Math.max(5,parseInt(state.sealed_seconds)||parseInt(sealedTimerSeconds)||LIVEASTA_TIMER_DEFAULTS.sealed),
                     remaining
                 );
             }else if(state.phase==='sealed_reveal'){
                 const remaining=Math.max(0,Math.ceil((Number(sealedRevealDeadlineAt||state.deadline_at)-Date.now())/1000));
                 state.client_countdown_seconds=Math.min(
-                    Math.max(1,parseInt(state.sealed_seconds)||parseInt(sealedRevealSeconds)||5),
+                    Math.max(1,parseInt(state.sealed_seconds)||parseInt(sealedRevealSeconds)||LIVEASTA_TIMER_DEFAULTS.reveal),
                     remaining
                 );
             }
@@ -2050,7 +2050,7 @@ function updateCreateRoomModeUI(){
 
         function normalAuctionConfiguredSeconds(){
             const n=parseInt(currentRoom?.timer_seconds ?? auctionTimeLimit);
-            return Math.max(1,Math.min(60,Number.isFinite(n)?n:5));
+            return Math.max(1,Math.min(60,Number.isFinite(n)?n:LIVEASTA_TIMER_DEFAULTS.auction));
         }
 
         function clampNormalAuctionSeconds(value){
@@ -4970,10 +4970,10 @@ function updateCreateRoomModeUI(){
                 limit_d: Math.max(0, parseInt(config.limit_d ?? 8) || 0),
                 limit_c: Math.max(0, parseInt(config.limit_c ?? 8) || 0),
                 limit_a: Math.max(0, parseInt(config.limit_a ?? 6) || 0),
-                timer_seconds: Math.max(1, parseInt(config.timer_seconds ?? 5) || 5),
-                prep_seconds: Math.max(1, Math.min(15, parseInt(config.prep_seconds ?? 5) || 5)),
-                sealed_timer_seconds: Math.max(5, Math.min(180, parseInt(config.sealed_timer_seconds ?? 30) || 30)),
-                sealed_reveal_seconds: Math.max(1, Math.min(30, parseInt(config.sealed_reveal_seconds ?? 5) || 5)),
+                timer_seconds: Math.max(1, parseInt(config.timer_seconds ?? LIVEASTA_TIMER_DEFAULTS.auction) || LIVEASTA_TIMER_DEFAULTS.auction),
+                prep_seconds: Math.max(1, Math.min(15, parseInt(config.prep_seconds ?? LIVEASTA_TIMER_DEFAULTS.prep) || LIVEASTA_TIMER_DEFAULTS.prep)),
+                sealed_timer_seconds: Math.max(5, Math.min(180, parseInt(config.sealed_timer_seconds ?? LIVEASTA_TIMER_DEFAULTS.sealed) || LIVEASTA_TIMER_DEFAULTS.sealed)),
+                sealed_reveal_seconds: Math.max(1, Math.min(30, parseInt(config.sealed_reveal_seconds ?? LIVEASTA_TIMER_DEFAULTS.reveal) || LIVEASTA_TIMER_DEFAULTS.reveal)),
                 game_mode:String(config.game_mode||'classic').toLowerCase()==='mantra'?'mantra':'classic',
                 mantra_min_roster:23,
                 mantra_max_roster:Math.max(23,Math.min(90,parseInt(config.mantra_max_roster??30)||30)),
@@ -6528,8 +6528,8 @@ function updateCreateRoomModeUI(){
 
         function playerRemainingFromLiveState(state,kind='sealed'){
             const maxSeconds=kind==='reveal'
-                ? Math.max(1,parseInt(state?.sealed_seconds)||parseInt(sealedRevealSeconds)||5)
-                : Math.max(5,parseInt(state?.sealed_seconds)||parseInt(sealedTimerSeconds)||30);
+                ? Math.max(1,parseInt(state?.sealed_seconds)||parseInt(sealedRevealSeconds)||LIVEASTA_TIMER_DEFAULTS.reveal)
+                : Math.max(5,parseInt(state?.sealed_seconds)||parseInt(sealedTimerSeconds)||LIVEASTA_TIMER_DEFAULTS.sealed);
 
             // Quando lo stato arriva dal banditore, questa è la durata residua
             // calcolata DAL SUO orologio e trasformata in semplici secondi.
@@ -6755,7 +6755,7 @@ function updateCreateRoomModeUI(){
                         document.getElementById('player-current-winner').textContent='In attesa apertura';
                     } else {
                         closePlayerReadyBanner();
-                        startLocalPlayerPreparation(Math.max(1,parseInt(data.prep_seconds)||5));
+                        startLocalPlayerPreparation(Math.max(1,parseInt(data.prep_seconds)||LIVEASTA_TIMER_DEFAULTS.prep));
                     }
                 });
                 channel.on('broadcast',{event:'sealed_bid_start'},(payload)=>{
@@ -6939,7 +6939,7 @@ function updateCreateRoomModeUI(){
                     document.getElementById('player-current-winner').style.color = currentWinner?(playerHasBidThisAuction?'var(--accent-green)':'var(--accent-red)'):'var(--text-muted)';
                     document.getElementById('player-current-value').innerText=String(currentAuctionValue||0);
                     setPlayerBidButtonsEnabled(true);
-                    const t = clampNormalAuctionSeconds(payload.payload?.seconds ?? currentRoom?.timer_seconds ?? 5) || normalAuctionConfiguredSeconds();
+                    const t = clampNormalAuctionSeconds(payload.payload?.seconds ?? currentRoom?.timer_seconds ?? LIVEASTA_TIMER_DEFAULTS.auction) || normalAuctionConfiguredSeconds();
                     document.getElementById('player-countdown').innerText = t;
                     updatePlayerTeamStatus();
                 });
@@ -7925,7 +7925,7 @@ function updateCreateRoomModeUI(){
                 err.innerText='Scegli prima se creare o entrare in una stanza.';
                 return;
             }
-            auctionTimeLimit = 5;
+            auctionTimeLimit = LIVEASTA_TIMER_DEFAULTS.auction;
             let room;
             let auctioneerLockAcquired=false;
             try {
@@ -7949,7 +7949,7 @@ function updateCreateRoomModeUI(){
                         mantra_min_roster:23,
                         mantra_max_roster:mantraMax,
                         mantra_min_goalkeepers:2,
-                        timer_seconds: 5
+                        timer_seconds: LIVEASTA_TIMER_DEFAULTS.auction
                     });
                     window.liveastaShowRoomCreated?.(room);
                     return room;
@@ -7991,7 +7991,7 @@ function updateCreateRoomModeUI(){
                 return;
             }
             document.querySelector('#auction-room-pill b').innerText = currentRoomCode;
-            auctionTimeLimit = Math.max(1, parseInt(currentRoom?.timer_seconds || auctionTimeLimit) || 5);
+            auctionTimeLimit = Math.max(1, parseInt(currentRoom?.timer_seconds || auctionTimeLimit) || LIVEASTA_TIMER_DEFAULTS.auction);
             await loadAuctionedPlayers();
             await loadRoomState();
             await loadAbsentTeams();
@@ -8337,7 +8337,7 @@ function updateCreateRoomModeUI(){
             sealedEnding=false;
             await closeReadyGateDedicated();
 
-            sealedDeadlineAt=Date.now()+Math.max(5,parseInt(sealedTimerSeconds)||30)*1000;
+            sealedDeadlineAt=Date.now()+Math.max(5,parseInt(sealedTimerSeconds)||LIVEASTA_TIMER_DEFAULTS.sealed)*1000;
             isAuctionActive=false;
             currentWinner='';
             currentAuctionValue=0;
@@ -8651,7 +8651,7 @@ function updateCreateRoomModeUI(){
             if(sealedBids.size>0){
                 const __deadline=Number(sealedRevealDeadlineAt)||0;
                 if(__deadline<=0){
-                    const __seconds=Math.max(1,parseInt(sealedRevealSeconds)||5);
+                    const __seconds=Math.max(1,parseInt(sealedRevealSeconds)||LIVEASTA_TIMER_DEFAULTS.reveal);
                     sealedRevealDeadlineAt=Date.now()+__seconds*1000;
                     showSealedAuctionStage('opening');
                     if(sealedRevealInterval){clearInterval(sealedRevealInterval);clearTimeout(sealedRevealInterval);}
@@ -8821,7 +8821,7 @@ function updateCreateRoomModeUI(){
             const nextButton=document.getElementById('btn-next');
             if(nextButton)nextButton.style.display='none';
 
-            let reveal=Math.max(1,parseInt(sealedRevealSeconds)||5);
+            let reveal=Math.max(1,parseInt(sealedRevealSeconds)||LIVEASTA_TIMER_DEFAULTS.reveal);
             const revealDeadline=Date.now()+reveal*1000;
             sealedRevealDeadlineAt=revealDeadline;
             showSealedAuctionStage('opening');
@@ -8887,7 +8887,7 @@ function updateCreateRoomModeUI(){
 
             isAuctionActive = false;
 
-            let prepTime = Math.max(1, parseInt(auctionPrepSeconds) || 5);
+            let prepTime = Math.max(1, parseInt(auctionPrepSeconds) || LIVEASTA_TIMER_DEFAULTS.prep);
             document.getElementById('countdown-display').innerText = prepTime;
             const prepDeadline=Date.now()+prepTime*1000;
             saveLiveAuctionState({
@@ -9617,14 +9617,14 @@ function updateCreateRoomModeUI(){
                 :'Si completa un ruolo alla volta. Chi ha completato il reparto viene saltato automaticamente.';
             document.getElementById('control-room-name').value=currentRoom.name||'';
             document.getElementById('control-room-password').value=currentRoom.password||'';
-            document.getElementById('control-room-timer').value=currentRoom.timer_seconds||auctionTimeLimit||5;
+            document.getElementById('control-room-timer').value=currentRoom.timer_seconds||auctionTimeLimit||LIVEASTA_TIMER_DEFAULTS.auction;
             const cooldownInput=document.getElementById('control-bid-cooldown');
             if(cooldownInput)cooldownInput.value=(normalBidCooldownMs/1000).toFixed(1).replace(/\.0$/,'');
             const autoBidOneInput=document.getElementById('nomination-auto-bid-one');
             if(autoBidOneInput)autoBidOneInput.checked=!!nominationAutoBidOneEnabled;
-            const prepInput=document.getElementById('control-room-prep'); if(prepInput) prepInput.value=auctionPrepSeconds||5;
-            const sealedInput=document.getElementById('control-sealed-timer'); if(sealedInput) sealedInput.value=sealedTimerSeconds||30;
-            const revealInput=document.getElementById('control-sealed-reveal-timer'); if(revealInput) revealInput.value=sealedRevealSeconds||5;
+            const prepInput=document.getElementById('control-room-prep'); if(prepInput) prepInput.value=auctionPrepSeconds||LIVEASTA_TIMER_DEFAULTS.prep;
+            const sealedInput=document.getElementById('control-sealed-timer'); if(sealedInput) sealedInput.value=sealedTimerSeconds||LIVEASTA_TIMER_DEFAULTS.sealed;
+            const revealInput=document.getElementById('control-sealed-reveal-timer'); if(revealInput) revealInput.value=sealedRevealSeconds||LIVEASTA_TIMER_DEFAULTS.reveal;
             const l=roomLimits(); ['P','D','C','A'].forEach(r=>document.getElementById('control-limit-'+r).value=l[r]);
             document.getElementById('control-team-count').innerText=`${teamsCache.length} squadre`;
             if(typeof window.renderManagementTeamList==='function') window.renderManagementTeamList();
@@ -9640,14 +9640,14 @@ function updateCreateRoomModeUI(){
             const randomRoleSelection=autoRandomSelectedRolesFromControl();
             if(randomRoleSelection.length)autoRandomRoles=new Set(randomRoleSelection);
             autoRandomEnabled=!!document.getElementById('auto-random-enabled')?.checked && autoRandomRoles.size>0 && !nominationState.enabled;
-            const prepSeconds=Math.max(1,Math.min(15,parseInt(document.getElementById('control-room-prep')?.value)||5));
-            const sealedSeconds=Math.max(5,Math.min(180,parseInt(document.getElementById('control-sealed-timer')?.value)||30));
-            const revealSeconds=Math.max(1,Math.min(30,parseInt(document.getElementById('control-sealed-reveal-timer')?.value)||5));
+            const prepSeconds=Math.max(1,Math.min(15,parseInt(document.getElementById('control-room-prep')?.value)||LIVEASTA_TIMER_DEFAULTS.prep));
+            const sealedSeconds=Math.max(5,Math.min(180,parseInt(document.getElementById('control-sealed-timer')?.value)||LIVEASTA_TIMER_DEFAULTS.sealed));
+            const revealSeconds=Math.max(1,Math.min(30,parseInt(document.getElementById('control-sealed-reveal-timer')?.value)||LIVEASTA_TIMER_DEFAULTS.reveal));
             const payload={
                 name:normalizeRoomCode(document.getElementById('control-room-name').value),
                 password:document.getElementById('control-room-password').value,
                 initial_credits:Math.max(1,parseInt(currentRoom?.initial_credits)||500),
-                timer_seconds:Math.max(1,parseInt(document.getElementById('control-room-timer').value)||5),
+                timer_seconds:Math.max(1,parseInt(document.getElementById('control-room-timer').value)||LIVEASTA_TIMER_DEFAULTS.auction),
                 prep_seconds:prepSeconds,
                 sealed_timer_seconds:sealedSeconds,
                 sealed_reveal_seconds:revealSeconds,
@@ -9725,9 +9725,10 @@ function updateCreateRoomModeUI(){
             if(!btn)return;
 
             btn.classList.toggle('active',!!sealedListonePickMode);
-            btn.textContent=sealedListonePickMode
-                ?'Buste ✓'
-                :'Avvia buste';
+            btn.textContent='✉';
+            const label=sealedListonePickMode?'Disattiva modalità busta chiusa':'Attiva modalità busta chiusa';
+            btn.setAttribute('aria-label',label);
+            btn.title=label;
             btn.setAttribute('aria-pressed',sealedListonePickMode?'true':'false');
         }
 
@@ -10249,6 +10250,7 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
         }
 
         async function openCsvRosterImport(){
+            if(!premium.require('roster_io'))return;
             await loadRoomState();
 
             const allowed=csvImportCanStart();
@@ -10651,6 +10653,7 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
         }
 
         async function confirmCsvRosterImport(){
+            if(!premium.require('roster_io'))return;
             if(csvRosterImportBusy || !csvRosterImportPlan?.valid)return;
 
             const allowed=csvImportCanStart();
@@ -10814,12 +10817,14 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
 
         function csvCell(v){const q=String(v??'');return /[",\n]/.test(q)?'"'+q.replace(/"/g,'""')+'"':q;}
         function exportRoseCSV() {
+            if(!premium.require('roster_io'))return;
             if(!purchasesCache.length){alert('Non ci sono acquisti da esportare.');return;}
             const rows=purchasesCache.map(x=>{const t=teamsCache.find(z=>String(z.id)===String(x.team_id));return [t?.name||'',x.player_id,x.price].map(csvCell).join(',');});
             downloadBlob(`Rose_${(currentRoomCode||'LIVEASTA').replace(/[^a-z0-9_-]+/gi,'_')}.csv`,rows.join('\r\n'));
         }
 
         function exportRostersXlsx() {
+            if(!premium.require('roster_io'))return;
             if(!purchasesCache.length){alert('Non ci sono acquisti da esportare.');return;}
             const rows=purchasesCache.map(x=>{const t=teamsCache.find(z=>String(z.id)===String(x.team_id));return {Squadra:t?.name||'',Id:x.player_id,Nome:x.player_name,Ruolo:x.role,Club:x.club,Prezzo:x.price};});
             const ws=XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Rose'); XLSX.writeFile(wb,`Rose_${(currentRoomCode||'LIVEASTA').replace(/[^a-z0-9_-]+/gi,'_')}.xlsx`);

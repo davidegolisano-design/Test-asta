@@ -13,7 +13,7 @@
     {Id:'demo-5',Nome:'FANTASISTA DEMO',Squadra:'Napoli',R:'C',RM:'T',FVM:65},
     {Id:'demo-6',Nome:'PUNTA DEMO',Squadra:'Juventus',R:'A',RM:'Pc',FVM:120}
   ];
-  const room={id:ROOM,name:'PREMIUM DEMO',password:'demo',approved:true,initial_credits:500,limit_p:3,limit_d:8,limit_c:8,limit_a:6,timer_seconds:5,prep_seconds:5,sealed_timer_seconds:30,sealed_reveal_seconds:5,auctioned_ids:[],game_mode:'classic',mantra_min_roster:23,mantra_max_roster:30,mantra_min_goalkeepers:2,created_at:new Date().toISOString()};
+  const room={id:ROOM,name:'PREMIUM DEMO',password:'demo',approved:true,initial_credits:500,limit_p:3,limit_d:8,limit_c:8,limit_a:6,timer_seconds:8,prep_seconds:3,sealed_timer_seconds:40,sealed_reveal_seconds:3,auctioned_ids:[],game_mode:'classic',mantra_min_roster:23,mantra_max_roster:30,mantra_min_goalkeepers:2,created_at:new Date().toISOString()};
   const tables={
     fanta_rooms:[room],
     fanta_teams:[{id:TEAM,room_id:ROOM,name:'FC DEMO',credits_remaining:500},{id:'00000000-0000-4000-8000-000000000202',room_id:ROOM,name:'FC RIVALI',credits_remaining:500}],
@@ -84,7 +84,7 @@
         if(!target)return {data:null,error:{code:'42501'}};
         let ent=tables.liveasta_premium_entitlements.find(r=>r.room_id===target.id);
         if(!ent){setFeatures([],target.id);ent=tables.liveasta_premium_entitlements.find(r=>r.room_id===target.id);}
-        let status=ent.requested_at?'already_requested':ent.features.length===7?'active':'requested';
+        let status=ent.requested_at?'already_requested':ent.features.length===8?'active':'requested';
         if(status==='requested'){
           if(!contacts.has(target.id)&&!args.p_email)return {data:{needs_email:true},error:null};
           if(!contacts.has(target.id))contacts.set(target.id,args.p_email);
@@ -106,7 +106,7 @@
       if(name==='liveasta_set_premium_feature'){
         if(args.p_password!=='demo-premium')return {data:null,error:{code:'42501',message:'Password errata'}};
         if(failWrites)return {data:null,error:{message:'Errore simulato di salvataggio'}};
-        const all=['sealed','random','turns','ready','budget','chat','miniatures'];
+        const all=['sealed','random','turns','ready','budget','chat','miniatures','roster_io'];
         let features=tables.liveasta_premium_entitlements.find(r=>r.room_id===args.p_room_id)?.features||[];
         if(args.p_feature==='all')features=args.p_enabled?all:[];
         else features=args.p_enabled?[...new Set([...features,args.p_feature])]:features.filter(f=>f!==args.p_feature);

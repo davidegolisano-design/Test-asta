@@ -20,7 +20,7 @@ window.addEventListener('load',async()=>{
   const scene=preview.get('scene');
   if(scene){
     if(preview.get('free')!=='1'){
-      demo.setFeatures(['sealed','random','turns','ready','budget','chat','miniatures']);
+      demo.setFeatures(['sealed','random','turns','ready','budget','chat','miniatures','roster_io']);
       await premium.refresh();
     }
     if(preview.get('mantra')==='1'){demo.room.game_mode='mantra';currentRoom.game_mode='mantra';}

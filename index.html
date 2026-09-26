@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="./icon-192.png?v=1067">
     <link rel="manifest" href="./manifest.webmanifest?v=1067">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <script src="./scripts/release-config.js?v=1076"></script>
+    <script src="./scripts/release-config.js?v=1077"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -401,7 +401,7 @@
         <div class="setup-card">
             <h1>Impostazioni</h1>
             <p class="subtitle">Preferenze e sistema</p>
-            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.07.6</strong></div>
+            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.07.7</strong></div>
 
             <div class="theme-settings-card theme-menu-launch-card">
                 <button type="button" class="theme-menu-launch" onclick="openLiveAstaThemeMenu()" aria-haspopup="dialog" aria-controls="liveasta-theme-submenu">
@@ -610,13 +610,13 @@
                         <div id="hybrid-consultation-note" class="hybrid-consultation-note" style="display:none;"></div>
                     <div class="auction-list-toolbar">
                             <input type="text" id="player-search" class="minimal-input" placeholder="Cerca calciatore..." oninput="filterTable(event)" autocomplete="off">
-                            <button class="btn btn-secondary toolbar-icon-btn" data-premium-feature="random" onclick="startRandomPlayer()" title="Giocatore casuale">🎲</button>
+                            <button class="btn btn-secondary toolbar-icon-btn" data-premium-feature="random" onclick="startRandomPlayer()" title="Giocatore casuale" aria-label="Giocatore casuale">🎲</button>
                             <button id="toolbar-sealed-mode-btn" data-premium-feature="sealed"
                                     class="btn btn-secondary toolbar-sealed-mode-btn"
                                     onclick="toggleSealedListoneMode()"
                                     aria-pressed="false"
-                                    title="Attiva o disattiva la modalità busta chiusa">
-                                Avvia buste
+                                    title="Attiva modalità busta chiusa" aria-label="Attiva modalità busta chiusa">
+                                ✉
                             </button>
                             <button class="btn btn-secondary toolbar-roster-btn" onclick="openAllRosters()" title="Visualizza rose">ROSE</button>
                         </div>
@@ -944,8 +944,8 @@
             <div class="mg-header-actions">
                 <button class="btn btn-secondary audio-toolbar-btn control-action-audio" type="button" onclick="openAudioMixer()">🔊 Audio</button>
                 <button class="btn btn-danger control-action-reset" type="button" onclick="resetRoomRuntimeState()">⟳ Reset</button>
-                <button class="btn btn-secondary control-action-import-csv" type="button" onclick="openCsvRosterImport()">↑ Importa</button>
-                <button class="btn btn-green control-action-csv" type="button" onclick="exportRoseCSV()">Esporta</button>
+                <button data-premium-feature="roster_io" class="btn btn-secondary control-action-import-csv" type="button" onclick="openCsvRosterImport()">↑ Importa</button>
+                <button data-premium-feature="roster_io" class="btn btn-green control-action-csv" type="button" onclick="exportRoseCSV()">Esporta</button>
             </div>
         </header>
 
@@ -975,11 +975,11 @@
                         <div class="mg-subcard">
                             <div class="mg-subcard-head"><h3>Tempi asta</h3></div>
                             <div class="mg-fields mg-fields-timers">
-                                <label><span class="field-label">Timer asta</span><input id="control-room-timer" type="number" class="minimal-input" min="1" max="60"></label>
+                                <label><span class="field-label">Timer asta</span><input id="control-room-timer" value="8" type="number" class="minimal-input" min="1" max="60"></label>
                                 <label><span class="field-label">Blocco rilanci</span><input id="control-bid-cooldown" type="number" class="minimal-input" min="0.1" max="5" step="0.1" inputmode="decimal" value="0.5"></label>
-                                <label><span class="field-label">Pre-asta</span><input id="control-room-prep" type="number" class="minimal-input" min="1" max="15"></label>
-                                <label data-premium-feature="sealed"><span class="field-label">Busta chiusa</span><input id="control-sealed-timer" type="number" class="minimal-input" min="5" max="180" value="30"></label>
-                                <label data-premium-feature="sealed"><span class="field-label">Apertura buste</span><input id="control-sealed-reveal-timer" type="number" class="minimal-input" min="1" max="30" value="5"></label>
+                                <label><span class="field-label">Pre-asta</span><input id="control-room-prep" value="3" type="number" class="minimal-input" min="1" max="15"></label>
+                                <label data-premium-feature="sealed"><span class="field-label">Busta chiusa</span><input id="control-sealed-timer" type="number" class="minimal-input" min="5" max="180" value="40"></label>
+                                <label data-premium-feature="sealed"><span class="field-label">Apertura buste</span><input id="control-sealed-reveal-timer" type="number" class="minimal-input" min="1" max="30" value="3"></label>
                             </div>
                         </div>
 
@@ -1256,7 +1256,7 @@
             <div id="list-filters-sealed" class="unified-list-filters"></div>
             <select id="sealed-player-select" class="minimal-input" size="8"></select>
 
-            <div class="manual-player-preview">Timer busta: <b id="sealed-picker-timer-label">30 secondi</b> · READY: <b id="sealed-picker-ready-label">--</b></div>
+            <div class="manual-player-preview">Timer busta: <b id="sealed-picker-timer-label">40 secondi</b> · READY: <b id="sealed-picker-ready-label">--</b></div>
             <button class="btn btn-green" type="button" onclick="confirmStartSealedAuction()">Avvia busta chiusa</button>
             <div id="sealed-picker-error" class="form-error"></div>
         </div>
@@ -1303,13 +1303,13 @@
     <script src="./scripts/roles.js?v=103"></script>
     <script src="./scripts/room-rules.js?v=100"></script>
     <script src="./scripts/team-rules.js?v=100"></script>
-    <script src="./scripts/timer-settings.js?v=100"></script>
+    <script src="./scripts/timer-settings.js?v=1077"></script>
     <script src="./scripts/player-assets.js?v=1072"></script>
     <script src="./scripts/screen-wake-lock.js?v=100"></script>
     <script src="./scripts/list-filters.js?v=106-fluo1"></script>
     <script src="./scripts/room-debug.js?v=101"></script>
-    <script src="./scripts/premium.js?v=1074"></script>
-    <script src="./scripts/app.js?v=1074"></script>
+    <script src="./scripts/premium.js?v=1077"></script>
+    <script src="./scripts/app.js?v=1077"></script>
     <script src="./scripts/mantra-auction.js?v=107-premium1"></script>
     <script src="./scripts/mantra-filter-ui.js?v=106-fluo1"></script>
 
@@ -1357,10 +1357,10 @@
 
 <script src="./scripts/runtime.js?v=106-fluo1"></script>
 
-<script src="./scripts/pwa.js?v=1076"></script>
+<script src="./scripts/pwa.js?v=1077"></script>
 <script src="./scripts/sealed-auction.js?v=100"></script>
 <script src="./scripts/management.js?v=1061"></script>
-<link rel="stylesheet" href="./styles/matchday.css?v=1075">
+<link rel="stylesheet" href="./styles/matchday.css?v=1077">
 <link rel="stylesheet" href="./styles/entry-matchday.css?v=1063">
 <script src="./scripts/responsive-ui.js?v=106-fluo1"></script>
 </body>

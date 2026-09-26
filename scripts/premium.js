@@ -10,6 +10,7 @@
     {id:'ready', name:'Ready / Skip', description:'Ogni squadra sceglie se è pronta prima del countdown.'},
     {id:'budget', name:'Budget per reparto', description:'Pianifica le spese con soglie e redistribuzione del budget.'},
     {id:'chat', name:'Chat della stanza', description:'Messaggi live tra banditore e partecipanti.'},
+    {id:'roster_io', name:'Importa ed esporta rose', description:'Importa le rose da CSV ed esporta i risultati della stanza.'},
     {id:'miniatures', name:'Pacchetto miniature', description:'Tutte le miniature personalizzate dei calciatori, nelle plance e nelle rose.'}
   ].map(Object.freeze));
   let adapter = {}, roomId = '', features = new Set(), loaded = false, failure = false;
@@ -114,7 +115,7 @@
       <div class="premium-dialog-content"><h2 id="premium-offer-title">${unavailable ? 'Verifica abilitazioni' : 'Acquista Premium'}</h2>
       <p>${unavailable ? (failure ? 'Non riusciamo a verificare il Premium della stanza. Riprova tra poco.' : 'Stiamo verificando le abilitazioni della stanza.') : feature ? '<b>' + escape(feature.name) + '</b> · ' + escape(feature.description) + ' Sblocca questa funzione con Premium.' : 'Un unico pacchetto per tutta la stanza, a disposizione di banditore e giocatori.'}</p>
       <ul class="premium-feature-list">${FEATURES.map(f => `<li class="${f.id === id ? 'selected' : ''}"><span>${has(f.id) ? '✓' : '◇'}</span><div><b>${f.name}</b><small>${f.description}</small></div></li>`).join('')}</ul>
-      <p class="premium-free-note">Classic e Mantra restano gratuiti, con miniature generiche per portieri e giocatori di movimento. Puoi completare l’asta, gestire crediti e rose ed esportare i risultati.</p>
+      <p class="premium-free-note">Classic e Mantra restano gratuiti, con miniature generiche per portieri e giocatori di movimento. Puoi completare l’asta, gestire crediti e rose.</p>
       <label id="premium-request-email-row" class="premium-email-row" hidden>Email di contatto
         <input id="premium-request-email" type="email" inputmode="email" autocomplete="email" maxlength="320" placeholder="nome@email.it">
       </label>

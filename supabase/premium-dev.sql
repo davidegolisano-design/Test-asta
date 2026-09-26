@@ -8,7 +8,7 @@ create table public.liveasta_premium_entitlements (
   room_id uuid not null references public.fanta_rooms(id) on delete cascade,
   environment text not null check (environment in ('dev-premium', 'production')),
   features text[] not null default '{}'
-    check (features <@ array['sealed','random','turns','ready','budget','chat','miniatures']::text[]),
+    check (features <@ array['sealed','random','turns','ready','budget','chat','miniatures','roster_io']::text[]),
   source text not null default 'manual' check (source in ('manual','payment')),
   revision bigint not null default 1,
   updated_at timestamptz not null default now(),
@@ -35,7 +35,7 @@ begin
     raise exception 'Autorizzazione superuser non valida' using errcode = '42501';
   end if;
   if p_environment is null or p_environment not in ('dev-premium','production')
-     or p_feature is null or p_feature not in ('all','sealed','random','turns','ready','budget','chat','miniatures')
+     or p_feature is null or p_feature not in ('all','sealed','random','turns','ready','budget','chat','miniatures','roster_io')
      or p_enabled is null then
     raise exception 'Abilitazione non valida' using errcode = '22023';
   end if;
@@ -44,7 +44,7 @@ begin
   select features into v_features from public.liveasta_premium_entitlements
     where room_id=p_room_id and environment=p_environment for update;
   if p_feature='all' then
-    v_features := case when p_enabled then array['sealed','random','turns','ready','budget','chat','miniatures']::text[] else '{}'::text[] end;
+    v_features := case when p_enabled then array['sealed','random','turns','ready','budget','chat','miniatures','roster_io']::text[] else '{}'::text[] end;
   elsif p_enabled then
     if not (p_feature = any(v_features)) then v_features := array_append(v_features,p_feature); end if;
   else
