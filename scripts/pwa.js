@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.5';
+  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.6';
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA';

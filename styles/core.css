@@ -294,9 +294,11 @@ td {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+@media (hover: hover) and (pointer: fine) {
 tr:hover {
   background: var(--bg-hover);
   cursor: pointer;
+}
 }
 .role-badge {
   display: inline-block;
@@ -1023,8 +1025,10 @@ th {
   background:#202938;
   color:#B8C2CF;
 }
+@media (hover: hover) and (pointer: fine) {
 tr:hover {
   background:rgba(61,220,151,.07);
+}
 }
 .collapsed-toggle{
   width:100%;
@@ -4574,8 +4578,10 @@ td,.control-table td,.admin-table td,.teams-control-table td{
 tbody tr:nth-child(even){
   background:rgba(255,255,255,.018)!important;
 }
+@media (hover: hover) and (pointer: fine) {
 tbody tr:hover{
   background:#202938!important;
+}
 }
 #screen-auctioneer-board{
   background:
@@ -13372,7 +13378,9 @@ html[data-live-theme] :is(.room-pill b,.identity-pill b,.admin-version-badge){co
 html[data-live-theme] :is(table,.control-table,.admin-table,.teams-control-table){background:var(--theme-input)!important;}
 html[data-live-theme] :is(th,.control-table th,.admin-table th,.teams-control-table th){background:var(--theme-hover)!important;color:var(--theme-muted)!important;border-color:var(--theme-border)!important;}
 html[data-live-theme] :is(td,.control-table td,.admin-table td,.teams-control-table td){color:var(--theme-text)!important;border-color:var(--theme-border)!important;}
+@media (hover: hover) and (pointer: fine) {
 html[data-live-theme] tbody tr:hover{background:color-mix(in srgb,var(--theme-primary) 8%,var(--theme-hover))!important;}
+}
 html[data-live-theme] #screen-auctioneer-board,html[data-live-theme] #screen-player-buzzer,html[data-live-theme] #screen-all-rosters{background:var(--theme-bg)!important;}
 html[data-live-theme] #screen-auctioneer-board :is(.col-timer,.col-info),html[data-live-theme] #screen-player-buzzer .player-live-side{background:var(--theme-panel)!important;border-color:var(--theme-border)!important;}
 html[data-live-theme] #screen-auctioneer-board .bid-box{background:var(--theme-input)!important;border-color:var(--theme-border)!important;}
