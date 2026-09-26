@@ -9725,7 +9725,6 @@ function updateCreateRoomModeUI(){
             if(!btn)return;
 
             btn.classList.toggle('active',!!sealedListonePickMode);
-            btn.textContent='✉';
             const label=sealedListonePickMode?'Disattiva modalità busta chiusa':'Attiva modalità busta chiusa';
             btn.setAttribute('aria-label',label);
             btn.title=label;

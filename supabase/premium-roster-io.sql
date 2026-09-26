@@ -43,7 +43,7 @@ begin
     set features=v_features, source='manual', revision=revision+1, updated_at=now()
     where room_id=p_room_id and environment=p_environment returning * into v_row;
   return to_jsonb(v_row);
-end $function$
+end $function$;
 
 CREATE OR REPLACE FUNCTION liveasta_premium_private.request_premium(p_room_id uuid, p_environment text, p_room_password text, p_email text)
  RETURNS jsonb
@@ -86,7 +86,7 @@ begin
       'name',v_room.name,'email',v_email,'requested_at',v_ent.requested_at)) returning id into v_job;
   perform liveasta_premium_private.queue_notification(v_job);
   return jsonb_build_object('status','requested','entitlement',to_jsonb(v_ent));
-end $function$
+end $function$;
 
 -- Rooms with the complete package retain the complete package.
 update public.liveasta_premium_entitlements
