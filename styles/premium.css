@@ -55,7 +55,8 @@
 
 /* Matchday owns button colours through a CSS layer; set the pressed mode there. */
 @layer matchday {
-html[data-live-theme] body #screen-auctioneer-board #toolbar-sealed-mode-btn[aria-pressed="true"]:not(.premium-locked){
+html[data-live-theme] body #screen-auctioneer-board #toolbar-sealed-mode-btn[aria-pressed="true"]:not(.premium-locked),
+html[data-live-theme] body #screen-auctioneer-board #toolbar-sealed-mode-btn[aria-pressed="true"]:not(.premium-locked):hover:not(:disabled){
   position:relative!important;
   background:#148044!important;
   border:2px solid #b5f2c5!important;
