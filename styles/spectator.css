@@ -18,7 +18,7 @@ html[data-live-theme] #screen-spectator-setup.entry-form-screen #spectator-room-
 .spectator-access-actions .btn:last-child{min-height:52px;background:var(--theme-marker)!important;color:var(--entry-ink)!important;border:0!important;font-family:var(--entry-display)!important;font-size:23px!important}
 /* Only exit and the Rose command remain actionable on the spectator board. */
 body #screen-auctioneer-board.spectator-mode > .session-nav > :last-child,
-body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#auction-online-pill,#nomination-stage,#auctioneer-ready-desktop,#view-list,#btn-next,#auctioneer-turn-center,#sealed-delivery-panel,#sealed-ranking-auctioneer,#auctioneer-turn-ranking-empty){display:none!important}
+body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#auction-online-pill,#nomination-stage,#auctioneer-ready-desktop,#view-list,#btn-next,#auctioneer-turn-center,#sealed-delivery-panel,#auctioneer-turn-ranking-empty){display:none!important}
 body #screen-auctioneer-board.spectator-mode #view-auction{display:flex!important}
 body #screen-auctioneer-board.spectator-mode #auctioneer-session-title{display:block!important}
 body #screen-auctioneer-board.spectator-mode .auction-session-center{justify-content:center!important}

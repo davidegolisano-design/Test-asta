@@ -545,6 +545,8 @@ function updateCreateRoomModeUI(){
                 const btn=document.getElementById(id);
                 if(btn){btn.hidden=!active;btn.style.display=active?'':'none';}
             }
+            const playerTitle=document.getElementById('player-session-title');
+            if(playerTitle)playerTitle.textContent=active?'Asta':'Asta Live';
             const title=document.getElementById('auctioneer-session-title');if(title)title.hidden=active;
         }
 

@@ -57,6 +57,10 @@ window.liveastaSpectatorView=(()=>{
     write('winner-display',winner);
     write('mobile-winner-display',winner);
     write('current-value-display',value);
+    const ranking=phase==='ended'?(state.mode==='sealed_result'?state.sealed_ranking:state.normal_bid_ranking):null;
+    if(Array.isArray(ranking)&&ranking.length&&typeof renderAuctioneerBidRanking==='function'){
+      renderAuctioneerBidRanking(ranking,'CLASSIFICA OFFERTE');
+    }else if(typeof clearSealedBidRanking==='function')clearSealedBidRanking();
     const caption=document.querySelector('#view-auction .timer-caption');
     if(caption)caption.textContent=phase==='idle'?'IN ATTESA':'TEMPO RESIDUO';
     tick();
