@@ -312,7 +312,7 @@
 /* Player roster: dedicated header geometry, independent of management titles. */
 @layer matchday {
   #player-roster-overlay .roster-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:12px!important;margin:0 0 14px!important;padding:0!important;flex:0 0 auto!important}
-  #player-roster-overlay .roster-head h2{margin:0!important;min-width:0!important;font-size:clamp(24px,6.5vw,28px)!important;line-height:1.1!important}
+  #player-roster-overlay .roster-head h2{margin:0!important;min-width:0!important;font-size:clamp(24px,6.5vw,28px)!important;line-height:1.1!important;text-align:left!important}
   #player-roster-overlay .roster-head .btn{width:auto!important;min-height:44px!important;margin:0!important;padding:8px 14px!important;font-size:18px!important;line-height:1!important}
   @media(max-width:760px){
     #player-roster-overlay > .roster-card{padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))!important}
