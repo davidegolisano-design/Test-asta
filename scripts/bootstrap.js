@@ -117,6 +117,7 @@
 
   function updateCountdown(el){
     if(!el) return;
+    if(el.id==='countdown-display' && document.getElementById('screen-auctioneer-board')?.classList.contains('spectator-mode'))return;
     const value=Number(String(el.textContent||'').trim().replace(',','.'));
     el.classList.toggle(
       'liveasta-last3',

@@ -6,6 +6,7 @@
     const before=document.documentElement.dataset.auctioneerUi;
     const mode=applyAuctioneerUiMode();
     if(before===mode)return;
+    if(spectatorMode){window.liveastaSpectatorView?.reflow();return;}
     const view=document.getElementById('view-auction');
     const mobilePhase=[...view.classList].find(name=>name.startsWith('mobile-')&&name!=='mobile-ended')?.slice(7);
     if(mode==='desktop')[...view.classList].filter(name=>name.startsWith('mobile-')).forEach(name=>view.classList.remove(name));

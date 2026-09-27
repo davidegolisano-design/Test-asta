@@ -54,7 +54,14 @@ window.addEventListener('load',async()=>{
     }
     if(scene==='spectator'){
       auctioneerLockKey=null;auctioneerLockToken=null;
-      demo.tables.fanta_app_data.push({key:`live_auction_${demo.room.id}`,data:{phase:'active',player:{id:demo.players[0].Id,nome:demo.players[0].Nome,role:'P',club:'Bologna'},winner:'FC DEMO',value:85,seconds:120,deadline_at:Date.now()+120000}});
+      const phase=preview.get('phase')||'active';
+      const ids=teamsCache.map(t=>String(t.id));
+      const state={phase,mode:['sealed','sealed_reveal'].includes(phase)?'sealed':'normal',
+        player:{id:demo.players[0].Id,nome:demo.players[0].Nome,role:preview.get('mantra')==='1'?'Por':'P',club:'Bologna',fvm:28},
+        winner:'FC DEMO',value:85,seconds:120,deadline_at:Date.now()+120000,
+        ready_required_ids:ids,ready_ids:ids.slice(0,1),sealed_eligible_ids:ids,sealed_submitted_ids:ids.slice(0,1),
+        normal_bid_ranking:[{team_id:ids[0],team_name:'FC DEMO',amount:85}]};
+      demo.tables.fanta_app_data.push({key:`live_auction_${demo.room.id}`,data:state});
       showScreen('screen-entry-role');
       await openSpectatorLobby();
       document.getElementById('spectator-room-select').value=demo.room.id;

@@ -2884,12 +2884,14 @@ function updateCreateRoomModeUI(){
             }
         }
 
-        function showAuctioneerReadyStage(){
-            if(!readyGateWaiting || !currentAuctionPlayer)return;
+        function showAuctioneerReadyStage(snapshot=null){
+            const player=snapshot?.player ? {Id:snapshot.player.id,Nome:snapshot.player.nome,R:snapshot.player.role,Squadra:snapshot.player.club,FVM:snapshot.player.fvm} : currentAuctionPlayer;
+            if((!snapshot && !readyGateWaiting) || !player)return;
+            const confirmed=snapshot ? new Set((snapshot.ready_ids||[]).map(String)) : readyPlayers;
 
-            const req=readyRequiredIds();
-            const ready=req.filter(id=>readyPlayers.has(String(id)));
-            const missing=req.filter(id=>!readyPlayers.has(String(id)));
+            const req=snapshot ? (snapshot.ready_required_ids||[]).map(String) : readyRequiredIds();
+            const ready=req.filter(id=>confirmed.has(String(id)));
+            const missing=req.filter(id=>!confirmed.has(String(id)));
             const nominatingTeam=nominationState.enabled ? currentNominationTeam() : null;
             const dashboard=document.getElementById('auction-dashboard');
             const desktopReady=!!dashboard?.classList.contains('mode-pc');
@@ -2914,22 +2916,22 @@ function updateCreateRoomModeUI(){
                 const count=document.getElementById('auctioneer-ready-count');
                 const list=document.getElementById('auctioneer-ready-team-list');
 
-                if(name)name.textContent=currentAuctionPlayer.Nome||'--';
-                if(img)setPlayerImage(img,currentAuctionPlayer.Id,currentAuctionPlayer.R);
+                if(name)name.textContent=player.Nome||'--';
+                if(img)setPlayerImage(img,player.Id,player.R);
                 if(role){
-                    const shownRole=String(currentAuctionPlayer.R||'-').trim()||'-';
+                    const shownRole=String(player.R||'-').trim()||'-';
                     role.textContent=shownRole;
                     role.classList.remove('role-P','role-D','role-C','role-A');
                     const classicRole=shownRole.toUpperCase();
                     if(['P','D','C','A'].includes(classicRole))role.classList.add(`role-${classicRole}`);
                 }
-                if(club)club.textContent=currentAuctionPlayer.Squadra||'-';
+                if(club)club.textContent=player.Squadra||'-';
                 const readyPlayerCard=panel?.querySelector('.ard-player');
                 if(readyPlayerCard){
-                    const bg=window.liveastaTeamBackgroundForClub?.(currentAuctionPlayer.Squadra||'');
+                    const bg=window.liveastaTeamBackgroundForClub?.(player.Squadra||'');
                     if(bg)readyPlayerCard.style.setProperty('--team-card-bg',bg);
                 }
-                if(fvm)fvm.textContent=String(playerListoneNumericValue(currentAuctionPlayer));
+                if(fvm)fvm.textContent=String(playerListoneNumericValue(player));
                 if(count)count.textContent=`${ready.length} / ${req.length}`;
 
                 if(list){
@@ -2944,7 +2946,7 @@ function updateCreateRoomModeUI(){
                     list.innerHTML=ordered.length?ordered.map(id=>{
                         const sid=String(id);
                         const absent=absentTeamIds.has(sid);
-                        const isReady=readyPlayers.has(sid);
+                        const isReady=confirmed.has(sid);
                         const isNominator=!!nominatorId && sid===nominatorId;
                         return `<div class="ard-team-row${absent?' absent':''}${isReady?' ready':''}${isNominator?' nominator':''}">
                             <div class="ard-team-name">${escapeHtml(readyTeamName(sid))}${isNominator?'<small>HA BANDITO</small>':''}</div>
@@ -2967,7 +2969,7 @@ function updateCreateRoomModeUI(){
             /* v0.93 Smartphone: stessa logica READY desktop, informazioni ridotte. */
             const readyDesktop=document.getElementById('auctioneer-ready-desktop');
             if(readyDesktop){readyDesktop.classList.remove('open');readyDesktop.setAttribute('aria-hidden','true');}
-            showMobileReadyBoard(ready.length,req.length);
+            showMobileReadyBoard(ready.length,req.length,player);
         }
 
         function showAuctionPanels(){
@@ -4911,7 +4913,7 @@ function updateCreateRoomModeUI(){
         async function refreshSpectatorState(withRosters=false){
             if(!spectatorMode||!currentRoomId)return;
             const roomId=currentRoomId;
-            if(withRosters)await loadRoomState();
+            if(withRosters){await loadRoomState();await loadNominationState();}
             const state=await loadLiveAuctionState();
             if(!spectatorMode||roomId!==currentRoomId)return;
             window.liveastaSpectatorView?.render(state);
@@ -4946,10 +4948,12 @@ function updateCreateRoomModeUI(){
                 applyAuctioneerUiMode();
                 showScreen('screen-auctioneer-board');
                 await loadRoomState();
+                await loadNominationState();
                 await refreshSpectatorState();
                 const spectatorChannel=channel;
+                spectatorChannel.on('broadcast',{event:'sealed_bid_count'},({payload})=>window.liveastaSpectatorView?.updateDeliveries(payload));
                 const refreshEvents=['new_player','prep_started','auction_started','auction_update','auction_end','sealed_bid_start','sealed_bid_count','sealed_bid_end','sealed_reveal_start','ready_gate_state','live_state','state_changed','force_state_reset','nomination_state'];
-                refreshEvents.forEach(event=>spectatorChannel.on('broadcast',{event},()=>scheduleSpectatorRefresh(event==='state_changed'||event==='auction_end')));
+                refreshEvents.forEach(event=>spectatorChannel.on('broadcast',{event},()=>scheduleSpectatorRefresh(event==='state_changed'||event==='auction_end'||event==='nomination_state')));
                 spectatorChannel.subscribe(status=>{
                     if(spectatorChannel!==channel||!spectatorMode)return;
                     if(status==='SUBSCRIBED'){
@@ -8355,15 +8359,15 @@ function updateCreateRoomModeUI(){
             if(img){img.style.visibility='visible';setPlayerImage(img,player.Id,player.R);}
             requestAnimationFrame(()=>fitAuctionNames());
         }
-        function showMobileReadyBoard(ready,total){
-            if(!isAuctioneerMobileBoard() || !currentAuctionPlayer)return false;
+        function showMobileReadyBoard(ready,total,player=currentAuctionPlayer){
+            if(!isAuctioneerMobileBoard() || !player)return false;
             showAuctionPanels();
             setMobileBoardPhase('ready');
-            setMobileAuctionCard();
+            setMobileAuctionCard(player);
             const av=mobileBoardView();
             const caption=av?.querySelector('.timer-caption');
             if(caption)caption.textContent='FVM';
-            document.getElementById('countdown-display').textContent=String(playerListoneNumericValue(currentAuctionPlayer)||0);
+            document.getElementById('countdown-display').textContent=String(playerListoneNumericValue(player)||0);
             document.getElementById('auction-title-display').textContent='READY';
             document.getElementById('winner-display').textContent='';
             document.getElementById('current-value-display').textContent=`${ready}/${total}`;
@@ -8387,6 +8391,11 @@ function updateCreateRoomModeUI(){
             const eligible=[...new Set(sealedEligibleIds.map(String))];
             const submitted=new Set([...sealedBids.keys()].map(String));
             const delivered=eligible.filter(id=>submitted.has(id));
+            renderSealedAuctionStage({player:currentAuctionPlayer,opening,remaining,eligible,delivered});
+        }
+
+        // Shared presentation only: both the host and spectator provide public display data.
+        function renderSealedAuctionStage({player,opening=false,remaining=0,eligible=[],delivered=[]}){
             showAuctionPanels();
             const av=document.getElementById('view-auction');
             av?.classList.add('sealed-collecting');
@@ -8394,13 +8403,13 @@ function updateCreateRoomModeUI(){
             if(isAuctioneerMobileBoard())setMobileBoardPhase(opening?'sealed-opening':'sealed-collecting');
             const caption=av?.querySelector('.timer-caption');if(caption)caption.textContent=opening?'APERTURA':'TEMPO RESIDUO';
             document.getElementById('winner-display').textContent='';
-            document.getElementById('auction-player-name-top').textContent=currentAuctionPlayer.Nome||'--';
-            document.getElementById('auction-player-role').textContent=currentAuctionPlayer.R||'-';
-            document.getElementById('auction-player-club').textContent=currentAuctionPlayer.Squadra||'-';
+            document.getElementById('auction-player-name-top').textContent=player.Nome||'--';
+            document.getElementById('auction-player-role').textContent=player.R||'-';
+            document.getElementById('auction-player-club').textContent=player.Squadra||'-';
             const img=document.getElementById('card-image');
-            const imageKey=String(currentAuctionPlayer.Id)+':'+sealedAuctionToken;
+            const imageKey=String(player.Id);
             if(img && img.dataset.sealedPlayer!==imageKey){
-                img.dataset.sealedPlayer=imageKey;setPlayerImage(img,currentAuctionPlayer.Id,currentAuctionPlayer.R);
+                img.dataset.sealedPlayer=imageKey;setPlayerImage(img,player.Id,player.R);
             }
             document.getElementById('countdown-display').textContent=String(remaining);
             document.getElementById('sealed-delivery-count').textContent=`${delivered.length} / ${eligible.length}`;
@@ -9427,8 +9436,18 @@ function updateCreateRoomModeUI(){
             const totalSlots = totalRoomSlots();
             const roomName = document.getElementById('rosters-room-name');
             if (roomName) roomName.innerText = currentRoom?.name || currentRoomCode || '--';
-            document.getElementById('rosters-team-count').innerText = `${teamsCache.length} squadre`;
-            document.getElementById('rosters-purchase-count').innerText = `${purchasesCache.length} acquisti`;
+            const selector=document.getElementById('rosters-team-select');
+            const selected=selector?.dataset.roomId===String(currentRoomId) ? selector.value : '';
+            const selection=teamsCache.some(t=>String(t.id)===selected)?selected:'';
+            if(selector){
+                selector.innerHTML='<option value="">Tutte le squadre</option>'+teamsCache.map(t=>`<option value="${escapeHtml(String(t.id))}">${escapeHtml(t.name||'Squadra')}</option>`).join('');
+                selector.value=selection;
+                selector.dataset.roomId=String(currentRoomId);
+            }
+            const visibleTeams=selection?teamsCache.filter(t=>String(t.id)===selection):teamsCache;
+            const visiblePurchases=selection?purchasesCache.filter(p=>String(p.team_id)===selection):purchasesCache;
+            document.getElementById('rosters-team-count').innerText = `${visibleTeams.length} ${visibleTeams.length===1?'squadra':'squadre'}`;
+            document.getElementById('rosters-purchase-count').innerText = `${visiblePurchases.length} acquisti`;
 
             if (!teamsCache.length) {
                 grid.style.removeProperty('--roster-columns');
@@ -9436,7 +9455,7 @@ function updateCreateRoomModeUI(){
                 return;
             }
 
-            const cards = teamsCache.map(team => {
+            const cards = visibleTeams.map(team => {
                 const bought = filterAndSortPlayers(teamPurchases(team.id),'rosters');
                 const counts = teamCounts(team.id);
                 const free = Math.max(0, totalSlots - counts.total);

@@ -5,20 +5,19 @@
 .spectator-access-actions{display:grid}
 /* Only exit and the Rose command remain actionable on the spectator board. */
 body #screen-auctioneer-board.spectator-mode > .session-nav > :last-child,
-body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#auction-online-pill,#nomination-stage,#auctioneer-ready-desktop,#view-list,#btn-next,#auctioneer-turn-center,#sealed-delivery-panel,#auctioneer-turn-ranking-empty){display:none!important}
-body #screen-auctioneer-board.spectator-mode #view-auction{display:flex!important}
+body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#auction-online-pill,#view-list,#btn-next){display:none!important}
 body #screen-auctioneer-board.spectator-mode #auctioneer-session-title{display:block!important}
 body #screen-auctioneer-board.spectator-mode .auction-session-center{justify-content:center!important}
 body #screen-auctioneer-board.spectator-mode .auction-quick-actions{display:flex!important}
 body #screen-auctioneer-board.spectator-mode .auction-quick-rosters{display:flex!important}
 body #screen-auctioneer-board.spectator-mode[data-spectator-phase="idle"] #auction-player-card{visibility:hidden!important}
-/* TV layout: the offer, title and team name stay inside the third column. */
-body #screen-auctioneer-board.spectator-mode #auction-dashboard.mode-pc #view-auction .col-info{min-width:0!important;align-items:center!important;text-align:center!important}
-body #screen-auctioneer-board.spectator-mode #auction-dashboard.mode-pc #view-auction .mobile-offer-block{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;min-width:0!important;max-width:100%!important}
-body #screen-auctioneer-board.spectator-mode #auction-dashboard.mode-pc #view-auction .auction-title{max-width:100%!important;font-size:clamp(15px,1.6vw,28px)!important;letter-spacing:.035em!important;white-space:normal!important;overflow-wrap:break-word!important;line-height:1.1!important}
-body #screen-auctioneer-board.spectator-mode #auction-dashboard.mode-pc #view-auction #winner-display{max-width:100%!important;width:100%!important;min-height:0!important;box-sizing:border-box!important;white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.05!important}
-body #screen-auctioneer-board.spectator-mode #auction-dashboard.mode-pc #view-auction .bid-box{align-self:center!important;margin:0 auto!important;width:min(100%,470px)!important;max-width:100%!important}
-body #screen-auctioneer-board.spectator-mode #auction-dashboard.mode-pc #view-auction #current-value-display{font-size:clamp(76px,10vw,180px)!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important}
+/* Shared host/spectator desktop layout: the offer, title and team name stay inside the third column. */
+body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .col-info{min-width:0!important;align-items:center!important;text-align:center!important}
+body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .mobile-offer-block{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;min-width:0!important;max-width:100%!important}
+body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .auction-title{max-width:100%!important;font-size:clamp(15px,1.6vw,28px)!important;letter-spacing:.035em!important;white-space:normal!important;overflow-wrap:break-word!important;line-height:1.1!important}
+body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction #winner-display{max-width:100%!important;width:100%!important;min-height:0!important;box-sizing:border-box!important;white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.05!important}
+body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .bid-box{align-self:center!important;margin:0 auto!important;width:min(100%,470px)!important;max-width:100%!important}
+body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction #current-value-display{font-size:clamp(76px,10vw,180px)!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important}
 /* Fit every navigation label within a narrow hybrid player screen. */
 body #screen-player-buzzer #hybrid-view-to-board:not([hidden]){font-size:clamp(11px,3.3vw,15px)!important;letter-spacing:0!important;white-space:nowrap!important;overflow:hidden!important}
 body #screen-auctioneer-board #hybrid-view-to-player:not([hidden]){font-size:clamp(11px,3.3vw,14px)!important;overflow:hidden!important}
@@ -28,3 +27,8 @@ body #screen-auctioneer-board #hybrid-view-to-player:not([hidden]){font-size:cla
   body #screen-player-buzzer.hybrid-auctioneer-player #player-session-title{overflow:hidden!important;overflow-wrap:normal!important;font-size:clamp(10px,3vw,12px)!important;line-height:1.05!important}
   body #screen-player-buzzer.hybrid-auctioneer-player .player-session-nav :is(#player-listone-btn,#player-roster-btn){font-size:clamp(10px,3vw,12px)!important;padding-left:2px!important;padding-right:2px!important;overflow:hidden!important}
 }
+
+/* Room roster selector shares the application input tokens. */
+.rosters-team-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--theme-muted);font-size:13px;font-weight:700}
+.rosters-team-picker .minimal-input{width:auto;min-width:180px;max-width:100%;margin:0}
+@media(max-width:760px){.rosters-team-picker{width:100%}.rosters-team-picker .minimal-input{flex:1;min-width:0}}

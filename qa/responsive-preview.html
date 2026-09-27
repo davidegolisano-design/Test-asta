@@ -5,6 +5,7 @@ html,body{margin:0;background:#253027;color:#fff;font:14px system-ui}header{disp
 </style></head><body>
 <header><b>Verifica UI · dati fittizi · nessun collegamento al database</b>
 <label>Schermata <select id="scene"><option value="entry">Scelta ruolo</option><option value="list">Listone</option><option value="room-empty">Listone da caricare</option><option value="turn">Primo turno</option><option value="hybrid-turn">Banditore giocatore</option><option value="spectator">Spettatore</option><option value="ready">Ready</option><option value="auction">Asta</option><option value="management">Gestione</option><option value="onboarding">Nuova stanza</option></select></label>
+<label>Fase spettatore <select id="phase"><option value="active">Offerta</option><option value="ready">Ready</option><option value="prep">Preparazione</option><option value="sealed">Buste</option><option value="sealed_reveal">Apertura</option><option value="ended">Esito</option></select></label>
 <label>Larghezza <select id="width"><option>320</option><option>360</option><option selected>390</option><option>412</option><option>760</option><option>1024</option><option>1280</option></select></label>
 <label>Altezza <select id="height"><option>568</option><option>640</option><option selected>780</option><option>844</option></select></label>
 <label>Modalità <select id="mode"><option value="classic">Classic</option><option value="mantra">Mantra</option></select></label>
@@ -13,8 +14,8 @@ html,body{margin:0;background:#253027;color:#fff;font:14px system-ui}header{disp
 <script>
 const frame=document.querySelector('iframe');
 function size(){frame.style.width=document.getElementById('width').value+'px';frame.style.height=document.getElementById('height').value+'px';}
-function scene(){const q=new URLSearchParams({scene:document.getElementById('scene').value,mantra:document.getElementById('mode').value==='mantra'?'1':'0',free:document.getElementById('plan').value==='free'?'1':'0'});frame.src='./premium-preview.html?'+q;}
+function scene(){const q=new URLSearchParams({scene:document.getElementById('scene').value,phase:document.getElementById('phase').value,mantra:document.getElementById('mode').value==='mantra'?'1':'0',free:document.getElementById('plan').value==='free'?'1':'0'});frame.src='./premium-preview.html?'+q;}
 for(const id of ['width','height'])document.getElementById(id).addEventListener('change',size);
-for(const id of ['scene','mode','plan'])document.getElementById(id).addEventListener('change',scene);
+for(const id of ['scene','mode','plan','phase'])document.getElementById(id).addEventListener('change',scene);
 size();scene();
 </script></body></html>
