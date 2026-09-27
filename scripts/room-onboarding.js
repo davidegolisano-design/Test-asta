@@ -6,7 +6,7 @@
   const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const steps=[
     {target:'#auction-room-pill',title:'La tua stanza è pronta',text:'Sei già nella plancia banditore. Condividi nome e password della stanza con la tua lega per far entrare i partecipanti.'},
-    {target:'.auction-list-toolbar',title:'Trova il prossimo calciatore',text:'Cerca per nome e usa il filtro per restringere la lista. Tocca un calciatore per preparare l’asta. Dado e busta sono le modalità Premium random e busta chiusa.'},
+    {target:'.auction-list-toolbar',title:'Trova il prossimo calciatore',text:'Prima carica il tuo listone Excel in Gestione → Regole. Poi qui potrai cercare e scegliere il calciatore da bandire.'},
     {target:'#screen-auctioneer-board [onclick="openAllRosters()"]',title:'Controlla le rose',text:'Da Rose puoi consultare le squadre e i calciatori acquistati durante l’asta.'},
     {target:'#screen-auctioneer-board [onclick*="openRoomControl"]',title:'Personalizza la tua asta',text:'In Gestione trovi squadre, crediti, timer e modalità di asta. Ora prepariamo le squadre della tua lega.'}
   ];

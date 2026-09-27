@@ -3087,7 +3087,7 @@ function updateCreateRoomModeUI(){
 
         async function openNominationPicker(){
             if(!(nominationState.enabled&&nominationReady&&String(nominationState.turn_team_id)===String(myTeamId)))return;
-            if(!playersList.length){const {data}=await supabaseClient.from('fanta_app_data').select('data').eq('key','official_listone').maybeSingle();if(Array.isArray(data?.data))playersList=data.data;}
+            if(!playersList.length)await fetchListone();
             loadPlayerUiPrefs();
             const search=document.getElementById('nomination-search');
             if(search)search.value='';
@@ -4662,16 +4662,7 @@ function updateCreateRoomModeUI(){
         async function openPlayerListone(){
             if(!currentRoomId || !myTeamId)return;
 
-            if(!playersList.length){
-                try{
-                    const {data}=await supabaseClient
-                        .from('fanta_app_data')
-                        .select('data')
-                        .eq('key','official_listone')
-                        .maybeSingle();
-                    if(Array.isArray(data?.data))playersList=data.data;
-                }catch(e){}
-            }
+            if(!playersList.length)await fetchListone();
 
             await loadPlayerShortlist();
             await loadRoomState();
@@ -5030,7 +5021,8 @@ function updateCreateRoomModeUI(){
             resetAuctioneerRoomMode();
             showScreen('screen-auctioneer-setup');
             setAuctioneerRoomMode('create');
-            fetchListone();
+            const start=document.getElementById('btn-apri-plancia');
+            if(start)start.disabled=false;
         }
 
         function leaveAuctioneerSetup() {
@@ -5543,6 +5535,7 @@ function updateCreateRoomModeUI(){
                 try { await supabaseClient.removeChannel(previousChannel); } catch(e) {}
             }
 
+            if(String(currentRoomId)!==String(room.id))playersList=[];
             currentRoom = room;
             currentRoomId = room.id;
             await premium.connect(room.id);
@@ -5711,6 +5704,8 @@ function updateCreateRoomModeUI(){
             const b = document.getElementById('auctioned-count');
             if (a) a.innerText = getAvailablePlayers().length;
             if (b) b.innerText = auctionedPlayerIds.size;
+            const empty=document.getElementById('board-listone-empty');
+            if(empty)empty.hidden=!!playersList.length||!auctioneerLockKey;
         }
 
         function renderAuctionedList() {
@@ -5864,7 +5859,7 @@ function updateCreateRoomModeUI(){
             const room = await getRoomById(id); if (!room) return;
             roomControlReturnScreen = 'screen-admin';
             await connectToRoom(room);
-            if (!playersList.length) await fetchListone();
+            await fetchListone();
             await loadRoomState();
             nominationReady=!!nominationState.enabled;
             subscribeCommonRoomEvents();
@@ -6004,7 +5999,7 @@ function updateCreateRoomModeUI(){
 
             if(error)throw error;
             if(!data || !Array.isArray(data.data) || !data.data.length){
-                throw new Error('Nessun listone centrale pubblicato.');
+                throw new Error('Carica prima un Excel di riferimento per le miniature.');
             }
             return data;
         }
@@ -6107,7 +6102,7 @@ function updateCreateRoomModeUI(){
 
                 miniatureAuditResult={
                     checked_at:new Date(),
-                    listone_file:source.file_name||'Listone centrale',
+                    listone_file:source.file_name||'Riferimento miniature',
                     listone_updated_at:source.updated_at||null,
                     total:list.length,
                     present,
@@ -6199,10 +6194,8 @@ function updateCreateRoomModeUI(){
                 const payload={key:'official_listone',data:parsed,file_name:file.name,updated_at:new Date().toISOString()};
                 const {error}=await supabaseClient.from('fanta_app_data').upsert(payload,{onConflict:'key'});
                 if(error) throw error;
-                playersList=parsed;
-                refreshPlayerLists();
                 await loadCentralListoneInfo();
-                alert(`Listone centrale aggiornato: ${parsed.length} giocatori. Tutti i dispositivi useranno questa versione.`);
+                alert(`Riferimento miniature aggiornato: ${parsed.length} calciatori. I listoni delle stanze non cambiano.`);
             } catch(e) {
                 if(statusEl) statusEl.textContent='Aggiornamento non riuscito: '+(e.message||e);
                 alert('Errore aggiornamento listone: '+(e.message||e));
@@ -6217,7 +6210,7 @@ function updateCreateRoomModeUI(){
             try {
                 const {data,error}=await supabaseClient.from('fanta_app_data').select('file_name,updated_at,data').eq('key','official_listone').maybeSingle();
                 if(error) throw error;
-                if(!data){ if(statusEl) statusEl.textContent='Nessun listone centrale pubblicato.'; if(countEl) countEl.textContent='0 giocatori'; return; }
+                if(!data){ if(statusEl) statusEl.textContent='Carica un Excel di riferimento per controllare le miniature.'; if(countEl) countEl.textContent='0 giocatori'; return; }
                 const n=Array.isArray(data.data)?data.data.length:0;
                 const d=data.updated_at?new Date(data.updated_at).toLocaleDateString('it-IT'):'';
                 if(countEl) countEl.textContent=`${n} giocatori`;
@@ -6262,86 +6255,79 @@ function updateCreateRoomModeUI(){
 
             await setAuctioneerRoomMode('join');
 
-            // Il listone viene sempre verificato automaticamente sul database centrale.
-            fetchListone();
+            const start=document.getElementById('btn-apri-plancia');
+            if(start)start.disabled=false;
+            const status=document.getElementById('excel-status');
+            if(status)status.textContent='Carica il listone della stanza dalla Gestione dopo l’ingresso.';
         }
 
-        async function fetchListone() {
-            const statusEl = document.getElementById('excel-status');
-            const btnPlancia = document.getElementById('btn-apri-plancia');
-            const cacheKey = 'fanta_central_listone_cache_v1';
+        function roomListoneKey(roomId=currentRoomId){
+            return roomId ? `room_listone_${roomId}` : '';
+        }
 
-            const formatCentralStatus = (data, cached=false) => {
-                const n = Array.isArray(data?.data) ? data.data.length : 0;
-                const d = data?.updated_at ? new Date(data.updated_at).toLocaleDateString('it-IT') : '--';
-                const mantraOk=Array.isArray(data?.data)&&data.data.some(p=>!!mantraRoleFromPlayer(p));
-                return `${cached ? '🟡' : '✅'} ${n} giocatori · ${mantraOk?'Classic + Mantra':'solo Classic'} · aggiornato ${d}${cached ? ' · copia salvata' : ''}`;
-            };
-
-            try {
-                if (statusEl) {
-                    statusEl.textContent = 'Controllo listone ufficiale…';
-                    statusEl.style.color = 'var(--text-muted)';
-                }
-
-                const {data,error} = await supabaseClient
-                    .from('fanta_app_data')
-                    .select('data,file_name,updated_at')
-                    .eq('key','official_listone')
-                    .maybeSingle();
-
-                if (error) throw error;
-
-                if (data && Array.isArray(data.data) && data.data.length) {
-                    playersList = data.data;
-                    try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(_) {}
-                    refreshPlayerLists();
-                    if (statusEl) {
-                        statusEl.textContent = formatCentralStatus(data, false);
-                        statusEl.style.color = 'var(--lime)';
-                    }
-                    if (btnPlancia) btnPlancia.disabled = false;
-                    return true;
-                }
-
-                // Nessun listone pubblicato: il banditore non può usare un file locale diverso.
-                playersList = [];
-                if (statusEl) {
-                    statusEl.textContent = 'Nessun listone ufficiale pubblicato dal Super User';
-                    statusEl.style.color = 'var(--accent-red)';
-                }
-                if (btnPlancia) btnPlancia.disabled = true;
-                return false;
-
-            } catch(e) {
-                console.warn('Listone centrale non raggiungibile', e);
-
-                // Solo come continuità operativa: usa l'ultima versione CENTRALE già ricevuta.
-                // Non viene più caricato listone.xlsx locale.
-                try {
-                    const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
-                    if (cached && Array.isArray(cached.data) && cached.data.length) {
-                        playersList = cached.data;
-                        refreshPlayerLists();
-                        if (statusEl) {
-                            statusEl.textContent = formatCentralStatus(cached, true);
-                            statusEl.style.color = 'var(--accent-yellow)';
-                        }
-                        if (btnPlancia) btnPlancia.disabled = false;
-                        return true;
-                    }
-                } catch(_) {}
-
-                playersList = [];
-                if (statusEl) {
-                    statusEl.textContent = 'Listone centrale non disponibile';
-                    statusEl.style.color = 'var(--accent-red)';
-                }
-                if (btnPlancia) btnPlancia.disabled = true;
+        async function fetchListone(){
+            const roomId=currentRoomId;
+            if(!roomId)return false;
+            const status=document.getElementById('room-listone-status');
+            try{
+                const {data,error}=await supabaseClient.from('fanta_app_data')
+                    .select('data,file_name,updated_at').eq('key',roomListoneKey(roomId)).maybeSingle();
+                if(error)throw error;
+                if(roomId!==currentRoomId)return false;
+                playersList=Array.isArray(data?.data)?data.data:[];
+                const date=data?.updated_at?new Date(data.updated_at).toLocaleDateString('it-IT'):'';
+                if(status)status.textContent=playersList.length
+                    ?`${data.file_name||'Excel'} · ${playersList.length} calciatori${date?' · '+date:''}`
+                    :'Nessun listone caricato. Carica un Excel per questa stanza.';
+                refreshPlayerLists();
+                return playersList.length>0;
+            }catch(e){
+                if(roomId!==currentRoomId)return false;
+                playersList=[];
+                if(status)status.textContent='Listone della stanza non disponibile. Riprova.';
+                refreshPlayerLists();
+                console.warn('Caricamento listone stanza non riuscito',e);
                 return false;
             }
         }
 
+        async function uploadRoomListone(file){
+            if(!file||!currentRoomId)return;
+            const input=document.getElementById('room-listone-file');
+            const status=document.getElementById('room-listone-status');
+            try{
+                if(!auctioneerLockKey&&!adminSessionPassword)throw new Error('Accedi come banditore per caricare il listone.');
+                if(isAuctionActive||readyGateWaiting||purchasesCache.length||auctionedPlayerIds.size){
+                    throw new Error('Non sostituire il listone dopo l’inizio dell’asta: prima azzera acquisti e banditi.');
+                }
+                if(status)status.textContent='Lettura Excel in corso…';
+                const workbook=XLSX.read(await file.arrayBuffer(),{type:'array'});
+                const worksheet=workbook.Sheets[workbook.SheetNames[0]];
+                if(!worksheet)throw new Error('Il file non contiene fogli.');
+                let rows=XLSX.utils.sheet_to_json(worksheet,{range:1});
+                let parsed=normalizeListoneRows(rows);
+                if(!parsed.length){rows=XLSX.utils.sheet_to_json(worksheet);parsed=normalizeListoneRows(rows);}
+                if(!parsed.length)throw new Error('Formato non riconosciuto: servono almeno le colonne Id e Nome.');
+                const ids=parsed.map(p=>String(p.Id).trim());
+                if(ids.some(id=>!id)||new Set(ids).size!==ids.length)throw new Error('Il listone contiene ID mancanti o duplicati.');
+                if(isMantraRoom()&&!parsed.every(p=>!!mantraRoleFromPlayer(p))){
+                    throw new Error('Per una stanza Mantra serve la colonna RM / Ruolo Mantra.');
+                }
+                const roomId=currentRoomId;
+                if(!isMantraRoom()&&!parsed.every(p=>['P','D','C','A'].includes(String(playerRole(p)).toUpperCase()))){
+                    throw new Error('Ogni calciatore deve avere un ruolo Classic valido (P, D, C o A).');
+                }
+                const {error}=await supabaseClient.from('fanta_app_data').upsert({
+                    key:roomListoneKey(roomId),data:parsed,file_name:file.name,updated_at:new Date().toISOString()
+                },{onConflict:'key'});
+                if(error)throw error;
+                if(roomId!==currentRoomId)return;
+                await fetchListone();
+                channel?.send({type:'broadcast',event:'room_listone_updated',payload:{room_id:roomId}}).catch(()=>{});
+            }catch(e){
+                if(status)status.textContent='Caricamento non riuscito: '+(e.message||e);
+            }finally{if(input)input.value='';}
+        }
 
         function sortBanditoreListCopy(list){
             return filterAndSortPlayers(list,'board');
@@ -6762,6 +6748,7 @@ function updateCreateRoomModeUI(){
 
                 await closePlayerSetupChannel();
                 await connectToRoom(room);
+                await fetchListone();
                 await selectExistingTeam(teamId);
             } catch(e) {
                 err.innerText = e.message || 'Impossibile collegarsi alla stanza.';
@@ -7187,6 +7174,7 @@ function updateCreateRoomModeUI(){
                     }
                 });
                 channel.on('broadcast',{event:'state_changed'}, async()=>{ await loadRoomState(); await loadNominationState(); });
+                channel.on('broadcast',{event:'room_listone_updated'},()=>fetchListone());
                 playerChannel.subscribe(async(status)=>{
                     // Ignora eventi tardivi provenienti da una vecchia connessione.
                     if(channel!==playerChannel || realtimeConnectionGeneration!==playerChannelGeneration){
@@ -8020,10 +8008,6 @@ function updateCreateRoomModeUI(){
                     const gameMode=document.querySelector('input[name="auction-game-mode"]:checked')?.value||'classic';
                     const mantraMax=Math.max(23,Math.min(90,parseInt(document.getElementById('auction-mantra-max-roster')?.value)||30));
 
-                    if(gameMode==='mantra' && !listoneHasMantraRoles()){
-                        throw new Error('Il listone centrale non contiene la colonna RM / Ruolo Mantra. Carica prima un listone Fantacalcio con ruoli Mantra.');
-                    }
-
                     room = await createRoom(name, password, {
                         game_mode:gameMode,
                         initial_credits: 500,
@@ -8067,6 +8051,7 @@ function updateCreateRoomModeUI(){
                 auctioneerLockAcquired=true;
 
                 await connectToRoom(room);
+                await fetchListone();
             } catch(e) {
                 if(auctioneerLockAcquired){
                     await releaseAuctioneerRoomLock();
@@ -8312,6 +8297,7 @@ function updateCreateRoomModeUI(){
                 .on('broadcast', { event: 'auctioned_state' }, (payload) => applyAuctionedState(payload.payload?.ids))
                 .on('broadcast', { event: 'auctioned_state_request' }, () => broadcastAuctionedState())
                 .on('broadcast', { event: 'state_changed' }, async () => { await loadRoomState(); if(document.getElementById('screen-room-control')?.classList.contains('active')) renderRoomControl(); })
+                .on('broadcast', { event: 'room_listone_updated' }, () => fetchListone())
                 .subscribe((status) => {
                     if(status==='SUBSCRIBED' && channel){
                         channel.send({type:'broadcast',event:'auctioned_state_request',payload:{}}).catch(()=>{});

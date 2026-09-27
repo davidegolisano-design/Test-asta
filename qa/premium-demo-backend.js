@@ -18,7 +18,7 @@
     fanta_rooms:[room],
     fanta_teams:[{id:TEAM,room_id:ROOM,name:'FC DEMO',credits_remaining:500},{id:'00000000-0000-4000-8000-000000000202',room_id:ROOM,name:'FC RIVALI',credits_remaining:500}],
     fanta_purchases:[],
-    fanta_app_data:[{key:'official_listone',data:players,updated_at:new Date().toISOString(),file_name:'Listone dimostrativo'}],
+    fanta_app_data:[{key:'official_listone',data:players,updated_at:new Date().toISOString(),file_name:'Riferimento miniature'},{key:`room_listone_${ROOM}`,data:players,updated_at:new Date().toISOString(),file_name:'Listone stanza dimostrativa'}],
     liveasta_premium_entitlements:[]
   };
   const contacts=new Map([[ROOM,"responsabile@example.invalid"]]),creationKeys=new Map(),notifications=[];

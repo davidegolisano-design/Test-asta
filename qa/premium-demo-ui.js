@@ -9,7 +9,20 @@ window.addEventListener('load',async()=>{
   adminSessionPassword='demo-premium';
   roomsCache=[demo.room]; playersList=demo.players;
   auctioneerLockKey='demo-lock';auctioneerRoomMode='desktop';
+  if(preview.get('scene')==='room-empty')demo.tables.fanta_app_data=demo.tables.fanta_app_data.filter(row=>row.key!==`room_listone_${demo.room.id}`);
   await connectToRoom(demo.room);
+  await fetchListone();
+  if(preview.get('scene')==='room-isolation'){
+    const second={...demo.room,id:'00000000-0000-4000-8000-000000000102',name:'STANZA B'};
+    demo.tables.fanta_rooms.push(second);
+    demo.tables.fanta_app_data.push({key:`room_listone_${second.id}`,data:[{Id:'room-b-only',Nome:'CALCIATORE B',R:'D',Squadra:'Demo'}],file_name:'B.xlsx',updated_at:new Date().toISOString()});
+    await connectToRoom(second);
+    await fetchListone();
+    const distinct=playersList.length===1&&playersList[0].Id==='room-b-only';
+    await connectToRoom(demo.room);
+    await fetchListone();
+    document.body.dataset.roomListoneIsolation=distinct&&playersList[0]?.Id===demo.players[0].Id?'passed':'failed';
+  }
   myTeamId=demo.teamId;myTeamName='FC DEMO';
   teamsCache=demo.tables.fanta_teams;
   document.querySelector('#auction-room-pill b').textContent=demo.room.name;
@@ -59,7 +72,7 @@ window.addEventListener('load',async()=>{
       else{setMobileBoardPhase('normal');document.getElementById('countdown-display').textContent='12';document.getElementById('current-value-display').textContent='85';document.getElementById('winner-display').textContent='FC DEMO';}
     }
     if(scene==='management'){document.getElementById('mg-tab-participants').click();}
-    if(scene==='list'||scene==='onboarding')refreshPlayerLists();
+    if(scene==='list'||scene==='onboarding'||scene==='room-empty')refreshPlayerLists();
     if(scene==='onboarding'){
       window.liveastaRoomOnboarding.prepare(demo.room);
       window.liveastaRoomOnboarding.open(demo.room,{
