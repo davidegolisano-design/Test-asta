@@ -3,6 +3,7 @@ window.liveastaSpectatorView=(()=>{
   let snapshot=null;
   let clock=null;
   let deliveryUpdate=null;
+  let previousResult=null;
   const el=id=>document.getElementById(id);
   const write=(id,value)=>{const target=el(id);if(target&&target.textContent!==String(value))target.textContent=String(value);};
   const timed=phase=>['prep','active','sealed','sealed_reveal'].includes(phase);
@@ -28,7 +29,8 @@ window.liveastaSpectatorView=(()=>{
       snapshot={...snapshot,sealed_submitted_ids:[...new Set([...(snapshot.sealed_submitted_ids||[]),...deliveryUpdate.ids].map(String))]};
     }
     const phase=snapshot.phase||'idle';
-    const source=snapshot.player;
+    if(phase==='ended')previousResult=snapshot;
+    const source=snapshot.player||(phase==='idle'&&nominationState.enabled?previousResult?.player:null);
     const player=source?{Id:source.id,Nome:source.nome,R:source.role,Squadra:source.club,FVM:source.fvm}:null;
     const board=el('screen-auctioneer-board');
     if(board)board.dataset.spectatorPhase=phase;
@@ -58,12 +60,14 @@ window.liveastaSpectatorView=(()=>{
       write('current-value-display',value);
       write('countdown-display',phase==='ended'?'0':'--');
       if(isAuctioneerMobileBoard()){
-        const mobilePhase=phase==='prep'?'preparing':phase==='ended'?(snapshot.winner?'sealed-result':'unsold'):'normal';
-        setMobileBoardPhase(mobilePhase);
-        if(phase==='ended')el('view-auction')?.classList.add('mobile-ended');
+        if(phase==='ended')showMobileAuctionResult(snapshot.winner);
+        else setMobileBoardPhase(phase==='prep'?'preparing':'normal');
       }
       if(phase==='ended')renderAuctioneerBidRanking(snapshot.mode==='sealed_result'?snapshot.sealed_ranking:snapshot.normal_bid_ranking,'CLASSIFICA OFFERTE');
-      if(phase==='idle' && nominationState.enabled)showNominationTurnStage();
+      if(phase==='idle' && nominationState.enabled){
+        renderAuctioneerBidRanking(previousResult?.mode==='sealed_result'?previousResult?.sealed_ranking:previousResult?.normal_bid_ranking,'CLASSIFICA OFFERTE');
+        showNominationTurnStage(player);
+      }
     }
     tick();
     if(timed(phase))clock=setInterval(tick,250);
@@ -71,7 +75,7 @@ window.liveastaSpectatorView=(()=>{
     window.updateLiveAstaTeamCards?.();
     window.refreshLiveAstaMobileBoardDev?.();
   }
-  function stop(){clearInterval(clock);clock=null;snapshot=null;deliveryUpdate=null;el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
+  function stop(){clearInterval(clock);clock=null;snapshot=null;deliveryUpdate=null;previousResult=null;el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
   return{render,stop,updateDeliveries:payload=>{
     if(!payload?.token||!Array.isArray(payload.submitted_ids))return;
     deliveryUpdate={token:payload.token,ids:payload.submitted_ids};

@@ -356,3 +356,8 @@
     }
   }
 }
+
+/* Only the shared mobile surfaces paint these quadrants. Source DOM stays readable. */
+@media(max-width:760px){
+  html body #screen-auctioneer-board.auctioneer-ui-mobile #auction-dashboard.mode-mobile #view-auction.liveasta-mobile-clean-active :is(.col-timer,.col-info)>:not(.liveasta-mobile-surface){display:none!important}
+}

@@ -10,7 +10,6 @@ body #screen-auctioneer-board.spectator-mode #auctioneer-session-title{display:b
 body #screen-auctioneer-board.spectator-mode .auction-session-center{justify-content:center!important}
 body #screen-auctioneer-board.spectator-mode .auction-quick-actions{display:flex!important}
 body #screen-auctioneer-board.spectator-mode .auction-quick-rosters{display:flex!important}
-body #screen-auctioneer-board.spectator-mode[data-spectator-phase="idle"] #auction-player-card{visibility:hidden!important}
 /* Shared host/spectator desktop layout: the offer, title and team name stay inside the third column. */
 body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .col-info{min-width:0!important;align-items:center!important;text-align:center!important}
 body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .mobile-offer-block{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;min-width:0!important;max-width:100%!important}
@@ -32,3 +31,7 @@ body #screen-auctioneer-board #hybrid-view-to-player:not([hidden]){font-size:cla
 .rosters-team-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--theme-muted);font-size:13px;font-weight:700}
 .rosters-team-picker .minimal-input{width:auto;min-width:180px;max-width:100%;margin:0}
 @media(max-width:760px){.rosters-team-picker{width:100%}.rosters-team-picker .minimal-input{flex:1;min-width:0}}
+/* State visibility must share the presentation layer's precedence. */
+@layer matchday {
+  #screen-auctioneer-board.spectator-mode .auction-quick-reset{display:none!important}
+}

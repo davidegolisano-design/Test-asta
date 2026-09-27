@@ -24,7 +24,7 @@
     document.head.appendChild(link);
   }
 
-  loadCss('./styles/auctioneer-mobile-clean.css?v=1067');
+  loadCss('./styles/auctioneer-mobile-clean.css?v=10710');
   loadCss('./styles/room-chat.css?v=10418');
 
   if('serviceWorker' in navigator && window.LIVEASTA_CONFIG?.serviceWorker === true && !window.premiumDemoBackend){

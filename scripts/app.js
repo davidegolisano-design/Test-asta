@@ -2771,7 +2771,7 @@ function updateCreateRoomModeUI(){
             }
         }
 
-        function showNominationTurnStage(){
+        function showNominationTurnStage(previousPlayer=currentAuctionPlayer){
             if(!nominationState.enabled)return;
             const team=currentNominationTeam();
             const role=nominationState.role;
@@ -2849,7 +2849,7 @@ function updateCreateRoomModeUI(){
                     rankingEmpty.setAttribute('aria-hidden',hasPreviousRanking?'true':'false');
                 }
 
-                if(!currentAuctionPlayer){
+                if(!previousPlayer){
                     clearSealedBidRanking();
                     document.querySelector('#view-auction .col-player')?.classList.add('nomination-empty-previous');
                     const name=document.getElementById('auction-player-name-top');
@@ -8327,6 +8327,11 @@ function updateCreateRoomModeUI(){
             if(name)av.classList.add(`mobile-${name}`);
             updateMobileQuadLabels(name);
         }
+        function showMobileAuctionResult(winner){
+            if(!isAuctioneerMobileBoard())return;
+            setMobileBoardPhase(winner?'sealed-result':'unsold');
+            mobileBoardView()?.classList.add('mobile-ended');
+        }
         function updateMobileQuadLabels(name=''){
             if(!isAuctioneerMobileBoard())return;
             const left=document.getElementById('mobile-left-label');
@@ -8830,8 +8835,7 @@ function updateCreateRoomModeUI(){
                 // dopo l'apertura buste mostra tutte le offerte ordinate.
                 renderSealedBidRanking(bids);
                 if(isAuctioneerMobileBoard()){
-                    setMobileBoardPhase(winner?'sealed-result':'unsold');
-                    mobileBoardView()?.classList.add('mobile-ended');
+                    showMobileAuctionResult(winner);
                     if(!winner){
                         document.getElementById('winner-display').textContent='INVENDUTO';
                     }
@@ -9412,6 +9416,7 @@ function updateCreateRoomModeUI(){
                 }
             }
             timerEl.innerText = "0";
+            showMobileAuctionResult(currentWinner);
             hybridRenderNormalEnd();
         }
 
