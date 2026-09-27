@@ -11,6 +11,12 @@ window.liveastaSpectatorView=(()=>{
     const deadline=Number(snapshot.deadline_at||snapshot.sealed_deadline_at)||0;
     const remaining=deadline?Math.max(0,Math.ceil((deadline-Date.now())/1000)):Math.max(0,Number(snapshot.seconds)||0);
     write('countdown-display',timed?remaining:'--');
+    const display=el('countdown-display');
+    if(display){
+      const lastThree=timed&&remaining>0&&remaining<=3;
+      display.classList.toggle('liveasta-last3',lastThree);
+      display.classList.toggle('danger',lastThree);
+    }
   }
   function render(state){
     snapshot=state||null;
@@ -48,7 +54,7 @@ window.liveastaSpectatorView=(()=>{
     let winner='Il banditore avvierà l’asta';
     let value='--';
     if(phase==='ready'){heading='READY';winner='In attesa dei giocatori';value=`${ready} / ${required}`;}
-    if(phase==='prep'){heading='PREPARAZIONE';winner='L’asta sta per iniziare';value='0';}
+    if(phase==='prep'){heading='PREPARAZIONE';winner='STA PER INIZIARE';value='0';}
     if(phase==='active'){heading='MIGLIOR OFFERENTE';winner=state.winner||'NESSUNO';value=state.value||0;}
     if(phase==='sealed'){heading='BUSTE CONSEGNATE';winner='Importi nascosti fino all’apertura';value=`${delivered} / ${eligible}`;}
     if(phase==='sealed_reveal'){heading='APERTURA BUSTE';winner='ATTENDI';value='?';}
@@ -67,6 +73,6 @@ window.liveastaSpectatorView=(()=>{
     clearInterval(clock);
     if(['ready','prep','active','sealed','sealed_reveal'].includes(phase))clock=setInterval(tick,250);
   }
-  function stop(){clearInterval(clock);clock=null;snapshot=null;delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
+  function stop(){clearInterval(clock);clock=null;snapshot=null;el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
   return{render,stop};
 })();

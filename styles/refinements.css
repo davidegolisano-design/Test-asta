@@ -5347,6 +5347,14 @@ html[data-live-theme] body #screen-auctioneer-board#screen-auctioneer-board #vie
   -webkit-text-fill-color:var(--theme-number)!important;
   text-shadow:none!important;
 }
+
+/* Miniatures are transparent cutouts; the drop shadow reads as a dark stain below the base. */
+#screen-player-buzzer .phone-card-image,
+#screen-auctioneer-board #auction-dashboard #auction-player-card #card-image,
+#screen-auctioneer-board #auction-dashboard.mode-pc #auctioneer-ready-desktop .ard-player-stage img,
+.room-roster-player-preview-image{
+  filter:none!important;
+}
 html body #nomination-picker-overlay .nomination-player-row .role-badge{
   width:28px!important;min-width:28px!important;max-width:28px!important;
   height:28px!important;min-height:28px!important;max-height:28px!important;

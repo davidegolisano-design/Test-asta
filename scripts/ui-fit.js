@@ -69,6 +69,7 @@ function fitNominationStageTeam(){
 
 function fitAuctionNames(){
             const mobile=document.getElementById('auction-dashboard')?.classList.contains('mode-mobile');
+            const spectator=document.getElementById('screen-auctioneer-board')?.classList.contains('spectator-mode');
             requestAnimationFrame(()=>{
                 fitTextToBox(
                     document.getElementById('auction-player-name-top'),
@@ -78,8 +79,8 @@ function fitAuctionNames(){
                 );
                 fitTextToBox(
                     document.getElementById('winner-display'),
-                    mobile?24:72,
-                    mobile?12:16,
+                    mobile?24:(spectator?44:72),
+                    mobile?12:(spectator?16:16),
                     true
                 );
             });
