@@ -2,9 +2,7 @@
 .entry-role-card.entry-role-spectator{background:var(--theme-card)!important;color:var(--theme-text)!important;border:1px solid var(--theme-primary)!important}
 .entry-role-spectator .entry-role-icon{color:var(--theme-primary)}
 /* The spectator access panel inherits the shared entry form component. */
-.spectator-access-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin-top:18px}
-html[data-live-theme] #screen-spectator-setup .spectator-access-actions .btn{box-sizing:border-box;width:100%;height:52px;min-height:52px;margin:0;padding:10px 12px!important;font-family:var(--entry-display)!important;font-size:20px!important;line-height:1.1!important;border-radius:3px 3px 15px 3px!important;text-align:center!important}
-html[data-live-theme] #screen-spectator-setup .spectator-access-actions .btn:last-child{background:var(--theme-marker)!important;color:var(--entry-ink)!important}
+.spectator-access-actions{display:grid}
 /* Only exit and the Rose command remain actionable on the spectator board. */
 body #screen-auctioneer-board.spectator-mode > .session-nav > :last-child,
 body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#auction-online-pill,#nomination-stage,#auctioneer-ready-desktop,#view-list,#btn-next,#auctioneer-turn-center,#sealed-delivery-panel,#auctioneer-turn-ranking-empty){display:none!important}
