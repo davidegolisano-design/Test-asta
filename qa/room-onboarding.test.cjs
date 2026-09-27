@@ -41,9 +41,10 @@ test('new room joins as auctioneer before starting onboarding; occupied rooms st
  const ctx={document:{getElementById:()=>element,querySelector:()=>element},window:{liveastaRoomOnboarding:{prepare:()=>actions.push('prepare'),hasDraft:()=>true,open:()=>actions.push('open')}},
   auctioneerRoomMode:'create',LIVEASTA_TIMER_DEFAULTS:{auction:8},listoneHasMantraRoles:()=>true,createRoom:async()=>room,acquireAuctioneerRoomLock:async()=>true,
   connectToRoom:async r=>{ctx.currentRoom=r;ctx.currentRoomCode=r.name;actions.push('connect');},auctioneerPlayerMode:false,nominationState:{enabled:false},
+  fetchListone:async()=>actions.push('listone'),
   showScreen:id=>actions.push(id),restoreAuctioneerFromLiveState:async()=>false};
  for(const name of ['loadAuctionedPlayers','loadRoomState','loadAbsentTeams','loadAudioRoutingSettings','loadAuctioneerPlayerMode','loadNominationState','loadAuctionPrepSeconds','loadRoomAuctionExtraSettings','loadReadyMode','loadSealedTimerSeconds','loadSealedRevealSeconds','hideNominationStage','refreshPlayerLists','subscribeCommonRoomEvents'])ctx[name]=()=>{};
  vm.createContext(ctx);vm.runInContext(fn,ctx);await ctx.joinAsAuctioneer();
- assert.deepEqual(actions,['prepare','connect','screen-auctioneer-board','open']);
+ assert.deepEqual(actions,['prepare','connect','listone','screen-auctioneer-board','open']);
  actions.length=0;ctx.acquireAuctioneerRoomLock=async()=>false;await ctx.joinAsAuctioneer();assert.deepEqual(actions,['prepare']);
 });

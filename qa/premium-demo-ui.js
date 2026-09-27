@@ -6,6 +6,10 @@ window.addEventListener('load',async()=>{
   if(preview.get('entry')==='home'){document.body.dataset.premiumDemoReady='true';return;}
   if(preview.get('miniatures')==='premium')demo.setFeatures(['miniatures']);
   if(preview.get('scene')==='onboarding')demo.tables.fanta_teams=[];
+  if(preview.get('scene')==='sealed-ready-12'){
+    const team=demo.tables.fanta_teams[0];
+    demo.tables.fanta_teams=Array.from({length:12},(_,i)=>({...team,id:i?`qa-team-${i+1}`:team.id,name:`SQUADRA ${i+1}`}));
+  }
   adminSessionPassword='demo-premium';
   roomsCache=[demo.room]; playersList=demo.players;
   auctioneerLockKey='demo-lock';auctioneerRoomMode='desktop';
@@ -48,7 +52,7 @@ window.addEventListener('load',async()=>{
     roomControlNavigationAuthorized=true;
     if(scene!=='management')showScreen('screen-auctioneer-board');
     roomControlNavigationAuthorized=false;
-    if(scene==='hybrid-turn'){
+    if(scene==='hybrid-turn'||scene==='sealed-ready-12'){
       auctioneerPlayerMode=true;auctioneerPlayerTeamId=demo.teamId;
       hybridPreferredView='board';configureHybridPlayerIdentity();syncHybridViewButtons();
     }
@@ -77,6 +81,19 @@ window.addEventListener('load',async()=>{
       restoreAuctioneerVisualFromState({player:{id:currentAuctionPlayer.Id,name:currentAuctionPlayer.Nome,role:'P',club:'Parma'}});
       if(scene==='ready'){readyGateWaiting=true;showAuctioneerReadyStage();}
       else{setMobileBoardPhase('normal');document.getElementById('countdown-display').textContent='12';document.getElementById('current-value-display').textContent='85';document.getElementById('winner-display').textContent='FC DEMO';}
+    }
+    if(scene==='sealed-ready-12'){
+      readyModeEnabled=true;
+      currentAuctionPlayer=demo.players[0];
+      sealedAuctionModeActive=true;sealedAuctionToken='qa-sealed-12';sealedTimerSeconds=180;
+      sealedEligibleIds=teamsCache.map(team=>String(team.id));
+      beginReadyGate();
+      readyPlayers=new Set(sealedEligibleIds.filter(id=>id!==String(myTeamId)));
+      persistReadyGateState();
+      hybridPreferredView='player';
+      showScreen('screen-player-buzzer');
+      showHybridPlayerForCurrentAuction();
+      showHybridReadyIfNeeded();
     }
     if(scene==='my-roster'){
       auctioneerLockKey=null;auctioneerLockToken=null;

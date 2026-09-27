@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.10';
+  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.11';
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA';
@@ -24,7 +24,7 @@
     document.head.appendChild(link);
   }
 
-  loadCss('./styles/auctioneer-mobile-clean.css?v=10710');
+  loadCss('./styles/auctioneer-mobile-clean.css?v=10711');
   loadCss('./styles/room-chat.css?v=10418');
 
   if('serviceWorker' in navigator && window.LIVEASTA_CONFIG?.serviceWorker === true && !window.premiumDemoBackend){

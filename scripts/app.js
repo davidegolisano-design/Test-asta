@@ -194,6 +194,12 @@ function updateCreateRoomModeUI(){
         let playerSkippedCurrentAuction=false;
         let playerReadyDismissedToken=null;
         let liveAuctionState=null;
+        const playerStateGuard=LiveAstaAuctionSync.createPlayerStateGuard();
+        let playerSealedStartedToken=null;
+        const saveAuctionSnapshot=LiveAstaAuctionSync.createSnapshotWriter(async record=>{
+            const {error}=await supabaseClient.from('fanta_app_data').upsert(record,{onConflict:'key'});
+            if(error)throw error;
+        });
         let showRoomsToUsers=true;
         let playerRoomRefreshTimer=null;
 
@@ -785,9 +791,13 @@ function updateCreateRoomModeUI(){
         function hybridStartSealedRound(){
             if(!isAuctioneerPlayerIdentity())return;
 
+            playerStateGuard.advance();
+            playerStateGuard.closeReady(currentRoomId,playerReadyToken);
+            playerStateGuard.closeReady(currentRoomId,readyGateToken);
             closePlayerReadyBanner();
             playerSealedMode=true;
             playerSealedToken=String(sealedAuctionToken||'');
+            playerSealedStartedToken=playerSealedToken;
             playerSealedSubmitted=false;
             isAuctionActive=false;
             setPlayerBidButtonsEnabled(false);
@@ -1414,10 +1424,8 @@ function updateCreateRoomModeUI(){
             return currentRoomId ? `ready_gate_${currentRoomId}` : '';
         }
 
-        async function saveReadyGateDedicated(active=true){
-            if(!currentRoomId)return;
-
-            const payload={
+        function readyGateSnapshot(active=true){
+            return {
                 active:!!active,
                 token:active?readyGateToken:null,
                 player:active?livePlayerSnapshot():null,
@@ -1432,15 +1440,19 @@ function updateCreateRoomModeUI(){
                 sealed_eligible_ids:active&&sealedAuctionModeActive?sealedEligibleIds:[],
                 updated_at:new Date().toISOString()
             };
+        }
+
+        async function saveReadyGateDedicated(active=true){
+            if(!currentRoomId)return;
+            const payload=readyGateSnapshot(!!active && readyGateWaiting);
 
             try{
-                const {error}=await supabaseClient.from('fanta_app_data').upsert({
+                await saveAuctionSnapshot({
                     key:readyGateStateKey(),
                     data:payload,
                     file_name:'ready-gate',
                     updated_at:new Date().toISOString()
-                },{onConflict:'key'});
-                if(error)throw error;
+                });
             }catch(e){
                 console.warn('Salvataggio READY gate non riuscito',e);
             }
@@ -1466,11 +1478,18 @@ function updateCreateRoomModeUI(){
             await saveReadyGateDedicated(false);
         }
 
-        async function restorePlayerReadyGateFirst(){
+        async function restorePlayerReadyGateFirst(state=null,isCurrent=()=>true){
             const gate=await loadReadyGateState();
+            if(!isCurrent())return true; // A newer realtime event owns the screen.
             if(!gate?.active)return false;
+            if(playerStateGuard.isReadyClosed(currentRoomId,gate.token))return false;
+            // A dedicated READY row is a fallback, never an override for a newer phase.
+            if(state?.phase && state.phase!=='idle'){
+                if(gate.mode==='sealed' && state.phase!=='ready' &&
+                   String(state.sealed_token||'')===String(gate.sealed_token||''))return false;
+                if((Date.parse(state.updated_at)||0)>=(Date.parse(gate.updated_at)||0))return false;
+            }
 
-            // Il gate READY ha priorità assoluta su prep/asta/turno.
             const required=Array.isArray(gate.required_ids)?gate.required_ids.map(String):[];
             const already=Array.isArray(gate.ready_ids)?gate.ready_ids.map(String):[];
             const skipped=Array.isArray(gate.skip_ids)?gate.skip_ids.map(String):[];
@@ -1638,7 +1657,6 @@ function updateCreateRoomModeUI(){
             readyOfflineExcludedIds=new Set();
             readyGateToken=`${currentRoomId}_${currentAuctionPlayer?.Id}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
             persistReadyGateState();
-            saveReadyGateDedicated(true);
         }
 
 
@@ -1709,13 +1727,13 @@ function updateCreateRoomModeUI(){
             const allSkipped=req.length>0 && req.every(id=>readySkipPlayers.has(String(id)));
             readyGateWaiting=false;
             broadcastReadyState();
-            closeReadyGateDedicated();
 
             // nuova semantica READY/SKIP:
             // - se TUTTI scelgono SKIP => invenduto immediato a 0;
             // - se anche UNA sola squadra sceglie READY => l'asta parte e TUTTE
             //   le squadre abilitate possono partecipare, comprese quelle che avevano SKIP.
             if(allSkipped){
+                closeReadyGateDedicated();
                 sealedAuctionModeActive=false;
                 sealedAuctionToken=null;
                 sealedEligibleIds=[];
@@ -1846,6 +1864,7 @@ function updateCreateRoomModeUI(){
         }
 
         function showPlayerReadyBanner(data,forceOpen=false){
+            if(playerStateGuard.isReadyClosed(currentRoomId,data?.ready_token))return;
             stopPlayerSealedCountdown();
             playerSealedRevealLocalEndAt=0;
 
@@ -1940,7 +1959,6 @@ function updateCreateRoomModeUI(){
                     readyPlayers.add(String(myTeamId));
                     if(selected==='skip')readySkipPlayers.add(String(myTeamId));
                     else readySkipPlayers.delete(String(myTeamId));
-                    persistReadyGateState();
                     evaluateReadyGate();
                 }
                 return;
@@ -1952,6 +1970,10 @@ function updateCreateRoomModeUI(){
         }
 
         function updatePlayerReadyProgress(data){
+            if(data?.waiting===false){
+                playerStateGuard.closeReady(currentRoomId,data.token);
+                if(String(data.token)===String(playerReadyToken))playerStateGuard.advance();
+            }
             if(!playerReadyToken||String(data?.token)!==String(playerReadyToken))return;
 
             if(data?.waiting===false){
@@ -2026,25 +2048,27 @@ function updateCreateRoomModeUI(){
 
             liveAuctionState={...(liveAuctionState||{}),...patch,updated_at:new Date().toISOString()};
             try{
-                await supabaseClient.from('fanta_app_data').upsert({
+                await saveAuctionSnapshot({
                     key:liveAuctionStateKey(),
                     data:liveAuctionState,
                     file_name:'stato-live-asta',
                     updated_at:new Date().toISOString()
-                },{onConflict:'key'});
+                });
             }catch(e){console.warn('Salvataggio stato live non riuscito',e);}
         }
 
-        async function loadLiveAuctionState(){
-            liveAuctionState=null;
+        async function loadLiveAuctionState(commit=true){
             if(!currentRoomId)return null;
+            const roomId=currentRoomId;
             try{
                 const {data,error}=await supabaseClient.from('fanta_app_data')
                     .select('data').eq('key',liveAuctionStateKey()).maybeSingle();
                 if(error)throw error;
-                liveAuctionState=data?.data||null;
+                const state=data?.data||null;
+                if(commit && roomId===currentRoomId)liveAuctionState=state;
+                return state;
             }catch(e){console.warn('Caricamento stato live non riuscito',e);}
-            return liveAuctionState;
+            return null;
         }
 
         function liveRemainingSeconds(state){
@@ -2087,17 +2111,25 @@ function updateCreateRoomModeUI(){
         }
 
         async function restorePlayerFromLiveState(stateOverride=null){
+            if(stateOverride?.phase==='ready' && playerStateGuard.isReadyClosed(currentRoomId,stateOverride.ready_token))return;
+            const revision=playerStateGuard.advance();
+            const roomId=currentRoomId,teamId=myTeamId;
+            const isCurrent=()=>playerStateGuard.isCurrent(revision)&&roomId===currentRoomId&&teamId===myTeamId;
             await loadRoomState();
             await loadNominationState();
             await loadReadyMode();
+            if(!isCurrent())return;
 
-            // Prima di qualsiasi altro stato, verifica se esiste un READY ancora aperto.
-            if(await restorePlayerReadyGateFirst()){
-                return;
+            const state=stateOverride || await loadLiveAuctionState(false);
+            if(!isCurrent())return;
+            if(state?.phase==='ready' && playerStateGuard.isReadyClosed(currentRoomId,state.ready_token))return;
+            if(await restorePlayerReadyGateFirst(state,isCurrent))return;
+            if(!isCurrent())return;
+            liveAuctionState=state;
+            if(state?.phase && state.phase!=='ready'){
+                playerStateGuard.closeReady(currentRoomId,state.completed_ready_token);
+                playerStateGuard.closeReady(currentRoomId,playerReadyToken);
             }
-
-            const state=stateOverride || await loadLiveAuctionState();
-            if(stateOverride) liveAuctionState=stateOverride;
 
             if(!state||!state.phase||state.phase==='idle'){
                 closePlayerReadyBanner();
@@ -2149,9 +2181,11 @@ function updateCreateRoomModeUI(){
 
             if(state.phase==='sealed'){
                 closePlayerReadyBanner();
+                const alreadySubmitted=playerSealedMode && String(playerSealedToken)===String(state.sealed_token||'') && playerSealedSubmitted;
                 playerSealedMode=true;
                 playerSealedToken=String(state.sealed_token||'');
-                playerSealedSubmitted=(state.sealed_submitted_ids||[]).map(String).includes(String(myTeamId));
+                playerSealedStartedToken=playerSealedToken;
+                playerSealedSubmitted=alreadySubmitted || (state.sealed_submitted_ids||[]).map(String).includes(String(myTeamId));
                 currentAuctionPlayer=playersList.find(x=>String(x.Id)===String(state.player?.id))||currentAuctionPlayer;
                 const eligible=(state.sealed_eligible_ids||[]).map(String);
                 const allowed=eligible.includes(String(myTeamId))&&!playerSealedSubmitted;
@@ -2172,6 +2206,7 @@ function updateCreateRoomModeUI(){
                 closePlayerReadyBanner();
                 playerSealedMode=true;
                 playerSealedToken=String(state.sealed_token||'');
+                playerSealedStartedToken=playerSealedToken;
                 playerSealedSubmitted=true;
                 preparePlayerSealedControls(false);
                 isAuctionActive=false;
@@ -5352,7 +5387,6 @@ function updateCreateRoomModeUI(){
                 renderOnlinePlayers();
                 if(readyGateWaiting){
                     evaluateReadyGate();
-                    saveReadyGateDedicated(true);
                 }
             }
         }
@@ -6786,12 +6820,15 @@ function updateCreateRoomModeUI(){
                     applyAudioRoutingPayload(payload.payload||{});
                 });
                 channel.on('broadcast', { event: 'new_player' }, (payload) => {
+                    const data = payload.payload;
+                    if(playerStateGuard.isReadyClosed(currentRoomId,data.ready_token))return;
+                    if(data.mode==='sealed' && data.sealed_token===playerSealedStartedToken)return;
+                    playerStateGuard.advance();
                     nominationReady=false;nominationRequestPending=false;closeNominationPicker();updateNominationUI();
                     playerSkippedCurrentAuction=false;
                     playerReadyChoice=null;
                     playerReadyRequiredIds=[];
                     playerReadyIds=[];
-                    const data = payload.payload;
                     setPlayerImage(document.getElementById('phone-card-image'), data.player_id||data.id, data.role||'');
                     if(data.nome) setPhonePlayerDisplayName(data.nome,data.player_id||data.id);
                     const roleEl = document.getElementById('phone-player-role');
@@ -6835,11 +6872,17 @@ function updateCreateRoomModeUI(){
                     }
                 });
                 channel.on('broadcast',{event:'sealed_bid_start'},(payload)=>{
-                    playerSkippedCurrentAuction=false;
-                    playSound('audio-start');
                     const d=payload.payload||{};
                     const token=String(d.token||'');
                     if(!token)return;
+                    // The retry broadcast must not clear an offer or restart its timer.
+                    if(token===playerSealedStartedToken)return;
+                    playerStateGuard.advance();
+                    playerStateGuard.closeReady(currentRoomId,playerReadyToken);
+                    playerStateGuard.closeReady(currentRoomId,d.ready_token);
+                    playerSealedStartedToken=token;
+                    playerSkippedCurrentAuction=false;
+                    playSound('audio-start');
 
                     // Il token ricevuto è autoritativo: così funziona anche se
                     // sealed_bid_start arriva prima di new_player o è uno spareggio.
@@ -6893,6 +6936,7 @@ function updateCreateRoomModeUI(){
                 channel.on('broadcast',{event:'sealed_reveal_start'},(payload)=>{
                     const d=payload.payload||{};
                     if(String(d.token)!==String(playerSealedToken))return;
+                    playerStateGuard.advance();
                     if(playerPrepInterval){clearInterval(playerPrepInterval);playerPrepInterval=null;}
                     playerSealedMode=true;
                     preparePlayerSealedControls(false);
@@ -6916,6 +6960,7 @@ function updateCreateRoomModeUI(){
                 channel.on('broadcast',{event:'sealed_bid_end'},(payload)=>{
                     const d=payload.payload||{};
                     if(String(d.token)!==String(playerSealedToken))return;
+                    playerStateGuard.advance();
 
                     const renderResult=()=>{
                         playSound('audio-end');
@@ -6965,6 +7010,9 @@ function updateCreateRoomModeUI(){
                 });
 
                 channel.on('broadcast', { event: 'prep_started' }, (payload) => {
+                    playerStateGuard.advance();
+                    playerStateGuard.closeReady(currentRoomId,playerReadyToken);
+                    playerStateGuard.closeReady(currentRoomId,payload.payload?.ready_token);
                     playerSkippedCurrentAuction=false;
                     playSound('audio-prep');
                     closePlayerReadyBanner();
@@ -6989,6 +7037,10 @@ function updateCreateRoomModeUI(){
                     el.classList.add('prep-countdown');
                 });
                 channel.on('broadcast', { event: 'auction_started' }, (payload) => {
+                    playerStateGuard.advance();
+                    playerStateGuard.closeReady(currentRoomId,playerReadyToken);
+                    playerStateGuard.closeReady(currentRoomId,payload.payload?.ready_token);
+                    closePlayerReadyBanner();
                     playerSkippedCurrentAuction=false;
                     playSound('audio-start');
                     stopPlayerSealedCountdown();
@@ -7075,6 +7127,9 @@ function updateCreateRoomModeUI(){
                     document.getElementById('player-auction-title').innerText = d.reason || 'OFFERTA NON VALIDA';
                 });
                 channel.on('broadcast', { event: 'auction_end' }, async (payload) => {
+                    playerStateGuard.advance();
+                    playerStateGuard.closeReady(currentRoomId,playerReadyToken);
+                    closePlayerReadyBanner();
                     playSound('audio-end');
                     const data = payload.payload; isAuctionActive = false; setPlayerBidButtonsEnabled(false); playerSkippedCurrentAuction=false;
                     document.getElementById('player-auction-title').innerText = data.winner === '' ? 'NESSUNA OFFERTA' : 'AGGIUDICATO A';
@@ -7107,16 +7162,17 @@ function updateCreateRoomModeUI(){
                 });
                 channel.on('broadcast',{event:'ready_gate_state'},async(payload)=>{
                     const gate=payload.payload||null;
-                    if(gate?.active){
-                        await restorePlayerReadyGateFirst();
+                    if(gate?.active && !playerStateGuard.isReadyClosed(currentRoomId,gate.token)){
+                        await restorePlayerFromLiveState();
                     }
                 });
                 channel.on('broadcast',{event:'live_state'},async(payload)=>{
                     const state=payload.payload||null;
-                    liveAuctionState=state;
                     await restorePlayerFromLiveState(state);
                 });
                 channel.on('broadcast',{event:'force_state_reset'},async(payload)=>{
+                    playerStateGuard.advance();
+                    playerStateGuard.closeReady(currentRoomId,playerReadyToken);
                     stopPlayerSealedCountdown();
                     playerSealedRevealLocalEndAt=0;
                     if(playerPrepInterval){
@@ -8249,14 +8305,11 @@ function updateCreateRoomModeUI(){
                         }
                     }).catch(()=>{});
                 })
-                .on('broadcast',{event:'live_state_request'},async()=>{
+                .on('broadcast',{event:'live_state_request'},()=>{
+                    // The host already has the authoritative state. Reconnects must
+                    // not enqueue READY writes or broadcast an old database read.
                     if(readyGateWaiting){
-                        persistReadyGateState();
-                        await saveReadyGateDedicated(true);
-                    }
-                    const gate=await loadReadyGateState();
-                    if(gate?.active){
-                        channel.send({type:'broadcast',event:'ready_gate_state',payload:gate}).catch(()=>{});
+                        channel.send({type:'broadcast',event:'ready_gate_state',payload:readyGateSnapshot(true)}).catch(()=>{});
                     }
                     if(liveAuctionState){
                         channel.send({type:'broadcast',event:'live_state',payload:liveStateForBroadcast()}).catch(()=>{});
@@ -8274,7 +8327,6 @@ function updateCreateRoomModeUI(){
                     readyPlayers.add(String(d.team_id));
                     if(String(d.choice||'ready')==='skip')readySkipPlayers.add(String(d.team_id));
                     else readySkipPlayers.delete(String(d.team_id));
-                    persistReadyGateState();
                     evaluateReadyGate();
                 })
                 .on('broadcast',{event:'player_availability'},async(payload)=>{
@@ -8426,8 +8478,10 @@ function updateCreateRoomModeUI(){
 
         async function startSealedAuctionTimer(){
             if(!sealedAuctionModeActive || !currentAuctionPlayer)return;
+            const token=sealedAuctionToken;
             sealedEnding=false;
             await closeReadyGateDedicated();
+            if(!sealedAuctionModeActive || token!==sealedAuctionToken)return;
 
             sealedDeadlineAt=Date.now()+Math.max(5,parseInt(sealedTimerSeconds)||LIVEASTA_TIMER_DEFAULTS.sealed)*1000;
             isAuctionActive=false;
@@ -8445,14 +8499,17 @@ function updateCreateRoomModeUI(){
                 sealed_eligible_ids:sealedEligibleIds,
                 sealed_submitted_ids:[...sealedBids.keys()],
                 winner:'',value:0,seconds:sealedTimerSeconds,deadline_at:sealedDeadlineAt,
+                completed_ready_token:readyGateToken,
                 ready_token:null,ready_required_ids:[],ready_ids:[]
             });
+            if(!sealedAuctionModeActive || token!==sealedAuctionToken)return;
 
             playSound('audio-start');
 
             if(channel){
                 const sealedStartPayload={
                     token:sealedAuctionToken,
+                    ready_token:readyGateToken,
                     player_id:String(currentAuctionPlayer.Id),
                     seconds:sealedTimerSeconds,
                     deadline_at:sealedDeadlineAt,
@@ -8468,6 +8525,7 @@ function updateCreateRoomModeUI(){
 
                 // Secondo invio + live state: protegge i telefoni da un broadcast perso.
                 setTimeout(()=>{
+                    if(token!==sealedAuctionToken || sealedEnding || liveAuctionState?.phase!=='sealed')return;
                     channel?.send({
                         type:'broadcast',
                         event:'sealed_bid_start',
@@ -8984,11 +9042,12 @@ function updateCreateRoomModeUI(){
             saveLiveAuctionState({
                 phase:'prep',player:livePlayerSnapshot(),winner:'',value:0,
                 seconds:prepTime,deadline_at:prepDeadline,
+                completed_ready_token:readyGateToken,
                 ready_token:null,ready_required_ids:[],ready_ids:[],
                 skip_ids:[]
             });
             playSound('audio-prep');
-            if(channel) channel.send({type:'broadcast',event:'prep_started',payload:{seconds:prepTime,player_id:currentAuctionPlayer?.Id}}).catch(()=>{});
+            if(channel) channel.send({type:'broadcast',event:'prep_started',payload:{seconds:prepTime,player_id:currentAuctionPlayer?.Id,ready_token:readyGateToken}}).catch(()=>{});
             hybridStartNormalPrep(prepTime);
 
             if(auctionPrepInterval){
@@ -9056,6 +9115,7 @@ function updateCreateRoomModeUI(){
                 normal_bid_ranking:initialBidRanking,
                 seconds:currentTimer,
                 deadline_at:Date.now()+currentTimer*1000,
+                completed_ready_token:readyGateToken,
                 ready_token:null,ready_required_ids:[],ready_ids:[],
                 skip_ids:[]
             });
@@ -9075,6 +9135,7 @@ function updateCreateRoomModeUI(){
             playSound('audio-start');
             if(channel) channel.send({type:'broadcast',event:'auction_started',payload:{
                 player_id:currentAuctionPlayer?.Id,
+                ready_token:readyGateToken,
                 seconds:currentTimer,
                 winner:currentWinner||'',
                 value:currentAuctionValue||0,
