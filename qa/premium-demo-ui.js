@@ -72,6 +72,14 @@ window.addEventListener('load',async()=>{
       else{setMobileBoardPhase('normal');document.getElementById('countdown-display').textContent='12';document.getElementById('current-value-display').textContent='85';document.getElementById('winner-display').textContent='FC DEMO';}
     }
     if(scene==='management'){document.getElementById('mg-tab-participants').click();}
+    if(scene==='room-upload'){
+      const book=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(book,XLSX.utils.json_to_sheet([{Id:'qa-new',Nome:'NUOVO CALCIATORE',R:'P',Squadra:'Demo'}]),'Listone');
+      const file=new File([XLSX.write(book,{bookType:'xlsx',type:'array'})],'stanza-demo.xlsx',{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      await uploadRoomListone(file);
+      const row=demo.tables.fanta_app_data.find(r=>r.key===`room_listone_${demo.room.id}`);
+      document.body.dataset.roomListoneUpload=row?.data?.[0]?.Id==='qa-new'&&playersList[0]?.Id==='qa-new'?'passed':'failed';
+    }
     if(scene==='list'||scene==='onboarding'||scene==='room-empty')refreshPlayerLists();
     if(scene==='onboarding'){
       window.liveastaRoomOnboarding.prepare(demo.room);
