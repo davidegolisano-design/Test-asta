@@ -78,7 +78,13 @@ window.addEventListener('load',async()=>{
       if(scene==='ready'){readyGateWaiting=true;showAuctioneerReadyStage();}
       else{setMobileBoardPhase('normal');document.getElementById('countdown-display').textContent='12';document.getElementById('current-value-display').textContent='85';document.getElementById('winner-display').textContent='FC DEMO';}
     }
-    if(scene==='my-roster')togglePlayerRoster(true);
+    if(scene==='my-roster'){
+      auctioneerLockKey=null;auctioneerLockToken=null;
+      document.getElementById('display-team-name').textContent=myTeamName;
+      document.getElementById('player-room-inline').textContent=currentRoomCode;
+      showScreen('screen-player-buzzer');
+      togglePlayerRoster(true);
+    }
     if(scene==='management'){document.getElementById('mg-tab-participants').click();}
     if(scene==='room-upload'){
       const book=XLSX.utils.book_new();
