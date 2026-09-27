@@ -2,6 +2,7 @@
 window.addEventListener('load',async()=>{
   const demo=window.premiumDemoBackend;
   const preview=new URLSearchParams(location.search);
+  if(preview.get('scene')==='entry'){showScreen('screen-entry-role');document.body.dataset.premiumDemoReady='true';return;}
   if(preview.get('entry')==='home'){document.body.dataset.premiumDemoReady='true';return;}
   if(preview.get('miniatures')==='premium')demo.setFeatures(['miniatures']);
   if(preview.get('scene')==='onboarding')demo.tables.fanta_teams=[];

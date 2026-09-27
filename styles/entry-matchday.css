@@ -97,6 +97,12 @@ html[data-live-theme] .entry-screen h1.entry-choice-title{font-size:clamp(44px,6
 .entry-role-copy>span{font-size:11px;line-height:1.5;display:block}
 .entry-role-card .entry-role-arrow{position:absolute;top:22px;right:20px;width:28px;height:28px}
 .entry-role-note{font-size:11px;line-height:1.65;color:var(--theme-muted);max-width:470px;margin:30px 0 0}
+/* Role selection fits the viewport; the three cards share all available space. */
+html[data-live-theme] #screen-entry-role.entry-screen{overflow:hidden!important}
+#screen-entry-role .entry-choice-shell{display:flex;flex-direction:column;height:100%;max-height:100%;min-height:0;box-sizing:border-box}
+#screen-entry-role .entry-role-choices{min-height:0;flex:1}
+#screen-entry-role .entry-role-card{min-height:0;justify-content:center}
+#screen-entry-role .entry-back{flex-shrink:0}
 .entry-device-shell{max-width:690px}
 .entry-device-choices{display:grid;grid-template-columns:1.14fr 1fr;gap:20px;align-items:center;padding:6px}
 .entry-device-card{padding:24px!important;display:flex;align-items:flex-start;flex-direction:column;min-width:0;text-align:left;border:0!important;position:relative;border-radius:6px!important}
@@ -155,6 +161,13 @@ body:has(#screen-role.entry-screen.active) #liveasta-install-btn{bottom:12px!imp
   .entry-role-card .entry-role-icon{width:66px;height:66px;margin:0;flex-shrink:0}
   .entry-role-copy small{font-size:7px;letter-spacing:.08em}.entry-role-copy strong{font-size:35px;margin:4px 0}.entry-role-copy>span{font-size:9px}
   .entry-role-card .entry-role-arrow{width:17px;height:17px;top:12px;right:11px}.entry-role-note{font-size:10px;margin-top:23px;max-width:310px}
+  #screen-entry-role .entry-back{min-height:32px;margin-bottom:6px!important;padding:6px 0!important}
+  html[data-live-theme] #screen-entry-role h1.entry-choice-title{font-size:clamp(30px,5.6dvh,48px)!important;margin:8px 0 14px!important}
+  #screen-entry-role .entry-role-choices{gap:10px;padding:3px}
+  #screen-entry-role .entry-role-card{min-height:0;padding:12px 14px!important;justify-content:flex-start;gap:14px}
+  #screen-entry-role .entry-role-card .entry-role-icon{width:clamp(40px,7dvh,60px);height:clamp(40px,7dvh,60px)}
+  #screen-entry-role .entry-role-copy strong{font-size:clamp(27px,4.6dvh,35px)}
+  #screen-entry-role .entry-role-note{font-size:10px;line-height:1.35;margin:12px 0 0;max-width:none;flex-shrink:0}
   .entry-device-choices{grid-template-columns:1fr 1.16fr;gap:14px;align-items:stretch}.entry-device-card{padding:20px 14px!important;min-height:239px;justify-content:flex-end}.entry-device-card strong{font-size:clamp(21px,6.65vw,26px)}.entry-device-card span{font-size:10px}
   .entry-device-card svg{width:88px!important;height:80px!important;margin-bottom:22px}.entry-device-mobile svg{width:48px!important;height:91px!important}
   html[data-live-theme] :is(#screen-player-setup,#screen-auctioneer-setup,#screen-spectator-setup).entry-form-screen .entry-pass{padding:22px 19px 20px!important}
@@ -167,6 +180,15 @@ body:has(#screen-role.entry-screen.active) #liveasta-install-btn{bottom:12px!imp
 @media(max-height:680px) and (max-width:760px){
   .entry-hero{padding-top:21px;padding-bottom:12px}.entry-intro{margin-bottom:17px}.entry-ticket{min-height:82px}.entry-ticket-copy{padding-top:14px;padding-bottom:14px}.entry-topbar{padding-bottom:8px}
   .entry-role-card{min-height:118px}.entry-back{margin-bottom:10px!important}.entry-role-note{margin-top:18px}
+}
+@media(max-height:480px){
+  #screen-entry-role .entry-back{min-height:28px;margin-bottom:4px!important;padding:4px 0!important}
+  html[data-live-theme] #screen-entry-role h1.entry-choice-title{font-size:28px!important;margin:6px 0 10px!important}
+  #screen-entry-role .entry-role-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  #screen-entry-role .entry-role-card{flex-direction:column;gap:4px;padding:12px!important;justify-content:center;align-items:flex-start}
+  #screen-entry-role .entry-role-card .entry-role-icon{width:32px;height:32px;margin:0}
+  #screen-entry-role .entry-role-copy strong{font-size:24px;margin:2px 0}
+  #screen-entry-role .entry-role-copy>span,#screen-entry-role .entry-role-copy small,#screen-entry-role .entry-role-note{display:none}
 }
 @media(prefers-reduced-motion:no-preference){
   .entry-ticket,.entry-role-card,.entry-device-card{transition:transform .18s ease,box-shadow .18s ease}
