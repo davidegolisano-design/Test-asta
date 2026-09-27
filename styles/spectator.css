@@ -1,21 +1,10 @@
 /* Third entry ticket follows the same shapes and palette as the two roles. */
-.entry-role-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.entry-role-card.entry-role-spectator{background:var(--theme-card)!important;color:var(--theme-text)!important;border:1px solid var(--theme-primary)!important;transform:rotate(-1deg);margin-top:12px}
+.entry-role-card.entry-role-spectator{background:var(--theme-card)!important;color:var(--theme-text)!important;border:1px solid var(--theme-primary)!important}
 .entry-role-spectator .entry-role-icon{color:var(--theme-primary)}
-.entry-role-choices .entry-role-copy strong{font-size:clamp(30px,3vw,44px)}
-html[data-live-theme] #screen-spectator-setup.entry-form-screen .entry-pass{
-  width:min(100%,480px)!important;max-width:480px!important;margin:auto!important;
-  padding:26px 28px 24px!important;border:1px solid var(--theme-border)!important;
-  border-top:7px solid var(--theme-marker)!important;border-radius:3px 3px 24px 3px!important;
-  background:var(--theme-card)!important;box-shadow:9px 10px 0 color-mix(in srgb,var(--theme-primary) 13%,var(--theme-bg))!important;text-align:left!important;
-}
-html[data-live-theme] #screen-spectator-setup.entry-form-screen h1{font-family:var(--entry-display)!important;font-size:40px!important;line-height:1!important;margin:0 0 20px!important;color:var(--theme-text)!important;text-align:left!important}
-html[data-live-theme] #screen-spectator-setup.entry-form-screen :is(input,select){display:block;width:100%;box-sizing:border-box;min-height:50px!important;font-size:16px!important;text-align:left!important;margin:10px 0!important}
-html[data-live-theme] #screen-spectator-setup.entry-form-screen #spectator-room-name-input[style*="none"],
-html[data-live-theme] #screen-spectator-setup.entry-form-screen #spectator-room-select[style*="none"]{display:none!important}
-.spectator-access-actions{display:grid;grid-template-columns:.7fr 1.3fr;gap:18px;align-items:center;margin-top:18px}
-.spectator-access-actions .btn:first-child{background:transparent!important;border:0!important;box-shadow:none!important;color:var(--theme-muted)!important;text-align:left!important}
-.spectator-access-actions .btn:last-child{min-height:52px;background:var(--theme-marker)!important;color:var(--entry-ink)!important;border:0!important;font-family:var(--entry-display)!important;font-size:23px!important}
+/* The spectator access panel inherits the shared entry form component. */
+.spectator-access-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin-top:18px}
+html[data-live-theme] #screen-spectator-setup .spectator-access-actions .btn{box-sizing:border-box;width:100%;height:52px;min-height:52px;margin:0;padding:10px 12px!important;font-family:var(--entry-display)!important;font-size:20px!important;line-height:1.1!important;border-radius:3px 3px 15px 3px!important;text-align:center!important}
+html[data-live-theme] #screen-spectator-setup .spectator-access-actions .btn:last-child{background:var(--theme-marker)!important;color:var(--entry-ink)!important}
 /* Only exit and the Rose command remain actionable on the spectator board. */
 body #screen-auctioneer-board.spectator-mode > .session-nav > :last-child,
 body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#auction-online-pill,#nomination-stage,#auctioneer-ready-desktop,#view-list,#btn-next,#auctioneer-turn-center,#sealed-delivery-panel,#auctioneer-turn-ranking-empty){display:none!important}
@@ -29,11 +18,8 @@ body #screen-auctioneer-board.spectator-mode[data-spectator-phase="idle"] #aucti
 body #screen-player-buzzer #hybrid-view-to-board:not([hidden]){font-size:clamp(11px,3.3vw,15px)!important;letter-spacing:0!important;white-space:nowrap!important;overflow:hidden!important}
 body #screen-auctioneer-board #hybrid-view-to-player:not([hidden]){font-size:clamp(11px,3.3vw,14px)!important;overflow:hidden!important}
 @media(max-width:760px){
-  .entry-role-choices{grid-template-columns:1fr;gap:20px}
-  .entry-role-card.entry-role-spectator{margin-top:0}
   body #screen-player-buzzer.hybrid-auctioneer-player .player-session-nav{grid-template-columns:minmax(76px,88px) minmax(0,1fr) minmax(58px,64px) minmax(66px,74px)!important;gap:3px!important}
   body #screen-player-buzzer.hybrid-auctioneer-player .player-session-nav :is(.session-back,.session-title){min-width:0!important}
   body #screen-player-buzzer.hybrid-auctioneer-player #player-session-title{overflow:hidden!important;overflow-wrap:normal!important;font-size:clamp(10px,3vw,12px)!important;line-height:1.05!important}
   body #screen-player-buzzer.hybrid-auctioneer-player .player-session-nav :is(#player-listone-btn,#player-roster-btn){font-size:clamp(10px,3vw,12px)!important;padding-left:2px!important;padding-right:2px!important;overflow:hidden!important}
-  html[data-live-theme] #screen-spectator-setup.entry-form-screen .entry-pass{padding:22px 19px 20px!important}
 }
