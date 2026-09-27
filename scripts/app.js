@@ -14,6 +14,9 @@ function updateCreateRoomModeUI(){
         let currentRoomCode = "";
         let currentRoomId = "";
         let currentRoom = null;
+        let spectatorMode = false;
+        let spectatorRefreshTimer = null;
+        let spectatorPollTimer = null;
         let roomsCache = [];
         let auctioneerRoomMode = null;
 
@@ -4863,7 +4866,7 @@ function updateCreateRoomModeUI(){
             const options = roomsCache.length
                 ? '<option value="">Seleziona una stanza...</option>' + roomsCache.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join('')
                 : '<option value="">Nessuna stanza disponibile</option>';
-            ['player-room-select','auction-room-select'].forEach(id => {
+            ['player-room-select','auction-room-select','spectator-room-select'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = options;
             });
@@ -4889,6 +4892,84 @@ function updateCreateRoomModeUI(){
                 }
             }
             window.resetPlayerAccessWizard?.();
+        }
+
+        async function openSpectatorLobby(){
+            showScreen('screen-spectator-setup');
+            document.getElementById('spectator-room-error').textContent='';
+            document.getElementById('spectator-room-password').value='';
+            document.getElementById('spectator-room-name-input').value='';
+            await loadShowRoomsSetting();
+            document.getElementById('spectator-room-select').style.display=showRoomsToUsers?'':'none';
+            document.getElementById('spectator-room-name-input').style.display=showRoomsToUsers?'none':'';
+            if(showRoomsToUsers)await loadRooms();
+        }
+
+        function stopSpectator(){
+            spectatorMode=false;
+            clearTimeout(spectatorRefreshTimer);
+            clearInterval(spectatorPollTimer);
+            spectatorRefreshTimer=null;
+            spectatorPollTimer=null;
+            document.getElementById('screen-auctioneer-board')?.classList.remove('spectator-mode');
+            window.liveastaSpectatorView?.stop();
+        }
+
+        async function refreshSpectatorState(withRosters=false){
+            if(!spectatorMode||!currentRoomId)return;
+            const roomId=currentRoomId;
+            if(withRosters)await loadRoomState();
+            const state=await loadLiveAuctionState();
+            if(!spectatorMode||roomId!==currentRoomId)return;
+            window.liveastaSpectatorView?.render(state);
+            if(withRosters&&document.getElementById('screen-all-rosters')?.classList.contains('active'))renderAllRosters();
+        }
+
+        function scheduleSpectatorRefresh(withRosters=false){
+            if(!spectatorMode)return;
+            clearTimeout(spectatorRefreshTimer);
+            spectatorRefreshTimer=setTimeout(()=>refreshSpectatorState(withRosters).catch(console.warn),180);
+        }
+
+        async function joinAsSpectator(){
+            const err=document.getElementById('spectator-room-error');
+            const enter=document.getElementById('spectator-enter-btn');
+            err.textContent='';
+            const room=showRoomsToUsers
+                ?await getRoomById(document.getElementById('spectator-room-select').value)
+                :await getRoomByExactName(document.getElementById('spectator-room-name-input').value);
+            if(!room){err.textContent=showRoomsToUsers?'Seleziona una stanza.':'Stanza non trovata. Controlla il nome inserito.';return;}
+            if(room.approved!==true){err.textContent='Questa stanza è in attesa di approvazione.';return;}
+            if(room.password!==document.getElementById('spectator-room-password').value){err.textContent='Password stanza errata.';return;}
+            enter.disabled=true;
+            try{
+                window.liveastaClearResumeSession?.();
+                await connectToRoom(room);
+                myTeamId=null;
+                myTeamName='';
+                spectatorMode=true;
+                document.getElementById('screen-auctioneer-board').classList.add('spectator-mode');
+                document.querySelector('#auction-room-pill b').textContent=room.name;
+                applyAuctioneerUiMode();
+                showScreen('screen-auctioneer-board');
+                await loadRoomState();
+                await refreshSpectatorState();
+                const spectatorChannel=channel;
+                const refreshEvents=['new_player','prep_started','auction_started','auction_update','auction_end','sealed_bid_start','sealed_bid_count','sealed_bid_end','sealed_reveal_start','ready_gate_state','live_state','state_changed','force_state_reset','nomination_state'];
+                refreshEvents.forEach(event=>spectatorChannel.on('broadcast',{event},()=>scheduleSpectatorRefresh(event==='state_changed'||event==='auction_end')));
+                spectatorChannel.subscribe(status=>{
+                    if(spectatorChannel!==channel||!spectatorMode)return;
+                    if(status==='SUBSCRIBED'){
+                        spectatorChannel.send({type:'broadcast',event:'live_state_request',payload:{}}).catch(()=>{});
+                        scheduleSpectatorRefresh(true);
+                    }
+                });
+                spectatorPollTimer=setInterval(()=>refreshSpectatorState(true).catch(console.warn),15000);
+            }catch(e){
+                stopSpectator();
+                err.textContent=e.message||'Impossibile collegarsi alla stanza.';
+                showScreen('screen-spectator-setup');
+            }finally{enter.disabled=false;}
         }
 
         async function setAuctioneerRoomMode(mode) {
@@ -5850,10 +5931,12 @@ function updateCreateRoomModeUI(){
         }
 
         async function leaveCurrentSession() {
+            const leavingAsSpectator=spectatorMode;
             const activeAuction = document.getElementById('screen-auctioneer-board')?.classList.contains('active');
 
-            if (activeAuction && isAuctionActive && !await appConfirm("C’è un’asta in corso. Vuoi davvero uscire dalla plancia?")) return;
-            if (!activeAuction && !await appConfirm("Vuoi uscire dalla stanza e tornare alla Home?")) return;
+            if (!leavingAsSpectator && activeAuction && isAuctionActive && !await appConfirm("C’è un’asta in corso. Vuoi davvero uscire dalla plancia?")) return;
+            if (!leavingAsSpectator && !activeAuction && !await appConfirm("Vuoi uscire dalla stanza e tornare alla Home?")) return;
+            if(leavingAsSpectator)stopSpectator();
             restoreHybridPlayerNav();
 
             setPlayerConnectionStatus('offline');

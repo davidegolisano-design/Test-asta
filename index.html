@@ -41,6 +41,7 @@
         <symbol id="entry-ball" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"/><path d="m50 28 21 15-8 25H37l-8-25zM50 5v23M7 37l22 6m8 25L23 89m40-21 14 21m-6-46 22-6" fill="none" stroke="currentColor" stroke-width="4"/></symbol>
         <symbol id="entry-jersey" viewBox="0 0 140 140"><path d="M46 17 15 34 3 62l26 12 12-18v69h58V56l12 18 26-12-12-28-31-17c-3 21-45 21-48 0Z" fill="currentColor"/><path d="M53 18c3 10 31 10 34 0" fill="none" stroke="var(--theme-on-marker)" stroke-width="5"/><path d="M68 60v37m17-37H75v37h10V60Z" fill="none" stroke="var(--theme-on-marker)" stroke-width="7"/></symbol>
         <symbol id="entry-whistle" viewBox="0 0 140 140"><path d="m89 42 37-17 9 23-47 30c-5 26-22 38-45 33C17 105 10 77 22 58c12-19 35-22 52-12Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="48" cy="75" r="15" fill="none" stroke="currentColor" stroke-width="7"/><path d="m109 60-14-26M44 17l-5-13m-13 22L12 17m52 3 6-14" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
+        <symbol id="entry-eye" viewBox="0 0 140 140"><path d="M9 70c17-24 37-36 61-36s44 12 61 36c-17 24-37 36-61 36S26 94 9 70Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><circle cx="70" cy="70" r="19" fill="none" stroke="currentColor" stroke-width="7"/></symbol>
         <symbol id="entry-arrow" viewBox="0 0 40 40"><path d="M7 31 32 7M10 7h22v22" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square"/></symbol>
         <symbol id="entry-monitor" viewBox="0 0 120 100"><rect x="7" y="9" width="106" height="68" rx="5" fill="none" stroke="currentColor" stroke-width="5"/><path d="M42 94h36m-18-17v17M9 64h102" fill="none" stroke="currentColor" stroke-width="5"/><path d="m48 28-12 12 12 12m24-24 12 12-12 12" fill="none" stroke="currentColor" stroke-width="4"/></symbol>
         <symbol id="entry-phone" viewBox="0 0 80 112"><rect x="14" y="5" width="52" height="102" rx="9" fill="none" stroke="currentColor" stroke-width="5"/><path d="M30 15h20M30 96h20m-10-58v29m-14-14h28" fill="none" stroke="currentColor" stroke-width="5"/></symbol>
@@ -111,8 +112,26 @@
             <span class="entry-role-copy"><small>IL RITMO LO DETTI TU</small><strong>Banditore</strong><span>Chiama i nomi. Conduci l’asta.</span></span>
             <svg class="entry-role-arrow" aria-hidden="true"><use href="#entry-arrow"/></svg>
           </button>
+          <button class="entry-role-card entry-role-spectator" type="button" onclick="openSpectatorLobby()" aria-label="Spettatore">
+            <svg class="entry-role-icon" aria-hidden="true"><use href="#entry-eye"/></svg>
+            <span class="entry-role-copy"><small>SEGUI OGNI OFFERTA</small><strong>Spettatore</strong><span>Guarda la plancia e le rose in diretta.</span></span>
+            <svg class="entry-role-arrow" aria-hidden="true"><use href="#entry-arrow"/></svg>
+          </button>
         </div>
-        <p class="entry-role-note">Vuoi anche giocare? Come banditore puoi attivare la tua squadra dalla Gestione.</p>
+        <p class="entry-role-note">Vuoi anche giocare? Come banditore puoi attivare la tua squadra dalla Gestione. Come spettatore segui l’asta senza intervenire.</p>
+      </div>
+    </div>
+
+    <div id="screen-spectator-setup" class="screen entry-screen entry-form-screen">
+      <div class="setup-card entry-pass">
+        <div class="entry-pass-kicker">PASS SPETTATORE <span aria-hidden="true">↗</span></div>
+        <h1>Segui l’asta</h1>
+        <p class="subtitle">Entra nella stanza per seguire la plancia e vedere le rose.</p>
+        <select id="spectator-room-select" class="minimal-input" aria-label="Stanza"></select>
+        <input id="spectator-room-name-input" class="minimal-input" type="text" maxlength="30" placeholder="Nome stanza" autocomplete="off" style="display:none;">
+        <input id="spectator-room-password" class="minimal-input liveasta-secret-input" type="text" placeholder="Password stanza" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other">
+        <div id="spectator-room-error" class="form-error" role="alert"></div>
+        <div class="spectator-access-actions"><button class="btn btn-secondary" type="button" onclick="showScreen('screen-entry-role')">← Indietro</button><button class="btn" id="spectator-enter-btn" type="button" onclick="joinAsSpectator()">Entra</button></div>
       </div>
     </div>
 
@@ -189,7 +208,7 @@
     <div id="screen-player-buzzer" class="screen">
         <div class="session-nav player-session-nav">
             <button id="player-exit-btn" class="btn btn-secondary session-back" onclick="leaveCurrentSession()">← Esci</button>
-            <button id="hybrid-view-to-board" class="btn btn-secondary session-back hybrid-view-switch" type="button" hidden onclick="switchHybridView('board')" aria-label="Passa alla plancia banditore">Banditore ⇄</button>
+            <button id="hybrid-view-to-board" class="btn btn-secondary session-back hybrid-view-switch" type="button" hidden onclick="switchHybridView('board')" aria-label="Passa alla plancia banditore">Banditore</button>
             <div id="player-session-title" class="session-title">Asta Live</div>
             <button class="btn btn-secondary session-back player-listone-nav-btn" id="player-listone-btn" onclick="openPlayerListone()">Listone</button>
             <button class="btn btn-secondary session-back" id="player-roster-btn" onclick="togglePlayerRoster(true)">Rosa · 0</button>
@@ -543,7 +562,7 @@
             <div class="room-pill auction-nav-room-pill" id="auction-room-pill">STANZA <b>--</b></div>
             <div class="auction-session-center">
                 <div id="auctioneer-session-title" class="session-title">Plancia Banditore</div>
-                <button id="hybrid-view-to-player" class="btn btn-secondary hybrid-view-switch" type="button" hidden onclick="switchHybridView('player')" aria-label="Passa alla plancia giocatore">Giocatore ⇄</button>
+                <button id="hybrid-view-to-player" class="btn btn-secondary hybrid-view-switch" type="button" hidden onclick="switchHybridView('player')" aria-label="Passa alla plancia giocatore">Giocatore</button>
                 <div class="auction-online-pill" id="auction-online-pill">
                     <span class="auction-online-dot"></span>
                     ONLINE <b id="auction-online-count">0 / 0</b>
@@ -1310,6 +1329,7 @@
     <script src="./scripts/room-debug.js?v=101"></script>
     <script src="./scripts/premium.js?v=1077"></script>
     <script src="./scripts/app.js?v=1078"></script>
+    <script src="./scripts/spectator.js?v=dev1"></script>
     <script src="./scripts/room-onboarding.js?v=1078"></script>
     <link rel="stylesheet" href="./styles/room-onboarding.css?v=1078">
     <script src="./scripts/mantra-auction.js?v=107-premium1"></script>
@@ -1364,6 +1384,7 @@
 <script src="./scripts/management.js?v=1061"></script>
 <link rel="stylesheet" href="./styles/matchday.css?v=1077">
 <link rel="stylesheet" href="./styles/entry-matchday.css?v=1063">
+<link rel="stylesheet" href="./styles/spectator.css?v=dev1">
 <script src="./scripts/responsive-ui.js?v=106-fluo1"></script>
 </body>
 </html>
