@@ -6,6 +6,13 @@
 .spectator-online-summary b{font:800 12px/1.4 Inter,sans-serif}
 .spectator-led{display:inline-block;width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--theme-muted)}
 .spectator-led.is-online{background:#1BD66B;box-shadow:0 0 5px rgba(27,214,107,.65)}
+.spectator-visibility-toggle{display:flex;align-items:center;gap:12px;min-height:44px;color:var(--theme-text)}
+.spectator-public-heading{margin:12px 0 8px;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--theme-muted)}
+.spectator-public-rooms{display:grid;gap:6px;max-height:180px;overflow-y:auto;overscroll-behavior:contain}
+html[data-live-theme] .spectator-public-room{display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%;min-height:48px;margin:0!important;padding:10px 12px!important;border:1px solid var(--theme-border)!important;border-radius:5px!important;background:var(--theme-panel)!important;color:var(--theme-text)!important;box-shadow:none!important}
+.spectator-public-room strong{font-size:18px;overflow-wrap:anywhere}
+.spectator-public-room span{font:400 12px/1.4 Inter,sans-serif;color:var(--theme-muted)}
+#screen-spectator-setup [hidden]{display:none!important}
 @media(max-height:480px){#screen-entry-role .entry-role-copy .spectator-online-summary{display:block;margin-top:4px}.spectator-online-summary>small{display:none}}
 /* The spectator access panel inherits the shared entry form component. */
 .spectator-access-actions{display:grid}

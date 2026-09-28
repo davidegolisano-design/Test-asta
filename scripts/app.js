@@ -4966,6 +4966,7 @@ function updateCreateRoomModeUI(){
             enter.disabled=true;
             try{
                 const room=await window.liveastaSpectatorLobby.resolveRoom();
+                if(!room)return;
                 window.liveastaClearResumeSession?.();
                 await connectToRoom(room);
                 myTeamId=null;
@@ -9777,7 +9778,7 @@ function updateCreateRoomModeUI(){
                 :'Si completa un ruolo alla volta. Chi ha completato il reparto viene saltato automaticamente.';
             document.getElementById('control-room-name').value=currentRoom.name||'';
             document.getElementById('control-room-password').value=currentRoom.password||'';
-            document.getElementById('control-spectator-public').value=String(currentRoom.spectator_public===true);
+            document.getElementById('control-spectator-public').checked=currentRoom.spectator_public===true;
             document.getElementById('control-room-timer').value=currentRoom.timer_seconds||auctionTimeLimit||LIVEASTA_TIMER_DEFAULTS.auction;
             const cooldownInput=document.getElementById('control-bid-cooldown');
             if(cooldownInput)cooldownInput.value=(normalBidCooldownMs/1000).toFixed(1).replace(/\.0$/,'');
@@ -9808,7 +9809,7 @@ function updateCreateRoomModeUI(){
             const payload={
                 name:normalizeRoomCode(document.getElementById('control-room-name').value),
                 password:document.getElementById('control-room-password').value,
-                spectator_public:document.getElementById('control-spectator-public').value==='true',
+                spectator_public:document.getElementById('control-spectator-public').checked,
                 initial_credits:Math.max(1,parseInt(currentRoom?.initial_credits)||500),
                 timer_seconds:Math.max(1,parseInt(document.getElementById('control-room-timer').value)||LIVEASTA_TIMER_DEFAULTS.auction),
                 prep_seconds:prepSeconds,
