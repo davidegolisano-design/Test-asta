@@ -1,5 +1,5 @@
 /* Screenshot fixture: real v1.07.17 presentation, fictional league, in-memory API only. */
-window.addEventListener('load',async()=>{
+window.addEventListener('DOMContentLoaded',async()=>{
  const demo=window.premiumDemoBackend,q=new URLSearchParams(location.search),phase=q.get('phase')||'active',view=q.get('view')||'host';
  const names=['FC IMPREVISTI','REAL BIRRETTA','ATLETICO DIVANO','GLI INTOCCABILI','MAI UNA GIOIA','ULTIMO RILANCIO','AC PICCHIA','DINAMO SPRITZ'];
  demo.room.name='LA LEGA DEGLI AMICI';
