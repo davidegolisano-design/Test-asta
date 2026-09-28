@@ -86,7 +86,7 @@ html[data-live-theme] .entry-screen h1.entry-choice-title{font-size:clamp(44px,6
 .entry-role-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:18px;padding:6px}
 .entry-role-card{position:relative;border:0!important;display:flex;align-items:flex-start;flex-direction:column;text-align:left;padding:24px!important;min-width:0;width:100%;height:100%;margin:0!important;transform:none;min-height:266px;box-sizing:border-box;border-radius:4px 4px 30px 4px!important}
 .entry-role-player{background:var(--theme-marker)!important;color:var(--entry-ink)!important;box-shadow:6px 6px 0 color-mix(in srgb,var(--theme-primary) 25%,transparent)}
-.entry-role-host{background:var(--theme-panel)!important;color:var(--theme-text)!important;border:1px solid var(--theme-accent)!important}
+.entry-role-host,.entry-role-spectator{background:var(--theme-panel)!important;color:var(--theme-text)!important;border:1px solid var(--theme-accent)!important}
 .entry-role-card .entry-role-icon{width:86px;height:86px;margin-bottom:18px}
 .entry-role-player .entry-role-icon{color:var(--entry-ink)}
 .entry-role-player .entry-role-icon use{--theme-on-marker:var(--theme-marker)}
@@ -102,7 +102,7 @@ html[data-live-theme] #screen-entry-role.entry-screen{overflow:hidden!important}
 #screen-entry-role .entry-choice-shell{display:flex;flex-direction:column;height:100%;max-height:100%;min-height:0;box-sizing:border-box}
 #screen-entry-role .entry-role-choices{min-height:0;flex:1}
 #screen-entry-role .entry-role-card{min-height:0;justify-content:center}
-#screen-entry-role .entry-back{flex-shrink:0}
+#screen-entry-role .entry-back{flex-shrink:0;align-self:flex-start;text-align:left!important;width:auto!important;min-height:44px;margin:12px 0 0!important;font-weight:800;text-transform:uppercase}
 .entry-device-shell{max-width:690px}
 .entry-device-choices{display:grid;grid-template-columns:1.14fr 1fr;gap:20px;align-items:center;padding:6px}
 .entry-device-card{padding:24px!important;display:flex;align-items:flex-start;flex-direction:column;min-width:0;text-align:left;border:0!important;position:relative;border-radius:6px!important}
@@ -161,7 +161,7 @@ body:has(#screen-role.entry-screen.active) #liveasta-install-btn{bottom:12px!imp
   .entry-role-card .entry-role-icon{width:66px;height:66px;margin:0;flex-shrink:0}
   .entry-role-copy small{font-size:7px;letter-spacing:.08em}.entry-role-copy strong{font-size:35px;margin:4px 0}.entry-role-copy>span{font-size:9px}
   .entry-role-card .entry-role-arrow{width:17px;height:17px;top:12px;right:11px}.entry-role-note{font-size:10px;margin-top:23px;max-width:310px}
-  #screen-entry-role .entry-back{min-height:32px;margin-bottom:6px!important;padding:6px 0!important}
+  #screen-entry-role .entry-back{min-height:44px;padding:10px 0!important}
   html[data-live-theme] #screen-entry-role h1.entry-choice-title{font-size:clamp(30px,5.6dvh,48px)!important;margin:8px 0 14px!important}
   #screen-entry-role .entry-role-choices{gap:10px;padding:3px}
   #screen-entry-role .entry-role-card{min-height:0;padding:12px 14px!important;justify-content:flex-start;gap:14px}
@@ -182,7 +182,7 @@ body:has(#screen-role.entry-screen.active) #liveasta-install-btn{bottom:12px!imp
   .entry-role-card{min-height:118px}.entry-back{margin-bottom:10px!important}.entry-role-note{margin-top:18px}
 }
 @media(max-height:480px){
-  #screen-entry-role .entry-back{min-height:28px;margin-bottom:4px!important;padding:4px 0!important}
+  #screen-entry-role .entry-back{min-height:44px;margin-top:4px!important;padding:8px 0!important}
   html[data-live-theme] #screen-entry-role h1.entry-choice-title{font-size:28px!important;margin:6px 0 10px!important}
   #screen-entry-role .entry-role-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
   #screen-entry-role .entry-role-card{flex-direction:column;gap:4px;padding:12px!important;justify-content:center;align-items:flex-start}

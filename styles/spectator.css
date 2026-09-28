@@ -1,5 +1,4 @@
 /* Third entry ticket follows the same shapes and palette as the two roles. */
-.entry-role-card.entry-role-spectator{background:var(--theme-card)!important;color:var(--theme-text)!important;border:1px solid var(--theme-primary)!important}
 .entry-role-spectator .entry-role-icon{color:var(--theme-primary)}
 /* The spectator access panel inherits the shared entry form component. */
 .spectator-access-actions{display:grid}

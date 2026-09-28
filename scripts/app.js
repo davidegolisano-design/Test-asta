@@ -5963,6 +5963,11 @@ function updateCreateRoomModeUI(){
             document.getElementById(screenId).classList.add('active');
             syncHybridViewButtons();
             if(screenId==='screen-player-buzzer')requestAnimationFrame(syncSealedBidAreaHeight);
+            window.liveastaPlayerOnboarding?.enter({
+                teamId:myTeamId,
+                isPlayer:()=>!spectatorMode && document.getElementById('screen-player-buzzer')?.classList.contains('active'),
+                isBusy:()=>isAuctionActive || !!playerReadyToken || !!auctionPrepInterval || ['ready','prep','active','sealed','sealed_reveal'].includes(liveAuctionState?.phase)
+            });
         }
 
         async function leaveCurrentSession() {

@@ -15,6 +15,8 @@
   .onboarding-names {display:grid;gap:12px}
   .onboarding-content .onboarding-error {color:var(--match-danger-ink);font-size:13px;margin:12px 0 0}
   .onboarding-error:empty {display:none}
+  .player-onboarding.tour-card-top .onboarding-card {top:calc(16px + env(safe-area-inset-top));bottom:auto}
+  .player-tour-premium {display:inline-block;margin:0 0 12px;padding:5px 8px;border:1px solid #B68A2E;border-radius:5px;color:var(--theme-text);background:var(--theme-panel);font:700 12px/1.4 Inter,sans-serif}
   .onboarding-reminder {padding:14px;border-left:3px solid var(--theme-marker);background:var(--theme-panel)}
   .onboarding-actions {display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--theme-border);flex-shrink:0}
   .onboarding-actions .btn {flex:1;min-width:0!important;min-height:44px!important;margin:0!important;padding:10px 6px!important;white-space:normal!important;font-size:18px!important}
