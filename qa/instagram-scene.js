@@ -24,6 +24,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
   document.getElementById('display-team-name').textContent=myTeamName;
   document.getElementById('player-room-inline').textContent=demo.room.name;
   showScreen('screen-player-buzzer');
+  setPlayerConnectionStatus('online');
   await restorePlayerFromLiveState(state);
   stopPlayerSealedCountdown();
   document.getElementById('player-countdown').textContent=phase==='sealed'?'24':phase==='sealed_reveal'?'3':phase==='ready'?'--':phase==='ended'?'0':'8';
