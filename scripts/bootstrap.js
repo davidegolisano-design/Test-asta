@@ -627,6 +627,7 @@
   function hardenInputs(root=document){
     root.querySelectorAll?.('form').forEach(f=>f.setAttribute('autocomplete','off'));
     root.querySelectorAll?.('input').forEach((el,i)=>{
+      if(el.id==='email-verify-code'){el.setAttribute('autocomplete','one-time-code');return;}
       if(el.type==='password'){el.type='text';el.classList.add('liveasta-secret-input');}
       el.setAttribute('autocomplete','off');el.setAttribute('data-lpignore','true');el.setAttribute('data-1p-ignore','true');el.setAttribute('data-bwignore','true');el.setAttribute('data-form-type','other');
       if(!el.name)el.name='liveasta-field-'+i;

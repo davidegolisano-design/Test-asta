@@ -43,8 +43,8 @@
 
       <div class="liveasta-create-step" data-create-step="3" style="display:none;">
         <p class="subtitle">Email del responsabile</p>
-        <input type="email" id="auction-new-room-email" class="minimal-input" placeholder="nome@email.it" maxlength="320" autocomplete="email" inputmode="email" spellcheck="false">
-        <div class="setup-note">L’amministratore riceverà questo indirizzo insieme ai dati della stanza e alle eventuali richieste Premium.</div>
+        <input type="email" id="auction-new-room-email" class="minimal-input" placeholder="nome@email.it" maxlength="254" autocomplete="email" inputmode="email" spellcheck="false">
+        <div class="setup-note">Riceverai un codice di 6 cifre da LIVEASTA. La stanza verrà creata soltanto dopo la conferma. L’indirizzo sarà comunicato all’amministratore della app.</div>
       </div>
 
       <div class="liveasta-create-step" data-create-step="4" style="display:none;">
@@ -103,7 +103,7 @@
     const names=['NOME','PASSWORD','CONFERMA','EMAIL','MODALITÀ'];
     if(label)label.textContent=`${createStep+1} / 5 · ${names[createStep]}`;
     if(back){back.style.display='';back.textContent=createStep===0?'Indietro':'Indietro';}
-    if(next){next.style.display='';next.textContent=createStep===4?'Crea stanza':'Avanti';}
+    if(next){next.style.display='';next.textContent=createStep===4?'Verifica email':'Avanti';}
     if(start)start.style.display='none';
 
     const err=document.getElementById('auction-room-error');

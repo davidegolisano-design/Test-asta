@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.16';
+  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.17';
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA';
@@ -59,7 +59,7 @@
     './scripts/session-resume.js?v=1078',
     './scripts/exact-bid-cooldown-exemption.js?v=10419',
     './scripts/player-room-status-leds.js?v=10420',
-    './scripts/room-creation-contact.js?v=1078'
+    './scripts/room-creation-contact.js?v=10717'
   ];
   featureScripts.forEach(src=>{const script=document.createElement('script');script.src=src;script.async=false;document.head.appendChild(script);});
 })();
