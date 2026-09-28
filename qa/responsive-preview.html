@@ -10,12 +10,13 @@ html,body{margin:0;background:#253027;color:#fff;font:14px system-ui}header{disp
 <label>Altezza <select id="height"><option>568</option><option>640</option><option selected>780</option><option>844</option></select></label>
 <label>Modalità <select id="mode"><option value="classic">Classic</option><option value="mantra">Mantra</option></select></label>
 <label>Pacchetto <select id="plan"><option value="premium">Premium</option><option value="free">Free</option></select></label>
+<label>Tema <select id="theme"><option value="broadcast">Classic scuro</option><option value="light-neutral">Classic chiaro</option><option value="light-blue">Glow chiaro</option><option value="light-sand">Lime chiaro</option><option value="ocean-daily">Ocean chiaro</option><option value="sunset-daily">Sunset chiaro</option><option value="royal-daily">Royal chiaro</option></select></label>
 </header><iframe title="Anteprima dell'app con dati fittizi"></iframe>
 <script>
 const frame=document.querySelector('iframe');
 function size(){frame.style.width=document.getElementById('width').value+'px';frame.style.height=document.getElementById('height').value+'px';}
-function scene(){const q=new URLSearchParams({scene:document.getElementById('scene').value,phase:document.getElementById('phase').value,mantra:document.getElementById('mode').value==='mantra'?'1':'0',free:document.getElementById('plan').value==='free'?'1':'0'});frame.src='./premium-preview.html?'+q;}
+function scene(){const q=new URLSearchParams({scene:document.getElementById('scene').value,phase:document.getElementById('phase').value,theme:document.getElementById('theme').value,mantra:document.getElementById('mode').value==='mantra'?'1':'0',free:document.getElementById('plan').value==='free'?'1':'0'});frame.src='./premium-preview.html?'+q;}
 for(const id of ['width','height'])document.getElementById(id).addEventListener('change',size);
-for(const id of ['scene','mode','plan','phase'])document.getElementById(id).addEventListener('change',scene);
+for(const id of ['scene','mode','plan','phase','theme'])document.getElementById(id).addEventListener('change',scene);
 size();scene();
 </script></body></html>
