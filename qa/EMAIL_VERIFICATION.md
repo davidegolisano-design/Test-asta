@@ -1,6 +1,6 @@
 # Email verification — v1.07.17
 
-The staged GitHack frontend creates rooms exclusively through `liveasta-room-verification`.
+The public frontend creates rooms exclusively through `liveasta-room-verification`.
 The Edge Function has gateway JWT verification enabled, reuses the existing Aruba SMTP
 secrets, and sends a six-digit code to the supplied email. No code or SMTP secret is
 returned or logged. Only SHA-256 of challenge ID plus code is stored in a private RLS table.
@@ -14,11 +14,11 @@ Notification to the app administrator and room onboarding happen only after crea
 
 - Migration `20260928133843_room_email_verification.sql`: applied.
 - Edge Function `liveasta-room-verification`: deployed with verify_jwt=true.
-- Frontend: preview branch, not production.
-- `supabase/email-verification-cutover.sql`: NOT applied. Apply with production rollout.
+- Frontend: published on liveasta.it on 2026-09-28, v1.07.17.
+- `supabase/email-verification-cutover.sql`: applied as `enforce_room_email_verification` on 2026-09-28.
   It removes legacy creation-function EXECUTE and direct room INSERT for client roles.
-  Until cutover, the legacy production API remains usable without email verification.
-- Do not claim verification is globally mandatory until both frontend and cutover ship.
+  Verified: anon/authenticated have neither legacy EXECUTE nor table/column INSERT.
+- Both frontend and creation privilege cutover are now deployed.
 - If rolling back after cutover, retain the verified frontend/API rather than restoring
   unchecked creation privileges.
 
