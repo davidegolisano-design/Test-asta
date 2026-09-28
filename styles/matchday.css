@@ -74,6 +74,10 @@
   :where(.player-session-nav,.roster-session-nav,.mg-header,.theme-submenu-toolbar) {background:var(--theme-bg)!important;border-color:var(--theme-border)!important;box-shadow:none!important;backdrop-filter:none!important}
   :where(.room-pill,.identity-pill,.auction-online-pill,.admin-version-badge) {border-radius:4px!important;box-shadow:none!important;background:var(--theme-panel)!important}
   :where(.room-pill b,.identity-pill b) {color:var(--theme-text)!important}
+  /* Presence uses theme-aware ink on both mobile and desktop. */
+  :where(.auction-online-pill) {color:var(--theme-text)!important}
+  :where(#auction-online-count) {color:var(--match-success-ink)!important;-webkit-text-fill-color:var(--match-success-ink)!important;text-shadow:none!important}
+  :where(.auction-online-dot) {background:var(--match-success-ink)!important;box-shadow:none!important}
   :where(.hybrid-view-switch,.room-system-badge) {background:var(--theme-accent-marker)!important;border-color:var(--theme-accent-marker)!important;color:var(--theme-on-marker)!important}
 
   /* Auction board: the same three panels, now styled as a match scoreboard. */
