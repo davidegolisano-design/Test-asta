@@ -9748,6 +9748,42 @@ function updateCreateRoomModeUI(){
         }
         async function refreshRoomControl() { await loadRoomState(); await loadAuctionPrepSeconds(); await loadRoomAuctionExtraSettings(); await loadSealedTimerSeconds(); await loadSealedRevealSeconds(); renderRoomControl(); }
 
+        let spectatorVisibilitySaving=false;
+        async function saveSpectatorVisibility(value) {
+            const toggle=document.getElementById('control-spectator-public');
+            const status=document.getElementById('spectator-visibility-status');
+            if(spectatorVisibilitySaving)return;
+            const roomId=currentRoomId,previous=currentRoom?.spectator_public===true;
+            if(!roomId || !auctioneerLockToken || spectatorMode){
+                toggle.checked=previous;
+                status.textContent='Sessione banditore non attiva. Rientra nella stanza.';
+                return;
+            }
+            spectatorVisibilitySaving=true;toggle.disabled=true;
+            const requested=value===true;
+            status.textContent='Salvataggio…';
+            try{
+                const {data,error}=await supabaseClient.from('fanta_rooms')
+                    .update({spectator_public:requested,updated_at:new Date().toISOString()})
+                    .eq('id',roomId).select('id,spectator_public').single();
+                if(error || !data || data.spectator_public!==requested)throw new Error('Salvataggio non confermato');
+                if(currentRoomId!==roomId)return;
+                currentRoom.spectator_public=data.spectator_public;
+                toggle.checked=data.spectator_public;
+                status.textContent=data.spectator_public?'Salvato · stanza pubblica per gli spettatori.':'Salvato · stanza privata per gli spettatori.';
+                broadcastStateChanged();
+                window.liveastaSpectatorLobby?.refresh();
+            }catch(_){
+                if(currentRoomId===roomId){
+                    toggle.checked=previous;
+                    status.textContent='Salvataggio non confermato. Controlla la connessione e riprova.';
+                }
+            }finally{
+                spectatorVisibilitySaving=false;toggle.disabled=false;
+                if(currentRoomId!==roomId){toggle.checked=currentRoom?.spectator_public===true;status.textContent='';}
+            }
+        }
+
         function renderRoomControl() {
             if (!currentRoom) return;
             ensureNominationOrder();
@@ -9778,7 +9814,7 @@ function updateCreateRoomModeUI(){
                 :'Si completa un ruolo alla volta. Chi ha completato il reparto viene saltato automaticamente.';
             document.getElementById('control-room-name').value=currentRoom.name||'';
             document.getElementById('control-room-password').value=currentRoom.password||'';
-            document.getElementById('control-spectator-public').checked=currentRoom.spectator_public===true;
+            if(!spectatorVisibilitySaving)document.getElementById('control-spectator-public').checked=currentRoom.spectator_public===true;
             document.getElementById('control-room-timer').value=currentRoom.timer_seconds||auctionTimeLimit||LIVEASTA_TIMER_DEFAULTS.auction;
             const cooldownInput=document.getElementById('control-bid-cooldown');
             if(cooldownInput)cooldownInput.value=(normalBidCooldownMs/1000).toFixed(1).replace(/\.0$/,'');
@@ -9809,7 +9845,6 @@ function updateCreateRoomModeUI(){
             const payload={
                 name:normalizeRoomCode(document.getElementById('control-room-name').value),
                 password:document.getElementById('control-room-password').value,
-                spectator_public:document.getElementById('control-spectator-public').checked,
                 initial_credits:Math.max(1,parseInt(currentRoom?.initial_credits)||500),
                 timer_seconds:Math.max(1,parseInt(document.getElementById('control-room-timer').value)||LIVEASTA_TIMER_DEFAULTS.auction),
                 prep_seconds:prepSeconds,
