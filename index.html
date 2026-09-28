@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" href="./icon-192.png?v=1067">
     <link rel="manifest" href="./manifest.webmanifest?v=1067">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <script src="./scripts/release-config.js?v=10713"></script>
+    <script src="./scripts/release-config.js?v=10714"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="./styles/refinements.css?v=1079-tv1">
     <link rel="stylesheet" href="./styles/matchday.css?v=10712">
     <link rel="stylesheet" href="./styles/entry-matchday.css?v=10713">
-    <link rel="stylesheet" href="./styles/spectator.css?v=10713">
+    <link rel="stylesheet" href="./styles/spectator.css?v=10714">
     <link rel="stylesheet" href="./styles/room-listone.css?v=dev1">
 </head>
 <body>
@@ -119,7 +119,7 @@
           </button>
           <button class="entry-role-card entry-role-spectator" type="button" onclick="openSpectatorLobby()" aria-label="Spettatore">
             <svg class="entry-role-icon" aria-hidden="true"><use href="#entry-eye"/></svg>
-            <span class="entry-role-copy"><small>SEGUI OGNI OFFERTA</small><strong>Spettatore</strong><span>Guarda la plancia e le rose in diretta.</span></span>
+            <span class="entry-role-copy"><small>SEGUI OGNI OFFERTA</small><strong>Spettatore</strong><span>Guarda la plancia e le rose in diretta.</span><span class="spectator-online-summary" aria-live="polite"><small>ASTE PUBBLICHE ONLINE</small><span><i class="spectator-led" aria-hidden="true"></i> Classic <b id="spectator-count-classic">–</b> · Mantra <b id="spectator-count-mantra">–</b></span></span></span>
             <svg class="entry-role-arrow" aria-hidden="true"><use href="#entry-arrow"/></svg>
           </button>
         </div>
@@ -133,9 +133,12 @@
         <div class="entry-pass-kicker">PASS SPETTATORE <span aria-hidden="true">↗</span></div>
         <h1>Segui l’asta</h1>
         <p class="subtitle">Entra nella stanza per seguire la plancia e vedere le rose.</p>
+        <label for="spectator-access-mode" class="field-label">Accesso spettatore</label>
+        <select id="spectator-access-mode" class="minimal-input" onchange="liveastaSpectatorLobby.setMode(this.value)"><option value="public">Stanze pubbliche · senza password</option><option value="private">Stanza privata · con password</option></select>
+        <p id="spectator-access-help" class="setup-note">Scegli una stanza pubblica. Non serve la password.</p>
         <select id="spectator-room-select" class="minimal-input" aria-label="Stanza"></select>
-        <input id="spectator-room-name-input" class="minimal-input" type="text" maxlength="30" placeholder="Nome stanza" autocomplete="off" style="display:none;">
-        <input id="spectator-room-password" class="minimal-input liveasta-secret-input" type="text" placeholder="Password stanza" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other">
+        <input id="spectator-room-name-input" aria-label="Nome stanza privata" class="minimal-input" type="text" maxlength="30" placeholder="Nome stanza" autocomplete="off" style="display:none;">
+        <input id="spectator-room-password" aria-label="Password stanza privata" style="display:none;" class="minimal-input liveasta-secret-input" type="text" placeholder="Password stanza" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other">
         <div id="spectator-room-error" class="form-error" role="alert"></div>
         <div class="spectator-access-actions"><button class="btn btn-secondary" type="button" onclick="showScreen('screen-entry-role')">← Indietro</button><button class="btn" id="spectator-enter-btn" type="button" onclick="joinAsSpectator()">Entra</button></div>
       </div>
@@ -407,11 +410,6 @@
 
                 <div id="auction-room-error" class="form-error"></div>
 
-                <div class="listone-info-card">
-                    <div class="listone-info-label">LISTONE DELLA STANZA</div>
-                    <div id="excel-status" class="listone-info-value">Il banditore carica il suo Excel dalla Gestione dopo l’ingresso.</div>
-                </div>
-
                 <div class="access-wizard-actions auction-wizard-actions">
                     <button class="btn btn-secondary" id="auction-wizard-back" type="button" onclick="auctionAccessWizardBack()">Indietro</button>
                     <button class="btn" id="auction-wizard-next" type="button" onclick="auctionAccessWizardNext()">Avanti</button>
@@ -426,7 +424,7 @@
         <div class="setup-card">
             <h1>Impostazioni</h1>
             <p class="subtitle">Preferenze e sistema</p>
-            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.07.13</strong></div>
+            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.07.14</strong></div>
 
             <div class="theme-settings-card theme-menu-launch-card">
                 <button type="button" class="theme-menu-launch" onclick="openLiveAstaThemeMenu()" aria-haspopup="dialog" aria-controls="liveasta-theme-submenu">
@@ -996,6 +994,8 @@
                             <div class="mg-fields mg-fields-2 mg-access-fields">
                                 <label><span class="field-label">Nome stanza</span><input id="control-room-name" class="minimal-input"></label>
                                 <label><span class="field-label">Password</span><input id="control-room-password" class="minimal-input"></label>
+                                <label><span class="field-label">Accesso spettatori</span><select id="control-spectator-public" class="minimal-input"><option value="false">Privata · nome e password</option><option value="true">Pubblica · senza password</option></select></label>
+                                <p class="setup-note">La scelta riguarda solo gli spettatori. Giocatori e banditore continuano a usare la password della stanza.</p>
                             </div>
                         </div>
 
@@ -1342,7 +1342,8 @@
     <script src="./scripts/room-debug.js?v=101"></script>
     <script src="./scripts/premium.js?v=1077"></script>
     <script src="./scripts/auction-state-sync.js?v=10711"></script>
-    <script src="./scripts/app.js?v=10713"></script>
+    <script src="./scripts/app.js?v=10714"></script>
+    <script src="./scripts/spectator-lobby.js?v=10714"></script>
     <script src="./scripts/spectator.js?v=10711"></script>
     <script src="./scripts/player-onboarding.js?v=10713"></script>
     <script src="./scripts/room-onboarding.js?v=1079-room-listone"></script>
@@ -1392,7 +1393,7 @@
 
 <script src="./scripts/runtime.js?v=106-fluo1"></script>
 
-<script src="./scripts/pwa.js?v=10713"></script>
+<script src="./scripts/pwa.js?v=10714"></script>
 <script src="./scripts/sealed-auction.js?v=100"></script>
 <script src="./scripts/management.js?v=1061"></script>
 <script src="./scripts/responsive-ui.js?v=10711"></script>

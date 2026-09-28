@@ -1,5 +1,12 @@
 /* Third entry ticket follows the same shapes and palette as the two roles. */
 .entry-role-spectator .entry-role-icon{color:var(--theme-primary)}
+.entry-role-copy .spectator-online-summary{display:block;margin-top:8px;color:var(--theme-text);font-size:11px;line-height:1.4}
+.spectator-online-summary>small{font-size:8px;letter-spacing:.06em;color:var(--theme-muted)}
+.spectator-online-summary>span{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.spectator-online-summary b{font:800 12px/1.4 Inter,sans-serif}
+.spectator-led{display:inline-block;width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--theme-muted)}
+.spectator-led.is-online{background:#1BD66B;box-shadow:0 0 5px rgba(27,214,107,.65)}
+@media(max-height:480px){#screen-entry-role .entry-role-copy .spectator-online-summary{display:block;margin-top:4px}.spectator-online-summary>small{display:none}}
 /* The spectator access panel inherits the shared entry form component. */
 .spectator-access-actions{display:grid}
 /* Only exit and the Rose command remain actionable on the spectator board. */

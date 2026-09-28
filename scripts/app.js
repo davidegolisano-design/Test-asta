@@ -4896,7 +4896,7 @@ function updateCreateRoomModeUI(){
             const options = roomsCache.length
                 ? '<option value="">Seleziona una stanza...</option>' + roomsCache.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join('')
                 : '<option value="">Nessuna stanza disponibile</option>';
-            ['player-room-select','auction-room-select','spectator-room-select'].forEach(id => {
+            ['player-room-select','auction-room-select'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = options;
             });
@@ -4929,10 +4929,7 @@ function updateCreateRoomModeUI(){
             document.getElementById('spectator-room-error').textContent='';
             document.getElementById('spectator-room-password').value='';
             document.getElementById('spectator-room-name-input').value='';
-            await loadShowRoomsSetting();
-            document.getElementById('spectator-room-select').style.display=showRoomsToUsers?'':'none';
-            document.getElementById('spectator-room-name-input').style.display=showRoomsToUsers?'none':'';
-            if(showRoomsToUsers)await loadRooms();
+            await window.liveastaSpectatorLobby.open();
         }
 
         function stopSpectator(){
@@ -4965,14 +4962,10 @@ function updateCreateRoomModeUI(){
             const err=document.getElementById('spectator-room-error');
             const enter=document.getElementById('spectator-enter-btn');
             err.textContent='';
-            const room=showRoomsToUsers
-                ?await getRoomById(document.getElementById('spectator-room-select').value)
-                :await getRoomByExactName(document.getElementById('spectator-room-name-input').value);
-            if(!room){err.textContent=showRoomsToUsers?'Seleziona una stanza.':'Stanza non trovata. Controlla il nome inserito.';return;}
-            if(room.approved!==true){err.textContent='Questa stanza è in attesa di approvazione.';return;}
-            if(room.password!==document.getElementById('spectator-room-password').value){err.textContent='Password stanza errata.';return;}
+            if(enter.disabled)return;
             enter.disabled=true;
             try{
+                const room=await window.liveastaSpectatorLobby.resolveRoom();
                 window.liveastaClearResumeSession?.();
                 await connectToRoom(room);
                 myTeamId=null;
@@ -5963,6 +5956,7 @@ function updateCreateRoomModeUI(){
             document.getElementById(screenId).classList.add('active');
             syncHybridViewButtons();
             if(screenId==='screen-player-buzzer')requestAnimationFrame(syncSealedBidAreaHeight);
+            window.liveastaSpectatorLobby?.onScreen(screenId);
             window.liveastaPlayerOnboarding?.enter({
                 teamId:myTeamId,
                 isPlayer:()=>!spectatorMode && document.getElementById('screen-player-buzzer')?.classList.contains('active'),
@@ -6300,8 +6294,6 @@ function updateCreateRoomModeUI(){
 
             const start=document.getElementById('btn-apri-plancia');
             if(start)start.disabled=false;
-            const status=document.getElementById('excel-status');
-            if(status)status.textContent='Carica il listone della stanza dalla Gestione dopo l’ingresso.';
         }
 
         function roomListoneKey(roomId=currentRoomId){
@@ -9785,6 +9777,7 @@ function updateCreateRoomModeUI(){
                 :'Si completa un ruolo alla volta. Chi ha completato il reparto viene saltato automaticamente.';
             document.getElementById('control-room-name').value=currentRoom.name||'';
             document.getElementById('control-room-password').value=currentRoom.password||'';
+            document.getElementById('control-spectator-public').value=String(currentRoom.spectator_public===true);
             document.getElementById('control-room-timer').value=currentRoom.timer_seconds||auctionTimeLimit||LIVEASTA_TIMER_DEFAULTS.auction;
             const cooldownInput=document.getElementById('control-bid-cooldown');
             if(cooldownInput)cooldownInput.value=(normalBidCooldownMs/1000).toFixed(1).replace(/\.0$/,'');
@@ -9800,6 +9793,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function saveRoomConfig() {
+            if(!currentRoomId || !auctioneerLockToken || spectatorMode)return;
             const rawCooldown=parseFloat(String(document.getElementById('control-bid-cooldown')?.value||'0.5').replace(',','.'));
             const cooldownSeconds=Number.isFinite(rawCooldown)?Math.max(.1,Math.min(5,rawCooldown)):.5;
             normalBidCooldownMs=Math.round(cooldownSeconds*1000);
@@ -9814,6 +9808,7 @@ function updateCreateRoomModeUI(){
             const payload={
                 name:normalizeRoomCode(document.getElementById('control-room-name').value),
                 password:document.getElementById('control-room-password').value,
+                spectator_public:document.getElementById('control-spectator-public').value==='true',
                 initial_credits:Math.max(1,parseInt(currentRoom?.initial_credits)||500),
                 timer_seconds:Math.max(1,parseInt(document.getElementById('control-room-timer').value)||LIVEASTA_TIMER_DEFAULTS.auction),
                 prep_seconds:prepSeconds,
