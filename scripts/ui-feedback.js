@@ -2,7 +2,7 @@
 (function(){
   'use strict';
   if(window.liveastaButtonFeedback)return;
-  let context=null,tapBuffer=null,lastSound=-Infinity,lastVibration=-Infinity,lastPointer=null;
+  let context=null,tapBuffer=null,lastSound=-Infinity,lastVibration=-Infinity;
   const settings=()=>typeof audioSettings==='object'?audioSettings:{uiClickVolume:.25,hapticsEnabled:true};
   function vibrate(pattern=12){
     if(settings().hapticsEnabled===false || typeof navigator.vibrate!=='function')return;
@@ -53,14 +53,11 @@
     return node;
   }
   function feedback(){sound();vibrate();}
-  document.addEventListener('pointerdown',event=>{
-    if(event.isPrimary===false || (event.button!==undefined && event.button!==0))return;
-    const node=control(event.target);if(!node)return;
-    lastPointer={node,at:Date.now()};feedback();
-  },{capture:true,passive:true});
+  // The browser emits click after an actual activation, not after a scroll gesture.
+  // Capture also covers controls whose handlers stop propagation or replace the DOM.
   document.addEventListener('click',event=>{
+    if(event.isTrusted===false)return;
     const node=control(event.target);if(!node)return;
-    if(lastPointer?.node===node && Date.now()-lastPointer.at<800)return;
     feedback();
   },{capture:true,passive:true});
   window.liveastaButtonFeedback={sound,vibrate};

@@ -15,14 +15,28 @@ function fixture(){
   const node={disabled:false,closest:selector=>selector.startsWith('[inert]')?null:node};
   return {c,node,listeners,sounds,vibrations,advance:n=>now+=n};
 }
-test('one pointer activation gives one sound and vibration despite subsequent click and bid-specific vibration',()=>{
-  const f=fixture();f.listeners.pointerdown({target:f.node,button:0,isPrimary:true});
+test('one actual click gives one sound and vibration despite bid-specific vibration',()=>{
+  const f=fixture();f.listeners.pointerdown?.({target:f.node,button:0,isPrimary:true});
   f.listeners.click({target:f.node});f.c.window.liveastaButtonFeedback.vibrate(40);
   assert.equal(f.sounds.length,1);assert.equal(f.vibrations.length,1);
 });
+test('touching a control to scroll, cancel or release outside it produces no feedback',()=>{
+  const f=fixture();
+  f.listeners.pointerdown?.({target:f.node,button:0,isPrimary:true});
+  f.listeners.pointermove?.({target:f.node,clientY:100});
+  f.listeners.pointercancel?.({target:f.node});
+  f.listeners.pointerup?.({target:f.node});
+  assert.equal(f.sounds.length,0);assert.equal(f.vibrations.length,0);
+  f.listeners.click({target:f.node,isTrusted:true});
+  assert.equal(f.sounds.length,1);assert.equal(f.vibrations.length,1);
+});
+test('programmatic clicks do not create user feedback',()=>{
+  const f=fixture();f.listeners.click({target:f.node,isTrusted:false});
+  assert.equal(f.sounds.length,0);assert.equal(f.vibrations.length,0);
+});
 test('keyboard activation is supported; disabled controls and secondary pointers produce no feedback',()=>{
   const f=fixture();f.node.disabled=true;f.listeners.click({target:f.node});assert.equal(f.sounds.length,0);
-  f.node.disabled=false;f.listeners.pointerdown({target:f.node,button:2});f.listeners.pointerdown({target:f.node,isPrimary:false});
+  f.node.disabled=false;f.listeners.pointerdown?.({target:f.node,button:2});f.listeners.pointerdown?.({target:f.node,isPrimary:false});
   assert.equal(f.vibrations.length,0);f.listeners.click({target:f.node});assert.equal(f.sounds.length,1);
 });
 test('local sound volume and vibration preference can independently disable feedback',()=>{
