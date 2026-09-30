@@ -115,7 +115,9 @@
   #room-roster-player-preview-name {font-size:clamp(52px,6vw,80px)!important;line-height:.94!important;font-weight:900!important;color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:1.5px #111!important;paint-order:stroke fill!important;text-shadow:0 2px 5px rgba(0,0,0,.95),0 0 9px rgba(0,0,0,.7)!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;text-wrap:balance}
   :where(#phone-player-role,#auction-player-role,#auctioneer-ready-player-role,#room-roster-player-preview-role):not(.role-badge-mantra) {border:2px solid #111!important;box-sizing:border-box!important}
   :where(.col-timer,.ard-fvm) {border-top-color:var(--theme-accent-marker)!important}
-  #view-auction .timer-ring {background:var(--theme-panel)!important;box-shadow:none!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
+  #auction-dashboard.mode-pc #view-auction .timer-ring {background:var(--theme-panel)!important;box-shadow:none!important;border-color:var(--theme-border)!important;border-radius:var(--match-radius)!important}
+  /* Mobile has one quadrant background. The inner legacy timer must not paint a second panel. */
+  #auction-dashboard.mode-mobile #view-auction .timer-ring {background:transparent!important;border-color:transparent!important;box-shadow:none!important}
   #view-auction .bid-box {background:var(--theme-marker)!important;border-color:var(--theme-marker)!important;border-radius:4px 4px 16px 4px!important;box-shadow:none!important}
   #view-auction .bid-box :is(.bid-label,#current-value-display,.credit-label,.mobile-winner-display) {color:var(--theme-on-marker)!important;-webkit-text-fill-color:currentColor!important;text-shadow:none!important}
   :where(.arrow-btn,#player-nominate-btn,#player-ready-reopen-btn) {background:var(--theme-marker)!important;color:var(--theme-on-marker)!important;border-color:var(--theme-marker)!important;border-radius:var(--match-control-radius)!important;box-shadow:none!important;text-shadow:none!important}
