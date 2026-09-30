@@ -1,0 +1,87 @@
+<!doctype html><html lang="it"><head><base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>LIVEASTA</title>
+    <meta name="theme-color" content="#0D1117">
+    <meta name="color-scheme" content="dark">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="description" content="LIVEASTA - asta fantasy calcio realtime a stanze">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=1067">
+    <link rel="apple-touch-icon" href="./icon-192.png?v=1067">
+    <link rel="manifest" href="./manifest.webmanifest?v=1067">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <script src="./scripts/release-config.js?v=10722"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <link rel="stylesheet" href="./styles/core.css?v=10722">
+
+    <script src="./scripts/theme-palettes.js?v=105-fluo1"></script>
+    <script src="./scripts/theme-preload.js?v=105-fluo1"></script>
+
+    <meta name="msapplication-navbutton-color" content="#0D1117">
+
+    <link rel="stylesheet" href="./styles/ui.css?v=10421-entry2">
+    <link rel="stylesheet" href="./styles/management.css?v=1061">
+    <link rel="stylesheet" href="./styles/pwa.css?v=100">
+    <link rel="stylesheet" href="./styles/roles.css?v=107">
+    <link rel="stylesheet" href="./styles/mantra-filter-ui.css?v=109">
+<link rel="stylesheet" href="./styles/premium.css?v=10718">
+    <link rel="stylesheet" href="./styles/room-onboarding.css?v=10713">
+    <link rel="stylesheet" href="./styles/refinements.css?v=10722">
+    <link rel="stylesheet" href="./styles/matchday.css?v=10712">
+    <link rel="stylesheet" href="./styles/entry-matchday.css?v=10713">
+    <link rel="stylesheet" href="./styles/spectator.css?v=10722">
+    <link rel="stylesheet" href="./styles/room-listone.css?v=dev1">
+</head><body>    <div id="screen-admin" class="screen active">
+        <div class="setup-card" style="max-width:1100px; width:96%; padding:24px;">
+            <div class="admin-version-badge">v1.02</div>
+            <h1>Gestione stanze</h1>
+            <button id="admin-automated-toggle" type="button" class="btn btn-secondary btn-small" hidden onclick="liveastaDemoRooms.openAdmin()">Gestione aste automatiche</button>
+            <dialog id="admin-automated-dialog" aria-label="Gestione aste automatiche">
+                <button type="button" class="btn btn-secondary btn-small automatic-room-close" onclick="liveastaDemoRooms.closeAdmin()">Chiudi</button>
+                <div id="admin-automated-rooms" hidden></div>
+            </dialog>
+            <p class="subtitle">Nome, password, modifica ed eliminazione</p>
+
+            <div class="admin-global-setting">
+                <div>
+                    <b>Mostra stanze agli utenti</b>
+                    <div class="admin-global-setting-help">
+                        Attivo: giocatori e banditori scelgono la stanza da una lista. Disattivo: devono digitare il nome esatto della stanza.
+                    </div>
+                </div>
+                <button type="button" id="admin-show-rooms-toggle" class="btn btn-secondary btn-small" onclick="toggleShowRoomsSetting()">
+                    MOSTRA STANZE: ON
+                </button>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                <button class="btn btn-secondary btn-small" onclick="loadRooms(true)">↻ Aggiorna</button>
+                <button class="btn btn-secondary btn-small" onclick="adminLogout()">Esci</button>
+            </div>
+            <div class="admin-listone-box">
+                <div class="admin-listone-head"><b>Riferimento miniature</b><span id="admin-listone-count">--</span></div>
+                <div class="admin-listone-actions">
+                    <button class="btn btn-green btn-small" onclick="document.getElementById('admin-listone-file').click()">Carica Excel per controllo</button>
+                    <button id="admin-miniature-check-btn" class="btn btn-secondary btn-small" onclick="checkMissingMiniatures()">Controlla miniature</button>
+                    <button id="admin-miniature-export-btn" class="btn btn-secondary btn-small" onclick="downloadMissingMiniaturesExcel()" disabled>Scarica Excel mancanti</button>
+                </div>
+                <input id="admin-listone-file" type="file" accept=".xlsx,.xls" style="display:none" onchange="uploadCentralListone(this.files[0])">
+                <div id="central-listone-status">Caricamento stato listone…</div>
+                <div id="admin-miniature-check-status" class="miniature-check-status">Controllo miniature non ancora eseguito.</div>
+            </div>
+            <div class="admin-scroll">
+                <table class="admin-table">
+                    <thead><tr><th>Stanza</th><th>Password</th><th>Config.</th><th>Approvata</th><th style="text-align:right;">Azioni</th></tr></thead>
+                    <tbody id="admin-rooms-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script>window.LIVEASTA_CONFIG={automatedRooms:true,demoConfigBackend:"local-preview"};</script><script src="scripts/demo-engine.js"></script><script src="scripts/demo-rooms.js"></script><script>liveastaDemoRooms.configure({getPassword:()=>"local-preview",getClient:()=>null});liveastaDemoRooms.admin();</script></body></html>

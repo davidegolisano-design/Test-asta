@@ -15,7 +15,7 @@ function playerMiniatureAssetUrl(id, role = '') {
 }
 
 function playerImageUrl(id, role = '') {
-    return window.liveastaPremium?.has('miniatures')
+    return (window.liveastaDemoRooms?.isActive() || window.liveastaPremium?.has('miniatures'))
         ? playerMiniatureAssetUrl(id, role)
         : genericPlayerImage(role);
 }
