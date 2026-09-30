@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id),enabled=()=>window.LIVEASTA_CONFIG?.automatedRooms===true;
-let hooks=null,configs=[],active=null,plan=null,clock=null,poll=null,playersPromise=null,offset=0,generation=0,request=null,lastPaint='',lastPurchases=-1,commandBusy=false;
+let hooks=null,configs=[],active=null,plan=null,clock=null,poll=null,playersPromise=null,offset=0,generation=0,request=null,lastPaint='',lastPurchases=-1,commandBusy=false,activeList=null;
 const local=()=>window.LIVEASTA_CONFIG?.demoConfigBackend==='local-preview';
 const LOCAL_KEY='liveasta-automated-rooms-dev-v1';
 function localRead(){
@@ -20,7 +20,7 @@ async function read(){
 function rooms(){return configs.filter(c=>c.enabled).map(c=>({id:'auto-'+c.game_mode,name:c.name,game_mode:c.game_mode,online:!c.paused,players_online:c.paused?0:8,players_total:8,auto_demo:true,config:c}));}
 function resolve(name){return rooms().find(r=>r.name.toLocaleLowerCase('it')===name.toLocaleLowerCase('it'));}
 function players(){
- if(!playersPromise){let saved;try{saved=JSON.parse(localStorage.getItem('liveasta-demo-listone-dev'));}catch(_){}
+ if(!playersPromise){let saved;if(local())try{saved=JSON.parse(localStorage.getItem('liveasta-demo-listone-dev'));}catch(_){}
  playersPromise=Array.isArray(saved)&&saved.length?Promise.resolve(saved):fetch('./scripts/demo-players.json?v=10720').then(r=>{if(!r.ok)throw Error('Listone automatico non disponibile');return r.json();}).catch(e=>{playersPromise=null;throw e;});}
  return playersPromise;
 }
@@ -28,6 +28,7 @@ function tick(force=false){
  if(!active||!plan||document.hidden)return;
  const config=configs.find(c=>c.game_mode===active);
  if(!config?.enabled){stop();hooks.disabled();return;}
+ if(config.revision!==plan.config.revision){plan=LiveAstaDemoEngine.build(config,activeList);lastPaint='';}
  const now=Date.now()+offset,frame=LiveAstaDemoEngine.frame(plan,config,now);
  // Translate the server clock to browser deadlines for the shared presentation.
  if(frame.state.deadline_at)frame.state.deadline_at-=offset;
@@ -38,11 +39,11 @@ function tick(force=false){
 }
 async function start(room){
  const ticket=++generation;const list=await players();if(ticket!==generation)return;
- stop(false);active=room.game_mode;plan=LiveAstaDemoEngine.build(room.config,list);lastPaint='';lastPurchases=-1;
+ stop(false);active=room.game_mode;activeList=list;plan=LiveAstaDemoEngine.build(room.config,list);lastPaint='';lastPurchases=-1;
  hooks.enter(room,plan);tick(true);clock=setInterval(tick,250);
- poll=setInterval(async()=>{if(document.hidden||!active)return;try{const current=configs.find(c=>c.game_mode===active);await read();const next=configs.find(c=>c.game_mode===active);if(next?.revision!==current?.revision){plan=LiveAstaDemoEngine.build(next,list);tick(true);}}catch(e){console.warn('Configurazione automatica:',e.message);}},30000);
+ poll=setInterval(async()=>{if(document.hidden||!active)return;try{const current=configs.find(c=>c.game_mode===active);await read();const next=configs.find(c=>c.game_mode===active);if(next?.revision!==current?.revision){plan=LiveAstaDemoEngine.build(next,list);tick(true);}}catch(e){console.warn('Configurazione automatica:',e.message);}},5000);
 }
-function stop(invalidate=true){if(invalidate)generation++;clearInterval(clock);clearInterval(poll);clock=poll=null;active=null;plan=null;lastPaint='';lastPurchases=-1;}
+function stop(invalidate=true){if(invalidate)generation++;clearInterval(clock);clearInterval(poll);clock=poll=null;active=null;plan=null;activeList=null;lastPaint='';lastPurchases=-1;}
 function field(label,type,value,min,max){const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement(type==='select'?'select':'input');input.className='minimal-input';if(type!=='select')input.type=type;if(min!==undefined)input.min=min;if(max!==undefined)input.max=max;input.value=value;wrap.append(input);return {wrap,input};}
 const labels={ready_seconds:['READY',3,20],prep_seconds:['Pre-asta',1,20],auction_seconds:['Chiusura asta',3,60],sealed_seconds:['Consegna buste',8,120],reveal_seconds:['Apertura buste',1,20],result_seconds:['Esito',3,20]};
 function renderAdmin(){
@@ -58,7 +59,7 @@ function renderAdmin(){
    localStorage.setItem('liveasta-demo-listone-dev',JSON.stringify(data.data));playersPromise=Promise.resolve(data.data);
    $('automatic-room-status').textContent=`Listone aggiornato: ${data.data.length} calciatori. Sarà usato al prossimo ingresso.`;
   }catch(e){$('automatic-room-status').textContent=e.message;}finally{update.disabled=false;}
- });panel.append(update);
+ });if(local())panel.append(update);
  for(const c of configs){
   const card=document.createElement('section');card.className='automatic-room-card';const head=document.createElement('h3');head.textContent=(c.game_mode==='mantra'?'Mantra':'Classic')+' · '+(!c.enabled?'Disattivata':c.paused?'In pausa':'In corso');card.append(head);
   const grid=document.createElement('div');grid.className='automatic-room-fields';const inputs={};
@@ -95,6 +96,6 @@ async function command(c,action,values){
  finally{commandBusy=false;document.querySelectorAll('#admin-automated-rooms button').forEach(b=>b.disabled=false);}
 }
 async function admin(){if(!enabled())return;try{await read();renderAdmin();}catch(e){const panel=$('admin-automated-rooms');panel.hidden=false;panel.textContent='Configurazione automatica non disponibile: '+e.message;}}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick(true);});
+document.addEventListener('visibilitychange',async()=>{if(!document.hidden&&active){try{await read();tick(true);}catch(e){console.warn('Configurazione automatica:',e.message);}}});
 window.liveastaDemoRooms={configure:value=>hooks=value,read,rooms,resolve,start,stop,admin,openAdmin:()=> $('admin-automated-dialog')?.showModal(),closeAdmin:()=> $('admin-automated-dialog')?.close(),isActive:()=>!!active,isEnabled:enabled};
 })();

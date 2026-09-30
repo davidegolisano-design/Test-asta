@@ -38,7 +38,7 @@ begin
   c:=c||jsonb_build_object('name',trim(p_config->>'name'),'selection',p_config->>'selection','auction_mode',p_config->>'auction_mode','elapsed_ms',0,'anchor_ms',stamp);
   foreach k in array array['ready_seconds','prep_seconds','auction_seconds','sealed_seconds','reveal_seconds','result_seconds'] loop
    v:=(p_config->>k)::integer;
-   if v is null or v < case k when 'ready_seconds' then 3 when 'auction_seconds' then 3 when 'sealed_seconds' then 8 when 'result_seconds' then 3 else 1 end or v > case k when 'auction_seconds' then 60 when 'sealed_seconds' then 120 else 20 end then raise exception 'Timer non valido'; end if;
+   if v is null or v < (case k when 'ready_seconds' then 3 when 'auction_seconds' then 3 when 'sealed_seconds' then 8 when 'result_seconds' then 3 else 1 end) or v > (case k when 'auction_seconds' then 60 when 'sealed_seconds' then 120 else 20 end) then raise exception 'Timer non valido'; end if;
    c:=jsonb_set(c,array[k],to_jsonb(v));
   end loop;
  else raise exception 'Comando non valido'; end if;
