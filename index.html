@@ -15,12 +15,12 @@
     <link rel="apple-touch-icon" href="./icon-192.png?v=1067">
     <link rel="manifest" href="./manifest.webmanifest?v=1067">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <script src="./scripts/release-config.js?v=10721-public"></script>
+    <script src="./scripts/release-config.js?v=10722-public"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <link rel="stylesheet" href="./styles/core.css?v=10721-public">
+    <link rel="stylesheet" href="./styles/core.css?v=10722-public">
 
     <script src="./scripts/theme-palettes.js?v=105-fluo1"></script>
     <script src="./scripts/theme-preload.js?v=105-fluo1"></script>
@@ -34,11 +34,12 @@
     <link rel="stylesheet" href="./styles/mantra-filter-ui.css?v=109">
 <link rel="stylesheet" href="./styles/premium.css?v=10718">
     <link rel="stylesheet" href="./styles/room-onboarding.css?v=10713">
-    <link rel="stylesheet" href="./styles/refinements.css?v=10721-public">
+    <link rel="stylesheet" href="./styles/refinements.css?v=10722-public">
     <link rel="stylesheet" href="./styles/matchday.css?v=10712">
     <link rel="stylesheet" href="./styles/entry-matchday.css?v=10713">
-    <link rel="stylesheet" href="./styles/spectator.css?v=10721-public">
+    <link rel="stylesheet" href="./styles/spectator.css?v=10722-public">
     <link rel="stylesheet" href="./styles/room-listone.css?v=dev1">
+    <link rel="stylesheet" href="./styles/sealed-bid.css?v=10722-public">
 </head>
 <body>
 
@@ -333,8 +334,12 @@
                 <div id="sealed-bid-controls" class="sealed-bid-controls" style="display:none;">
                     <div class="sealed-bid-label">OFFERTA IN BUSTA CHIUSA</div>
                     <div class="sealed-bid-entry">
-                        <input id="sealed-bid-input" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Inserisci crediti" autocomplete="off" autocapitalize="off" spellcheck="false" name="liveasta-sealed-offer" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" oninput="updatePlayerBidBudgetVisuals()">
-                        <button id="sealed-bid-submit" class="btn btn-green" type="button" onclick="submitSealedBid()">OFFRI</button>
+                        <div class="sealed-slider-shell">
+                            <input id="sealed-bid-input" type="range" min="0" max="0" step="1" value="0" aria-label="Importo della busta in crediti" oninput="updatePlayerSealedSelection()">
+                            <div class="sealed-slider-scale" aria-hidden="true"><span>0</span><span id="sealed-slider-max">0</span></div>
+                        </div>
+                        <button id="sealed-bid-submit" class="btn btn-green" type="button" onclick="submitSealedBid()"><span class="sealed-offer-caption">OFFRI </span><strong class="sealed-offer-number">0</strong></button>
+                        <div id="sealed-bid-receipt" class="sealed-bid-receipt" role="status" hidden></div>
                     </div>
                     <div id="sealed-bid-status" class="sealed-bid-status">L'offerta sarà visibile solo alla fine del timer.</div>
                 </div>
@@ -432,7 +437,7 @@
         <div class="setup-card">
             <h1>Impostazioni</h1>
             <p class="subtitle">Preferenze e sistema</p>
-            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.07.21</strong></div>
+            <div class="settings-version-row"><span>Versione installata</span><strong class="settings-version-badge">v1.07.22</strong></div>
 
             <div class="theme-settings-card theme-menu-launch-card">
                 <button type="button" class="theme-menu-launch" onclick="openLiveAstaThemeMenu()" aria-haspopup="dialog" aria-controls="liveasta-theme-submenu">
@@ -1220,6 +1225,7 @@
                     <div class="audio-channel"><div class="audio-channel-head"><b>Fischio inizio</b><button onclick="testAuctionAudio('audio-start')" type="button">▶</button></div><input id="vol-audio-start" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">100%</span></div>
                     <div class="audio-channel"><div class="audio-channel-head"><b>Rilancio</b><button onclick="testAuctionAudio('audio-buzz')" type="button">▶</button></div><input id="vol-audio-buzz" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">20%</span></div>
                     <div class="audio-channel"><div class="audio-channel-head"><b>Fine asta</b><button onclick="testAuctionAudio('audio-end')" type="button">▶</button></div><input id="vol-audio-end" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">80%</span></div>
+                    <div class="audio-channel"><div class="audio-channel-head"><b>Suono tasti</b></div><input id="vol-ui-click" aria-label="Volume suono tasti" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">25%</span><label class="voice-switch"><input id="ui-haptics-enabled" type="checkbox" onchange="saveAudioSettings()"><span>Vibrazione tasti</span></label></div>
                     <div class="audio-channel voice-channel"><div class="audio-channel-head"><b>Volume voce</b><button onclick="testBidVoice()" type="button">▶</button></div><input id="vol-bid-voice" type="range" min="0" max="100" oninput="updateAudioLabel(this);saveAudioSettings()"><span class="audio-percent">100%</span></div>
                     <div class="audio-channel voice-channel"><div class="audio-channel-head"><b>Velocità voce</b><button onclick="testBidVoice()" type="button">▶</button></div><input id="rate-bid-voice" type="range" min="80" max="140" step="5" oninput="updateAudioLabel(this,true);saveAudioSettings()"><span class="audio-percent">1.40×</span></div>
                     <div class="audio-channel final3-channel"><div class="audio-channel-head"><b>Ultimi 3 sec. asta</b><button onclick="testFinalCountdownAudio()" type="button">▶</button></div><select id="auction-final3-mode" class="audio-mode-select" onchange="saveAudioSettings()"><option value="beep">Suono 3-2-1</option><option value="voice">Voce “3, 2, 1”</option><option value="off">Nessun suono</option></select><small class="audio-mode-note">Solo durante l’asta attiva, non nella preparazione.</small></div>
@@ -1341,25 +1347,26 @@
     <audio id="audio-end" src="./gong.mp3" preload="auto"></audio>
 
     <script src="./scripts/csv-import-utils.js?v=100"></script>
-    <script src="./scripts/audio.js?v=100"></script>
+    <script src="./scripts/audio.js?v=10722-public"></script>
+    <script src="./scripts/ui-feedback.js?v=10722-public"></script>
     <script src="./scripts/ui-fit.js?v=10711"></script>
     <script src="./scripts/utils.js?v=100"></script>
     <script src="./scripts/roles.js?v=103"></script>
     <script src="./scripts/room-rules.js?v=100"></script>
     <script src="./scripts/team-rules.js?v=100"></script>
     <script src="./scripts/timer-settings.js?v=1077"></script>
-    <script src="./scripts/player-assets.js?v=10721-public"></script>
+    <script src="./scripts/player-assets.js?v=10722-public"></script>
     <script src="./scripts/screen-wake-lock.js?v=100"></script>
     <script src="./scripts/list-filters.js?v=106-fluo1"></script>
     <script src="./scripts/room-debug.js?v=101"></script>
     <script src="./scripts/premium.js?v=1077"></script>
     <script src="./scripts/auction-state-sync.js?v=10711"></script>
-    <script src="./scripts/demo-engine.js?v=10721-public"></script>
-    <script src="./scripts/demo-rooms.js?v=10721-public"></script>
-    <script src="./scripts/directory-presence.js?v=10721-public"></script>
-    <script src="./scripts/app.js?v=10721-public"></script>
-    <script src="./scripts/spectator-lobby.js?v=10721-public"></script>
-    <script src="./scripts/spectator.js?v=10721-public"></script>
+    <script src="./scripts/demo-engine.js?v=10722-public"></script>
+    <script src="./scripts/demo-rooms.js?v=10722-public"></script>
+    <script src="./scripts/directory-presence.js?v=10722-public"></script>
+    <script src="./scripts/app.js?v=10722-public"></script>
+    <script src="./scripts/spectator-lobby.js?v=10722-public"></script>
+    <script src="./scripts/spectator.js?v=10722-public"></script>
     <script src="./scripts/player-onboarding.js?v=10713"></script>
     <script src="./scripts/room-email-verification.js?v=10717"></script>
     <script src="./scripts/room-onboarding.js?v=1079-room-listone"></script>
@@ -1409,7 +1416,7 @@
 
 <script src="./scripts/runtime.js?v=106-fluo1"></script>
 
-<script src="./scripts/pwa.js?v=10721-public"></script>
+<script src="./scripts/pwa.js?v=10722-public"></script>
 <script src="./scripts/sealed-auction.js?v=10718"></script>
 <script src="./scripts/management.js?v=1061"></script>
 <script src="./scripts/responsive-ui.js?v=10711"></script>

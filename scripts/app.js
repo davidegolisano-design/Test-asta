@@ -179,6 +179,8 @@ function updateCreateRoomModeUI(){
         let playerSealedMode=false;
         let playerSealedToken=null;
         let playerSealedSubmitted=false;
+        let playerSealedConfirming=false;
+        let playerSealedOffer=null;
         let readyModeEnabled=false;
         let readyGateWaiting=false;
         let readyGateToken=null;
@@ -6951,10 +6953,11 @@ function updateCreateRoomModeUI(){
                     const d=payload.payload||{};
                     if(String(d.token)!==String(playerSealedToken)||String(d.team_id)!==String(myTeamId))return;
                     playerSealedSubmitted=false;
+                    preparePlayerSealedControls(true);
                     const btn=document.getElementById('sealed-bid-submit');
                     const inp=document.getElementById('sealed-bid-input');
                     const st=document.getElementById('sealed-bid-status');
-                    if(btn){btn.disabled=false;btn.textContent='OFFRI';}
+                    if(btn){btn.disabled=false;}
                     if(inp)inp.disabled=false;
                     if(st){st.textContent=d.reason||'Offerta rifiutata.';st.className='sealed-bid-status error';}
                 });
@@ -7453,48 +7456,108 @@ function updateCreateRoomModeUI(){
 
             if(input){
                 input.disabled=!enabled || playerSealedSubmitted;
-                input.value=playerSealedSubmitted?input.value:'';
                 const team=myTeamId?teamsCache.find(t=>String(t.id)===String(myTeamId)):null;
                 const max=team&&currentAuctionPlayer?maxBidForTeam(team,currentAuctionPlayer.R):0;
-                input.max=String(Math.max(1,max));
-                input.placeholder=max>0?`Max ${max} crediti`:'Offerta non disponibile';
+                input.max=String(Math.max(0,max));
+                if(input.dataset.sealedToken!==String(playerSealedToken||'')){
+                    input.dataset.sealedToken=String(playerSealedToken||'');
+                    input.value='0';
+                }
+                if(playerSealedOffer?.token===playerSealedToken)input.value=String(playerSealedOffer.amount);
+                else input.value=String(Math.min(max,Math.max(0,sealedBidAmount(input.value)||0)));
             }
             if(btn){
                 btn.disabled=!enabled || playerSealedSubmitted;
-                btn.textContent=playerSealedSubmitted?'OFFERTA INVIATA ✓':'OFFRI';
             }
             if(st){
                 st.className='sealed-bid-status'+(playerSealedSubmitted?' sent':'');
                 st.textContent=playerSealedSubmitted
                     ? 'Offerta registrata. Non può più essere modificata.'
                     : enabled
-                        ? 'Inserisci l’importo e conferma. L’offerta è definitiva.'
+                        ? 'Scorri e conferma. 0 = rinuncia. L’offerta è definitiva.'
                         : (playerSealedMode?'Buste in attesa di apertura.':'In attesa della busta chiusa.');
             }
-            updatePlayerBidBudgetVisuals();
+            updatePlayerSealedSelection();
             syncSealedBidAreaHeight();
         }
 
+        function updatePlayerSealedSelection(){
+            const input=document.getElementById('sealed-bid-input');
+            const controls=document.getElementById('sealed-bid-controls');
+            const btn=document.getElementById('sealed-bid-submit');
+            const receipt=document.getElementById('sealed-bid-receipt');
+            const maximum=document.getElementById('sealed-slider-max');
+            const amount=sealedBidAmount(input?.value)||0;
+            const max=Number(input?.max)||0;
+            if(input){
+                input.style.setProperty('--sealed-slider-progress',`${max>0?amount/max*100:0}%`);
+                input.setAttribute('aria-valuetext',amount===0?'0 crediti, rinuncia':`${amount} crediti`);
+            }
+            if(maximum)maximum.textContent=String(max);
+            const sent=playerSealedSubmitted && playerSealedOffer?.token===playerSealedToken;
+            controls?.classList.toggle('sealed-submitted',!!sent);
+            if(receipt){
+                receipt.hidden=!sent;
+                receipt.innerHTML=sent?`<span class="sealed-offer-caption">HAI OFFERTO </span><strong class="sealed-offer-number">${playerSealedOffer.amount}</strong>`:'';
+            }
+            if(btn && !playerSealedSubmitted)btn.innerHTML=`<span class="sealed-offer-caption">OFFRI </span><strong class="sealed-offer-number">${amount}</strong>`;
+            updatePlayerBidBudgetVisuals();
+        }
+
+        function sealedBidAmount(value){
+            // Non troncare decimali, non convertire vuoti/negativi in una puntata.
+            if(typeof value!=='string' && typeof value!=='number')return null;
+            const text=String(value).trim();
+            if(!/^\d+$/.test(text))return null;
+            const amount=Number(text);
+            return Number.isSafeInteger(amount)?amount:null;
+        }
+
         async function submitSealedBid(){
-            if(!playerSealedMode || !playerSealedToken || playerSealedSubmitted || !myTeamId)return;
+            if(!playerSealedMode || !playerSealedToken || playerSealedSubmitted || playerSealedConfirming || !myTeamId)return;
             // Per il banditore+giocatore l'offerta viene consegnata direttamente
             // a receiveSealedBid(), quindi il realtime channel non è un prerequisito.
             if(!isAuctioneerPlayerIdentity() && !channel)return;
 
             const input=document.getElementById('sealed-bid-input');
-            const amount=Math.max(1,parseInt(input?.value)||0);
+            if(!input || input.disabled)return;
+            const amount=sealedBidAmount(input.value);
             const team=teamsCache.find(t=>String(t.id)===String(myTeamId));
             const max=team&&currentAuctionPlayer?maxBidForTeam(team,currentAuctionPlayer.R):0;
             const st=document.getElementById('sealed-bid-status');
 
-            if(amount<1 || amount>max){
-                if(st){st.textContent=`Inserisci un'offerta tra 1 e ${max} crediti.`;st.className='sealed-bid-status error';}
+            if(amount===null || amount>max){
+                if(st){st.textContent=`Inserisci un numero intero tra 0 e ${max} crediti. 0 = rinuncia.`;st.className='sealed-bid-status error';}
                 return;
             }
 
-            if(!await appConfirm(`Confermi l'offerta di ${amount} crediti?\n\nDopo l'invio NON potrai modificarla.`))return;
+            const token=playerSealedToken;
+            const playerId=String(currentAuctionPlayer?.Id||'');
+            playerSealedConfirming=true;
+            let confirmed=false;
+            try{
+                confirmed=await appConfirm(amount===0
+                    ? 'Confermi la rinuncia con una busta da 0 crediti?\n\nConta come consegnata, ma non può aggiudicare il giocatore.'
+                    : `Confermi l'offerta di ${amount} crediti?\n\nDopo l'invio NON potrai modificarla.`);
+            }finally{playerSealedConfirming=false;}
+            if(!confirmed)return;
+            // La conferma può rimanere aperta mentre cambia fase, giocatore o budget.
+            if(!playerSealedMode || playerSealedToken!==token || playerSealedSubmitted || input.disabled || String(currentAuctionPlayer?.Id||'')!==playerId)return;
+            const countdown=document.getElementById('player-countdown');
+            const remaining=String(countdown?.textContent||'').trim();
+            if(/^\d+$/.test(remaining) && Number(remaining)===0){
+                if(st){st.textContent='Tempo per la consegna scaduto.';st.className='sealed-bid-status error';}
+                return;
+            }
+            const freshTeam=teamsCache.find(t=>String(t.id)===String(myTeamId));
+            const freshMax=freshTeam&&currentAuctionPlayer?maxBidForTeam(freshTeam,currentAuctionPlayer.R):0;
+            if(!freshTeam || amount>freshMax){
+                if(st){st.textContent=`Budget aggiornato: massimo ${freshMax} crediti. Inserisci una nuova offerta.`;st.className='sealed-bid-status error';}
+                return;
+            }
 
             playerSealedSubmitted=true;
+            playerSealedOffer={token:playerSealedToken,amount};
             preparePlayerSealedControls(true);
 
             const sealedPayload={
@@ -7691,7 +7754,7 @@ function updateCreateRoomModeUI(){
             knob.classList.add('active');
             exactBidLayer(true);
             exactBidRefreshActive();
-            if(navigator.vibrate)navigator.vibrate([28,24,28]);
+            window.liveastaButtonFeedback?.vibrate([28,24,28]);
             exactBidStateTimer=setInterval(exactBidRefreshActive,80);
         }
 
@@ -7755,7 +7818,7 @@ function updateCreateRoomModeUI(){
             if(!range.valid || exact<range.min || exact>range.max)return;
             if(Date.now()<playerNormalBidCooldownUntil)return;
 
-            if(navigator.vibrate)navigator.vibrate(40);
+            window.liveastaButtonFeedback?.vibrate(40);
             const bidId=`exact_${String(myTeamId||'team')}_${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
 
             if(isAuctioneerPlayerIdentity()){
@@ -7788,7 +7851,7 @@ function updateCreateRoomModeUI(){
             if (Date.now() < playerNormalBidCooldownUntil) {roomDebug.record('bid.tap',{amount,reason:'cooldown'});return;}
             roomDebug.record('bid.tap',{amount,reason:'send'});
 
-            if (navigator.vibrate) navigator.vibrate(40);
+            window.liveastaButtonFeedback?.vibrate(40);
 
             const bidId=`${String(myTeamId||'team')}_${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
 
@@ -8585,12 +8648,12 @@ function updateCreateRoomModeUI(){
         }
 
         async function receiveSealedBid(data){
-            if(!sealedAuctionModeActive || !sealedAuctionToken || !currentAuctionPlayer)return;
+            if(!sealedAuctionModeActive || !sealedAuctionToken || !currentAuctionPlayer || sealedEnding)return;
             if(String(data?.token||'')!==String(sealedAuctionToken))return;
 
             // Il banditore è l'autorità temporale: dopo la sua scadenza
             // nessuna offerta tardiva viene accettata.
-            if(sealedDeadlineAt && Date.now()>sealedDeadlineAt+250)return;
+            if(sealedDeadlineAt && Date.now()>=sealedDeadlineAt)return;
             const teamId=String(data?.team_id||'');
             if(!sealedEligibleIds.includes(teamId))return;
             if(sealedBids.has(teamId))return;
@@ -8598,10 +8661,10 @@ function updateCreateRoomModeUI(){
             const team=teamsCache.find(t=>String(t.id)===teamId);
             if(!team)return;
 
-            const amount=Math.max(1,parseInt(data?.amount)||0);
+            const amount=sealedBidAmount(data?.amount);
             const max=maxBidForTeam(team,currentAuctionPlayer.R);
-            if(amount<1 || amount>max){
-                const reason=`Offerta non valida. Massimo ${max}.`;
+            if(amount===null || amount>max){
+                const reason=`Offerta non valida: inserisci un intero tra 0 e ${max}. 0 = rinuncia.`;
 
                 if(isAuctioneerPlayerIdentity() && String(teamId)===String(myTeamId)){
                     playerSealedSubmitted=false;
@@ -8664,7 +8727,7 @@ function updateCreateRoomModeUI(){
                 .map((b,index)=>({
                     team_id:String(b?.team_id||''),
                     team_name:String(b?.team_name||'Squadra'),
-                    amount:Math.max(0,parseInt(b?.amount)||0),
+                    amount:sealedBidAmount(b?.amount),
                     at:Number(b?.at)||0,
                     original_index:index
                 }))

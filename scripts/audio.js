@@ -7,6 +7,8 @@ const defaultAudioSettings = {
             voiceVolume: 1.00,
             voiceRate: 1.40,
             final3Mode: 'beep',
+            uiClickVolume: 0.25,
+            hapticsEnabled: true,
             volumes: {'audio-prep':0.70,'audio-start':1.00,'audio-buzz':0.20,'audio-end':0.80}
         };
 
@@ -52,6 +54,10 @@ function loadAudioSettings(){
             const vr=document.getElementById('rate-bid-voice'); if(vr){vr.value=Math.round(audioSettings.voiceRate*100);updateAudioLabel(vr,true);}
             const final3=document.getElementById('auction-final3-mode');
             if(final3)final3.value=['beep','voice','off'].includes(audioSettings.final3Mode)?audioSettings.final3Mode:'beep';
+            const uiVolume=document.getElementById('vol-ui-click');
+            if(uiVolume){uiVolume.value=Math.round(audioSettings.uiClickVolume*100);updateAudioLabel(uiVolume);}
+            const haptics=document.getElementById('ui-haptics-enabled');
+            if(haptics)haptics.checked=audioSettings.hapticsEnabled!==false;
         }
 
 function saveAudioSettings(){
@@ -59,6 +65,10 @@ function saveAudioSettings(){
             if(toggle) audioSettings.voiceEnabled=toggle.checked;
             const final3=document.getElementById('auction-final3-mode');
             if(final3)audioSettings.final3Mode=['beep','voice','off'].includes(final3.value)?final3.value:'beep';
+            const uiVolume=document.getElementById('vol-ui-click');
+            if(uiVolume)audioSettings.uiClickVolume=Math.max(0,Math.min(1,Number(uiVolume.value)/100));
+            const haptics=document.getElementById('ui-haptics-enabled');
+            if(haptics)audioSettings.hapticsEnabled=haptics.checked;
             Object.keys(audioSettings.volumes).forEach(id=>{
                 const el=document.getElementById('vol-'+id); if(el) audioSettings.volumes[id]=(parseInt(el.value)||0)/100;
             });
