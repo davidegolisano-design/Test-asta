@@ -243,7 +243,7 @@ function updateCreateRoomModeUI(){
             enter:(room,plan)=>{
                 myTeamId=null;myTeamName='';auctioneerPlayerMode=false;auctioneerPlayerTeamId=null;
                 spectatorMode=true;currentRoomId=room.id;currentRoomCode=room.name;
-                currentRoom={...room,initial_budget:500,limit_p:3,limit_d:8,limit_c:8,limit_a:6,mantra_max_roster:25};
+                currentRoom={...room,initial_credits:500,limit_p:3,limit_d:8,limit_c:8,limit_a:6,mantra_max_roster:25};
                 teamsCache=plan.teams;playersList=plan.players;purchasesCache=[];
                 document.getElementById('screen-auctioneer-board').classList.add('spectator-mode');
                 document.querySelector('#auction-room-pill b').textContent=room.name;
@@ -253,6 +253,7 @@ function updateCreateRoomModeUI(){
                 currentRoom.name=config.name;currentRoomCode=config.name;
                 document.querySelector('#auction-room-pill b').textContent=config.name;
                 purchasesCache=frame.purchases;liveAuctionState=frame.state;
+                teamsCache=plan.teams.map(t=>({...t,credits_remaining:500-frame.purchases.filter(p=>p.team_id===t.id).reduce((sum,p)=>sum+p.price,0)}));
                 currentAuctionPlayer=plan.players.find(p=>String(p.Id)===frame.state.player?.id)||null;
                 nominationState={...nominationState,enabled:config.selection==='turns',turn_team_id:frame.state.nomination_team_id,order:plan.teams.map(t=>String(t.id))};
                 onlinePlayers.clear();

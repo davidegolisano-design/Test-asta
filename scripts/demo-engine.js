@@ -55,12 +55,12 @@ function build(raw,list){
    }
    winner=last||interested[0].team;value=Math.max(1,amount);ranking.sort((a,b)=>b.amount-a.amount);
   }
-  const purchase={id:`auto-p-${round}`,player_id:String(source.Id),player_name:source.Nome,role:player.role,team_id:winner.id,price:value,created_at:new Date(round*1000).toISOString()};
+  const purchase={id:`auto-p-${round}`,player_id:String(source.Id),player_name:source.Nome,role:player.role,club:source.Squadra,team_id:winner.id,price:value,created_at:new Date(round*1000).toISOString()};
   winner.budget-=value;winner.slots[role]++;purchases.push(purchase);
   add({...base,phase:'ended',winner:winner.name,value,mode:sealed&&!uncontested?'sealed_result':'normal',sealed_ranking:sealed?ranking:[],normal_bid_ranking:ranking,purchases_count:purchases.length},config.result_seconds);round++;
  }
  add({phase:'idle',purchases_count:purchases.length,cycle_complete:true},8);
- return {config,steps,purchases,duration:cursor,teams:teams.map(t=>({id:t.id,name:t.name,initial_budget:500,room_id:`auto-${config.game_mode}`})),players:list.map(p=>({...p,R:config.game_mode==='mantra'?(p.RM||p.R):p.R}))};
+ return {config,steps,purchases,duration:cursor,teams:teams.map(t=>({id:t.id,name:t.name,credits_remaining:500,room_id:`auto-${config.game_mode}`})),players:list.map(p=>({...p,R:config.game_mode==='mantra'?(p.RM||p.R):p.R}))};
 }
 function elapsed(config,now){return Math.max(0,Number(config.elapsed_ms||0)+(config.paused?0:now-Number(config.anchor_ms??now)));}
 function frame(plan,config,now){
