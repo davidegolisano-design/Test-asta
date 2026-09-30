@@ -9,18 +9,26 @@ const defaultAudioSettings = {
             final3Mode: 'beep',
             uiClickVolume: 0.25,
             hapticsEnabled: true,
+            spectatorAudioEnabled: true,
             volumes: {'audio-prep':0.70,'audio-start':1.00,'audio-buzz':0.20,'audio-end':0.80}
         };
 
 let audioSettings = JSON.parse(JSON.stringify(defaultAudioSettings));
 
 async function openAudioMixer(){
+            // Keep media activation in the original button gesture, before awaits.
+            unlockAudio();
             loadAudioSettings();
-            await loadAudioRoutingSettings();
-            renderAudioRoutingTargets();
+            const viewer=typeof spectatorMode!=='undefined' && spectatorMode;
+            if(!viewer){await loadAudioRoutingSettings();renderAudioRoutingTargets();}
 
             const modal=document.getElementById('audio-mixer-modal');
             if(modal){
+                modal.classList.toggle('spectator-audio',viewer);
+                const title=document.getElementById('audio-mixer-title');
+                const subtitle=document.getElementById('audio-mixer-subtitle');
+                if(title)title.textContent=viewer?'🔊 Audio spettatore':'🔊 Audio asta';
+                if(subtitle)subtitle.textContent=viewer?'Volume e suoni solo su questo dispositivo.':'Bilancia effetti e voce delle offerte';
                 // Il mixer nasce dentro Gestione, ma su mobile un overlay fixed dentro
                 // un contenitore scrollabile può essere intrappolato/clippato dal parent.
                 // Lo portiamo direttamente sotto BODY: un solo viewport, uno solo scroll.
@@ -33,7 +41,6 @@ async function openAudioMixer(){
                     if(card)card.scrollTop=0;
                 });
             }
-            unlockAudio();
         }
 
 function closeAudioMixer(){
@@ -58,6 +65,8 @@ function loadAudioSettings(){
             if(uiVolume){uiVolume.value=Math.round(audioSettings.uiClickVolume*100);updateAudioLabel(uiVolume);}
             const haptics=document.getElementById('ui-haptics-enabled');
             if(haptics)haptics.checked=audioSettings.hapticsEnabled!==false;
+            const spectatorAudio=document.getElementById('spectator-audio-enabled');
+            if(spectatorAudio)spectatorAudio.checked=audioSettings.spectatorAudioEnabled!==false;
         }
 
 function saveAudioSettings(){
@@ -69,6 +78,8 @@ function saveAudioSettings(){
             if(uiVolume)audioSettings.uiClickVolume=Math.max(0,Math.min(1,Number(uiVolume.value)/100));
             const haptics=document.getElementById('ui-haptics-enabled');
             if(haptics)audioSettings.hapticsEnabled=haptics.checked;
+            const spectatorAudio=document.getElementById('spectator-audio-enabled');
+            if(spectatorAudio)audioSettings.spectatorAudioEnabled=spectatorAudio.checked;
             Object.keys(audioSettings.volumes).forEach(id=>{
                 const el=document.getElementById('vol-'+id); if(el) audioSettings.volumes[id]=(parseInt(el.value)||0)/100;
             });

@@ -4990,6 +4990,7 @@ function updateCreateRoomModeUI(){
         }
 
         async function joinAsSpectator(){
+            unlockAudio();
             const err=document.getElementById('spectator-room-error');
             const enter=document.getElementById('spectator-enter-btn');
             err.textContent='';
@@ -11141,6 +11142,7 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
         }
 
         function isThisDeviceAudioMuted(){
+            if(spectatorMode)return audioSettings.spectatorAudioEnabled===false;
             const target=audioTargetIdForThisDevice();
             if(!target)return false;
             const muted=new Set((audioRoutingSettings.mutedTargets||[]).map(String));
@@ -11182,6 +11184,7 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
         }
 
         async function saveAudioRoutingSettings(){
+            if(spectatorMode)return;
             if(!currentRoomId)return;
 
             const status=document.getElementById('audio-routing-status');
@@ -11280,6 +11283,7 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
         }
 
         async function setAudioTargetMuted(target,muted){
+            if(spectatorMode)return;
             if(!target)return;
             const set=new Set((audioRoutingSettings.mutedTargets||[]).map(String));
 
@@ -11302,6 +11306,7 @@ Tutti i suoi acquisti verranno annullati e i giocatori torneranno disponibili ne
         }
 
         async function unmuteAllAudioTargets(){
+            if(spectatorMode)return;
             audioRoutingSettings={...audioRoutingSettings,mode:'presence',mutedTargets:[]};
             renderAudioRoutingTargets();
             await saveAudioRoutingSettings();

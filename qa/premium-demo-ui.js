@@ -66,11 +66,10 @@ window.addEventListener('load',async()=>{
         ready_required_ids:ids,ready_ids:ids.slice(0,1),sealed_eligible_ids:ids,sealed_submitted_ids:ids.slice(0,1),
         normal_bid_ranking:[{team_id:ids[0],team_name:'FC DEMO',amount:85}]};
       demo.tables.fanta_app_data.push({key:`live_auction_${demo.room.id}`,data:state});
-      showScreen('screen-entry-role');
-      await openSpectatorLobby();
-      document.getElementById('spectator-room-select').value=demo.room.id;
-      document.getElementById('spectator-room-password').value='demo';
-      await joinAsSpectator();
+      myTeamId=null;myTeamName='';spectatorMode=true;
+      document.getElementById('screen-auctioneer-board').classList.add('spectator-mode');
+      applyAuctioneerUiMode();showScreen('screen-auctioneer-board');
+      window.liveastaSpectatorView.render(state);
     }
     if(scene==='turn'||scene==='hybrid-turn'){
       nominationState={...nominationState,enabled:true,role:'P',turn_team_id:demo.teamId,order_team_ids:teamsCache.map(t=>t.id)};

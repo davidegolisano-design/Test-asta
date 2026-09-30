@@ -16,13 +16,18 @@ html[data-live-theme] .spectator-public-room{display:flex;flex-direction:column;
 @media(max-height:480px){#screen-entry-role .entry-role-copy .spectator-online-summary{display:block;margin-top:4px}.spectator-online-summary>small{display:none}}
 /* The spectator access panel inherits the shared entry form component. */
 .spectator-access-actions{display:grid}
-/* Only exit and the Rose command remain actionable on the spectator board. */
-body #screen-auctioneer-board.spectator-mode > .session-nav > :last-child,
+/* Spectators have local audio controls and rosters, never host management. */
+body #screen-auctioneer-board.spectator-mode > .session-nav > button[onclick="openRoomControl(true)"],
 body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#view-list,#btn-next){display:none!important}
 body #screen-auctioneer-board.spectator-mode #auctioneer-session-title{display:block!important}
 body #screen-auctioneer-board.spectator-mode .auction-session-center{justify-content:center!important}
 body #screen-auctioneer-board.spectator-mode .auction-quick-actions{display:flex!important}
 body #screen-auctioneer-board.spectator-mode .auction-quick-rosters{display:flex!important}
+.auction-spectator-audio{display:none!important}
+body #screen-auctioneer-board.spectator-mode .auction-spectator-audio{display:flex!important;align-items:center!important;justify-content:center!important;grid-area:manage!important}
+.spectator-audio-setting{display:none!important}
+.spectator-audio .spectator-audio-setting{display:flex!important}
+.spectator-audio .audio-routing-section{display:none!important}
 /* Shared host/spectator desktop layout: the offer, title and team name stay inside the third column. */
 body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .col-info{min-width:0!important;align-items:center!important;text-align:center!important}
 body #screen-auctioneer-board #auction-dashboard.mode-pc #view-auction .mobile-offer-block{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;min-width:0!important;max-width:100%!important}

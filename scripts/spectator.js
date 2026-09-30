@@ -4,9 +4,31 @@ window.liveastaSpectatorView=(()=>{
   let clock=null;
   let deliveryUpdate=null;
   let previousResult=null;
+  let audioState=null,lastAudioTick='';
   const el=id=>document.getElementById(id);
   const write=(id,value)=>{const target=el(id);if(target&&target.textContent!==String(value))target.textContent=String(value);};
   const timed=phase=>['prep','active','sealed','sealed_reveal'].includes(phase);
+  function audioTransition(state){
+    const next={phase:state.phase,player:state.player?.id,token:state.sealed_token||'',value:Number(state.value)||0,winner:state.winner||'',paused:!!state.paused};
+    const previous=audioState;audioState=next;
+    const changed=!previous || previous.phase!==next.phase || previous.player!==next.player || previous.token!==next.token;
+    if(changed)lastAudioTick='';
+    // Joining, polling and reflow must not replay a historical offer/result.
+    if(!previous || state.paused || document.hidden)return;
+    if(changed){
+      if(['active','sealed'].includes(next.phase))playSound('audio-start');
+      if(next.phase==='ended')playSound('audio-end');
+    }else if(next.phase==='active' && next.value>previous.value){
+      playSound('audio-buzz');speakBidValue(next.value);
+    }
+  }
+  function audioTick(phase,seconds){
+    if(snapshot.paused || document.hidden || seconds<=0)return;
+    const key=`${phase}:${seconds}`;if(key===lastAudioTick)return;
+    lastAudioTick=key;
+    if(['prep','sealed_reveal'].includes(phase))playSound('audio-prep');
+    else if(['active','sealed'].includes(phase)&&seconds<=3)playAuctionFinalCountdown(seconds);
+  }
   function subscribePresence(spectatorChannel){
     const active=()=>spectatorMode&&channel===spectatorChannel;
     const sync=()=>{if(active())syncOnlinePlayersFromPresence();};
@@ -28,6 +50,7 @@ window.liveastaSpectatorView=(()=>{
     if(!snapshot)return;
     const phase=snapshot.phase;
     const seconds=remaining(snapshot);
+    audioTick(phase,seconds);
     if(timed(phase))write('countdown-display',seconds);
     const display=el('countdown-display');
     const lastThree=['active','sealed'].includes(phase)&&seconds>0&&seconds<=3;
@@ -37,6 +60,7 @@ window.liveastaSpectatorView=(()=>{
   }
   function render(state){
     clearInterval(clock);clock=null;
+    audioTransition(state||{phase:'idle'});
     snapshot=state||{phase:'idle'};
     if(deliveryUpdate&&snapshot.sealed_token===deliveryUpdate.token){
       snapshot={...snapshot,sealed_submitted_ids:[...new Set([...(snapshot.sealed_submitted_ids||[]),...deliveryUpdate.ids].map(String))]};
@@ -88,7 +112,7 @@ window.liveastaSpectatorView=(()=>{
     window.updateLiveAstaTeamCards?.();
     window.refreshLiveAstaMobileBoardDev?.();
   }
-  function stop(){clearInterval(clock);clock=null;snapshot=null;deliveryUpdate=null;previousResult=null;el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
+  function stop(){clearInterval(clock);clock=null;snapshot=null;deliveryUpdate=null;previousResult=null;audioState=null;lastAudioTick='';el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
   return{render,stop,subscribePresence,updateDeliveries:payload=>{
     if(!payload?.token||!Array.isArray(payload.submitted_ids))return;
     deliveryUpdate={token:payload.token,ids:payload.submitted_ids};
