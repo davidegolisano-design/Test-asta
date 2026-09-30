@@ -4,8 +4,9 @@ function fixture(){
   let now=1000;const listeners={},sounds=[],vibrations=[];
   const param={setValueAtTime(){},exponentialRampToValueAtTime(){}};
   class AudioContext{
-    state='running';currentTime=0;destination={};
-    createOscillator(){return {frequency:param,connect(){},disconnect(){},start(){sounds.push(now);},stop(){}};}
+    state='running';currentTime=0;sampleRate=48000;destination={};
+    createBuffer(channels,length){const data=new Float32Array(length);return {getChannelData:()=>data};}
+    createBufferSource(){return {connect(){},disconnect(){},start(){sounds.push(now);}};}
     createGain(){return {gain:param,connect(){},disconnect(){}};}
   }
   const c={window:{AudioContext},navigator:{vibrate:p=>vibrations.push(p)},Date:{now:()=>now},Math,Number,

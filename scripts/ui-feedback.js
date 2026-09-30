@@ -2,7 +2,7 @@
 (function(){
   'use strict';
   if(window.liveastaButtonFeedback)return;
-  let context=null,lastSound=-Infinity,lastVibration=-Infinity,lastPointer=null;
+  let context=null,tapBuffer=null,lastSound=-Infinity,lastVibration=-Infinity,lastPointer=null;
   const settings=()=>typeof audioSettings==='object'?audioSettings:{uiClickVolume:.25,hapticsEnabled:true};
   function vibrate(pattern=12){
     if(settings().hapticsEnabled===false || typeof navigator.vibrate!=='function')return;
@@ -18,19 +18,28 @@
     try{
       const AudioContext=window.AudioContext||window.webkitAudioContext;
       if(!AudioContext)return;
-      if(!context || context.state==='closed')context=new AudioContext();
+      if(!context || context.state==='closed'){context=new AudioContext();tapBuffer=null;}
       const play=()=>{
         if(context.state!=='running')return;
-        const oscillator=context.createOscillator(),gain=context.createGain(),at=context.currentTime;
-        oscillator.type='triangle';
-        oscillator.frequency.setValueAtTime(1100,at);
-        oscillator.frequency.exponentialRampToValueAtTime(650,at+.035);
-        gain.gain.setValueAtTime(.0001,at);
-        gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume*.12),at+.004);
-        gain.gain.exponentialRampToValueAtTime(.0001,at+.04);
-        oscillator.connect(gain);gain.connect(context.destination);
-        oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();};
-        oscillator.start(at);oscillator.stop(at+.045);
+        // A damped wooden impact: short noise attack and fixed resonances, no pitch sweep.
+        if(!tapBuffer){
+          tapBuffer=context.createBuffer(1,Math.ceil(context.sampleRate*.05),context.sampleRate);
+          const samples=tapBuffer.getChannelData(0);
+          for(let i=0;i<samples.length;i++){
+            const t=i/context.sampleRate;
+            const attack=Math.min(1,t/.0005);
+            const body=.65*Math.sin(2*Math.PI*820*t)*Math.exp(-t/ .008)
+              +.25*Math.sin(2*Math.PI*1640*t)*Math.exp(-t/ .004);
+            const knock=(Math.random()*2-1)*.3*Math.exp(-t/ .002);
+            const fade=Math.min(1,(samples.length-1-i)/(context.sampleRate*.003));
+            samples[i]=(body+knock)*attack*fade;
+          }
+        }
+        const source=context.createBufferSource(),gain=context.createGain();
+        source.buffer=tapBuffer;gain.gain.setValueAtTime(volume*.4,context.currentTime);
+        source.connect(gain);gain.connect(context.destination);
+        source.onended=()=>{source.disconnect();gain.disconnect();};
+        source.start();
       };
       if(context.state==='suspended')context.resume().then(play).catch(()=>{});
       else play();
