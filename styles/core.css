@@ -13295,7 +13295,7 @@ body #screen-player-buzzer #normal-bid-controls.ready-choice-active {
 body #screen-player-buzzer #normal-bid-controls.ready-choice-active #sealed-bid-controls {display:none!important;}
 body #screen-player-buzzer #normal-bid-controls.ready-choice-active #player-ready-choice-controls {height:100%!important;min-height:0!important;max-height:100%!important;box-sizing:border-box!important;}
 body #sealed-delivery-panel {display:none;}
-body #screen-auctioneer-board #view-auction.sealed-collecting .col-info > :not(#sealed-delivery-panel) {display:none!important;}
+body #screen-auctioneer-board #view-auction.sealed-collecting .col-info > :not(#sealed-delivery-panel):not(#liveasta-mobile-info-surface) {display:none!important;}
 body #screen-auctioneer-board #view-auction.sealed-collecting #btn-next {display:none!important;}
 body #screen-auctioneer-board #view-auction.sealed-collecting #sealed-delivery-panel {
  display:flex!important;flex-direction:column;gap:12px;width:100%;height:100%;min-height:0;min-width:0;overflow:hidden;box-sizing:border-box;padding:16px;

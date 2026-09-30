@@ -1939,12 +1939,13 @@ html[data-live-theme="light-sand"] #auction-room-error:not(:empty):not(.liveasta
    ========================================================================== */
 #screen-admin{
     align-items:flex-start!important;
-    justify-content:center!important;
+    justify-content:flex-start!important;
     overflow-y:auto!important;
     padding:18px 0 34px!important;
     box-sizing:border-box!important;
 }
 #screen-admin > .setup-card{
+    flex:0 0 auto!important;
     width:min(1180px,96vw)!important;
     max-width:1180px!important;
     min-width:0!important;
