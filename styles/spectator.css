@@ -18,7 +18,7 @@ html[data-live-theme] .spectator-public-room{display:flex;flex-direction:column;
 .spectator-access-actions{display:grid}
 /* Only exit and the Rose command remain actionable on the spectator board. */
 body #screen-auctioneer-board.spectator-mode > .session-nav > :last-child,
-body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#auction-online-pill,#view-list,#btn-next){display:none!important}
+body #screen-auctioneer-board.spectator-mode :is(.auction-quick-reset,#hybrid-view-to-player,#view-list,#btn-next){display:none!important}
 body #screen-auctioneer-board.spectator-mode #auctioneer-session-title{display:block!important}
 body #screen-auctioneer-board.spectator-mode .auction-session-center{justify-content:center!important}
 body #screen-auctioneer-board.spectator-mode .auction-quick-actions{display:flex!important}

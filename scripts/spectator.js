@@ -7,6 +7,19 @@ window.liveastaSpectatorView=(()=>{
   const el=id=>document.getElementById(id);
   const write=(id,value)=>{const target=el(id);if(target&&target.textContent!==String(value))target.textContent=String(value);};
   const timed=phase=>['prep','active','sealed','sealed_reveal'].includes(phase);
+  function subscribePresence(spectatorChannel){
+    const active=()=>spectatorMode&&channel===spectatorChannel;
+    const sync=()=>{if(active())syncOnlinePlayersFromPresence();};
+    ['sync','join','leave'].forEach(event=>spectatorChannel.on('presence',{event},sync));
+    spectatorChannel.on('broadcast',{event:'player_online_fallback'},({payload})=>{
+      if(active())touchFallbackOnlinePlayer(payload||{});
+    });
+    spectatorChannel.on('broadcast',{event:'player_offline_now'},({payload})=>{
+      if(!active())return;
+      onlinePlayers.delete(String(payload?.team_id||''));
+      renderOnlinePlayers();
+    });
+  }
   function remaining(state){
     const deadline=Number(state.deadline_at||state.sealed_deadline_at)||0;
     return deadline?Math.max(0,Math.ceil((deadline-Date.now())/1000)):Math.max(0,Number(state.seconds)||0);
@@ -76,7 +89,7 @@ window.liveastaSpectatorView=(()=>{
     window.refreshLiveAstaMobileBoardDev?.();
   }
   function stop(){clearInterval(clock);clock=null;snapshot=null;deliveryUpdate=null;previousResult=null;el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
-  return{render,stop,updateDeliveries:payload=>{
+  return{render,stop,subscribePresence,updateDeliveries:payload=>{
     if(!payload?.token||!Array.isArray(payload.submitted_ids))return;
     deliveryUpdate={token:payload.token,ids:payload.submitted_ids};
     if(snapshot?.sealed_token===payload.token)render(snapshot);

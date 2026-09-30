@@ -4948,6 +4948,7 @@ function updateCreateRoomModeUI(){
             if(withRosters){await loadRoomState();await loadNominationState();}
             const state=await loadLiveAuctionState();
             if(!spectatorMode||roomId!==currentRoomId)return;
+            syncOnlinePlayersFromPresence();
             window.liveastaSpectatorView?.render(state);
             if(withRosters&&document.getElementById('screen-all-rosters')?.classList.contains('active'))renderAllRosters();
         }
@@ -4980,6 +4981,7 @@ function updateCreateRoomModeUI(){
                 await loadNominationState();
                 await refreshSpectatorState();
                 const spectatorChannel=channel;
+                window.liveastaSpectatorView.subscribePresence(spectatorChannel);
                 spectatorChannel.on('broadcast',{event:'sealed_bid_count'},({payload})=>window.liveastaSpectatorView?.updateDeliveries(payload));
                 const refreshEvents=['new_player','prep_started','auction_started','auction_update','auction_end','sealed_bid_start','sealed_bid_count','sealed_bid_end','sealed_reveal_start','ready_gate_state','live_state','state_changed','force_state_reset','nomination_state'];
                 refreshEvents.forEach(event=>spectatorChannel.on('broadcast',{event},()=>scheduleSpectatorRefresh(event==='state_changed'||event==='auction_end'||event==='nomination_state')));
@@ -5493,7 +5495,7 @@ function updateCreateRoomModeUI(){
 
             // Il banditore-giocatore è un giocatore reale a tutti gli effetti:
             // deve comparire ONLINE anche se usa lo stesso dispositivo del banditore.
-            if(auctioneerPlayerMode && auctioneerPlayerTeamId){
+            if(!spectatorMode && auctioneerPlayerMode && auctioneerPlayerTeamId){
                 const hostTeam=teamsCache.find(t=>String(t.id)===String(auctioneerPlayerTeamId));
                 if(hostTeam && !items.some(p=>String(p.team_id)===String(hostTeam.id))){
                     items.push({
