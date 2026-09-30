@@ -41,12 +41,16 @@
 
     const delivery=view.classList.contains('sealed-collecting') && !view.classList.contains('sealed-opening');
     const n=Math.max(0,parseInt(timer.textContent,10)||0);
-    const final3=delivery && n>0 && n<=3;
+    const spectatorPhase=document.getElementById('screen-auctioneer-board')?.dataset.spectatorPhase;
+    const normal=spectatorPhase ? spectatorPhase==='active' :
+      typeof isAuctionActive!=='undefined' && isAuctionActive &&
+      !view.classList.contains('sealed-collecting') && !timer.classList.contains('prep-countdown');
+    const final3=(delivery || normal) && n>0 && n<=3;
 
     if(delivery)timer.classList.remove('prep-countdown');
     forceFinal3(timer,final3);
 
-    if(final3 && n!==lastAuctioneerCue){
+    if(delivery && final3 && n!==lastAuctioneerCue){
       lastAuctioneerCue=n;
       playFinalCue(n);
     }else if(!delivery || n>3){
@@ -62,12 +66,13 @@
     const label=(title.textContent||'').trim().toUpperCase();
     const delivery=label==='BUSTA CHIUSA' || label==='SPAREGGIO BUSTA';
     const n=Math.max(0,parseInt(timer.textContent,10)||0);
-    const final3=delivery && n>0 && n<=3;
+    const normal=label==='MIGLIOR OFFERTA';
+    const final3=(delivery || normal) && n>0 && n<=3;
 
     if(delivery)timer.classList.remove('prep-countdown');
     forceFinal3(timer,final3);
 
-    if(final3 && n!==lastPlayerCue){
+    if(delivery && final3 && n!==lastPlayerCue){
       lastPlayerCue=n;
       playFinalCue(n);
     }else if(!delivery || n>3){

@@ -193,7 +193,8 @@
   }
 
   .liveasta-mobile-surface[data-tone="danger"] .liveasta-mobile-surface-main{
-    color:var(--theme-danger,#D84A55)!important;
+    color:#FF334F!important;
+    -webkit-text-fill-color:#FF334F!important;
   }
 
   .liveasta-mobile-surface[data-tone="primary"] .liveasta-mobile-surface-main{

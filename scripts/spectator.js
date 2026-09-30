@@ -17,7 +17,7 @@ window.liveastaSpectatorView=(()=>{
     const seconds=remaining(snapshot);
     if(timed(phase))write('countdown-display',seconds);
     const display=el('countdown-display');
-    const lastThree=phase==='active'&&seconds>0&&seconds<=3;
+    const lastThree=['active','sealed'].includes(phase)&&seconds>0&&seconds<=3;
     display?.classList.toggle('liveasta-last3',lastThree);
     display?.classList.toggle('danger',lastThree);
     window.refreshLiveAstaMobileBoardDev?.();

@@ -2,7 +2,7 @@
   if(window.__liveastaPwaInstallLoaded) return;
   window.__liveastaPwaInstallLoaded=true;
 
-  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.17';
+  const APP_VERSION=window.LIVEASTA_CONFIG?.version || 'v1.07.18';
 
   function applyLiveAstaVersion(){
     document.title='LIVEASTA';
@@ -24,7 +24,7 @@
     document.head.appendChild(link);
   }
 
-  loadCss('./styles/auctioneer-mobile-clean.css?v=10711');
+  loadCss('./styles/auctioneer-mobile-clean.css?v=10718');
   loadCss('./styles/room-chat.css?v=10418');
 
   if('serviceWorker' in navigator && window.LIVEASTA_CONFIG?.serviceWorker === true && !window.premiumDemoBackend){
@@ -50,7 +50,7 @@
   window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);window.addEventListener('pageshow',syncInstallButton);document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncInstallButton();});syncInstallButton();
 
   const featureScripts=[
-    './scripts/auctioneer-mobile-board.js?v=1075',
+    './scripts/auctioneer-mobile-board.js?v=10718',
     './scripts/opponent-credits.js?v=1062',
     './scripts/room-chat.js?v=107-premium1',
     './scripts/room-chat-entry-sync.js?v=10418',

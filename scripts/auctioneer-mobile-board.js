@@ -149,9 +149,9 @@
 
   function countdownTone(phase){
     const timer=document.getElementById('countdown-display');
-    if(phase==='normal'){
+    if(phase==='normal'||phase==='sealed-collecting'){
       if(timer?.classList.contains('liveasta-last3')||timer?.classList.contains('danger'))return 'danger';
-      return 'success';
+      return phase==='normal'?'success':'number';
     }
     return 'number';
   }
@@ -212,7 +212,7 @@
           head:phase==='sealed-opening'?'APERTURA':'TIMER BUSTE',
           main:timer,
           kind:'number',
-          tone:'number'
+          tone:countdownTone(phase)
         });
         setSurface(right,{
           head:'CONSEGNATE',
