@@ -210,7 +210,7 @@ function updateCreateRoomModeUI(){
                     apiOrigin: SUPABASE_URL,
                     getClient: () => supabaseClient,
                     getContext: () => ({
-                        room_id:currentRoomId, room_password:currentRoom?.password,
+                        room_id:currentRoom?.auto_demo?null:currentRoomId, room_password:currentRoom?.password,
                         team_id:myTeamId || null,
                         actor:auctioneerLockKey?'auctioneer':myTeamId?'player':'observer',
                         phase:readyGateWaiting || playerReadyToken?'ready':isAuctionActive?'active':liveAuctionState?.phase || 'idle',
@@ -237,6 +237,31 @@ function updateCreateRoomModeUI(){
 
 
         const premium = window.liveastaPremium;
+        window.liveastaDemoRooms?.configure({
+            getClient:()=>supabaseClient,
+            getPassword:()=>adminSessionPassword,
+            enter:(room,plan)=>{
+                myTeamId=null;myTeamName='';auctioneerPlayerMode=false;auctioneerPlayerTeamId=null;
+                spectatorMode=true;currentRoomId=room.id;currentRoomCode=room.name;
+                currentRoom={...room,initial_budget:500,limit_p:3,limit_d:8,limit_c:8,limit_a:6,mantra_max_roster:25};
+                teamsCache=plan.teams;playersList=plan.players;purchasesCache=[];
+                document.getElementById('screen-auctioneer-board').classList.add('spectator-mode');
+                document.querySelector('#auction-room-pill b').textContent=room.name;
+                applyAuctioneerUiMode();showScreen('screen-auctioneer-board');
+            },
+            paint:(plan,config,frame,rostersChanged)=>{
+                currentRoom.name=config.name;currentRoomCode=config.name;
+                document.querySelector('#auction-room-pill b').textContent=config.name;
+                purchasesCache=frame.purchases;liveAuctionState=frame.state;
+                currentAuctionPlayer=plan.players.find(p=>String(p.Id)===frame.state.player?.id)||null;
+                nominationState={...nominationState,enabled:config.selection==='turns',turn_team_id:frame.state.nomination_team_id,order:plan.teams.map(t=>String(t.id))};
+                onlinePlayers.clear();
+                if(!config.paused)plan.teams.forEach(t=>onlinePlayers.set(String(t.id),{team_id:String(t.id),team_name:t.name,presence_at:Date.now()}));
+                renderOnlinePlayers();window.liveastaSpectatorView.render(frame.state);
+                if(rostersChanged&&document.getElementById('screen-all-rosters')?.classList.contains('active'))renderAllRosters();
+            },
+            disabled:()=>{stopSpectator();currentRoom=null;currentRoomId='';showScreen('screen-entry-role');}
+        });
         premium.configure({
             getClient:()=>supabaseClient,
             getPassword:()=>adminSessionPassword,
@@ -914,6 +939,7 @@ function updateCreateRoomModeUI(){
         
 
         async function loadRoomState() {
+            if(window.liveastaDemoRooms?.isActive())return;
             if (!currentRoomId) return;
             const [{data:teams,error:te},{data:purchases,error:pe},{data:room,error:re}] = await Promise.all([
                 supabaseClient.from('fanta_teams').select('*').eq('room_id', currentRoomId).order('created_at'),
@@ -4933,6 +4959,7 @@ function updateCreateRoomModeUI(){
         }
 
         function stopSpectator(){
+            window.liveastaDemoRooms?.stop();
             spectatorMode=false;
             clearTimeout(spectatorRefreshTimer);
             clearInterval(spectatorPollTimer);
@@ -4968,6 +4995,8 @@ function updateCreateRoomModeUI(){
             try{
                 const room=await window.liveastaSpectatorLobby.resolveRoom();
                 if(!room)return;
+                await window.liveastaDirectoryPresence?.stop();
+                if(room.auto_demo){await window.liveastaDemoRooms.start(room);return;}
                 window.liveastaClearResumeSession?.();
                 await connectToRoom(room);
                 myTeamId=null;
@@ -5802,6 +5831,7 @@ function updateCreateRoomModeUI(){
             adminSessionPassword=pin;
             document.getElementById('admin-pin').value='';
             showScreen('screen-admin');
+            window.liveastaDemoRooms?.admin();
             await Promise.all([loadRooms(true), loadCentralListoneInfo(), loadShowRoomsSetting()]);
         }
 

@@ -1,4 +1,4 @@
-const CACHE = 'liveasta-v1.07.19';
+const CACHE = 'liveasta-v1.07.20-dev';
 const OFFLINE = '/offline.html';
 const CORE = [OFFLINE, '/manifest.webmanifest', '/icon-192.png', '/icon-512.png',
   '/icon-maskable-192.png', '/icon-maskable-512.png'];

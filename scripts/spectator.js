@@ -83,7 +83,7 @@ window.liveastaSpectatorView=(()=>{
       }
     }
     tick();
-    if(timed(phase))clock=setInterval(tick,250);
+    if(timed(phase)&&!snapshot.paused)clock=setInterval(tick,250);
     window.fitAuctionNames?.();
     window.updateLiveAstaTeamCards?.();
     window.refreshLiveAstaMobileBoardDev?.();

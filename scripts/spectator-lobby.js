@@ -14,21 +14,29 @@
       const button=document.createElement('button');button.type='button';button.className='spectator-public-room';
       const name=document.createElement('strong');name.textContent=room.name;
       const detail=document.createElement('span');detail.textContent=`${room.game_mode==='mantra'?'Mantra':'Classic'} · ${room.online?'Online':'Banditore offline'}`;
-      button.append(name,detail);button.addEventListener('click',()=>{$('spectator-room-name-input').value=room.name;$('spectator-room-error').textContent='';});list.append(button);
+      const presence=document.createElement('span');presence.className='spectator-room-presence';
+      const led=document.createElement('i');led.className='spectator-led'+(Number(room.players_online)>0?' is-online':'');led.setAttribute('aria-hidden','true');
+      const count=document.createElement('b');count.textContent=`ONLINE ${room.players_online==null?'–':Number(room.players_online)} / ${room.players_total==null?'–':Number(room.players_total)}`;
+      presence.append(led,count);presence.setAttribute('aria-label',`${room.players_online==null?'Conteggio in attesa':room.players_online+' giocatori online'} su ${room.players_total??'–'} squadre`);
+      button.append(name,detail,presence);button.addEventListener('click',()=>{$('spectator-room-name-input').value=room.name;$('spectator-room-error').textContent='';});list.append(button);
     }
   }
   async function refresh(){
     if(pending)return pending;
     pending=(async()=>{
       const results=await Promise.allSettled([
-        supabaseClient.rpc('liveasta_spectator_directory'),supabaseClient.rpc('liveasta_spectator_online_counts')
+        supabaseClient.rpc(window.liveastaDemoRooms?.isEnabled()&&window.LIVEASTA_CONFIG?.demoConfigBackend!=='local-preview'?'liveasta_spectator_directory_dev':'liveasta_spectator_directory'),supabaseClient.rpc('liveasta_spectator_online_counts'),window.liveastaDemoRooms?.read()
       ]);
       const directory=results[0],totals=results[1];
       if(directory.status==='fulfilled'&&!directory.value.error){
-        const rows=directory.value.data||[];render(rows);
+        const realRows=directory.value.data||[];
+        if(window.liveastaDemoRooms?.isEnabled()&&window.LIVEASTA_CONFIG?.demoConfigBackend==='local-preview')await window.liveastaDirectoryPresence?.observe(realRows);
+        const rows=[...realRows,...(window.liveastaDemoRooms?.rooms()||[])];render(rows);
         $('spectator-directory-status').textContent=rows.length?'':'Nessuna stanza pubblica disponibile.';
       }else{render([]);$('spectator-directory-status').textContent='Elenco non disponibile. Puoi inserire il nome della stanza.';}
-      counts(totals.status==='fulfilled'&&!totals.value.error?totals.value.data:null);
+      const value=totals.status==='fulfilled'&&!totals.value.error?{...totals.value.data}:null;
+      if(value)for(const room of window.liveastaDemoRooms?.rooms()||[])if(room.online)value[room.game_mode]=Number(value[room.game_mode]||0)+1;
+      counts(value);
     })().finally(()=>{pending=null;});return pending;
   }
   function showStep(value){
@@ -46,6 +54,10 @@
     const ticket=generation;
     const name=step===1?$('spectator-room-name-input').value.trim():roomName;
     if(!name)throw Error('Inserisci il nome della stanza o scegline una dall’elenco.');
+    if(window.liveastaDemoRooms?.isEnabled()){
+      await window.liveastaDemoRooms.read();if(ticket!==generation)return null;
+      const automatic=window.liveastaDemoRooms.resolve(name);if(automatic)return automatic;
+    }
     const {data:access,error:lookupError}=await supabaseClient.rpc('liveasta_spectator_resolve',{p_name:name});
     if(ticket!==generation)return null;
     if(lookupError)throw Error('Accesso non disponibile. Riprova tra qualche secondo.');
@@ -64,6 +76,7 @@
   window.liveastaSpectatorLobby=Object.freeze({refresh,resolveRoom,back,open:async()=>{
     generation++;roomName='';$('spectator-room-name-input').value='';showStep(1);await refresh();
   },onScreen:id=>{
+    if(id!=='screen-spectator-setup')window.liveastaDirectoryPresence?.stop();
     if(id!=='screen-spectator-setup')generation++;
     if(['screen-role','screen-entry-role','screen-spectator-setup'].includes(id))refresh();
   }});
