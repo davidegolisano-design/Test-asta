@@ -7468,7 +7468,6 @@ function updateCreateRoomModeUI(){
             }
             if(btn){
                 btn.disabled=!enabled || playerSealedSubmitted;
-                btn.textContent=playerSealedSubmitted?'OFFERTA INVIATA ✓':`OFFRI ${sealedBidAmount(input?.value)||0}`;
             }
             if(st){
                 st.className='sealed-bid-status'+(playerSealedSubmitted?' sent':'');
@@ -7497,8 +7496,11 @@ function updateCreateRoomModeUI(){
             if(maximum)maximum.textContent=String(max);
             const sent=playerSealedSubmitted && playerSealedOffer?.token===playerSealedToken;
             controls?.classList.toggle('sealed-submitted',!!sent);
-            if(receipt){receipt.hidden=!sent;receipt.textContent=sent?`HAI OFFERTO ${playerSealedOffer.amount}`:'';}
-            if(btn && !playerSealedSubmitted)btn.textContent=`OFFRI ${amount}`;
+            if(receipt){
+                receipt.hidden=!sent;
+                receipt.innerHTML=sent?`<span class="sealed-offer-caption">HAI OFFERTO </span><strong class="sealed-offer-number">${playerSealedOffer.amount}</strong>`:'';
+            }
+            if(btn && !playerSealedSubmitted)btn.innerHTML=`<span class="sealed-offer-caption">OFFRI </span><strong class="sealed-offer-number">${amount}</strong>`;
             updatePlayerBidBudgetVisuals();
         }
 

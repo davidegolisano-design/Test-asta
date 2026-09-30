@@ -32,4 +32,15 @@ body #screen-player-buzzer #sealed-bid-controls .sealed-bid-receipt{
 }
 body #screen-player-buzzer #sealed-bid-controls .sealed-bid-receipt[hidden]{display:none;}
 body #screen-player-buzzer #sealed-bid-controls.sealed-submitted :is(.sealed-slider-shell,#sealed-bid-submit){visibility:hidden;pointer-events:none;}
-body #screen-player-buzzer #normal-bid-controls.sealed-active #sealed-bid-submit{font-size:clamp(18px,2.6vw,28px)!important;}
+body #screen-player-buzzer #normal-bid-controls.sealed-active #sealed-bid-submit,
+body #screen-player-buzzer #sealed-bid-controls .sealed-bid-receipt{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+}
+body #screen-player-buzzer #sealed-bid-controls .sealed-offer-caption{
+  display:block;font-size:18px;line-height:1.1;font-weight:800;color:inherit;
+}
+body #screen-player-buzzer #sealed-bid-controls .sealed-offer-number{
+  display:block;font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(36px,12vw,64px);line-height:1;font-weight:800;color:inherit;letter-spacing:0;
+}
+body #screen-player-buzzer #sealed-bid-controls .sealed-bid-receipt .sealed-offer-number{font-size:clamp(48px,16vw,80px);}
