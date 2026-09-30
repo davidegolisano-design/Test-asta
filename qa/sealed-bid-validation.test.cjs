@@ -97,3 +97,34 @@ test('host cannot accept bids at or after deadline, during opening, for old roun
   const f=fixture();f.setNow(1999);await f.c.receiveSealedBid({token:'round1',team_id:'t1',amount:100});
   assert.equal(f.c.sealedBids.get('t1').amount,100);
 });
+
+function sliderFixture(){
+  const {parseHTML}=require('linkedom');
+  const f=fixture();const {document}=parseHTML(fs.readFileSync('index.html','utf8'));
+  f.c.document=document;f.c.playerSealedOffer=null;
+  f.c.updatePlayerBidBudgetVisuals=()=>{};f.c.syncSealedBidAreaHeight=()=>{};
+  load(f.c,['preparePlayerSealedControls','updatePlayerSealedSelection']);
+  return {...f,document};
+}
+test('range uses whole credits and both exact endpoints; label follows selection and survives refresh',()=>{
+  const {c,document}=sliderFixture();c.preparePlayerSealedControls(true);
+  const input=document.getElementById('sealed-bid-input');
+  assert.equal(input.type,'range');assert.equal(input.getAttribute('min'),'0');assert.equal(input.getAttribute('step'),'1');
+  assert.equal(input.max,'100');assert.equal(input.value,'0');
+  assert.equal(document.getElementById('sealed-bid-submit').textContent,'OFFRI 0');
+  input.value='100';c.updatePlayerSealedSelection();
+  assert.equal(document.getElementById('sealed-bid-submit').textContent,'OFFRI 100');
+  c.preparePlayerSealedControls(true);assert.equal(input.value,'100');
+  c.playerSealedToken='round2';c.preparePlayerSealedControls(true);assert.equal(input.value,'0');
+});
+test('confirmed amount fills receipt, rejection restores slider, opening without a known offer never invents zero',()=>{
+  const {c,document}=sliderFixture();c.preparePlayerSealedControls(true);
+  c.playerSealedOffer={token:'round1',amount:42};c.playerSealedSubmitted=true;c.preparePlayerSealedControls(true);
+  const receipt=document.getElementById('sealed-bid-receipt');
+  assert.equal(receipt.hidden,false);assert.equal(receipt.textContent,'HAI OFFERTO 42');
+  assert.equal(document.getElementById('sealed-bid-input').disabled,true);
+  c.playerSealedSubmitted=false;c.preparePlayerSealedControls(true);
+  assert.equal(receipt.hidden,true);assert.equal(document.getElementById('sealed-bid-input').disabled,false);
+  c.playerSealedOffer=null;c.playerSealedSubmitted=true;c.preparePlayerSealedControls(false);
+  assert.equal(receipt.hidden,true);
+});

@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="./styles/entry-matchday.css?v=10713">
     <link rel="stylesheet" href="./styles/spectator.css?v=10721-public">
     <link rel="stylesheet" href="./styles/room-listone.css?v=dev1">
+    <link rel="stylesheet" href="./styles/sealed-bid.css?v=dev-slider1">
 </head>
 <body>
 
@@ -333,8 +334,12 @@
                 <div id="sealed-bid-controls" class="sealed-bid-controls" style="display:none;">
                     <div class="sealed-bid-label">OFFERTA IN BUSTA CHIUSA</div>
                     <div class="sealed-bid-entry">
-                        <input id="sealed-bid-input" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Inserisci crediti" autocomplete="off" autocapitalize="off" spellcheck="false" name="liveasta-sealed-offer" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" oninput="updatePlayerBidBudgetVisuals()">
-                        <button id="sealed-bid-submit" class="btn btn-green" type="button" onclick="submitSealedBid()">OFFRI</button>
+                        <div class="sealed-slider-shell">
+                            <input id="sealed-bid-input" type="range" min="0" max="0" step="1" value="0" aria-label="Importo della busta in crediti" oninput="updatePlayerSealedSelection()">
+                            <div class="sealed-slider-scale" aria-hidden="true"><span>0</span><span id="sealed-slider-max">0</span></div>
+                        </div>
+                        <button id="sealed-bid-submit" class="btn btn-green" type="button" onclick="submitSealedBid()">OFFRI 0</button>
+                        <div id="sealed-bid-receipt" class="sealed-bid-receipt" role="status" hidden></div>
                     </div>
                     <div id="sealed-bid-status" class="sealed-bid-status">L'offerta sarà visibile solo alla fine del timer.</div>
                 </div>

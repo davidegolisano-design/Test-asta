@@ -180,6 +180,7 @@ function updateCreateRoomModeUI(){
         let playerSealedToken=null;
         let playerSealedSubmitted=false;
         let playerSealedConfirming=false;
+        let playerSealedOffer=null;
         let readyModeEnabled=false;
         let readyGateWaiting=false;
         let readyGateToken=null;
@@ -6952,10 +6953,11 @@ function updateCreateRoomModeUI(){
                     const d=payload.payload||{};
                     if(String(d.token)!==String(playerSealedToken)||String(d.team_id)!==String(myTeamId))return;
                     playerSealedSubmitted=false;
+                    preparePlayerSealedControls(true);
                     const btn=document.getElementById('sealed-bid-submit');
                     const inp=document.getElementById('sealed-bid-input');
                     const st=document.getElementById('sealed-bid-status');
-                    if(btn){btn.disabled=false;btn.textContent='OFFRI';}
+                    if(btn){btn.disabled=false;}
                     if(inp)inp.disabled=false;
                     if(st){st.textContent=d.reason||'Offerta rifiutata.';st.className='sealed-bid-status error';}
                 });
@@ -7454,26 +7456,50 @@ function updateCreateRoomModeUI(){
 
             if(input){
                 input.disabled=!enabled || playerSealedSubmitted;
-                input.value=playerSealedSubmitted?input.value:'';
                 const team=myTeamId?teamsCache.find(t=>String(t.id)===String(myTeamId)):null;
                 const max=team&&currentAuctionPlayer?maxBidForTeam(team,currentAuctionPlayer.R):0;
                 input.max=String(Math.max(0,max));
-                input.placeholder=`Da 0 a ${Math.max(0,max)} crediti`;
+                if(input.dataset.sealedToken!==String(playerSealedToken||'')){
+                    input.dataset.sealedToken=String(playerSealedToken||'');
+                    input.value='0';
+                }
+                if(playerSealedOffer?.token===playerSealedToken)input.value=String(playerSealedOffer.amount);
+                else input.value=String(Math.min(max,Math.max(0,sealedBidAmount(input.value)||0)));
             }
             if(btn){
                 btn.disabled=!enabled || playerSealedSubmitted;
-                btn.textContent=playerSealedSubmitted?'OFFERTA INVIATA ✓':'OFFRI';
+                btn.textContent=playerSealedSubmitted?'OFFERTA INVIATA ✓':`OFFRI ${sealedBidAmount(input?.value)||0}`;
             }
             if(st){
                 st.className='sealed-bid-status'+(playerSealedSubmitted?' sent':'');
                 st.textContent=playerSealedSubmitted
                     ? 'Offerta registrata. Non può più essere modificata.'
                     : enabled
-                        ? 'Inserisci l’importo e conferma. 0 = rinuncia. L’offerta è definitiva.'
+                        ? 'Scorri e conferma. 0 = rinuncia. L’offerta è definitiva.'
                         : (playerSealedMode?'Buste in attesa di apertura.':'In attesa della busta chiusa.');
             }
-            updatePlayerBidBudgetVisuals();
+            updatePlayerSealedSelection();
             syncSealedBidAreaHeight();
+        }
+
+        function updatePlayerSealedSelection(){
+            const input=document.getElementById('sealed-bid-input');
+            const controls=document.getElementById('sealed-bid-controls');
+            const btn=document.getElementById('sealed-bid-submit');
+            const receipt=document.getElementById('sealed-bid-receipt');
+            const maximum=document.getElementById('sealed-slider-max');
+            const amount=sealedBidAmount(input?.value)||0;
+            const max=Number(input?.max)||0;
+            if(input){
+                input.style.setProperty('--sealed-slider-progress',`${max>0?amount/max*100:0}%`);
+                input.setAttribute('aria-valuetext',amount===0?'0 crediti, rinuncia':`${amount} crediti`);
+            }
+            if(maximum)maximum.textContent=String(max);
+            const sent=playerSealedSubmitted && playerSealedOffer?.token===playerSealedToken;
+            controls?.classList.toggle('sealed-submitted',!!sent);
+            if(receipt){receipt.hidden=!sent;receipt.textContent=sent?`HAI OFFERTO ${playerSealedOffer.amount}`:'';}
+            if(btn && !playerSealedSubmitted)btn.textContent=`OFFRI ${amount}`;
+            updatePlayerBidBudgetVisuals();
         }
 
         function sealedBidAmount(value){
@@ -7529,6 +7555,7 @@ function updateCreateRoomModeUI(){
             }
 
             playerSealedSubmitted=true;
+            playerSealedOffer={token:playerSealedToken,amount};
             preparePlayerSealedControls(true);
 
             const sealedPayload={
