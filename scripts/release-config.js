@@ -3,7 +3,7 @@
   'use strict';
   const production = location.protocol === 'https:' && ['www.liveasta.it','liveasta.it'].includes(location.hostname);
   window.LIVEASTA_CONFIG = Object.freeze({
-    version: 'v1.07.27',
+    version: 'v1.07.28',
     automatedRooms: true,
     demoConfigBackend: 'supabase',
     environment: production ? 'production' : 'dev-premium',

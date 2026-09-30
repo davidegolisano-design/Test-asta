@@ -45,3 +45,13 @@ test('spectator audio routing commands cannot change or write other participants
     vm.runInContext(source.slice(start,end),c);await c[name]('auctioneer',false);
   }
 });
+
+test('spectator heading combines bidding and selection modes and resets for the host',()=>{
+  const {view,c}=viewer();const title=()=>c.document.getElementById('auctioneer-session-title').textContent;
+  view.render(state('active'));assert.equal(title(),'Rilanci');
+  c.autoRandomEnabled=true;view.render(state('active'));assert.equal(title(),'Rilanci · Random');
+  c.nominationState.enabled=true;view.render({...state('sealed'),mode:'sealed'});assert.equal(title(),'Busta chiusa · Banditura a turni');
+  view.render({...state('ready'),mode:'sealed',selection_mode:'random'});assert.equal(title(),'Busta chiusa · Random');
+  view.render({...state('active'),mode:'sealed_tiebreak',selection_mode:'turns'});assert.equal(title(),'Spareggio a rilanci · Banditura a turni');
+  view.stop();assert.equal(title(),'Plancia Banditore');
+});

@@ -260,7 +260,7 @@ function updateCreateRoomModeUI(){
                 nominationState={...nominationState,enabled:config.selection==='turns'||!!frame.state.cycle_complete,role:frame.state.cycle_complete?null:currentAuctionPlayer?.R,turn_team_id:frame.state.nomination_team_id,order_team_ids:plan.teams.map(t=>String(t.id))};
                 onlinePlayers.clear();
                 if(!config.paused)plan.teams.forEach(t=>onlinePlayers.set(String(t.id),{team_id:String(t.id),team_name:t.name,presence_at:Date.now()}));
-                renderOnlinePlayers();window.liveastaSpectatorView.render(frame.state);
+                renderOnlinePlayers();window.liveastaSpectatorView.render({...frame.state,selection_mode:config.selection,mode:frame.state.mode||(config.auction_mode==='sealed'||config.auction_mode==='mixed'&&frame.state.round%3===1?'sealed':'normal')});
                 if(rostersChanged&&document.getElementById('screen-all-rosters')?.classList.contains('active'))renderAllRosters();
             },
             disabled:()=>{stopSpectator();currentRoom=null;currentRoomId='';showScreen('screen-entry-role');}

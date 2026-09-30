@@ -8,6 +8,13 @@ window.liveastaSpectatorView=(()=>{
   const el=id=>document.getElementById(id);
   const write=(id,value)=>{const target=el(id);if(target&&target.textContent!==String(value))target.textContent=String(value);};
   const timed=phase=>['prep','active','sealed','sealed_reveal'].includes(phase);
+  function modeLabel(state){
+    const mode=String(state.mode||'');
+    const sealed=mode==='sealed'||mode==='sealed_result'&&state.phase==='ended'||['sealed','sealed_reveal'].includes(state.phase);
+    const format=mode==='sealed_tiebreak'?'Spareggio a rilanci':sealed?'Busta chiusa':'Rilanci';
+    const selection=state.selection_mode||(nominationState.enabled?'turns':typeof autoRandomEnabled!=='undefined'&&autoRandomEnabled?'random':'manual');
+    return format+(selection==='turns'?' · Banditura a turni':selection==='random'?' · Random':'');
+  }
   function audioTransition(state){
     const next={phase:state.phase,player:state.player?.id,token:state.sealed_token||'',value:Number(state.value)||0,winner:state.winner||'',paused:!!state.paused};
     const previous=audioState;audioState=next;
@@ -66,6 +73,7 @@ window.liveastaSpectatorView=(()=>{
       snapshot={...snapshot,sealed_submitted_ids:[...new Set([...(snapshot.sealed_submitted_ids||[]),...deliveryUpdate.ids].map(String))]};
     }
     const phase=snapshot.phase||'idle';
+    write('auctioneer-session-title',modeLabel(snapshot));
     if(phase==='ended')previousResult=snapshot;
     const source=snapshot.player||(phase==='idle'&&nominationState.enabled?previousResult?.player:null);
     const player=source?{Id:source.id,Nome:source.nome,R:source.role,Squadra:source.club,FVM:source.fvm}:null;
@@ -112,7 +120,7 @@ window.liveastaSpectatorView=(()=>{
     window.updateLiveAstaTeamCards?.();
     window.refreshLiveAstaMobileBoardDev?.();
   }
-  function stop(){clearInterval(clock);clock=null;snapshot=null;deliveryUpdate=null;previousResult=null;audioState=null;lastAudioTick='';el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
+  function stop(){write('auctioneer-session-title','Plancia Banditore');clearInterval(clock);clock=null;snapshot=null;deliveryUpdate=null;previousResult=null;audioState=null;lastAudioTick='';el('countdown-display')?.classList.remove('liveasta-last3','danger');delete el('screen-auctioneer-board')?.dataset.spectatorPhase;}
   return{render,stop,subscribePresence,updateDeliveries:payload=>{
     if(!payload?.token||!Array.isArray(payload.submitted_ids))return;
     deliveryUpdate={token:payload.token,ids:payload.submitted_ids};
