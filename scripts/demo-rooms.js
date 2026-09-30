@@ -46,7 +46,7 @@ function stop(invalidate=true){if(invalidate)generation++;clearInterval(clock);c
 function field(label,type,value,min,max){const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement(type==='select'?'select':'input');input.className='minimal-input';if(type!=='select')input.type=type;if(min!==undefined)input.min=min;if(max!==undefined)input.max=max;input.value=value;wrap.append(input);return {wrap,input};}
 const labels={ready_seconds:['READY',3,20],prep_seconds:['Pre-asta',1,20],auction_seconds:['Chiusura asta',3,60],sealed_seconds:['Consegna buste',8,120],reveal_seconds:['Apertura buste',1,20],result_seconds:['Esito',3,20]};
 function renderAdmin(){
- const panel=$('admin-automated-rooms');if(!panel||!enabled())return;panel.hidden=false;panel.replaceChildren();
+ const panel=$('admin-automated-rooms');if(!panel||!enabled())return;panel.hidden=false;panel.replaceChildren();const trigger=$('admin-automated-toggle');if(trigger)trigger.hidden=false;
  const title=document.createElement('h2');title.textContent='Stanze automatiche';panel.append(title);
  const note=document.createElement('p');note.className='subtitle';note.textContent='Ambiente dev · 8 squadre, 500 crediti, ciclo completo e riavvio. Nessuna scrittura per le aste simulate. Salvare le impostazioni ricomincia il ciclo.'+(local()?' In questa anteprima i comandi valgono per questo browser.':'');panel.append(note);
  const update=document.createElement('button');update.className='btn btn-secondary btn-small';update.textContent='Aggiorna dal listone miniature';
@@ -96,5 +96,5 @@ async function command(c,action,values){
 }
 async function admin(){if(!enabled())return;try{await read();renderAdmin();}catch(e){const panel=$('admin-automated-rooms');panel.hidden=false;panel.textContent='Configurazione automatica non disponibile: '+e.message;}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick(true);});
-window.liveastaDemoRooms={configure:value=>hooks=value,read,rooms,resolve,start,stop,admin,isActive:()=>!!active,isEnabled:enabled};
+window.liveastaDemoRooms={configure:value=>hooks=value,read,rooms,resolve,start,stop,admin,openAdmin:()=> $('admin-automated-dialog')?.showModal(),closeAdmin:()=> $('admin-automated-dialog')?.close(),isActive:()=>!!active,isEnabled:enabled};
 })();

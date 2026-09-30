@@ -59,3 +59,10 @@ body #screen-auctioneer-board #hybrid-view-to-player:not([hidden]){font-size:cla
 .automatic-room-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .automatic-room-actions .btn{width:auto!important;margin:0!important}
 @media(max-width:760px){.automatic-room-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.automatic-room-fields label:first-child{grid-column:1/-1}.automatic-room-actions .btn{flex:1 1 40%}}
+
+#admin-automated-toggle[hidden]{display:none!important}
+#admin-automated-dialog{box-sizing:border-box;width:min(960px,calc(100% - 24px));max-height:calc(100dvh - 32px);overflow-y:auto;margin:auto;padding:20px;border:1px solid var(--theme-border);border-radius:12px;background:var(--theme-bg,var(--theme-panel));color:var(--theme-text)}
+#admin-automated-dialog::backdrop{background:rgba(0,0,0,.7)}
+#admin-automated-dialog .automatic-room-close{display:block;width:auto!important;margin:0 0 12px auto!important}
+#admin-automated-dialog h2{margin-top:0}
+@media(max-width:760px){#admin-automated-dialog{padding:12px;max-height:calc(100dvh - 24px)}}

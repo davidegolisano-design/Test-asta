@@ -255,7 +255,7 @@ function updateCreateRoomModeUI(){
                 purchasesCache=frame.purchases;liveAuctionState=frame.state;
                 teamsCache=plan.teams.map(t=>({...t,credits_remaining:500-frame.purchases.filter(p=>p.team_id===t.id).reduce((sum,p)=>sum+p.price,0)}));
                 currentAuctionPlayer=plan.players.find(p=>String(p.Id)===frame.state.player?.id)||null;
-                nominationState={...nominationState,enabled:config.selection==='turns',turn_team_id:frame.state.nomination_team_id,order:plan.teams.map(t=>String(t.id))};
+                nominationState={...nominationState,enabled:config.selection==='turns'||!!frame.state.cycle_complete,role:frame.state.cycle_complete?null:currentAuctionPlayer?.R,turn_team_id:frame.state.nomination_team_id,order_team_ids:plan.teams.map(t=>String(t.id))};
                 onlinePlayers.clear();
                 if(!config.paused)plan.teams.forEach(t=>onlinePlayers.set(String(t.id),{team_id:String(t.id),team_name:t.name,presence_at:Date.now()}));
                 renderOnlinePlayers();window.liveastaSpectatorView.render(frame.state);

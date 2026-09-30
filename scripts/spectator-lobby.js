@@ -10,7 +10,7 @@
   }
   function render(rows){
     const list=$('spectator-public-rooms');list.replaceChildren();
-    for(const room of [...rows].sort((a,b)=>Number(b.online)-Number(a.online)||a.name.localeCompare(b.name,'it'))){
+    for(const room of [...rows].filter(room=>room.online===true).sort((a,b)=>Number(b.online)-Number(a.online)||a.name.localeCompare(b.name,'it'))){
       const button=document.createElement('button');button.type='button';button.className='spectator-public-room';
       const name=document.createElement('strong');name.textContent=room.name;
       const detail=document.createElement('span');detail.textContent=`${room.game_mode==='mantra'?'Mantra':'Classic'} · ${room.online?'Online':'Banditore offline'}`;
@@ -29,9 +29,9 @@
       ]);
       const directory=results[0],totals=results[1];
       if(directory.status==='fulfilled'&&!directory.value.error){
-        const realRows=directory.value.data||[];
+        const realRows=(directory.value.data||[]).filter(room=>room.online===true);
         if(window.liveastaDemoRooms?.isEnabled()&&window.LIVEASTA_CONFIG?.demoConfigBackend==='local-preview')await window.liveastaDirectoryPresence?.observe(realRows);
-        const rows=[...realRows,...(window.liveastaDemoRooms?.rooms()||[])];render(rows);
+        const rows=[...realRows,...(window.liveastaDemoRooms?.rooms()||[])].filter(room=>room.online===true);render(rows);
         $('spectator-directory-status').textContent=rows.length?'':'Nessuna stanza pubblica disponibile.';
       }else{render([]);$('spectator-directory-status').textContent='Elenco non disponibile. Puoi inserire il nome della stanza.';}
       const value=totals.status==='fulfilled'&&!totals.value.error?{...totals.value.data}:null;
