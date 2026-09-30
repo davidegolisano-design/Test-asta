@@ -49,7 +49,7 @@
     if(!target?.closest)return null;
     let node=target.closest('button,[role="button"],[role="tab"],[role="switch"],input[type="checkbox"],input[type="radio"],a[href]');
     if(!node){const label=target.closest('label');node=label?.control||label?.querySelector('input[type="checkbox"],input[type="radio"]');}
-    if(!node || node.disabled || node.closest('[inert],[aria-disabled="true"]'))return null;
+    if(!node || node.disabled || node.closest('[inert],[aria-disabled="true"],[data-settings-tap]'))return null;
     return node;
   }
   function feedback(){sound();vibrate();}
